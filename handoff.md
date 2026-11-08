@@ -8,6 +8,6 @@
   3. 沉澱系統全域自訂技能：`learning-island-builder` 與 `g4-writing-island-builder`。
   4. 建立專案工作規則 `AGENTS.md`、入口 `ANTIGRAVITY.md`、`.gitignore` 與專案文檔 `README.md`。
   5. 建立 Obsidian 專案駕駛艙：`/Users/tunyuan/Documents/ObsidianVault/創作庫/115四上作文專案駕駛艙.md`。
+  6. 成功建立公開 GitHub Repo [asc103138/g4-writing-island](https://github.com/asc103138/g4-writing-island) 並啟用 GitHub Pages：[https://asc103138.github.io/g4-writing-island/](https://asc103138.github.io/g4-writing-island/)。
 - **下一步待辦**：
-  - 待使用者確認是否建立 GitHub Repo 並啟用 GitHub Pages 部署。
   - 進行課堂學生載具（平板/電腦）實機測試與體驗回饋收集。

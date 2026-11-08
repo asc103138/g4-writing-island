@@ -4,8 +4,8 @@
 - **專案名稱**：115四上作文・《考試前後》3D 寫作冒險島嶼與四格漫畫守門獸
 - **專案用途**：臺中市梧棲區中正國小四年級作文沉浸式教學系統。將記敘文「起、承、轉、合」拆解為四座 3D 探索島嶼，結合教材生字詞審查紅線、誇飾修辭鷹架、教師逐段批改雙軌印章、矛盾劇情裂痕警報、全自動 Q 版四格漫畫與稿紙抄寫專區。
 - **主要工作目錄**：`/Users/tunyuan/Library/CloudStorage/GoogleDrive-asc103138@st.tc.edu.tw/我的雲端硬碟/115四上作文`
-- **GitHub Repo**：待建立與關聯（預計：`asc103138/g4-writing-island`）
-- **網頁部署**：預計部署至 GitHub Pages
+- **GitHub Repo**：https://github.com/asc103138/g4-writing-island
+- **GitHub Pages**：https://asc103138.github.io/g4-writing-island/
 
 ## Obsidian 關聯筆記
 - **Vault 路徑**：`/Users/tunyuan/Documents/ObsidianVault`
