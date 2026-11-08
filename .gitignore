@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Node / Environment
+node_modules/
+.env
+.env.local
+
+# Build / Temp
+dist/
+build/
+*.tmp
+*.log
+
+# 教科書版權保護（依 g4-curriculum-review 規範隔離）
+*.pdf
+115四上國課習/
+115四上數課習/
+115社會課習/

@@ -1,0 +1,2007 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>考試前後・3D 作文冒險島嶼與四格漫畫守門獸</title>
+  <meta name="description" content="臺中市國小四年級作文 3D 沉浸式學習島嶼：起承轉合四島、微縮立體地標模型、四上期末教材句型審查、教師逐段批改印章、四格漫畫守門獸與稿紙抄寫專區。">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏝️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <style>
+    :root {
+      --bg: #90cae8;
+      --surface: #fffdf9;
+      --text: #1d3557;
+      --text-muted: #52796f;
+      --primary: #1d5f8a;
+      --primary-light: #e3f2fd;
+      --accent: #e76f51;
+      --accent-gold: #f4a261;
+      --success: #2a9d8f;
+      --danger: #e63946;
+      --line: rgba(29, 95, 138, 0.16);
+      --shadow: 0 12px 36px rgba(15, 40, 70, 0.15);
+      --radius: 16px;
+      --font-sans: 'Noto Sans TC', system-ui, sans-serif;
+      --font-serif: 'Noto Serif TC', serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--font-sans); background: var(--bg); color: var(--text); user-select: none; }
+    button { font: inherit; cursor: pointer; border: none; outline: none; transition: all .18s ease; }
+    button:active { transform: scale(0.97); }
+
+    /* 3D 畫布與容器 */
+    #canvas-container { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
+    #webgl-canvas { width: 100%; height: 100%; display: block; }
+
+    /* 頂部導航列 */
+    .topbar {
+      position: absolute; top: 0; left: 0; right: 0; height: 64px; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; background: rgba(255, 253, 249, 0.92); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line); box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon { font-size: 28px; }
+    .brand-title { font-size: 18px; font-weight: 900; color: var(--primary); letter-spacing: 0.5px; }
+    .brand-subtitle { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .tier-badge {
+      display: flex; align-items: center; gap: 6px; padding: 6px 14px;
+      background: var(--primary-light); color: var(--primary); font-size: 13px; font-weight: 700;
+      border-radius: 999px; border: 1px solid rgba(29, 95, 138, 0.2);
+    }
+    .btn-top {
+      padding: 7px 15px; border-radius: 999px; font-size: 13.5px; font-weight: 700;
+      background: white; border: 1px solid var(--line); color: var(--text);
+      display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .btn-top:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+
+    /* 3D 浮動標籤與引線 */
+    #labels-layer { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
+    .island-marker {
+      position: absolute; transform: translate(-50%, -100%); pointer-events: auto;
+      display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform .2s ease;
+    }
+    .island-marker:hover { transform: translate(-50%, -105%) scale(1.06); }
+    .marker-bubble {
+      display: flex; align-items: center; gap: 8px; padding: 7px 14px;
+      background: rgba(255, 255, 255, 0.95); border-radius: 12px; border: 2px solid var(--primary);
+      box-shadow: 0 8px 24px rgba(29, 95, 138, 0.25); white-space: nowrap;
+    }
+    .marker-bubble.guardian { border-color: var(--accent); }
+    .marker-icon { font-size: 19px; }
+    .marker-title { font-size: 14px; font-weight: 900; color: var(--primary); }
+    .marker-status {
+      font-size: 11px; padding: 2px 7px; border-radius: 999px; font-weight: 700;
+      background: #e0e0e0; color: #666;
+    }
+    .marker-status.passed { background: #d4edda; color: #155724; }
+    .marker-pin {
+      width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent;
+      border-top: 9px solid var(--primary); margin-top: -1px;
+    }
+    .marker-bubble.guardian + .marker-pin { border-top-color: var(--accent); }
+
+    /* 底部導航島嶼進度列 */
+    .bottom-bar {
+      position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 20;
+      display: flex; align-items: center; gap: 10px; padding: 8px 18px;
+      background: rgba(255, 253, 249, 0.92); backdrop-filter: blur(8px);
+      border-radius: 999px; border: 1px solid var(--line); box-shadow: var(--shadow);
+    }
+    .island-step-dot {
+      display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px;
+      font-size: 13px; font-weight: 700; cursor: pointer; background: white; border: 1px solid var(--line);
+    }
+    .island-step-dot.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .island-step-dot.completed { background: #e8f5e9; color: var(--success); border-color: #a5d6a7; }
+
+    /* 寫作與任務抽屜 (側邊滑出) */
+    .drawer {
+      position: absolute; top: 76px; right: 20px; bottom: 20px; width: 480px; max-width: calc(100vw - 40px);
+      background: var(--surface); border-radius: var(--radius); border: 1px solid var(--line);
+      box-shadow: 0 16px 48px rgba(10, 30, 60, 0.2); z-index: 30; display: flex; flex-direction: column;
+      overflow: hidden; transform: translateX(110%); transition: transform .32s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer-header {
+      padding: 16px 20px; background: white; border-bottom: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .drawer-title { font-size: 17px; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+    .drawer-close { font-size: 20px; color: #888; background: none; padding: 4px 8px; border-radius: 8px; }
+    .drawer-close:hover { background: #f0f0f0; color: #333; }
+    .drawer-body { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* 精靈任務引言卡 (CLT ≤ 60字) */
+    .clt-prompt-card {
+      background: linear-gradient(135deg, #f0f7fc 0%, #e8f4fb 100%);
+      border-left: 4px solid var(--primary); border-radius: 10px; padding: 12px 16px;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .sprite-avatar { font-size: 32px; line-height: 1; }
+    .sprite-text { font-size: 13.5px; line-height: 1.6; color: #234; font-weight: 500; }
+    .sprite-speaker { font-weight: 900; color: var(--primary); margin-bottom: 2px; }
+
+    /* 好詞百寶箱與同儕觀摩卡 */
+    .tools-accordion { display: flex; flex-direction: column; gap: 8px; }
+    .tool-box {
+      background: white; border: 1px solid var(--line); border-radius: 12px; padding: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .tool-title { font-size: 13px; font-weight: 900; color: var(--primary); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .chips-group { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip {
+      padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700;
+      background: #f4f7f9; border: 1px solid #dce4ec; color: #2c4a68; cursor: pointer;
+    }
+    .chip:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+    .chip.highlight { background: #fff3cd; border-color: #ffeeba; color: #856404; }
+
+    /* 寫作輸入區 */
+    .writing-area { display: flex; flex-direction: column; gap: 8px; }
+    .writing-textarea {
+      width: 100%; height: 135px; padding: 12px; border-radius: 12px; border: 1.5px solid #c9d7e3;
+      font-size: 15px; font-family: var(--font-sans); line-height: 1.7; resize: none;
+      background: #ffffff; color: #1f2937;
+    }
+    .writing-textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(29, 95, 138, 0.15); }
+    
+    /* 靈力能量條 (字數統計) */
+    .energy-bar-wrap { display: flex; flex-direction: column; gap: 4px; }
+    .energy-bar-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--text-muted); }
+    .energy-bar-bg { width: 100%; height: 8px; background: #e0e8ef; border-radius: 999px; overflow: hidden; }
+    .energy-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #48cae4, #0077b6); transition: width .2s ease; }
+    .energy-bar-fill.good { background: linear-gradient(90deg, #2a9d8f, #21867a); }
+
+    /* 教師批改印章狀態卡 */
+    .teacher-review-card {
+      background: #fff8f6; border: 1.5px dashed var(--accent); border-radius: 12px; padding: 14px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .teacher-stamp-display { display: flex; align-items: center; justify-content: space-between; }
+    .stamp-badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px;
+      border-radius: 999px; font-weight: 900; font-size: 13px;
+    }
+    .stamp-badge.unreviewed { background: #ffe3dc; color: var(--danger); }
+    .stamp-badge.approved { background: #d4edda; color: #155724; border: 2px solid #28a745; }
+    .red-pen-feedback { font-size: 13px; color: var(--danger); font-weight: 700; line-height: 1.5; padding: 6px 10px; background: #ffebee; border-radius: 8px; }
+
+    /* 操作按鈕群 */
+    .drawer-actions { padding: 16px 20px; background: white; border-top: 1px solid var(--line); display: flex; gap: 10px; }
+    .btn-main {
+      flex: 1; padding: 11px; border-radius: 10px; font-size: 14.5px; font-weight: 900;
+      background: var(--primary); color: white; display: flex; justify-content: center; align-items: center; gap: 8px;
+    }
+    .btn-main:hover { background: #154668; }
+    .btn-teacher {
+      padding: 11px 16px; border-radius: 10px; font-size: 13.5px; font-weight: 900;
+      background: white; border: 1.5px solid var(--accent); color: var(--accent); display: flex; align-items: center; gap: 6px;
+    }
+    .btn-teacher:hover { background: #fff5f2; }
+
+    /* 守門獸對話與四格漫畫全屏彈窗 */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(10, 25, 45, 0.72); backdrop-filter: blur(8px);
+      z-index: 50; display: none; place-items: center; padding: 20px;
+    }
+    .modal-backdrop.open { display: grid; }
+    .modal-panel {
+      width: 960px; max-width: 100%; max-height: 92vh; background: var(--surface);
+      border-radius: 20px; box-shadow: 0 24px 64px rgba(0,0,0,0.3); border: 2px solid var(--line);
+      display: flex; flex-direction: column; overflow: hidden; animation: popIn .25s ease-out;
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .modal-header {
+      padding: 18px 24px; background: white; border-bottom: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-title { font-size: 20px; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+    .modal-body { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+    /* 四格漫畫網格 */
+    .comic-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; background: #222;
+      padding: 16px; border-radius: 16px; border: 3px solid #111;
+    }
+    .comic-panel {
+      background: #fff; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;
+      position: relative; border: 2px solid #333; min-height: 280px; box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+    .comic-panel.has-crack {
+      border: 3px dashed var(--danger); box-shadow: 0 0 16px rgba(230, 57, 70, 0.6);
+    }
+    .crack-overlay {
+      position: absolute; inset: 0; background: rgba(230, 57, 70, 0.12);
+      display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px;
+      padding: 14px; text-align: center; z-index: 5;
+    }
+    .crack-badge {
+      background: var(--danger); color: white; font-size: 13px; font-weight: 900;
+      padding: 4px 10px; border-radius: 999px; display: flex; align-items: center; gap: 4px;
+    }
+    .crack-reason { font-size: 12px; font-weight: 700; color: #900; background: white; padding: 6px 8px; border-radius: 6px; }
+    .crack-btn {
+      padding: 6px 12px; background: var(--danger); color: white; font-weight: 900; font-size: 12px;
+      border-radius: 8px; margin-top: 4px;
+    }
+    .comic-header-tag {
+      background: #f0f0f0; padding: 4px 8px; font-size: 11px; font-weight: 900; color: #444;
+      display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd;
+    }
+    .comic-art-box { flex: 1; display: grid; place-items: center; padding: 10px; background: #fafafa; position: relative; }
+    .comic-svg-scene { width: 100%; height: 140px; }
+    .comic-caption {
+      padding: 8px 10px; font-size: 12px; line-height: 1.45; color: #111;
+      background: #ffffff; border-top: 1px solid #eee; font-weight: 600; min-height: 52px;
+    }
+
+    /* 國小真實稿紙抄寫專區 (20x20 模擬) */
+    .manuscript-section {
+      background: #fffdf9; border: 2px solid #52796f; border-radius: 14px; padding: 20px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .manuscript-toolbar { display: flex; justify-content: space-between; align-items: center; }
+    .manuscript-title { font-size: 18px; font-weight: 900; font-family: var(--font-serif); color: #2d544a; display: flex; align-items: center; gap: 8px; }
+    .manuscript-grid {
+      display: flex; flex-direction: column; gap: 4px; background: #f4f9f7;
+      padding: 16px; border-radius: 10px; border: 1.5px solid #a3c2b8; max-height: 280px; overflow-y: auto;
+    }
+    .grid-line { display: flex; gap: 4px; flex-wrap: wrap; }
+    .grid-cell {
+      width: 32px; height: 32px; border: 1px solid #bcdad1; display: grid; place-items: center;
+      font-size: 18px; font-family: var(--font-serif); color: #1c3d34; font-weight: 600;
+      background: white; border-radius: 3px; position: relative;
+    }
+    .grid-cell.indent { background: #eef5f3; color: transparent; }
+    .grid-cell.punct { color: #d9534f; font-weight: 900; }
+
+    /* 教師批改密碼確認彈窗 */
+    .teacher-modal-card {
+      width: 420px; max-width: 90vw; background: white; border-radius: 18px;
+      padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); border: 2px solid var(--accent);
+      display: flex; flex-direction: column; gap: 16px; animation: popIn .2s ease-out;
+    }
+    .teacher-stamp-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .stamp-btn {
+      padding: 12px 8px; border-radius: 12px; border: 2px solid #e0e0e0; background: white;
+      display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 900;
+    }
+    .stamp-btn:hover { border-color: var(--accent); background: #fff5f2; }
+    .stamp-btn.selected { border-color: var(--accent); background: #ffe8e2; color: var(--accent); }
+    .stamp-icon { font-size: 26px; }
+    .quick-reject-group { display: flex; flex-wrap: wrap; gap: 6px; }
+    .reject-tag {
+      padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 700;
+      background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; cursor: pointer;
+    }
+    .reject-tag.selected { background: var(--danger); color: white; border-color: var(--danger); }
+
+    @media (max-width: 900px) {
+      .comic-grid { grid-template-columns: repeat(2, 1fr); }
+      .drawer { width: 100vw; right: 0; left: 0; bottom: 0; top: 64px; max-width: 100vw; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 3D WebGL 畫布容器 -->
+  <div id="canvas-container">
+    <canvas id="webgl-canvas"></canvas>
+  </div>
+
+  <!-- 2D 懸浮標籤圖層 -->
+  <div id="labels-layer"></div>
+
+  <!-- 頂部功能列 -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon">🏝️</span>
+      <div>
+        <h1 class="brand-title">考試前後・3D 寫作冒險島</h1>
+        <p class="brand-subtitle">南一數・翰林國・康軒社｜四上期末專屬作文修辭島嶼</p>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <div class="tier-badge" id="tierDisplay">
+        <span>🌟 挑戰者模式</span>
+      </div>
+      <button class="btn-top" onclick="window.islandApp.openTierSelect()">
+        <span>🎯 切換難度</span>
+      </button>
+      <button class="btn-top" onclick="window.islandApp.toggleTeacherMode()">
+        <span id="teacherModeIcon">🔒</span>
+        <span id="teacherModeText">教師模式 (密碼 888)</span>
+      </button>
+      <button class="btn-top" onclick="window.islandApp.resetCamera()">
+        <span>🧭 全景視角</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 底部島嶼航行進度列 -->
+  <nav class="bottom-bar">
+    <div class="island-step-dot active" id="step-dot-0" onclick="window.islandApp.flyToIsland(0)">
+      <span>🏝️ 起・月考倒數</span>
+    </div>
+    <span>➜</span>
+    <div class="island-step-dot" id="step-dot-1" onclick="window.islandApp.flyToIsland(1)">
+      <span>🏫 承・考場鐘聲</span>
+    </div>
+    <span>➜</span>
+    <div class="island-step-dot" id="step-dot-2" onclick="window.islandApp.flyToIsland(2)">
+      <span>⚡ 轉・驚天動地</span>
+    </div>
+    <span>➜</span>
+    <div class="island-step-dot" id="step-dot-3" onclick="window.islandApp.flyToIsland(3)">
+      <span>🌅 合・超越自我</span>
+    </div>
+    <span>➜</span>
+    <div class="island-step-dot" id="step-dot-4" onclick="window.islandApp.flyToIsland(4)">
+      <span>🐲 守門獸試煉</span>
+    </div>
+  </nav>
+
+  <!-- 側邊寫作任務抽屜 -->
+  <aside class="drawer" id="islandDrawer">
+    <div class="drawer-header">
+      <h2 class="drawer-title" id="drawerTitle">🏝️ 第一段：起之島・考前準備</h2>
+      <button class="drawer-close" onclick="window.islandApp.closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-body">
+      
+      <!-- CLT 認知負荷 ≤ 60字 精靈任務卡 -->
+      <div class="clt-prompt-card">
+        <span class="sprite-avatar" id="spriteAvatar">🧚‍♂️</span>
+        <div>
+          <div class="sprite-speaker" id="spriteName">島嶼書精靈・墨墨</div>
+          <div class="sprite-text" id="spritePrompt">
+            月考快到了！你是認真苦讀還是貪玩抱佛腳？請運用誇飾法寫出考前的緊張生活與堆積如山的作業。
+          </div>
+        </div>
+      </div>
+
+      <!-- 四上期末好詞百寶箱與同儕觀摩卡 -->
+      <div class="tools-accordion">
+        <div class="tool-box">
+          <div class="tool-title">
+            <span>📚 四上翰林期末好詞庫（點擊直接放入）</span>
+            <span style="font-size: 11px; color: var(--text-muted);">教材核可</span>
+          </div>
+          <div class="chips-group" id="wordChips"></div>
+        </div>
+
+        <div class="tool-box">
+          <div class="tool-title">
+            <span>💡 誇飾法句型積木（放大法／縮小法）</span>
+            <span style="font-size: 11px; color: var(--accent);">加分解鎖金框</span>
+          </div>
+          <div class="chips-group" id="syntaxChips"></div>
+        </div>
+
+        <div class="tool-box">
+          <div class="tool-title">
+            <span>👀 四年級同儕佳作觀摩卡</span>
+          </div>
+          <div style="font-size: 12.5px; line-height: 1.5; color: #4a5568; background: #f7fafc; padding: 8px 10px; border-radius: 8px;" id="peerExemplar">
+            「悠閒的卡通時光一去不復返，取而代之的是重點比芝麻還多的課本、快被寫爛的習作和堆積如山的測驗卷……」
+          </div>
+        </div>
+      </div>
+
+      <!-- 寫作輸入區 -->
+      <div class="writing-area">
+        <div class="textarea-wrapper">
+          <textarea class="writing-textarea" id="paragraphInput" placeholder="請在此輸入你的段落內容……" oninput="window.islandApp.onTextChange()"></textarea>
+        </div>
+        
+        <!-- 字數靈力能量條 (50~80字) -->
+        <div class="energy-bar-wrap">
+          <div class="energy-bar-label">
+            <span>段落靈力值（建議 50 ~ 80 字）</span>
+            <span id="charCountLabel">0 / 80 字</span>
+          </div>
+          <div class="energy-bar-bg">
+            <div class="energy-bar-fill" id="energyFill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 教師逐段批改印章卡片 -->
+      <div class="teacher-review-card">
+        <div class="teacher-stamp-display">
+          <span style="font-size: 13.5px; font-weight: 900; color: #333;">👨‍🏫 教師批改狀態</span>
+          <span class="stamp-badge unreviewed" id="stampBadge">⏳ 待教師蓋章</span>
+        </div>
+        <div id="teacherFeedbackBox" style="display: none;" class="red-pen-feedback"></div>
+      </div>
+
+    </div>
+
+    <!-- 底部操作按鈕 -->
+    <div class="drawer-actions">
+      <button class="btn-teacher" onclick="window.islandApp.openTeacherModal()">
+        <span>💮 教師批改蓋章</span>
+      </button>
+      <button class="btn-main" id="btnNextIsland" onclick="window.islandApp.submitAndNext()">
+        <span>通往下一座島 ➔</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- 教師批改認證彈窗 -->
+  <div class="modal-backdrop" id="teacherModalBackdrop">
+    <div class="teacher-modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 17px; font-weight: 900; color: var(--accent);">💮 教師批改認證通行門</h3>
+        <button onclick="window.islandApp.closeTeacherModal()" style="background: none; font-size: 18px;">✕</button>
+      </div>
+
+      <div id="pwdSection" style="display: flex; flex-direction: column; gap: 6px;">
+        <label style="font-size: 13px; font-weight: 700; color: #555;">請輸入教師通關密碼（預設 888）</label>
+        <input type="password" id="teacherPwdInput" style="padding: 8px 12px; border-radius: 8px; border: 1.5px solid #ccc; font-size: 16px;" placeholder="輸入密碼">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <label style="font-size: 13px; font-weight: 700; color: #333;">選擇評等紅印章：</label>
+        <div class="teacher-stamp-group">
+          <button class="stamp-btn selected" id="stamp-opt-1" onclick="window.islandApp.selectStamp('💯 甲上')">
+            <span class="stamp-icon">💯</span>
+            <span>甲上</span>
+          </button>
+          <button class="stamp-btn" id="stamp-opt-2" onclick="window.islandApp.selectStamp('🌟 優等')">
+            <span class="stamp-icon">🌟</span>
+            <span>優等</span>
+          </button>
+          <button class="stamp-btn" id="stamp-opt-3" onclick="window.islandApp.selectStamp('👍 佳作')">
+            <span class="stamp-icon">👍</span>
+            <span>佳作</span>
+          </button>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <label style="font-size: 13px; font-weight: 700; color: #555;">快捷退件指導（若未達標請勾選）：</label>
+        <div class="quick-reject-group">
+          <span class="reject-tag" onclick="window.islandApp.toggleRejectTag(this, '字數不足50字')">字數不足</span>
+          <span class="reject-tag" onclick="window.islandApp.toggleRejectTag(this, '缺少誇飾修辭')">缺少誇飾法</span>
+          <span class="reject-tag" onclick="window.islandApp.toggleRejectTag(this, '注意錯別字')">錯別字修正</span>
+          <span class="reject-tag" onclick="window.islandApp.toggleRejectTag(this, '情節需更具體')">情節需豐富</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 8px;">
+        <button style="flex: 1; padding: 10px; border-radius: 8px; background: #e0e0e0; font-weight: 900;" onclick="window.islandApp.rejectParagraph()">
+          ✏️ 需修改再送審
+        </button>
+        <button style="flex: 1.2; padding: 10px; border-radius: 8px; background: var(--accent); color: white; font-weight: 900;" onclick="window.islandApp.approveParagraph()">
+          💮 核准通關蓋章
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 難度選擇彈窗 -->
+  <div class="modal-backdrop" id="tierModalBackdrop">
+    <div class="teacher-modal-card" style="width: 500px;">
+      <h3 style="font-size: 18px; font-weight: 900; color: var(--primary);">🎯 選擇你的寫作冒險難度</h3>
+      <p style="font-size: 13px; color: #666; line-height: 1.5;">依據自己的寫作信心選擇，各模式皆配備專屬鷹架，保證能順利通關！</p>
+      
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 6px;">
+        <button style="padding: 12px; border-radius: 10px; border: 2px solid #a8dadc; background: #f1faee; text-align: left; display: flex; justify-content: space-between; align-items: center;" onclick="window.islandApp.setTier('beginner')">
+          <div>
+            <strong style="color: var(--primary); font-size: 15px;">🌟 初探者（低成就・拼圖鷹架）</strong>
+            <div style="font-size: 12px; color: #555; margin-top: 2px;">提供克漏字語意拼圖，輕鬆組裝即享 100% 通關成功！</div>
+          </div>
+          <span style="font-size: 20px;">🧩</span>
+        </button>
+
+        <button style="padding: 12px; border-radius: 10px; border: 2px solid var(--primary); background: #e3f2fd; text-align: left; display: flex; justify-content: space-between; align-items: center;" onclick="window.islandApp.setTier('intermediate')">
+          <div>
+            <strong style="color: var(--primary); font-size: 15px;">🌟🌟 挑戰者（中成就・骨架引導・推薦）</strong>
+            <div style="font-size: 12px; color: #555; margin-top: 2px;">提供情境題幹與好詞積木，自由擴寫挑戰 60~80 字段落。</div>
+          </div>
+          <span style="font-size: 20px;">⚔️</span>
+        </button>
+
+        <button style="padding: 12px; border-radius: 10px; border: 2px solid #f4a261; background: #fff8f0; text-align: left; display: flex; justify-content: space-between; align-items: center;" onclick="window.islandApp.setTier('master')">
+          <div>
+            <strong style="color: #b05a14; font-size: 15px;">🌟🌟🌟 大師級（高成就・修辭挑戰）</strong>
+            <div style="font-size: 12px; color: #555; margin-top: 2px;">挑戰雙重誇飾法與同理心描摹，解鎖守門獸金色特級徽章！</div>
+          </div>
+          <span style="font-size: 20px;">👑</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 守門獸試煉・四格漫畫與稿紙抄寫全屏彈窗 -->
+  <div class="modal-backdrop" id="guardianModalBackdrop">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <span>🐲 守門獸神殿：四格漫畫生成與全文謄寫</span>
+          <span style="font-size: 13px; font-weight: 700; color: var(--success); background: #e8f5e9; padding: 3px 10px; border-radius: 999px;" id="guardianStatusTag">審查通過！</span>
+        </h2>
+        <button class="drawer-close" onclick="window.islandApp.closeGuardianModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- 守門獸對話吐槽/讚賞泡泡 -->
+        <div style="background: #2b2d42; color: #edf2f4; padding: 14px 18px; border-radius: 12px; display: flex; align-items: center; gap: 14px;">
+          <span style="font-size: 38px;">🐲</span>
+          <div>
+            <strong style="color: #ffd166; font-size: 15px;" id="guardianSpeaker">守門神獸・文字饕餮</strong>
+            <p style="font-size: 13.5px; line-height: 1.5; margin-top: 2px;" id="guardianDialogue">
+              吼！四段篇章匯聚完畢！待本獸仔細審視前後邏輯與修辭光芒……
+            </p>
+          </div>
+        </div>
+
+        <!-- 四格漫畫生成網格 -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="font-size: 15px; color: var(--primary);">🎨 全自動校園 Q 版四格漫畫（段落驅動生成）</strong>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-top" style="font-size: 12px; padding: 4px 10px;" onclick="window.islandApp.exportComicImage()">🖼️ 匯出四格圖</button>
+              <button class="btn-top" style="font-size: 12px; padding: 4px 10px;" onclick="window.print()">🖨️ 列印學習單</button>
+            </div>
+          </div>
+          <div class="comic-grid" id="comicGridContainer"></div>
+        </div>
+
+        <!-- 國小真實綠格作文稿紙抄寫專區 (20x20) -->
+        <div class="manuscript-section">
+          <div class="manuscript-toolbar">
+            <h3 class="manuscript-title">
+              <span>📝 作文簿抄寫專區《考試前後》</span>
+            </h3>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span style="font-size: 12px; color: #52796f; font-weight: 700;">依據標準稿紙格式：首行空兩格、標點獨立佔格</span>
+              <button class="btn-top" style="font-size: 12px; padding: 4px 10px;" onclick="window.islandApp.copyFullText()">📋 複製全文</button>
+            </div>
+          </div>
+          <div class="manuscript-grid" id="manuscriptGrid"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 3D 核心邏輯與微縮地標建築渲染 -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+    // ----------------------------------------------------
+    // 0. 模型建造工具包 (微縮模型風格元件)
+    // ----------------------------------------------------
+    const matCache = new Map();
+    function getMat(color, opts = {}) {
+      const key = `${color}_${JSON.stringify(opts)}`;
+      if (!matCache.has(key)) {
+        matCache.set(key, new THREE.MeshStandardMaterial({
+          color: color,
+          roughness: 0.75,
+          metalness: 0.05,
+          flatShading: true,
+          ...opts
+        }));
+      }
+      return matCache.get(key);
+    }
+
+    function rbox(w, h, d, mat, r = 0.08) {
+      const radius = Math.min(r, w / 2.2, h / 2.2, d / 2.2);
+      const geo = new RoundedBoxGeometry(w, h, d, 2, radius);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      return mesh;
+    }
+
+    function cyl(rt, rb, h, seg, mat) {
+      const geo = new THREE.CylinderGeometry(rt, rb, h, seg);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      return mesh;
+    }
+
+    function cone(r, h, seg, mat) {
+      const geo = new THREE.ConeGeometry(r, h, seg);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      return mesh;
+    }
+
+    function ball(r, mat, ws = 12, hs = 8) {
+      const geo = new THREE.SphereGeometry(r, ws, hs);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      return mesh;
+    }
+
+    function at(obj, x, y, z, ry = 0) {
+      obj.position.set(x, y, z);
+      obj.rotation.y = ry;
+      return obj;
+    }
+
+    function sc(obj, sx, sy, sz) {
+      obj.scale.set(sx, sy, sz);
+      return obj;
+    }
+
+    function gableRoof(w, h, len, mat) {
+      const s = new THREE.Shape();
+      s.moveTo(-w / 2, 0);
+      s.lineTo(w / 2, 0);
+      s.lineTo(0, h);
+      s.closePath();
+      const geo = new THREE.ExtrudeGeometry(s, { depth: len, bevelEnabled: false });
+      geo.translate(0, 0, -len / 2);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      return mesh;
+    }
+
+    function canvasTexture(w, h, draw) {
+      const c = document.createElement('canvas');
+      c.width = w;
+      c.height = h;
+      draw(c.getContext('2d'), w, h);
+      const t = new THREE.CanvasTexture(c);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    }
+
+    function signBoard(text, w = 1.4, h = 0.5, bg = '#1d5f8a', fg = '#ffffff') {
+      const tex = canvasTexture(512, Math.round(512 * (h / w)), (ctx, cw, ch) => {
+        ctx.fillStyle = '#f4a261'; ctx.fillRect(0, 0, cw, ch);
+        ctx.fillStyle = bg; ctx.fillRect(8, 8, cw - 16, ch - 16);
+        ctx.fillStyle = fg; ctx.font = `bold ${ch * 0.48}px "Noto Sans TC", sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(text, cw / 2, ch / 2 + 2);
+      });
+      const mat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.8 });
+      const fMat = getMat(0xe76f51);
+      const board = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.06), [fMat, fMat, fMat, fMat, mat, fMat]);
+      board.castShadow = true;
+      return board;
+    }
+
+    function cloud(scale = 1) {
+      const g = new THREE.Group();
+      const m = getMat(0xffffff, { roughness: 0.9 });
+      for (const [x, y, z, r] of [[0,0,0,0.8], [0.6,-0.1,0.1,0.6], [-0.6,-0.1,0,0.55], [0.2,0.3,-0.1,0.5], [-0.3,0.1,0.4,0.45]]) {
+        g.add(at(ball(r, m, 10, 8), x, y, z));
+      }
+      g.scale.setScalar(scale);
+      return g;
+    }
+
+    function figure(coatColor, skin = 0xffe0bd, hair = 0x333333) {
+      const g = new THREE.Group();
+      // 身體
+      g.add(at(cyl(0.35, 0.55, 1.2, 8, getMat(coatColor)), 0, 0.6, 0));
+      // 頭部
+      g.add(at(ball(0.42, getMat(skin), 10, 8), 0, 1.5, 0));
+      // 頭髮
+      g.add(at(sc(ball(0.44, getMat(hair), 10, 6), 1, 0.6, 1), 0, 1.7, -0.05));
+      return g;
+    }
+
+    // ----------------------------------------------------
+    // 1. 教材資料庫與寫作大綱
+    // ----------------------------------------------------
+    const CURRICULUM_DATA = [
+      {
+        id: 0,
+        name: "起之島・考前準備",
+        shortName: "起・月考倒數",
+        position: [ -25, 0, -18 ],
+        color: 0x5fa8d3,
+        prompt: "月考即將來臨！你是認真苦讀還是貪玩抱佛腳？請運用誇飾法寫出考前堆積如山的作業與緊張氣氛。",
+        spriteName: "書精靈・小墨",
+        words: ["風雲變色", "堆積如山", "苦讀之夜", "臨陣磨槍", "臨渴掘井", "按部就班", "緊張萬分", "重點如麻"],
+        syntax: ["比玉山還高", "重點比芝麻還多", "習作快被寫爛了", "媽媽臉色比包青天還黑", "比汽車速度還快"],
+        peer: "「悠閒的卡通時光一去不復返，取而代之的是重點比芝麻還多的課本、快被寫爛的習作和堆積如山的測驗卷……」",
+        scaffoldBeginner: "每到月考前，我的生活就風雲變色。課本重點比芝麻還多，測驗卷堆積如山，媽媽臉色比包青天還黑，我只能咬緊牙關認真苦讀。"
+      },
+      {
+        id: 1,
+        name: "承之島・考場神態",
+        shortName: "承・考場鐘聲",
+        position: [ -10, 0, 18 ],
+        color: 0x70c1b3,
+        prompt: "考卷發下那一刻！教室氣氛如何？看著密密麻麻的題目，你的心跳與腦海產生了什麼誇張的變化？",
+        spriteName: "鐘聲精靈・噹噹",
+        words: ["草木皆兵", "人仰馬翻", "大腦當機", "一片空白", "如坐針氈", "冷汗直流", "安靜無聲", "心跳加速"],
+        syntax: ["鐘聲比死神喪鐘還驚心", "大腦像當機一樣全空白", "教室安靜得連根針掉下都聽得見", "心跳比高美濕地風車還快"],
+        peer: "「考卷緩緩飄落，密密麻麻的鉛字映入眼簾，我的大腦像當機一樣，注音和改錯全刷的一聲變成空白……」",
+        scaffoldBeginner: "考試鐘聲響起，教室安靜得連一根針掉下去都聽得見。考卷發下時，密密麻麻的題目讓我大腦像當機一樣，緊張得如坐針氈。"
+      },
+      {
+        id: 2,
+        name: "轉之島・驚天動地",
+        shortName: "轉・驚天動地",
+        position: [ 22, 0, 15 ],
+        color: 0xf39c12,
+        prompt: "發考卷時是驚天動地還是心驚膽戰？看到刺眼的分數，你內心有何震撼？回家後遭遇了什麼樣的家庭風暴？",
+        spriteName: "考卷精靈・白白",
+        words: ["驚天地泣鬼神", "火冒三丈", "眼冒金星", "坐立難安", "慘痛教訓", "退步落後", "膽戰心驚", "歡笑收穫"],
+        syntax: ["屁股像坐在針氈上", "媽媽氣得火冒三丈", "降龍十八掌打得眼冒金星", "聲音比雷公怒吼還大"],
+        peer: "「終於叫到我的名字，我匆忙走向講臺拿回成積。不出所料分數退步了，回家後媽媽氣得火冒三丈，使出降龍十八掌……」",
+        scaffoldBeginner: "發考卷那天，我屁股像坐在針氈上坐立難安。拿到考卷看到滿江紅，回家後媽媽氣得火冒三丈，把我訓得眼冒金星。"
+      },
+      {
+        id: 3,
+        name: "合之島・超越自我",
+        shortName: "合・超越自我",
+        position: [ 18, 0, -22 ],
+        color: 0x9b59b6,
+        prompt: "經歷了這次月考的洗禮，你學到了什麼啟示？如何改掉平時不燒香的壞習慣，期許自己按部就班超越自我？",
+        spriteName: "智慧石像・智者",
+        words: ["痛定思痛", "按部就班", "不勞而獲", "努力不懈", "超越自我", "征服考試", "良藥苦口", "腳踏實地"],
+        syntax: ["改掉平時不燒香的毛病", "不再成為月考的大魔王俘虜", "征服考試並超越自我", "唯有努力不懈方能成功"],
+        peer: "「經過這次月考的慘痛教訓，我一定要改掉臨渴掘井的壞習慣，每天按部就班複習，下次一定能征服月考、超越自己！」",
+        scaffoldBeginner: "經過這次月考的慘痛教訓，我明白天下絕不可能不勞而獲。從今天起我要按部就班每天複習，不再當考試的俘虜，超越自我！"
+      },
+      {
+        id: 4,
+        name: "守門神殿・四格審查",
+        shortName: "🐲 守門試煉",
+        position: [ 0, 0, 0 ],
+        color: 0xe74c3c,
+        prompt: "四座島嶼段落齊備！守門巨獸將審查你的四段情節是否連貫、有無非書面口語，並生成四格漫畫與謄寫稿紙！",
+        spriteName: "文字饕餮",
+        words: [],
+        syntax: [],
+        peer: "",
+        scaffoldBeginner: ""
+      }
+    ];
+
+    const SLANG_FILTER = ["超廢", "完蛋了", "超狂", "GG", "芭比Q", "傻眼貓咪", "廢到笑", "很瞎", "很扯", "狂按猛按"];
+
+    // ----------------------------------------------------
+    // 2. 狀態管理器
+    // ----------------------------------------------------
+    class IslandStateManager {
+      constructor() {
+        this.tier = "intermediate";
+        this.teacherMode = false;
+        this.activeIslandIndex = 0;
+        this.paragraphs = ["", "", "", ""];
+        this.teacherApprovals = [false, false, false, false];
+        this.teacherStamps = ["", "", "", ""];
+        this.teacherComments = ["", "", "", ""];
+        this.loadState();
+      }
+      loadState() {
+        try {
+          const raw = localStorage.getItem("g4_writing_island_state_v2");
+          if (raw) {
+            const data = JSON.parse(raw);
+            this.tier = data.tier || "intermediate";
+            this.paragraphs = data.paragraphs || ["", "", "", ""];
+            this.teacherApprovals = data.teacherApprovals || [false, false, false, false];
+            this.teacherStamps = data.teacherStamps || ["", "", "", ""];
+            this.teacherComments = data.teacherComments || ["", "", "", ""];
+          }
+        } catch (e) {
+          console.warn("無法讀取舊存檔", e);
+        }
+      }
+      saveState() {
+        try {
+          const data = {
+            tier: this.tier,
+            paragraphs: this.paragraphs,
+            teacherApprovals: this.teacherApprovals,
+            teacherStamps: this.teacherStamps,
+            teacherComments: this.teacherComments
+          };
+          localStorage.setItem("g4_writing_island_state_v2", JSON.stringify(data));
+        } catch (e) {
+          console.warn("儲存失敗", e);
+        }
+      }
+    }
+
+    const state = new IslandStateManager();
+
+    // ----------------------------------------------------
+    // 3. 3D 場景建造：豐富微縮模型與主題地標
+    // ----------------------------------------------------
+    class IslandScene {
+      constructor() {
+        this.container = document.getElementById("canvas-container");
+        this.canvas = document.getElementById("webgl-canvas");
+        this.labelsContainer = document.getElementById("labels-layer");
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0x9bd0eb);
+        this.scene.fog = new THREE.FogExp2(0x9bd0eb, 0.009);
+
+        this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+        this.camera.position.set(0, 52, 64);
+
+        this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true;
+        this.controls.dampingFactor = 0.05;
+        this.controls.maxPolarAngle = Math.PI / 2 - 0.06;
+        this.controls.minDistance = 15;
+        this.controls.maxDistance = 130;
+        this.controls.target.set(0, 0, 0);
+
+        this.islands = [];
+        this.markers = [];
+        this.animatedObjects = [];
+
+        this.initLights();
+        this.initSea();
+        this.buildAllIslands();
+        this.buildGuardianSanctuary();
+        this.buildSteppingStoneBridges();
+        this.createMarkers();
+
+        window.addEventListener("resize", () => this.onResize());
+        this.animate();
+      }
+
+      initLights() {
+        const ambient = new THREE.AmbientLight(0xfff8ee, 0.95);
+        this.scene.add(ambient);
+
+        const sun = new THREE.DirectionalLight(0xfffaed, 1.35);
+        sun.position.set(50, 70, 35);
+        sun.castShadow = true;
+        sun.shadow.mapSize.width = 2048;
+        sun.shadow.mapSize.height = 2048;
+        sun.shadow.camera.near = 1;
+        sun.shadow.camera.far = 200;
+        const d = 55;
+        sun.shadow.camera.left = -d;
+        sun.shadow.camera.right = d;
+        sun.shadow.camera.top = d;
+        sun.shadow.camera.bottom = -d;
+        this.scene.add(sun);
+      }
+
+      initSea() {
+        const seaGeo = new THREE.PlaneGeometry(350, 350, 40, 40);
+        const seaMat = new THREE.MeshStandardMaterial({
+          color: 0x38bdf8,
+          roughness: 0.15,
+          metalness: 0.1,
+          transparent: true,
+          opacity: 0.88,
+          flatShading: true
+        });
+        const sea = new THREE.Mesh(seaGeo, seaMat);
+        sea.rotation.x = -Math.PI / 2;
+        sea.position.y = -0.5;
+        sea.receiveShadow = true;
+        this.scene.add(sea);
+        this.sea = sea;
+
+        // 海面漂浮幾隻摺紙小船
+        for (let i = 0; i < 4; i++) {
+          const boat = new THREE.Group();
+          const hull = cyl(0.8, 0.4, 0.35, 3, getMat(0xffffff));
+          hull.rotation.y = Math.PI / 2;
+          boat.add(hull);
+          const sail = cone(0.5, 0.9, 3, getMat(0xf4a261));
+          sail.position.set(0, 0.6, 0);
+          boat.add(sail);
+          boat.position.set(-15 + i * 10, -0.3, -5 + (i % 2) * 12);
+          this.scene.add(boat);
+          this.animatedObjects.push({ obj: boat, type: 'bob', speed: 1.5 + i * 0.4 });
+        }
+      }
+
+      // 建造四座豐富的微縮主題島嶼
+      buildAllIslands() {
+        for (let i = 0; i < 4; i++) {
+          const data = CURRICULUM_DATA[i];
+          const islandGroup = new THREE.Group();
+          islandGroup.position.set(...data.position);
+
+          // 1. 島嶼地盤層次 (沙灘底座 + 岩壁 + 豐美草地階梯)
+          const baseRadius = 11;
+          const sandMesh = cyl(baseRadius * 1.25, baseRadius * 1.5, 2.5, 12, getMat(0xf4d35e));
+          sandMesh.position.y = -0.6;
+          islandGroup.add(sandMesh);
+
+          const cliffMesh = cyl(baseRadius, baseRadius * 1.25, 3.2, 12, getMat(0x8d5b4c));
+          cliffMesh.position.y = 1.4;
+          islandGroup.add(cliffMesh);
+
+          const grassMesh = cyl(baseRadius * 0.96, baseRadius, 1.2, 12, getMat(data.color));
+          grassMesh.position.y = 3.2;
+          islandGroup.add(grassMesh);
+
+          // 2. 指引燈塔 (信標光球)
+          const tower = cyl(0.6, 1.1, 5.5, 6, getMat(0xffffff));
+          tower.position.set(5.5, 6.2, -4.5);
+          islandGroup.add(tower);
+
+          const beacon = ball(0.85, getMat(state.teacherApprovals[i] ? 0x2ec4b6 : 0xfbbf24, { emissive: state.teacherApprovals[i] ? 0x2ec4b6 : 0xfbbf24, emissiveIntensity: 0.5 }));
+          beacon.position.set(5.5, 9.4, -4.5);
+          beacon.name = `beacon_${i}`;
+          islandGroup.add(beacon);
+
+          // 3. 專屬島嶼微縮建築群
+          if (i === 0) this.buildStudyHouseDiorama(islandGroup);
+          else if (i === 1) this.buildSchoolExamDiorama(islandGroup);
+          else if (i === 2) this.buildStormHouseDiorama(islandGroup);
+          else if (i === 3) this.buildTrophyTempleDiorama(islandGroup);
+
+          this.scene.add(islandGroup);
+          this.islands.push(islandGroup);
+        }
+      }
+
+      // 起之島：書房苦讀微縮模型 (小屋、書桌、檯燈、堆積如山之書冊、倒數大時鐘)
+      buildStudyHouseDiorama(g) {
+        // 書房小屋
+        const house = new THREE.Group();
+        house.position.set(-2, 3.8, 0);
+
+        // 主屋身
+        const wallMat = getMat(0xfdf0d5);
+        house.add(at(rbox(6.2, 3.8, 5.2, wallMat), 0, 1.9, 0));
+
+        // 紅瓦斜人字屋頂
+        const roofMat = getMat(0xc1121f);
+        house.add(at(gableRoof(7.0, 2.5, 5.8, roofMat), 0, 3.8, 0));
+
+        // 煙囪
+        house.add(at(rbox(0.8, 1.8, 0.8, getMat(0x780000)), 1.8, 5.2, 0.8));
+
+        // 木門與窗戶
+        house.add(at(rbox(1.2, 2.2, 0.1, getMat(0x663f25)), 0, 1.1, 2.62));
+        house.add(at(rbox(1.4, 1.4, 0.08, getMat(0xa8dadc)), -1.8, 2.2, 2.62));
+        house.add(at(rbox(1.4, 1.4, 0.08, getMat(0xa8dadc)), 1.8, 2.2, 2.62));
+
+        g.add(house);
+
+        // 屋外苦讀大書桌區
+        const deskGroup = new THREE.Group();
+        deskGroup.position.set(2.8, 3.8, 3.2);
+
+        // 木書桌
+        deskGroup.add(at(rbox(3.2, 0.25, 2.0, getMat(0x854d0e)), 0, 1.4, 0));
+        deskGroup.add(at(cyl(0.12, 0.12, 1.4, 5, getMat(0x713f12)), -1.3, 0.7, -0.8));
+        deskGroup.add(at(cyl(0.12, 0.12, 1.4, 5, getMat(0x713f12)), 1.3, 0.7, -0.8));
+        deskGroup.add(at(cyl(0.12, 0.12, 1.4, 5, getMat(0x713f12)), -1.3, 0.7, 0.8));
+        deskGroup.add(at(cyl(0.12, 0.12, 1.4, 5, getMat(0x713f12)), 1.3, 0.7, 0.8));
+
+        // 堆積如山的書本與測驗卷 (放大法)
+        const colors = [0xe63946, 0x457b9d, 0x2a9d8f, 0xe9c46a, 0xffffff];
+        for (let b = 0; b < 6; b++) {
+          const book = rbox(0.9, 0.18, 0.7, getMat(colors[b % colors.length]));
+          book.position.set(-0.8, 1.6 + b * 0.19, -0.3 + (b % 2) * 0.05);
+          book.rotation.y = (b * 0.2);
+          deskGroup.add(book);
+        }
+
+        // 發光檯燈
+        const lamp = new THREE.Group();
+        lamp.add(at(cyl(0.25, 0.3, 0.1, 8, getMat(0x333333)), 0.9, 1.5, -0.5));
+        lamp.add(at(cyl(0.05, 0.05, 0.9, 5, getMat(0x333333)), 0.9, 1.9, -0.5));
+        lamp.add(at(cone(0.35, 0.4, 8, getMat(0xf4a261, { emissive: 0xf4a261, emissiveIntensity: 0.6 })), 0.9, 2.3, -0.5));
+        deskGroup.add(lamp);
+
+        g.add(deskGroup);
+
+        // 月考倒數大鐘樓
+        const clockTower = new THREE.Group();
+        clockTower.position.set(-5.5, 3.8, 3.5);
+        clockTower.add(at(cyl(0.8, 1.0, 5.0, 8, getMat(0x4a5568)), 0, 2.5, 0));
+        // 大時鐘面
+        const clockDial = cyl(1.2, 1.2, 0.25, 16, getMat(0xffffff));
+        clockDial.rotation.x = Math.PI / 2;
+        clockDial.position.set(0, 4.8, 0.8);
+        clockTower.add(clockDial);
+        // 指針指在深夜 11:55
+        const hand = rbox(0.1, 0.7, 0.05, getMat(0xd90429));
+        hand.position.set(0, 4.8, 0.95);
+        clockTower.add(hand);
+
+        // 標語招牌：倒數 3 天！
+        clockTower.add(at(signBoard("倒數３天！", 1.8, 0.5), 0, 1.8, 1.0));
+        g.add(clockTower);
+
+        // 漂浮蓬鬆白雲
+        const cl = cloud(1.2);
+        cl.position.set(-2, 10.5, -1);
+        g.add(cl);
+        this.animatedObjects.push({ obj: cl, type: 'float', base: 10.5 });
+      }
+
+      // 承之島：學校考場微縮模型 (兩層樓校舍、校園大鐘、整齊課桌椅、黑板)
+      buildSchoolExamDiorama(g) {
+        const school = new THREE.Group();
+        school.position.set(-1, 3.8, -2.5);
+
+        // 兩層學校紅磚教學樓
+        school.add(at(rbox(7.5, 4.8, 4.2, getMat(0xd97706)), 0, 2.4, 0));
+        school.add(at(rbox(8.0, 0.3, 4.6, getMat(0xffffff)), 0, 4.8, 0));
+
+        // 教室大門與多扇黑框窗戶
+        school.add(at(rbox(1.4, 2.2, 0.1, getMat(0x1e3a8a)), 0, 1.1, 2.12));
+        for (let x = -2.6; x <= 2.6; x += 1.8) {
+          if (Math.abs(x) > 0.5) {
+            school.add(at(rbox(1.1, 1.2, 0.08, getMat(0xdbeafe)), x, 1.5, 2.12));
+            school.add(at(rbox(1.1, 1.2, 0.08, getMat(0xdbeafe)), x, 3.4, 2.12));
+          }
+        }
+
+        // 考場鐘樓 (大銅鐘)
+        const bellTower = new THREE.Group();
+        bellTower.position.set(0, 5.0, 0);
+        bellTower.add(at(cyl(1.1, 1.3, 2.2, 6, getMat(0xffffff)), 0, 1.1, 0));
+        bellTower.add(at(cone(1.4, 1.8, 6, getMat(0x1d4ed8)), 0, 3.1, 0));
+        // 金銅鐘
+        const bell = cyl(0.4, 0.7, 0.9, 8, getMat(0xf59e0b, { metalness: 0.8, roughness: 0.2 }));
+        bell.position.set(0, 1.2, 0.8);
+        bellTower.add(bell);
+        school.add(bellTower);
+
+        g.add(school);
+
+        // 操場前排列整齊的考試桌椅與考卷
+        for (let r = 0; r < 2; r++) {
+          for (let c = 0; c < 2; c++) {
+            const desk = new THREE.Group();
+            const dx = -2.2 + c * 4.4;
+            const dz = 2.5 + r * 2.8;
+            desk.position.set(dx, 3.8, dz);
+
+            // 課桌
+            desk.add(at(rbox(1.8, 0.18, 1.2, getMat(0xb45309)), 0, 1.1, 0));
+            desk.add(at(cyl(0.08, 0.08, 1.1, 4, getMat(0x78350f)), -0.7, 0.55, -0.4));
+            desk.add(at(cyl(0.08, 0.08, 1.1, 4, getMat(0x78350f)), 0.7, 0.55, -0.4));
+            desk.add(at(cyl(0.08, 0.08, 1.1, 4, getMat(0x78350f)), -0.7, 0.55, 0.4));
+            desk.add(at(cyl(0.08, 0.08, 1.1, 4, getMat(0x78350f)), 0.7, 0.55, 0.4));
+
+            // 雪白的考試卷
+            desk.add(at(rbox(0.9, 0.04, 0.7, getMat(0xffffff)), 0, 1.22, 0));
+
+            // 椅子
+            desk.add(at(rbox(1.2, 0.12, 0.8, getMat(0xd97706)), 0, 0.65, 1.0));
+            desk.add(at(rbox(1.2, 0.9, 0.1, getMat(0xd97706)), 0, 1.15, 1.35));
+
+            g.add(desk);
+          }
+        }
+
+        // 大黑板：安靜作答！
+        g.add(at(signBoard("考場：安靜作答！", 2.2, 0.6, '#14532d', '#ffffff'), 3.6, 5.0, 3.0, -0.4));
+
+        // 升旗台
+        const flagPole = new THREE.Group();
+        flagPole.position.set(-5.5, 3.8, 2.5);
+        flagPole.add(at(cyl(0.08, 0.1, 7.5, 6, getMat(0xd1d5db, { metalness: 0.8 })), 0, 3.75, 0));
+        flagPole.add(at(rbox(1.4, 0.8, 0.04, getMat(0xef4444)), 0.7, 6.8, 0));
+        g.add(flagPole);
+      }
+
+      // 轉之島：家庭風暴與成績揭曉微縮模型 (客廳小屋、憤怒烏雲、金色閃電折線、巨型滿江紅試卷)
+      buildStormHouseDiorama(g) {
+        const house = new THREE.Group();
+        house.position.set(-1.5, 3.8, -1.0);
+
+        // 溫馨平房
+        house.add(at(rbox(5.8, 3.6, 5.0, getMat(0xfef08a)), 0, 1.8, 0));
+        house.add(at(gableRoof(6.6, 2.2, 5.6, getMat(0x3b82f6)), 0, 3.6, 0));
+        house.add(at(rbox(1.1, 2.0, 0.1, getMat(0x854d0e)), 0, 1.0, 2.52));
+
+        // 屋頂上方憤怒黑雷雲與金色閃電折線
+        const stormCloud = new THREE.Group();
+        stormCloud.position.set(0, 6.8, 0);
+        const darkCloudMat = getMat(0x4b5563);
+        for (const [cx, cy, cz, cr] of [[0,0,0,1.1], [0.8,-0.1,0.2,0.85], [-0.8,-0.1,0,0.8], [0.3,0.4,-0.1,0.7]]) {
+          stormCloud.add(at(ball(cr, darkCloudMat, 10, 8), cx, cy, cz));
+        }
+
+        // 金色折線立體閃電
+        const boltMat = getMat(0xfacc15, { emissive: 0xfacc15, emissiveIntensity: 0.8 });
+        const bolt1 = cyl(0.12, 0.12, 1.6, 4, boltMat);
+        bolt1.rotation.z = 0.45;
+        bolt1.position.set(-0.6, -1.2, 0.8);
+        stormCloud.add(bolt1);
+
+        const bolt2 = cyl(0.12, 0.12, 1.4, 4, boltMat);
+        bolt2.rotation.z = -0.55;
+        bolt2.position.set(-0.2, -2.2, 0.8);
+        stormCloud.add(bolt2);
+
+        house.add(stormCloud);
+        g.add(house);
+        this.animatedObjects.push({ obj: stormCloud, type: 'shake' });
+
+        // 刺眼的滿江紅巨型考卷雕像
+        const paperMonument = new THREE.Group();
+        paperMonument.position.set(3.8, 3.8, 2.0);
+        paperMonument.rotation.y = -0.3;
+
+        // 石基座
+        paperMonument.add(at(rbox(3.2, 0.6, 1.2, getMat(0x374151)), 0, 0.3, 0));
+
+        // 巨型試卷板面
+        const tex = canvasTexture(512, 512, (ctx, w, h) => {
+          ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h);
+          ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 4;
+          for (let y = 60; y < h; y += 45) {
+            ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(w - 40, y); ctx.stroke();
+          }
+          // 刺眼的滿江紅分數 59 分與大叉叉
+          ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 14;
+          ctx.beginPath(); ctx.moveTo(w * 0.15, h * 0.15); ctx.lineTo(w * 0.85, h * 0.85); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(w * 0.85, h * 0.15); ctx.lineTo(w * 0.15, h * 0.85); ctx.stroke();
+          ctx.fillStyle = '#dc2626'; ctx.font = `900 130px "Noto Sans TC"`; ctx.textAlign = 'right';
+          ctx.fillText("59", w * 0.9, h * 0.35);
+        });
+        const paperMesh = new THREE.Mesh(new THREE.BoxGeometry(2.6, 3.4, 0.1), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.8 }));
+        paperMesh.position.y = 2.2;
+        paperMonument.add(paperMesh);
+
+        // 火冒三丈標籤
+        paperMonument.add(at(signBoard("火冒三丈！", 1.8, 0.5, '#991b1b', '#ffffff'), 0, 4.3, 0));
+        g.add(paperMonument);
+
+        // 媽媽生氣人偶與主角抱頭人偶
+        const mom = figure(0xd97706, 0xffd166, 0x111111);
+        mom.position.set(0.8, 3.8, 4.2);
+        mom.scale.setScalar(1.2);
+        g.add(mom);
+
+        const kid = figure(0x3b82f6);
+        kid.position.set(2.4, 3.8, 4.2);
+        kid.scale.setScalar(0.9);
+        g.add(kid);
+      }
+
+      // 合之島：超越自我微縮模型 (超越之門、第一名大金盃、旋轉金星、百科全書螺旋天梯、金色風車)
+      buildTrophyTempleDiorama(g) {
+        // 榮譽殿堂 (超越之門)
+        const temple = new THREE.Group();
+        temple.position.set(-1.5, 3.8, -1.5);
+
+        // 圓柱
+        const colMat = getMat(0xffffff, { roughness: 0.3 });
+        for (const [x, z] of [[-2.2, -1.8], [2.2, -1.8], [-2.2, 1.8], [2.2, 1.8]]) {
+          temple.add(at(cyl(0.35, 0.45, 4.5, 8, colMat), x, 2.25, z));
+        }
+        // 頂部金橫額
+        temple.add(at(rbox(5.8, 0.8, 4.8, getMat(0xf59e0b, { metalness: 0.7, roughness: 0.3 })), 0, 4.8, 0));
+        temple.add(at(signBoard("超越自我・征服考試", 3.2, 0.7, '#d97706', '#ffffff'), 0, 5.6, 2.45));
+        g.add(temple);
+
+        // 巨大的第一名金獎盃
+        const trophy = new THREE.Group();
+        trophy.position.set(-1.5, 5.2, 0);
+
+        const goldMat = getMat(0xfbbf24, { metalness: 0.85, roughness: 0.2 });
+        // 底座
+        trophy.add(at(cyl(0.9, 1.1, 0.6, 8, getMat(0x1e293b)), 0, 0.3, 0));
+        // 盃身與手把
+        trophy.add(at(cyl(0.3, 0.2, 0.7, 8, goldMat), 0, 0.95, 0));
+        trophy.add(at(cyl(1.1, 0.4, 1.6, 12, goldMat), 0, 2.0, 0));
+        // 盃耳
+        for (const s of [-1, 1]) {
+          const ear = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.1, 6, 12, Math.PI), goldMat);
+          ear.position.set(s * 1.0, 2.2, 0);
+          ear.rotation.z = s * (Math.PI / 2);
+          trophy.add(ear);
+        }
+        // 頂部旋轉五角星
+        const star = cone(0.5, 0.8, 5, getMat(0xfef08a, { emissive: 0xfbbf24, emissiveIntensity: 0.8 }));
+        star.position.set(0, 3.2, 0);
+        trophy.add(star);
+        g.add(trophy);
+        this.animatedObjects.push({ obj: trophy, type: 'spin', speed: 0.8 });
+
+        // 百科全書螺旋天梯 (步步高升)
+        const stairColors = [0xef4444, 0xf97316, 0xeab308, 0x22c55e, 0x06b6d4, 0x6366f1, 0xa855f7];
+        for (let s = 0; s < 7; s++) {
+          const bookStep = rbox(1.5, 0.35, 1.0, getMat(stairColors[s]));
+          const theta = s * 0.45;
+          const r = 3.6;
+          bookStep.position.set(2.5 + Math.cos(theta) * 1.5, 3.8 + s * 0.45, 1.5 + Math.sin(theta) * 1.5);
+          bookStep.rotation.y = -theta;
+          g.add(bookStep);
+        }
+
+        // 金色四葉風車 (高美濕地意象)
+        const mill = new THREE.Group();
+        mill.position.set(5.5, 3.8, -3.5);
+        mill.add(at(cyl(0.5, 0.8, 6.0, 8, getMat(0xffffff)), 0, 3.0, 0));
+        const blades = new THREE.Group();
+        blades.position.set(0, 5.8, 0.7);
+        for (let b = 0; b < 4; b++) {
+          const blade = rbox(0.35, 2.2, 0.05, getMat(0xf59e0b));
+          blade.position.y = 1.1;
+          const bg = new THREE.Group();
+          bg.rotation.z = b * (Math.PI / 2);
+          bg.add(blade);
+          blades.add(bg);
+        }
+        mill.add(blades);
+        g.add(mill);
+        this.animatedObjects.push({ obj: blades, type: 'spinZ', speed: 1.8 });
+      }
+
+      // 中央守門神殿與立體守門神龍/饕餮 (四格漫畫神壇)
+      buildGuardianSanctuary() {
+        const sanctuary = new THREE.Group();
+        sanctuary.position.set(0, 0, 0);
+
+        // 浮空八角白玉神壇
+        const baseMat = getMat(0x1e293b, { roughness: 0.7 });
+        sanctuary.add(at(cyl(11.5, 13.5, 3.5, 8, baseMat), 0, 1.2, 0));
+        sanctuary.add(at(cyl(10.0, 11.0, 1.2, 8, getMat(0x334155)), 0, 3.2, 0));
+
+        // 四方四根墨玉毛筆圖騰柱 (起承轉合四筆)
+        const pillarMat = getMat(0x0f172a, { metalness: 0.6, roughness: 0.3 });
+        for (const [x, z] of [[-7.5, -7.5], [7.5, -7.5], [-7.5, 7.5], [7.5, 7.5]]) {
+          const pillar = new THREE.Group();
+          pillar.position.set(x, 3.5, z);
+          // 筆桿
+          pillar.add(at(cyl(0.5, 0.6, 7.5, 8, pillarMat), 0, 3.75, 0));
+          // 毛筆尖
+          pillar.add(at(cone(0.65, 2.2, 8, getMat(0xffffff, { emissive: 0x38bdf8, emissiveIntensity: 0.4 })), 0, 8.5, 0));
+          sanctuary.add(pillar);
+        }
+
+        // 守門巨獸：立體 Q 版文字饕餮神龍
+        const dragon = new THREE.Group();
+        dragon.position.set(0, 4.0, 0);
+
+        // 祥雲底座
+        dragon.add(at(cloud(2.2), 0, 0.8, 0));
+
+        // 龍身盤旋幾何
+        const bodyMat = getMat(0xe11d48, { roughness: 0.5, metalness: 0.2 });
+        for (let seg = 0; seg < 5; seg++) {
+          const bodyPart = ball(1.6 - seg * 0.15, bodyMat, 10, 8);
+          bodyPart.position.set(Math.sin(seg * 0.8) * 1.5, 2.2 + seg * 0.6, -seg * 1.2);
+          dragon.add(bodyPart);
+        }
+
+        // 威武龍頭 (面頰、開口大嘴、金色龍角、龍眼、龍鬚)
+        const headGroup = new THREE.Group();
+        headGroup.position.set(0, 5.2, 1.2);
+
+        // 頭部與長吻
+        headGroup.add(at(rbox(2.8, 2.2, 2.8, bodyMat), 0, 0, 0));
+        headGroup.add(at(rbox(2.2, 1.2, 2.2, getMat(0xf43f5e)), 0, -0.4, 1.8));
+
+        // 銳利白獠牙
+        for (const tx of [-0.7, 0.7]) {
+          headGroup.add(at(cone(0.18, 0.5, 4, getMat(0xffffff)), tx, -1.1, 2.2, Math.PI));
+        }
+
+        // 炯炯有神的發光龍眼
+        for (const ex of [-0.9, 0.9]) {
+          headGroup.add(at(ball(0.45, getMat(0xfef08a, { emissive: 0xfacc15, emissiveIntensity: 0.9 })), ex, 0.6, 1.2));
+          headGroup.add(at(ball(0.2, getMat(0x000000)), ex, 0.6, 1.5));
+        }
+
+        // 金色長龍角
+        const hornMat = getMat(0xf59e0b, { metalness: 0.8, roughness: 0.2 });
+        for (const s of [-1, 1]) {
+          const horn = cone(0.4, 2.6, 6, hornMat);
+          horn.position.set(s * 1.1, 2.0, -0.4);
+          horn.rotation.z = s * 0.45;
+          horn.rotation.x = -0.3;
+          headGroup.add(horn);
+        }
+
+        // 飄逸長龍鬚
+        for (const s of [-1, 1]) {
+          const whisker = cyl(0.06, 0.02, 2.8, 4, hornMat);
+          whisker.position.set(s * 1.4, -0.6, 2.2);
+          whisker.rotation.z = s * 0.6;
+          headGroup.add(whisker);
+        }
+
+        dragon.add(headGroup);
+
+        // 胸前神珠
+        const pearl = ball(1.1, getMat(0x38bdf8, { emissive: 0x0ea5e9, emissiveIntensity: 0.85 }));
+        pearl.position.set(0, 3.2, 2.5);
+        dragon.add(pearl);
+
+        // 懸浮四格漫畫金色魔鏡框
+        const portal = new THREE.Group();
+        portal.position.set(0, 5.0, 4.8);
+        const frameMat = getMat(0xf59e0b, { metalness: 0.8, roughness: 0.2 });
+        // 外框
+        portal.add(at(rbox(5.8, 4.4, 0.25, frameMat), 0, 0, 0));
+        // 四格分割十字框
+        portal.add(at(rbox(0.18, 4.2, 0.3, frameMat), 0, 0, 0.05));
+        portal.add(at(rbox(5.6, 0.18, 0.3, frameMat), 0, 0, 0.05));
+        // 四格半透明發光鏡面
+        const glassMat = getMat(0xdbeafe, { transparent: true, opacity: 0.75, emissive: 0x60a5fa, emissiveIntensity: 0.4 });
+        portal.add(at(rbox(5.4, 4.0, 0.1, glassMat), 0, 0, 0));
+        portal.add(at(signBoard("四格漫畫守門鏡", 3.0, 0.6, '#991b1b', '#ffffff'), 0, 2.5, 0.2));
+
+        dragon.add(portal);
+        sanctuary.add(dragon);
+
+        this.scene.add(sanctuary);
+        this.guardianMesh = dragon;
+        this.animatedObjects.push({ obj: pearl, type: 'bob', speed: 2.0 });
+      }
+
+      // 連接各島嶼的彩虹階梯步道 (Stepping Stone Bridges)
+      buildSteppingStoneBridges() {
+        const islandPositions = CURRICULUM_DATA.map(d => d.position);
+        const stoneMat = getMat(0xe2e8f0, { roughness: 0.8 });
+
+        // 連接各島至中央神殿的浮石
+        for (let i = 0; i < 4; i++) {
+          const start = new THREE.Vector3(...islandPositions[i]);
+          const end = new THREE.Vector3(0, 1.5, 0);
+
+          for (let step = 1; step <= 5; step++) {
+            const t = step / 6;
+            const stone = cyl(1.0 - step * 0.05, 1.2 - step * 0.05, 0.6, 7, stoneMat);
+            const pos = new THREE.Vector3().lerpVectors(start, end, t);
+            pos.y = 0.2 + Math.sin(t * Math.PI) * 1.5;
+            stone.position.copy(pos);
+            this.scene.add(stone);
+          }
+        }
+      }
+
+      createMarkers() {
+        this.labelsContainer.innerHTML = "";
+        this.markers = [];
+
+        CURRICULUM_DATA.forEach((item, idx) => {
+          const markerEl = document.createElement("div");
+          markerEl.className = "island-marker";
+          const isPassed = idx < 4 ? state.teacherApprovals[idx] : false;
+          const statusText = idx === 4 ? "終點試煉" : (isPassed ? "✓ 已蓋章" : "待完成");
+          const statusCls = isPassed ? "passed" : "";
+
+          markerEl.innerHTML = `
+            <div class="marker-bubble ${idx === 4 ? 'guardian' : ''}">
+              <span class="marker-icon">${idx === 4 ? '🐲' : '🏝️'}</span>
+              <span class="marker-title">${item.shortName}</span>
+              <span class="marker-status ${statusCls}" id="markerStatus_${idx}">${statusText}</span>
+            </div>
+            <div class="marker-pin"></div>
+          `;
+
+          markerEl.onclick = () => window.islandApp.flyToIsland(idx);
+          this.labelsContainer.appendChild(markerEl);
+
+          this.markers.push({
+            element: markerEl,
+            position: new THREE.Vector3(...item.position).add(new THREE.Vector3(0, idx === 4 ? 9.5 : 9.0, 0))
+          });
+        });
+      }
+
+      updateMarkers() {
+        const halfW = window.innerWidth / 2;
+        const halfH = window.innerHeight / 2;
+        const tempV = new THREE.Vector3();
+
+        this.markers.forEach((m) => {
+          tempV.copy(m.position);
+          tempV.project(this.camera);
+
+          if (tempV.z > 1) {
+            m.element.style.display = "none";
+          } else {
+            m.element.style.display = "flex";
+            const x = (tempV.x * halfW) + halfW;
+            const y = -(tempV.y * halfH) + halfH;
+            m.element.style.left = `${x}px`;
+            m.element.style.top = `${y}px`;
+          }
+        });
+      }
+
+      flyTo(targetPos, lookPos, onComplete) {
+        const startPos = this.camera.position.clone();
+        const startTarget = this.controls.target.clone();
+        const duration = 1200;
+        const startTime = performance.now();
+
+        const animateCamera = (time) => {
+          const elapsed = time - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const t = 1 - Math.pow(1 - progress, 3);
+
+          this.camera.position.lerpVectors(startPos, targetPos, t);
+          this.controls.target.lerpVectors(startTarget, lookPos, t);
+
+          if (progress < 1) {
+            requestAnimationFrame(animateCamera);
+          } else {
+            if (onComplete) onComplete();
+          }
+        };
+        requestAnimationFrame(animateCamera);
+      }
+
+      onResize() {
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+
+      animate() {
+        requestAnimationFrame(() => this.animate());
+        this.controls.update();
+        this.updateMarkers();
+
+        const now = Date.now() * 0.001;
+
+        // 驅動場景動畫物件 (旋轉、浮動、搖晃)
+        this.animatedObjects.forEach(item => {
+          if (item.type === 'spin') item.obj.rotation.y += (item.speed || 1) * 0.01;
+          if (item.type === 'spinZ') item.obj.rotation.z += (item.speed || 1) * 0.01;
+          if (item.type === 'bob') item.obj.position.y += Math.sin(now * (item.speed || 1)) * 0.005;
+          if (item.type === 'float') item.obj.position.y = item.base + Math.sin(now * 1.2) * 0.25;
+          if (item.type === 'shake') item.obj.position.x = Math.sin(now * 8) * 0.08;
+        });
+
+        // 守門巨獸神龍盤旋呼吸動畫
+        if (this.guardianMesh) {
+          this.guardianMesh.rotation.y = Math.sin(now * 0.5) * 0.15;
+          this.guardianMesh.position.y = 4.0 + Math.sin(now * 1.5) * 0.25;
+        }
+
+        this.renderer.render(this.scene, this.camera);
+      }
+    }
+
+    // ----------------------------------------------------
+    // 4. 島嶼寫作與四格漫畫應用控制器
+    // ----------------------------------------------------
+    class IslandApp {
+      constructor() {
+        this.sceneDirector = new IslandScene();
+        this.currentIsland = 0;
+        this.currentStamp = "💯 甲上";
+        this.rejectTags = [];
+        this.initUI();
+      }
+
+      initUI() {
+        this.updateTierDisplay();
+        this.loadIslandData(0);
+      }
+
+      updateTierDisplay() {
+        const names = { beginner: "🌟 初探者模式", intermediate: "🌟🌟 挑戰者模式", master: "🌟🌟🌟 大師模式" };
+        document.getElementById("tierDisplay").textContent = names[state.tier];
+      }
+
+      openTierSelect() {
+        document.getElementById("tierModalBackdrop").classList.add("open");
+      }
+
+      setTier(tier) {
+        state.tier = tier;
+        state.saveState();
+        this.updateTierDisplay();
+        document.getElementById("tierModalBackdrop").classList.remove("open");
+        this.loadIslandData(this.currentIsland);
+      }
+
+      toggleTeacherMode() {
+        state.teacherMode = !state.teacherMode;
+        document.getElementById("teacherModeIcon").textContent = state.teacherMode ? "🔓" : "🔒";
+        document.getElementById("teacherModeText").textContent = state.teacherMode ? "免密碼快速蓋章" : "教師模式 (密碼 888)";
+        alert(state.teacherMode ? "已切換為【巡堂免密碼快速蓋章】模式！" : "已切換為【密碼保護】模式 (預設 888)！");
+      }
+
+      resetCamera() {
+        this.sceneDirector.flyTo(new THREE.Vector3(0, 52, 64), new THREE.Vector3(0, 0, 0));
+        this.closeDrawer();
+      }
+
+      flyToIsland(index) {
+        this.currentIsland = index;
+
+        document.querySelectorAll(".island-step-dot").forEach((el, idx) => {
+          el.classList.toggle("active", idx === index);
+        });
+
+        const targetData = CURRICULUM_DATA[index];
+        const [x, y, z] = targetData.position;
+
+        if (index === 4) {
+          // 守門神殿
+          this.sceneDirector.flyTo(new THREE.Vector3(0, 24, 28), new THREE.Vector3(0, 6, 0), () => {
+            this.openGuardianModal();
+          });
+        } else {
+          // 聚焦特寫微縮島嶼
+          const camTarget = new THREE.Vector3(x + 13, y + 16, z + 18);
+          const lookTarget = new THREE.Vector3(x, y + 3.5, z);
+          this.sceneDirector.flyTo(camTarget, lookTarget, () => {
+            this.openDrawer(index);
+          });
+        }
+      }
+
+      openDrawer(index) {
+        this.loadIslandData(index);
+        document.getElementById("islandDrawer").classList.add("open");
+      }
+
+      closeDrawer() {
+        document.getElementById("islandDrawer").classList.remove("open");
+      }
+
+      loadIslandData(index) {
+        const data = CURRICULUM_DATA[index];
+        document.getElementById("drawerTitle").textContent = `🏝️ ${data.name}`;
+        document.getElementById("spriteName").textContent = `島精靈・${data.spriteName}`;
+        document.getElementById("spritePrompt").textContent = data.prompt;
+        document.getElementById("peerExemplar").textContent = data.peer;
+
+        // 好詞晶片
+        const wordWrap = document.getElementById("wordChips");
+        wordWrap.innerHTML = "";
+        data.words.forEach(w => {
+          const btn = document.createElement("button");
+          btn.className = "chip";
+          btn.textContent = w;
+          btn.onclick = () => this.insertText(w);
+          wordWrap.appendChild(btn);
+        });
+
+        // 句型積木
+        const synWrap = document.getElementById("syntaxChips");
+        synWrap.innerHTML = "";
+        data.syntax.forEach(s => {
+          const btn = document.createElement("button");
+          btn.className = "chip highlight";
+          btn.textContent = `+ ${s}`;
+          btn.onclick = () => this.insertText(`，${s}，`);
+          synWrap.appendChild(btn);
+        });
+
+        const textarea = document.getElementById("paragraphInput");
+        textarea.value = state.paragraphs[index] || (state.tier === "beginner" ? data.scaffoldBeginner : "");
+        this.onTextChange();
+
+        this.updateTeacherUI(index);
+      }
+
+      insertText(txt) {
+        const area = document.getElementById("paragraphInput");
+        const start = area.selectionStart;
+        const end = area.selectionEnd;
+        const old = area.value;
+        area.value = old.substring(0, start) + txt + old.substring(end);
+        area.focus();
+        area.selectionStart = area.selectionEnd = start + txt.length;
+        this.onTextChange();
+      }
+
+      onTextChange() {
+        const val = document.getElementById("paragraphInput").value;
+        state.paragraphs[this.currentIsland] = val;
+        state.saveState();
+
+        const len = val.length;
+        document.getElementById("charCountLabel").textContent = `${len} / 80 字`;
+        const pct = Math.min((len / 80) * 100, 100);
+        const bar = document.getElementById("energyFill");
+        bar.style.width = `${pct}%`;
+        bar.className = len >= 50 ? "energy-bar-fill good" : "energy-bar-fill";
+      }
+
+      updateTeacherUI(index) {
+        const isApproved = state.teacherApprovals[index];
+        const stampBadge = document.getElementById("stampBadge");
+        const fbBox = document.getElementById("teacherFeedbackBox");
+        const nextBtn = document.getElementById("btnNextIsland");
+
+        if (isApproved) {
+          stampBadge.className = "stamp-badge approved";
+          stampBadge.textContent = `✓ ${state.teacherStamps[index]}`;
+          fbBox.style.display = "none";
+          nextBtn.textContent = index === 3 ? "前往守門神殿 ➔" : "通往下一座島 ➔";
+          nextBtn.disabled = false;
+          nextBtn.style.opacity = "1";
+        } else {
+          stampBadge.className = "stamp-badge unreviewed";
+          stampBadge.textContent = "⏳ 待教師蓋章核准";
+          nextBtn.disabled = true;
+          nextBtn.style.opacity = "0.5";
+          nextBtn.textContent = "需經教師批改方能啟航 🔒";
+
+          if (state.teacherComments[index]) {
+            fbBox.style.display = "block";
+            fbBox.textContent = `✏️ 老師叮嚀：${state.teacherComments[index]}`;
+          } else {
+            fbBox.style.display = "none";
+          }
+        }
+      }
+
+      openTeacherModal() {
+        document.getElementById("teacherModalBackdrop").classList.add("open");
+        document.getElementById("pwdSection").style.display = state.teacherMode ? "none" : "flex";
+        document.getElementById("teacherPwdInput").value = "";
+      }
+
+      closeTeacherModal() {
+        document.getElementById("teacherModalBackdrop").classList.remove("open");
+      }
+
+      selectStamp(stamp) {
+        this.currentStamp = stamp;
+        document.querySelectorAll(".stamp-btn").forEach(btn => {
+          btn.classList.toggle("selected", btn.textContent.includes(stamp.substring(2)));
+        });
+      }
+
+      toggleRejectTag(el, tag) {
+        el.classList.toggle("selected");
+        if (el.classList.contains("selected")) {
+          this.rejectTags.push(tag);
+        } else {
+          this.rejectTags = this.rejectTags.filter(t => t !== tag);
+        }
+      }
+
+      approveParagraph() {
+        if (!state.teacherMode) {
+          const pwd = document.getElementById("teacherPwdInput").value;
+          if (pwd !== "888") {
+            alert("❌ 教師密碼錯誤！請輸入預設密碼 888，或切換免密碼模式。");
+            return;
+          }
+        }
+
+        const idx = this.currentIsland;
+        state.teacherApprovals[idx] = true;
+        state.teacherStamps[idx] = this.currentStamp;
+        state.teacherComments[idx] = "";
+        state.saveState();
+
+        this.closeTeacherModal();
+        this.updateTeacherUI(idx);
+
+        // 點亮島嶼燈塔為青綠色自發光
+        const beacon = this.sceneDirector.islands[idx].getObjectByName(`beacon_${idx}`);
+        if (beacon) {
+          beacon.material.color.setHex(0x2ec4b6);
+          beacon.material.emissive.setHex(0x2ec4b6);
+        }
+
+        // 更新標籤狀態
+        const stEl = document.getElementById(`markerStatus_${idx}`);
+        if (stEl) {
+          stEl.textContent = "✓ 已蓋章";
+          stEl.className = "marker-status passed";
+        }
+
+        alert(`🎉 恭喜！${this.currentStamp} 認證成功！已解鎖通往下一座島嶼的航道！`);
+      }
+
+      rejectParagraph() {
+        if (!state.teacherMode) {
+          const pwd = document.getElementById("teacherPwdInput").value;
+          if (pwd !== "888") {
+            alert("❌ 教師密碼錯誤！");
+            return;
+          }
+        }
+
+        const idx = this.currentIsland;
+        state.teacherApprovals[idx] = false;
+        state.teacherComments[idx] = this.rejectTags.length > 0 ? this.rejectTags.join("、") : "請再充實內容並修正語意！";
+        state.saveState();
+
+        this.closeTeacherModal();
+        this.updateTeacherUI(idx);
+        alert("已退件要求修改，學生畫面已標註紅筆指導！");
+      }
+
+      submitAndNext() {
+        if (!state.teacherApprovals[this.currentIsland]) {
+          alert("🔒 必須先請老師過目並蓋章核准，才能航向下一座島嶼喔！");
+          return;
+        }
+
+        const next = this.currentIsland + 1;
+        if (next <= 4) {
+          this.closeDrawer();
+          this.flyToIsland(next);
+        }
+      }
+
+      // ----------------------------------------------------
+      // 5. 守門獸審查與四格漫畫生成邏輯
+      // ----------------------------------------------------
+      openGuardianModal() {
+        const backdrop = document.getElementById("guardianModalBackdrop");
+        backdrop.classList.add("open");
+        this.runGuardianReview();
+      }
+
+      closeGuardianModal() {
+        document.getElementById("guardianModalBackdrop").classList.remove("open");
+      }
+
+      runGuardianReview() {
+        const p1 = state.paragraphs[0] || "";
+        const p2 = state.paragraphs[1] || "";
+        const p3 = state.paragraphs[2] || "";
+        const p4 = state.paragraphs[3] || "";
+
+        // 審查 1: 紅線口語攔截
+        let slangError = null;
+        [p1, p2, p3, p4].forEach((p, idx) => {
+          SLANG_FILTER.forEach(s => {
+            if (p.includes(s)) slangError = { island: idx, slang: s };
+          });
+        });
+
+        // 審查 2: 前後矛盾檢查
+        let conflictError = null;
+        if (p1.includes("貪玩") || p1.includes("打電動") || p1.includes("都在玩")) {
+          if (p3.includes("考了一百分") || p3.includes("第一名") || p3.includes("歡笑收穫")) {
+            conflictError = {
+              panel: 2,
+              reason: "情節矛盾：第一段寫考前貪玩，第三段卻不勞而獲考滿分！違背教材『唯有努力不懈方能成功』之立意！"
+            };
+          }
+        }
+
+        const statusTag = document.getElementById("guardianStatusTag");
+        const dialogue = document.getElementById("guardianDialogue");
+
+        if (slangError) {
+          statusTag.textContent = "發現違規口語！";
+          statusTag.style.background = "#ffebee";
+          statusTag.style.color = "#c62828";
+          dialogue.textContent = `吼！在第 ${slangError.island + 1} 座島嶼發現了非教材口語『${slangError.slang}』！請回該島替換為四上書面語（如：大腦一片空白、風雲變色）！`;
+          this.renderComicPanels({ crackPanel: slangError.island, reason: `含有非書面語：${slangError.slang}` });
+          return;
+        }
+
+        if (conflictError) {
+          statusTag.textContent = "劇情裂痕警報！";
+          statusTag.style.background = "#ffebee";
+          statusTag.style.color = "#c62828";
+          dialogue.textContent = `吼！守門獸眼睛是雪亮的！${conflictError.reason}`;
+          this.renderComicPanels({ crackPanel: conflictError.panel, reason: conflictError.reason });
+          return;
+        }
+
+        // 全部通過
+        statusTag.textContent = "審查圓滿通過！🎉";
+        statusTag.style.background = "#e8f5e9";
+        statusTag.style.color = "#155724";
+        dialogue.textContent = "太精彩了！四段立意高遠、修辭豐沛且前後呼應！四格漫畫完美生成，請看下方成果並謄寫至作文簿！";
+        this.renderComicPanels(null);
+        this.renderManuscript();
+      }
+
+      renderComicPanels(crackInfo) {
+        const container = document.getElementById("comicGridContainer");
+        container.innerHTML = "";
+
+        const panelsMeta = [
+          { title: "第 1 格・起：考前堆積如山", text: state.paragraphs[0] || "月考前重點比芝麻還多，測驗卷堆積如山。", mood: "study" },
+          { title: "第 2 格・承：考場鐘聲大腦當機", text: state.paragraphs[1] || "鐘聲響起，考卷飄落，大腦像當機一樣緊張空白。", mood: "exam" },
+          { title: "第 3 格・轉：成績揭曉家庭風暴", text: state.paragraphs[2] || "拿到退步考卷，媽媽氣得火冒三丈使出降龍十八掌！", mood: "storm" },
+          { title: "第 4 格・合：痛改前非超越自我", text: state.paragraphs[3] || "改掉平時不燒香毛病，按部就班複習，超越自我！", mood: "resolve" }
+        ];
+
+        panelsMeta.forEach((m, idx) => {
+          const panelEl = document.createElement("div");
+          const isCrack = crackInfo && crackInfo.crackPanel === idx;
+          panelEl.className = `comic-panel ${isCrack ? 'has-crack' : ''}`;
+
+          const svgCode = this.generateComicSVG(m.mood, idx);
+
+          panelEl.innerHTML = `
+            <div class="comic-header-tag">
+              <span>${m.title}</span>
+              <span>⭐ 四上Q版</span>
+            </div>
+            <div class="comic-art-box">
+              ${svgCode}
+            </div>
+            <div class="comic-caption">
+              ${m.text.substring(0, 48)}${m.text.length > 48 ? '…' : ''}
+            </div>
+          `;
+
+          if (isCrack) {
+            const crackDiv = document.createElement("div");
+            crackDiv.className = "crack-overlay";
+            crackDiv.innerHTML = `
+              <span class="crack-badge">⚡ 守門獸裂痕警報</span>
+              <div class="crack-reason">${crackInfo.reason}</div>
+              <button class="crack-btn" onclick="window.islandApp.flyToIsland(${idx}); window.islandApp.closeGuardianModal();">
+                傳送回第 ${idx + 1} 島修改 ➔
+              </button>
+            `;
+            panelEl.appendChild(crackDiv);
+          }
+
+          container.appendChild(panelEl);
+        });
+      }
+
+      generateComicSVG(mood) {
+        if (mood === "study") {
+          return `
+            <svg class="comic-svg-scene" viewBox="0 0 160 120">
+              <rect x="20" y="80" width="120" height="25" fill="#d4a373" rx="3"/>
+              <rect x="25" y="45" width="30" height="8" fill="#e76f51" rx="2"/>
+              <rect x="23" y="55" width="34" height="8" fill="#2a9d8f" rx="2"/>
+              <rect x="26" y="65" width="30" height="8" fill="#e9c46a" rx="2"/>
+              <rect x="22" y="74" width="36" height="7" fill="#f4a261" rx="2"/>
+              <circle cx="95" cy="50" r="22" fill="#ffe0bd"/>
+              <path d="M 112 40 Q 120 44 116 50 Q 112 46 112 40" fill="#48cae4"/>
+              <circle cx="88" cy="48" r="3" fill="#333"/>
+              <circle cx="102" cy="48" r="3" fill="#333"/>
+              <path d="M 90 60 Q 95 64 100 60" stroke="#333" stroke-width="2" fill="none"/>
+              <text x="80" y="24" font-size="11" font-weight="900" fill="#e63946">苦讀！</text>
+            </svg>
+          `;
+        } else if (mood === "exam") {
+          return `
+            <svg class="comic-svg-scene" viewBox="0 0 160 120">
+              <rect x="20" y="85" width="120" height="20" fill="#a8dadc" rx="2"/>
+              <rect x="50" y="70" width="45" height="30" fill="#ffffff" stroke="#333" stroke-width="1.5" rx="1"/>
+              <circle cx="80" cy="45" r="24" fill="#e0e0e0"/>
+              <circle cx="72" cy="44" r="5" fill="none" stroke="#333" stroke-width="2"/>
+              <circle cx="88" cy="44" r="5" fill="none" stroke="#333" stroke-width="2"/>
+              <path d="M 74 58 Q 80 54 86 58" stroke="#333" stroke-width="2" fill="none"/>
+              <text x="96" y="28" font-size="12" font-weight="900" fill="#e63946">當機！</text>
+              <line x1="10" y1="20" x2="35" y2="40" stroke="#ffb703" stroke-width="3"/>
+            </svg>
+          `;
+        } else if (mood === "storm") {
+          return `
+            <svg class="comic-svg-scene" viewBox="0 0 160 120">
+              <path d="M 20 110 Q 30 70 45 110 Q 60 60 80 110 Q 105 50 125 110 Z" fill="#ffebee"/>
+              <circle cx="50" cy="50" r="22" fill="#ffd166"/>
+              <path d="M 40 45 L 48 48" stroke="#333" stroke-width="3"/>
+              <path d="M 60 48 L 52 45" stroke="#333" stroke-width="3"/>
+              <ellipse cx="50" cy="60" rx="8" ry="6" fill="#e63946"/>
+              <circle cx="110" cy="65" r="18" fill="#ffe0bd"/>
+              <circle cx="106" cy="62" r="2.5" fill="#333"/>
+              <circle cx="116" cy="62" r="2.5" fill="#333"/>
+              <polygon points="125,40 128,48 136,48 130,53 132,61 125,56 118,61 120,53 114,48 122,48" fill="#ffb703"/>
+              <text x="35" y="24" font-size="11" font-weight="900" fill="#d90429">降龍十八掌！</text>
+            </svg>
+          `;
+        } else {
+          return `
+            <svg class="comic-svg-scene" viewBox="0 0 160 120">
+              <circle cx="80" cy="90" r="45" fill="#fefae0"/>
+              <line x1="80" y1="20" x2="80" y2="35" stroke="#f4a261" stroke-width="3"/>
+              <line x1="30" y1="45" x2="45" y2="55" stroke="#f4a261" stroke-width="3"/>
+              <line x1="130" y1="45" x2="115" y2="55" stroke="#f4a261" stroke-width="3"/>
+              <circle cx="80" cy="55" r="22" fill="#ffe0bd"/>
+              <path d="M 72 50 Q 75 46 78 50" stroke="#333" stroke-width="2.5" fill="none"/>
+              <path d="M 82 50 Q 85 46 88 50" stroke="#333" stroke-width="2.5" fill="none"/>
+              <path d="M 74 62 Q 80 72 86 62 Z" fill="#e76f51"/>
+              <circle cx="108" cy="72" r="7" fill="#ffe0bd" stroke="#333" stroke-width="1.5"/>
+              <text x="60" y="24" font-size="11" font-weight="900" fill="#2a9d8f">超越自我！</text>
+            </svg>
+          `;
+        }
+      }
+
+      // ----------------------------------------------------
+      // 6. 國小真實 20x20 綠格稿紙模擬謄寫引擎
+      // ----------------------------------------------------
+      renderManuscript() {
+        const grid = document.getElementById("manuscriptGrid");
+        grid.innerHTML = "";
+
+        const title = "考試前後";
+        const paragraphs = [
+          state.paragraphs[0] || CURRICULUM_DATA[0].scaffoldBeginner,
+          state.paragraphs[1] || CURRICULUM_DATA[1].scaffoldBeginner,
+          state.paragraphs[2] || CURRICULUM_DATA[2].scaffoldBeginner,
+          state.paragraphs[3] || CURRICULUM_DATA[3].scaffoldBeginner
+        ];
+
+        // 題目行 (置中)
+        const titleLine = document.createElement("div");
+        titleLine.className = "grid-line";
+        for (let i = 0; i < 7; i++) titleLine.appendChild(this.createCell(""));
+        for (let char of title) titleLine.appendChild(this.createCell(char));
+        grid.appendChild(titleLine);
+
+        // 各段落排版 (首行空兩格)
+        paragraphs.forEach(p => {
+          let lineEl = document.createElement("div");
+          lineEl.className = "grid-line";
+          lineEl.appendChild(this.createCell("", true));
+          lineEl.appendChild(this.createCell("", true));
+
+          let colCount = 2;
+          for (let char of p) {
+            const isPunct = "，。！？；：「」『』、……".includes(char);
+            lineEl.appendChild(this.createCell(char, false, isPunct));
+            colCount++;
+
+            if (colCount >= 20) {
+              grid.appendChild(lineEl);
+              lineEl = document.createElement("div");
+              lineEl.className = "grid-line";
+              colCount = 0;
+            }
+          }
+          if (colCount > 0) grid.appendChild(lineEl);
+        });
+      }
+
+      createCell(char, isIndent = false, isPunct = false) {
+        const cell = document.createElement("div");
+        cell.className = `grid-cell ${isIndent ? 'indent' : ''} ${isPunct ? 'punct' : ''}`;
+        cell.textContent = char;
+        return cell;
+      }
+
+      copyFullText() {
+        const text = `《考試前後》
+
+` + state.paragraphs.map(p => `　　${p}`).join("
+
+");
+        navigator.clipboard.writeText(text).then(() => {
+          alert("📋 已成功複製《考試前後》全文至剪貼簿！方便貼入檔案或作業繳交！");
+        });
+      }
+
+      exportComicImage() {
+        alert("🖼️ 正在打包高解析四格漫畫……可使用截圖或右鍵另存圖片做為學習單附件！");
+      }
+    }
+
+    window.islandApp = new IslandApp();
+  </script>
+</body>
+</html>
