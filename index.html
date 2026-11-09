@@ -1088,6 +1088,39 @@
         prompt: "月考即將來臨！你是認真苦讀還是貪玩抱佛腳？請運用誇飾法寫出考前堆積如山的作業與緊張氣氛。",
         spriteName: "書精靈・小墨",
         // 五要素選項庫 (Step 1 點選用)
+                // 大師模式專屬：審題沈堤啟發引導 (引導深層回想與詞句填入)
+        masterPrompts: {
+          time: {
+            title: "⏰ 【時・時空氛圍審題】",
+            question: "月考逼近的那一刻，空氣中瀰漫著什麼樣令人窒息的緊張感？是倒數幾天、或是深夜幾點？",
+            hint: "提示：請填入帶有壓迫感的時間情境（例：在期末月考倒數三天的深夜時分）",
+            placeholder: "例：在期末月考倒數最後三天的深夜時分"
+          },
+          place: {
+            title: "🏠 【地・環境戰場審題】",
+            question: "你把自己關在哪個充滿壓迫感的作戰基地？桌面上是一副怎樣的戰場景象？",
+            hint: "提示：請填入帶有視覺細節的環境（例：在被講義淹沒、檯燈發燙的凌亂書桌前）",
+            placeholder: "例：在被講義淹沒、檯燈照得發燙的凌亂書桌前"
+          },
+          person: {
+            title: "👤 【人・神態交鋒審題】",
+            question: "此時此刻人物的神態有何戲劇反差？疲憊緊繃的你，與神情嚴肅的家人如何對峙？",
+            hint: "提示：請描寫雙方表情神態與心理反差（例：眼皮沉重的我，與眼神比鷹眼還銳利的媽媽）",
+            placeholder: "例：眼皮沉重卻不敢闔眼的我，與眼神比鷹眼還銳利的媽媽"
+          },
+          object: {
+            title: "📚 【物・壓迫景物審題】",
+            question: "眼前有哪些像巨石般壓在心頭的教材與作業？請用誇飾的眼光描繪它們：",
+            hint: "提示：運用誇飾法形容如山如麻的作業（例：重點比夜空繁星還多的課本和快寫爛的習作）",
+            placeholder: "例：重點比夜空繁星還多的課本，和快被寫爛的厚重習作"
+          },
+          event: {
+            title: "⚡ 【事・衝突抉擇審題】",
+            question: "為了這場月考硬仗，你不得不割捨什麼心愛之物？你正為平時的什麼壞習慣付出代價？",
+            hint: "提示：寫出割捨最愛與背水一戰的代價（例：卡通球賽全數喊卡，硬著頭皮挑燈夜戰）",
+            placeholder: "例：平日熱愛的卡通與球賽全數喊卡，硬著頭皮挑燈夜讀、臨渴掘井"
+          }
+        },
         elementOptions: {
           time: { label: "⏰ 【時】何時發生？", options: ["每當月考前一個禮拜", "期末月考倒數的日子裡"] },
           place: { label: "🏠 【地】在什麼地方？", options: ["在凌亂的書桌前", "在深夜明亮的檯燈下"] },
@@ -1132,6 +1165,38 @@
         color: 0x70c1b3,
         prompt: "考卷發下那一刻！教室氣氛如何？看著密密麻麻的題目，你的心跳與腦海產生了什麼誇張的變化？",
         spriteName: "鐘聲精靈・噹噹",
+        masterPrompts: {
+          time: {
+            title: "⏰ 【時・鐘聲驚雷審題】",
+            question: "當死神般的鐘聲響徹走廊那一秒，早自習原本的喧鬧如何瞬間驟止、空氣如何凍結？",
+            hint: "提示：填入鐘聲敲響瞬間的時間張力（例：早自習鈴聲響起、比死神喪鐘更驚心動魄的瞬間）",
+            placeholder: "例：早自習結束、比死神喪鐘更令人驚心動魄的鐘聲響起瞬間"
+          },
+          place: {
+            title: "🏫 【地・肅殺考場審題】",
+            question: "教室的空氣產生了什麼詭異的變化？你坐在位子上有什麼如坐針氈的具體體感？",
+            hint: "提示：描寫教室靜寂與座位上的焦慮感（例：在肅殺凝重、空氣彷彿凍結的教室座位上）",
+            placeholder: "例：在肅殺凝重、空氣彷彿凍結的四年級教室座位上"
+          },
+          person: {
+            title: "👤 【人・考場神態審題】",
+            question: "監考老師的腳步聲與全班同學的神情有何異樣？你自己的冷汗與心跳如何飆速？",
+            hint: "提示：描寫監考者的嚴肅與自己的生理緊張反應（例：臉色鐵青的老師，與手心冒汗、心跳疾馳的我）",
+            placeholder: "例：臉色鐵青的監考老師，與滿頭冷汗、手心發涼的我"
+          },
+          object: {
+            title: "📄 【物・漫天考卷審題】",
+            question: "發到桌上的考卷在你看來像什麼？黑漆漆的密麻鉛字帶給你怎樣的視覺壓迫？",
+            hint: "提示：用譬喻與誇飾形容試卷與鉛字（例：如冰冷雪花飄落的考卷，和密密麻麻如螞蟻的鉛字）",
+            placeholder: "例：如冰冷雪花飄落的考卷，和密密麻麻像黑螞蟻大軍的題目"
+          },
+          event: {
+            title: "⚡ 【事・大腦當機審題】",
+            question: "教室安靜到什麼極致的程度？看著眼前題目，你的大腦產生了什麼當機空白的崩潰反應？",
+            hint: "提示：運用縮小法與心理誇飾（例：教室安靜得連根針掉地都聽得見，大腦刷的一聲完全當機）",
+            placeholder: "例：全班安靜得連一根針掉地都聽得見，心跳飆速，大腦刷的一聲完全當機"
+          }
+        },
         elementOptions: {
           time: { label: "⏰ 【時】何時發生？", options: ["早自習鈴聲響起、月考大魔王逼近時", "發下試卷的那一瞬間"] },
           place: { label: "🏫 【地】在什麼地方？", options: ["在安靜無聲的教室裡", "在如坐針氈的座位上"] },
@@ -1174,6 +1239,38 @@
         color: 0xf39c12,
         prompt: "發考卷時是驚天動地還是心驚膽戰？看到刺眼的分數，你內心有何震撼？回家後遭遇了什麼樣的家庭風暴？",
         spriteName: "考卷精靈・白白",
+        masterPrompts: {
+          time: {
+            title: "⏰ 【時・判決時刻審題】",
+            question: "最令人膽戰心驚的揭曉時刻何時降臨？是你踏上講臺的那一秒，還是踩進家門的瞬間？",
+            hint: "提示：寫出判決揭曉的窒息時刻（例：老師面無表情宣讀成績那一刻，與放學踏進家門時）",
+            placeholder: "例：老師面無表情宣讀成績的那一刻，以及放學推開家門的瞬間"
+          },
+          place: {
+            title: "🏫 【地・處刑舞台審題】",
+            question: "審判的舞臺在哪裡？講臺前三公尺的距離走起來有多沉重？客廳沙發旁瀰漫著怎樣的低氣壓？",
+            hint: "提示：描寫講臺與客廳的心理壓迫感（例：在猶如斷頭台般沉重的講臺前，以及狂風暴雨籠罩的客廳裡）",
+            placeholder: "例：在猶如斷頭台般沉重的講臺前，以及狂風暴雨籠罩的客廳裡"
+          },
+          person: {
+            title: "👤 【人・怒火對峙審題】",
+            question: "宣判成績的老師眼神如何？雙腿發軟的你，與看到滿江紅分數即刻引爆的媽媽如何交鋒？",
+            hint: "提示：描繪雙腿發軟的自己與火冒三丈的家人（例：雙腿發軟心驚膽戰的我，與氣得頭頂冒煙的媽媽）",
+            placeholder: "例：雙腳發軟、心驚膽戰的我，與氣得頭頂冒煙、火冒三丈的媽媽"
+          },
+          object: {
+            title: "💯 【物・降龍十八掌審題】",
+            question: "考卷上刺眼的分數像什麼？媽媽暴怒之下使出了什麼武林絕學般的誇飾懲罰？",
+            hint: "提示：運用誇飾法描寫刺眼成績與懲罰（例：滿江紅刺眼的退步成績單，與媽媽高舉的降龍十八掌）",
+            placeholder: "例：那疊滿江紅、慘不忍睹的退步成績單，與媽媽高高舉起的「降龍十八掌」"
+          },
+          event: {
+            title: "⚡ 【事・家庭風暴審題】",
+            question: "接過考卷時屁股與心臟有多痛苦？回到家迎來了怎樣一場驚天動地的家庭風暴？",
+            hint: "提示：寫出如坐針氈與被訓得眼冒金星（例：屁股像坐在針氈上痛苦萬分，回家後被訓得眼冒金星）",
+            placeholder: "例：屁股像坐在針氈上痛苦萬分，回家後被媽媽訓得眼冒金星、狂風暴雨"
+          }
+        },
         elementOptions: {
           time: { label: "⏰ 【時】何時發生？", options: ["熬過考試、發考卷那一節課", "放學踏進家門時"] },
           place: { label: "🏫 【地】在什麼地方？", options: ["在講臺前與自己的座位上", "在客廳沙發旁"] },
@@ -1216,6 +1313,38 @@
         color: 0x9b59b6,
         prompt: "經歷了這次月考的洗禮，你學到了什麼啟示？如何改掉平時不燒香的壞習慣，期許自己按部就班超越自我？",
         spriteName: "智慧石像・智者",
+        masterPrompts: {
+          time: {
+            title: "⏰ 【時・痛定思痛審題】",
+            question: "風暴過後的反省平靜時刻，是在你痛定思痛的深夜，還是迎向新一天的清晨？",
+            hint: "提示：寫出沉澱反省的時間點（例：在挨了責備、撫平眼淚並痛定思痛的那個反省之夜）",
+            placeholder: "例：在挨了責備、撫平眼淚並痛定思痛的那個反省之夜"
+          },
+          place: {
+            title: "🏠 【地・整裝出發審題】",
+            question: "你打算在哪個重新收拾乾淨的角落重新出發？未來求學的長路上你要如何站穩腳步？",
+            hint: "提示：描繪收拾整齊的書桌與人生道路（例：在收拾得井井有條的書桌前，與未來的求學起跑線上）",
+            placeholder: "例：在收拾得井井有條的書桌前，以及未來的每一次求學起跑線上"
+          },
+          person: {
+            title: "👤 【人・蛻變自我審題】",
+            question: "洗去淚水、眼裡重新閃爍光芒的你，想要成為一個讓家人刮目相看的全新自己？",
+            hint: "提示：描寫下定決心、重新站起的堅定神態（例：擦乾眼淚、下定決心不再當考試俘虜的全新自我）",
+            placeholder: "例：擦乾眼淚、下定決心不再當考試俘虜的全新自我"
+          },
+          object: {
+            title: "📖 【物・踏實盟約審題】",
+            question: "你親手立下了什麼具體踏實的行動盟約？書桌前貼上了什麼讓你安心奮鬥的法寶？",
+            hint: "提示：具體寫出行動清單或筆記本（例：貼在牆上的每日按部就班複習計畫表，和工整踏實的筆記本）",
+            placeholder: "例：貼在牆上的每日按部就班複習計畫表，和工整踏實的筆記本"
+          },
+          event: {
+            title: "⚡ 【事・超越自我審題】",
+            question: "這次慘痛教訓讓你悟出了什麼人生真理？你如何徹底戒除壞毛病、按部就班超越自我？",
+            hint: "提示：總結不勞而獲的教訓並宣示征服考試（例：領悟天下無不勞而獲真理，按部就班超越自我）",
+            placeholder: "例：領悟天下絕無不勞而獲的真理，徹底改掉平日不燒香的惡習，腳踏實地超越自我"
+          }
+        },
         elementOptions: {
           time: { label: "⏰ 【時】何時發生？", options: ["經歷了這次慘痛的月考洗禮之後", "從今天開始的每一天"] },
           place: { label: "🏠 【地】在什麼地方？", options: ["在自己的書桌前", "在未來的求學道路上"] },
@@ -2332,34 +2461,56 @@
           });
 
         } else {
-          // 🌟🌟🌟 大師級 (高成就)：全開放式五要素心智地圖 ＋ 成語錦囊激發
+          // 🌟🌟🌟 大師級 (高成就)：深層審題啟發 ＋ 情境沈堤定位
           const tipCard = document.createElement("div");
           tipCard.className = "master-challenge-card";
           tipCard.innerHTML = `
-            <span class="master-badge-tag">👑 大師級思維定位</span>
-            <div style="font-size: 12.5px; line-height: 1.5; color: #78350f;">
-              高水準的作文不落俗套！請不依賴預設按鈕，運用四上高級成語自行設定這場月考風暴的獨特舞台：
+            <span class="master-badge-tag">👑 大師級・深層審題思維定位</span>
+            <div style="font-size: 13px; font-weight: 700; color: #78350f; line-height: 1.6;">
+              真正的寫作大師在動筆前必先「沉思審題」！請閉上雙眼回想當時的情境，依據每一欄的「審題啟發問題」填入鮮活生動的詞句，為後續段落注入文學張力：
             </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px;">
-              <span style="font-size: 11px; color: #b45309; font-weight: 700;">推薦成語錦囊：</span>
-              ${data.words.map(w => `<span class="chip" style="font-size: 11px; padding: 2px 6px;" onclick="window.islandApp.insertText('${w}')">${w}</span>`).join("")}
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; background: rgba(255,255,255,0.7); padding: 8px 10px; border-radius: 8px;">
+              <span style="font-size: 11.5px; color: #b45309; font-weight: 900;">💎 推薦四上高級成語（點擊可直接填入）：</span>
+              ${data.words.map(w => `<span class="chip" style="font-size: 11.5px; padding: 3px 8px; font-weight: 700;" onclick="window.islandApp.insertToActiveElement('${w}')">${w}</span>`).join("")}
             </div>
           `;
           list.appendChild(tipCard);
 
+          const mp = data.masterPrompts || {};
+
           elemKeys.forEach(({ key, color }) => {
-            const item = data.elementOptions[key];
-            if (!item) return;
+            const promptInfo = mp[key];
+            if (!promptInfo) return;
 
             const card = document.createElement("div");
             card.className = "element-picker-card";
-            const curVal = curSelections[`${key}_custom`] || item.options[0];
+            card.style.border = "1.5px solid #fcd34d";
+            card.style.background = "#fffdf7";
+
+            const curVal = curSelections[`${key}_custom`] || "";
 
             card.innerHTML = `
-              <div class="picker-label" style="background: ${color}; padding: 4px 8px; border-radius: 6px; width: fit-content;">
-                <span>${item.label}</span>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="picker-label" style="background: ${color}; padding: 4px 10px; border-radius: 6px; font-size: 13px;">
+                  <span>${promptInfo.title}</span>
+                </div>
+                <span style="font-size: 11px; font-weight: 700; color: #b45309;">💡 審題引導</span>
               </div>
-              <input class="element-custom-input" style="padding: 8px 10px; font-weight: 600;" placeholder="請輸入你設定的${item.label.substring(6)}..." value="${curVal}" onchange="window.islandApp.setElementCustomText('${key}', this.value)">
+
+              <!-- 審題引導問題 -->
+              <div style="font-size: 12.5px; line-height: 1.5; color: #334155; font-weight: 600; padding: 4px 2px;">
+                ${promptInfo.question}
+              </div>
+
+              <!-- 聚焦提示 -->
+              <div style="font-size: 11.5px; color: #64748b; line-height: 1.4;">
+                ${promptInfo.hint}
+              </div>
+
+              <!-- 大師輸入框 -->
+              <div style="margin-top: 4px;">
+                <input class="element-custom-input" id="masterInput_${key}" style="padding: 9px 12px; font-weight: 600; font-size: 13.5px; width: 100%; border: 1.5px solid #e2e8f0; border-radius: 8px;" placeholder="${promptInfo.placeholder}" value="${curVal}" onfocus="window.islandApp.lastFocusedElement='${key}'" oninput="window.islandApp.setElementCustomText('${key}', this.value)">
+              </div>
             `;
             list.appendChild(card);
           });
@@ -2378,6 +2529,18 @@
         const data = CURRICULUM_DATA[islandIdx];
         this.renderStep1Pickers(data);
         this.showToast(`已選取【${data.elementOptions[key].options[optIdx]}】`, 1500);
+      }
+
+            insertToActiveElement(txt) {
+        const key = this.lastFocusedElement || 'time';
+        const input = document.getElementById(`masterInput_${key}`);
+        if (input) {
+          input.value = (input.value ? input.value + '、' : '') + txt;
+          this.setElementCustomText(key, input.value);
+          this.showToast(`已將【${txt}】加入${key}欄位！`, 1500);
+        } else {
+          this.insertText(txt);
+        }
       }
 
       setElementCustomText(key, text) {
