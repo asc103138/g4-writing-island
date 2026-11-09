@@ -1986,11 +1986,7 @@
       }
 
       copyFullText() {
-        const text = `《考試前後》
-
-` + state.paragraphs.map(p => `　　${p}`).join("
-
-");
+        const text = `《考試前後》\n\n` + state.paragraphs.map(p => `　　${p}`).join("\n\n");
         navigator.clipboard.writeText(text).then(() => {
           alert("📋 已成功複製《考試前後》全文至剪貼簿！方便貼入檔案或作業繳交！");
         });
