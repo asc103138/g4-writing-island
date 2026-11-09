@@ -450,6 +450,33 @@
       border-radius: 8px; font-size: 12.5px; color: #15803d; font-weight: 700; line-height: 1.45;
     }
 
+    /* 漸進式思考鷹架樣式 (啟發學生自我動腦思考詞性，卡住時才點開靈感錦囊) */
+    .guided-pos-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800;
+      background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe;
+    }
+    .guided-thinking-prompt {
+      font-size: 12px; color: #1e293b; font-weight: 700; line-height: 1.5;
+      background: #f8fafc; padding: 6px 10px; border-radius: 6px; margin: 4px 0 6px 0;
+      border-left: 3px solid #3b82f6;
+    }
+    .guided-hint-toggle {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 800; color: #b45309; background: #fef3c7;
+      border: 1px solid #fde68a; border-radius: 6px; padding: 3px 8px; cursor: pointer;
+      margin-top: 5px; transition: all .15s ease; width: fit-content;
+    }
+    .guided-hint-toggle:hover { background: #fde68a; color: #78350f; }
+    .guided-hint-box {
+      margin-top: 6px; padding: 8px 10px; background: #fffdf5; border: 1px solid #fef08a;
+      border-radius: 6px; display: none;
+    }
+    .guided-hint-box.is-open { display: block; animation: fadeIn .2s ease; }
+    .guided-idea-text {
+      font-size: 11.5px; color: #92400e; line-height: 1.45; font-weight: 600; margin-bottom: 6px;
+    }
+
     /* 導航切換按鈕組 */
     .step-actions-bar {
       display: flex; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line);
@@ -1867,7 +1894,7 @@
           object: { label: "📚 【物】看到什麼景物？", options: ["重點比芝麻還多的課本和堆積如山的測驗卷", "堆滿桌子、快被寫爛的習作"] },
           event: { label: "⚡ 【事】發生什麼核心事件？", options: ["悠閒的卡通時光全被暫停，只能挑燈夜讀", "面對令人喘不過氣的壓力，咬牙苦讀"] }
         },
-        // 🌟 挑戰者專屬：句型結構框架鷹架（Sentence Frames - 拒絕直接給整句，透過句型與詞性提示引導學生親自填寫詞語組裝）
+        // 🌟 挑戰者專屬：句型結構框架鷹架（Sentence Frames - 拒絕直接給整句，透過句型、詞性要求與思考引導，讓學生先動腦寫出自己的詞語，卡住時才點開靈感提點）
         guidedFrames: {
           time: {
             label: "⏰ 【時】時間情境引導",
@@ -1879,8 +1906,11 @@
                 blanks: [
                   {
                     key: "part1",
-                    label: "底線【時間情境】（詞性：時間名詞／動態片語，描述大考逼近）",
-                    placeholder: "例：月考前一個禮拜",
+                    label: "時間情境",
+                    pos: "時間名詞／動態片語",
+                    thinkingPrompt: "想一想：每當什麼日子快到了，你的好日子就結束了？請回想月考倒數時的緊張時刻。",
+                    ideaAngles: "思考方向：你可以想想「剩幾天」、「大考逼近」、「某種可怕的魔王要來了」來填寫。",
+                    placeholder: "請親自輸入你想到的時間情境...",
                     chips: ["月考前一個禮拜", "期末月考倒數的日子", "段考大魔王逼近時", "月考倒數十天"]
                   }
                 ]
@@ -1892,14 +1922,20 @@
                 blanks: [
                   {
                     key: "part1",
-                    label: "底線 ①【氣氛形容】（詞性：形容詞，描述考前緊張氛圍）",
-                    placeholder: "例：緊張萬分",
+                    label: "氣氛形容詞",
+                    pos: "形容詞",
+                    thinkingPrompt: "想一想：這幾天是什麼樣的日子？這時候家裡或班上的氣氛讓你感覺如何？（時間很緊迫？還是大家都很慌亂？）",
+                    ideaAngles: "思考方向：試著從「時間一分一秒流逝」、「事情多到手忙腳亂」、「心情像被火烤」三個角度找形容詞！",
+                    placeholder: "請親自輸入你想到的形容詞...",
                     chips: ["緊張萬分", "分秒必爭", "水深火熱", "兵荒馬亂"]
                   },
                   {
                     key: "part2",
-                    label: "底線 ②【時間名詞】（詞性：名詞，時間單位）",
-                    placeholder: "例：日子",
+                    label: "時間名詞",
+                    pos: "時間名詞",
+                    thinkingPrompt: "想一想：這是一段什麼樣的時間？請填入時間單位名詞。",
+                    ideaAngles: "思考方向：可以填入「日子」、「夜晚」、「時光」、「深夜」等時間名詞。",
+                    placeholder: "請輸入時間名詞（例：日子）...",
                     chips: ["日子", "深夜", "夜晚", "時光"]
                   }
                 ]
@@ -1916,14 +1952,20 @@
                 blanks: [
                   {
                     key: "part1",
-                    label: "底線 ①【環境狀態】（詞性：形容詞，描摹書房凌亂狀態）",
-                    placeholder: "例：凌亂不堪",
+                    label: "環境狀態",
+                    pos: "形容詞",
+                    thinkingPrompt: "想一想：你溫習功課的書房看起來是什麼樣子？課本和測驗卷被你丟得呈現什麼狀態？",
+                    ideaAngles: "思考方向：試著從「桌面很亂」、「到處堆滿講義」、「安靜得可怕」來想形容詞！",
+                    placeholder: "請親自輸入你想到的形容詞...",
                     chips: ["凌亂不堪", "堆滿課本", "狹小", "安靜無聲"]
                   },
                   {
                     key: "part2",
-                    label: "底線 ②【空間名詞】（詞性：名詞，家具空間）",
-                    placeholder: "例：書桌",
+                    label: "空間家具",
+                    pos: "空間名詞",
+                    thinkingPrompt: "想一想：你此時正坐在哪裡埋首苦讀？請填入具體的家具或房間位置。",
+                    ideaAngles: "思考方向：例如書桌、書架、房間角落。",
+                    placeholder: "請輸入家具或地點名詞...",
                     chips: ["書桌", "書架", "房間"]
                   }
                 ]
@@ -1935,8 +1977,11 @@
                 blanks: [
                   {
                     key: "part1",
-                    label: "底線【光源與環境】（詞性：偏正名詞片語，形容詞＋名詞）",
-                    placeholder: "例：深夜明亮的檯燈",
+                    label: "光源與環境",
+                    pos: "形容詞＋名詞",
+                    thinkingPrompt: "想一想：深夜陪著你挑燈夜戰的光源是什麼？在寂靜的黑夜中發出怎樣的光線？",
+                    ideaAngles: "思考方向：用「形容詞＋燈光名詞」，例如檯燈的明亮、微弱或發燙。",
+                    placeholder: "請親自輸入形容詞＋燈光...",
                     chips: ["深夜明亮的檯燈", "刺眼的日光燈", "寂靜夜晚微弱的燈光"]
                   }
                 ]
@@ -1953,14 +1998,20 @@
                 blanks: [
                   {
                     key: "part1",
-                    label: "底線 ①【主角狀態】（詞性：形容詞／動態副詞，描繪緊繃心理）",
-                    placeholder: "例：苦讀",
+                    label: "主角狀態",
+                    pos: "形容詞／動態副詞",
+                    thinkingPrompt: "想一想：這時候的你看起來是什麼模樣？你的身體和心情正處於怎樣的狀態？",
+                    ideaAngles: "思考方向：從「頭腦很脹」、「神經繃得很緊」、「手忙腳亂」來找形容詞！",
+                    placeholder: "請親自輸入形容你的詞語...",
                     chips: ["苦讀", "焦頭爛額", "神經緊繃", "手忙腳亂"]
                   },
                   {
                     key: "part2",
-                    label: "底線 ②【媽媽神態】（詞性：形容詞，描繪神情動作）",
-                    placeholder: "例：嚴厲",
+                    label: "媽媽神態",
+                    pos: "形容詞",
+                    thinkingPrompt: "想一想：平常笑咪咪的媽媽，這時候臉上的神情和眼神變成了什麼模樣？",
+                    ideaAngles: "思考方向：從「眼神很兇」、「在背後緊緊盯著」、「表情非常焦急」來找形容詞！",
+                    placeholder: "請親自輸入形容媽媽的詞語...",
                     chips: ["嚴厲", "在一旁緊盯", "目光如炬", "焦急萬分"]
                   }
                 ]
@@ -1972,8 +2023,11 @@
                 blanks: [
                   {
                     key: "part1",
-                    label: "底線【主角心境】（詞性：四字成語／形容詞，孤軍奮戰心理）",
-                    placeholder: "例：神經緊繃",
+                    label: "主角心境",
+                    pos: "四字成語／形容詞",
+                    thinkingPrompt: "想一想：深夜全家人都睡了，只剩你一個人在書桌前孤軍奮戰，那是怎樣的心情？",
+                    ideaAngles: "思考方向：用成語形容孤單、緊張、不敢鬆懈的心態。",
+                    placeholder: "請親自輸入形容心境的成語...",
                     chips: ["神經緊繃", "孤軍奮戰", "忐忑不安", "嚴陣以待"]
                   }
                 ]
@@ -1990,14 +2044,20 @@
                 blanks: [
                   {
                     key: "part1",
-                    label: "底線 ①【比喻物】（詞性：微小名詞，誇飾比喻）",
-                    placeholder: "例：芝麻",
+                    label: "誇飾比喻物",
+                    pos: "名詞（極微小物品）",
+                    thinkingPrompt: "想一想：課本上的重點多到爆炸！請發揮想像力，找一個「超級微小」的東西來做誇飾對比！",
+                    ideaAngles: "思考方向：越小的東西越能突顯重點多，例如芝麻、牛毛、天上的繁星。",
+                    placeholder: "請親自輸入微小事物名詞...",
                     chips: ["芝麻", "繁星", "牛毛", "細沙"]
                   },
                   {
                     key: "part2",
-                    label: "底線 ②【數量狀態】（詞性：四字成語／形容詞，形容數量極多）",
-                    placeholder: "例：堆積如山",
+                    label: "數量誇飾",
+                    pos: "四字成語／形容詞",
+                    thinkingPrompt: "想一想：桌上的測驗卷堆得有多高？多到像什麼一樣？",
+                    ideaAngles: "思考方向：用四字成語形容數量很多、疊得很厚。",
+                    placeholder: "請親自輸入形容數量極多的成語...",
                     chips: ["堆積如山", "數也數不清", "滿坑滿谷", "厚厚一疊"]
                   }
                 ]
@@ -2009,8 +2069,11 @@
                 blanks: [
                   {
                     key: "part1",
-                    label: "底線【動態描摹】（詞性：動詞片語，描繪翻閱頻繁）",
-                    placeholder: "例：堆滿桌子",
+                    label: "動態描摹",
+                    pos: "動詞片語",
+                    thinkingPrompt: "想一想：習作本被你翻了多少次、寫成什麼樣子？",
+                    ideaAngles: "思考方向：用動態描寫翻閱的頻繁或桌上擺滿的樣子。",
+                    placeholder: "請親自輸入動態描寫片語...",
                     chips: ["堆滿桌子", "翻閱無數次", "密密麻麻寫滿字"]
                   }
                 ]
@@ -2027,14 +2090,20 @@
                 blanks: [
                   {
                     key: "part1",
-                    label: "底線 ①【休閒娛樂】（詞性：名詞，平日休閒活動）",
-                    placeholder: "例：悠閒的卡通時光",
+                    label: "休閒娛樂",
+                    pos: "名詞（平日休閒愛好）",
+                    thinkingPrompt: "想一想：平時你放學最喜歡做、最期待的娛樂休閒是什麼？現在全被無情喊卡了！",
+                    ideaAngles: "思考方向：例如看卡通、打電動、出去打球的歡樂時光。",
+                    placeholder: "請親自輸入平日最愛的休閒活動...",
                     chips: ["悠閒的卡通時光", "最愛的電玩時間", "假期的玩樂計畫"]
                   },
                   {
                     key: "part2",
-                    label: "底線 ②【苦讀行動】（詞性：四字成語／動詞，應考作為）",
-                    placeholder: "例：挑燈夜讀",
+                    label: "苦讀行動",
+                    pos: "四字成語／動詞",
+                    thinkingPrompt: "想一想：娛樂都沒了，面對殘酷的考試，你現在只能乖乖採取什麼具體行動？",
+                    ideaAngles: "思考方向：用四字成語或動詞描繪熬夜苦讀、臨時補救的行動。",
+                    placeholder: "請親自輸入苦讀應考的成語或動詞...",
                     chips: ["挑燈夜讀", "全力以赴", "埋首苦讀", "臨時抱佛腳"]
                   }
                 ]
@@ -2046,14 +2115,20 @@
                 blanks: [
                   {
                     key: "part1",
-                    label: "底線 ①【壓力形容】（詞性：形容詞，考前氛圍）",
-                    placeholder: "例：令人喘不過氣",
+                    label: "壓力形容詞",
+                    pos: "形容詞",
+                    thinkingPrompt: "想一想：考前排山倒海而來的巨大壓力，帶給你怎樣的身體與心理感受？",
+                    ideaAngles: "思考方向：從「胸口喘不過氣」、「像大石頭壓在心上」來想形容詞！",
+                    placeholder: "請親自輸入形容壓力的詞語...",
                     chips: ["令人喘不過氣", "排山倒海而來", "如影隨形"]
                   },
                   {
                     key: "part2",
-                    label: "底線 ②【應對作為】（詞性：四字成語／動詞）",
-                    placeholder: "例：咬牙苦讀",
+                    label: "應對作為",
+                    pos: "四字成語／動詞",
+                    thinkingPrompt: "想一想：面對這樣龐大的壓力，你的決心與積極作為是什麼？",
+                    ideaAngles: "思考方向：用成語描繪堅持不懈、咬牙拼搏的態度。",
+                    placeholder: "請親自輸入應對作為的詞語...",
                     chips: ["咬牙苦讀", "奮力一搏", "不敢鬆懈"]
                   }
                 ]
@@ -5312,31 +5387,60 @@ puzzleSentences: [
             return `<button type="button" class="guided-pattern-tab ${isCur ? 'active' : ''}" onclick="window.islandApp.switchGuidedPattern('${key}', ${pIdx})">${p.name}</button>`;
           }).join("");
 
-          // 底線輸入與詞性導引
+          // 底線輸入與思考導引 (預設隱藏現成答案，先激發學生大腦思考，卡住才點開靈感提點)
           let blanksHtml = "";
           curPattern.blanks.forEach(b => {
             const currentVal = (curKeyData.blanks && curKeyData.blanks[b.key]) || "";
-            const chipsHtml = b.chips.map(chip => {
+            const chipsHtml = (b.chips || []).map(chip => {
               const safeChip = chip.replace(/'/g, "\\'");
               return `<button type="button" class="cloze-chip-btn" onclick="window.islandApp.fillGuidedChip('${key}', '${b.key}', '${safeChip}')">+ ${chip}</button>`;
             }).join("");
 
+            const posBadge = b.pos ? `<span class="guided-pos-tag">🏷️ 詞性：${b.pos}</span>` : '';
+            const promptText = b.thinkingPrompt || b.label;
+            const ideaText = b.ideaAngles || '思考方向：試著回想生活情境，用貼切生動的詞語來描述。';
+
             blanksHtml += `
-              <div class="guided-blank-row" style="margin-top: 8px; background: #f8fafc; padding: 8px 10px; border-radius: 8px; border: 1px dashed #cbd5e1;">
+              <div class="guided-blank-row" style="margin-top: 8px; background: #f8fafc; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #e2e8f0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                  <span style="font-size: 11.5px; font-weight: 800; color: #1e293b;">${b.label}</span>
-                  ${currentVal ? '<span style="font-size: 11px; color: #16a34a; font-weight: 800;">✓ 已填寫</span>' : '<span style="font-size: 11px; color: #dc2626; font-weight: 700;">待填入詞語</span>'}
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-size: 12px; font-weight: 900; color: #1e293b;">【${b.label}】</span>
+                    ${posBadge}
+                  </div>
+                  ${currentVal ? '<span style="font-size: 11px; color: #16a34a; font-weight: 800;">✓ 已親自填寫</span>' : '<span style="font-size: 11px; color: #dc2626; font-weight: 700;">待輸入自己的詞語</span>'}
                 </div>
-                <input class="element-custom-input" 
-                       id="guidedInput_${key}_${b.key}"
-                       value="${currentVal.replace(/"/g, '&quot;')}" 
-                       placeholder="${b.placeholder}" 
-                       style="padding: 7px 10px; font-size: 13px; font-weight: 600; width: 100%; border: 1.5px solid #94a3b8; border-radius: 6px; box-sizing: border-box;"
-                       oninput="window.islandApp.setGuidedBlankText('${key}', '${b.key}', this.value)">
-                <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; align-items: center;">
-                  <span style="font-size: 11px; color: #64748b; font-weight: 700;">🧩 推薦詞語積木：</span>
-                  ${chipsHtml}
+
+                <!-- 🧠 大腦想一想思考導引問句 (激發內在聯想，非被動點選) -->
+                <div class="guided-thinking-prompt">
+                  ${promptText}
                 </div>
+
+                <!-- 學生親手輸入框 (預設鼓勵親自打字) -->
+                <div style="margin-top: 6px;">
+                  <input class="element-custom-input" 
+                         id="guidedInput_${key}_${b.key}"
+                         value="${currentVal.replace(/"/g, '&quot;')}" 
+                         placeholder="${b.placeholder || '請親手輸入你想到的詞語（試著用自己的話寫出來）...'}" 
+                         style="padding: 8px 12px; font-size: 13px; font-weight: 600; width: 100%; border: 1.5px solid #94a3b8; border-radius: 8px; box-sizing: border-box; background: #ffffff;"
+                         oninput="window.islandApp.setGuidedBlankText('${key}', '${b.key}', this.value)">
+                </div>
+
+                <!-- 💡 思考卡住時的按需展開靈感錦囊 (預設折疊，絕不直接攤開現成答案) -->
+                <div style="margin-top: 4px;">
+                  <button type="button" class="guided-hint-toggle" id="guidedHintBtn_${key}_${b.key}" onclick="window.islandApp.toggleGuidedHint('${key}', '${b.key}')">
+                    💡 思考不出來嗎？點我看靈感提點
+                  </button>
+                  <div class="guided-hint-box" id="guidedHint_${key}_${b.key}">
+                    <div class="guided-idea-text">
+                      ${ideaText}
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin-top: 4px;">
+                      <span style="font-size: 11px; color: #92400e; font-weight: 800;">📚 四上教材參考好詞（可參考或點選）：</span>
+                      ${chipsHtml}
+                    </div>
+                  </div>
+                </div>
+
               </div>
             `;
           });
@@ -5370,6 +5474,20 @@ puzzleSentences: [
 
           list.appendChild(card);
         });
+      }
+
+      toggleGuidedHint(key, blankKey) {
+        const box = document.getElementById(`guidedHint_${key}_${blankKey}`);
+        const btn = document.getElementById(`guidedHintBtn_${key}_${blankKey}`);
+        if (!box) return;
+        const isOpen = box.classList.contains("is-open");
+        if (isOpen) {
+          box.classList.remove("is-open");
+          if (btn) btn.innerHTML = `💡 思考不出來嗎？點我看靈感提點`;
+        } else {
+          box.classList.add("is-open");
+          if (btn) btn.innerHTML = `🔼 收起靈感提點`;
+        }
       }
 
       switchGuidedPattern(key, pIdx) {
