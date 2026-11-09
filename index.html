@@ -430,6 +430,26 @@
       box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
     }
 
+    /* 挑戰者句型鷹架卡片專屬樣式 (拒絕直接給整句，透過句型與詞性提示引導學生親自填寫詞語組裝) */
+    .intermediate-guided-banner {
+      background: #eff6ff; border-left: 3.5px solid #2563eb; padding: 10px 14px;
+      border-radius: 8px; margin-bottom: 6px; box-shadow: 0 1px 3px rgba(37,99,235,0.06);
+    }
+    .guided-pattern-tab {
+      padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 800;
+      background: #f1f5f9; color: #475569; border: 1.5px solid #cbd5e1; cursor: pointer;
+      transition: all .15s ease;
+    }
+    .guided-pattern-tab:hover { background: #e2e8f0; color: #0f172a; }
+    .guided-pattern-tab.active {
+      background: #2563eb; color: #ffffff; border-color: #1d4ed8;
+      box-shadow: 0 2px 6px rgba(37,99,235,0.25);
+    }
+    .guided-assembled-box {
+      margin-top: 6px; padding: 8px 12px; background: #f0fdf4; border: 1px solid #86efac;
+      border-radius: 8px; font-size: 12.5px; color: #15803d; font-weight: 700; line-height: 1.45;
+    }
+
     /* 導航切換按鈕組 */
     .step-actions-bar {
       display: flex; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line);
@@ -1847,6 +1867,200 @@
           object: { label: "📚 【物】看到什麼景物？", options: ["重點比芝麻還多的課本和堆積如山的測驗卷", "堆滿桌子、快被寫爛的習作"] },
           event: { label: "⚡ 【事】發生什麼核心事件？", options: ["悠閒的卡通時光全被暫停，只能挑燈夜讀", "面對令人喘不過氣的壓力，咬牙苦讀"] }
         },
+        // 🌟 挑戰者專屬：句型結構框架鷹架（Sentence Frames - 拒絕直接給整句，透過句型與詞性提示引導學生親自填寫詞語組裝）
+        guidedFrames: {
+          time: {
+            label: "⏰ 【時】時間情境引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：每當……",
+                template: "每當{part1}",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【時間情境】（詞性：時間名詞／動態片語，描述大考逼近）",
+                    placeholder: "例：月考前一個禮拜",
+                    chips: ["月考前一個禮拜", "期末月考倒數的日子", "段考大魔王逼近時", "月考倒數十天"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：在……的……裡",
+                template: "在{part1}的{part2}裡",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線 ①【氣氛形容】（詞性：形容詞，描述考前緊張氛圍）",
+                    placeholder: "例：緊張萬分",
+                    chips: ["緊張萬分", "分秒必爭", "水深火熱", "兵荒馬亂"]
+                  },
+                  {
+                    key: "part2",
+                    label: "底線 ②【時間名詞】（詞性：名詞，時間單位）",
+                    placeholder: "例：日子",
+                    chips: ["日子", "深夜", "夜晚", "時光"]
+                  }
+                ]
+              }
+            ]
+          },
+          place: {
+            label: "🏠 【地】空間環境引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：在……的……前",
+                template: "在{part1}的{part2}前",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線 ①【環境狀態】（詞性：形容詞，描摹書房凌亂狀態）",
+                    placeholder: "例：凌亂不堪",
+                    chips: ["凌亂不堪", "堆滿課本", "狹小", "安靜無聲"]
+                  },
+                  {
+                    key: "part2",
+                    label: "底線 ②【空間名詞】（詞性：名詞，家具空間）",
+                    placeholder: "例：書桌",
+                    chips: ["書桌", "書架", "房間"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：在……下",
+                template: "在{part1}下",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【光源與環境】（詞性：偏正名詞片語，形容詞＋名詞）",
+                    placeholder: "例：深夜明亮的檯燈",
+                    chips: ["深夜明亮的檯燈", "刺眼的日光燈", "寂靜夜晚微弱的燈光"]
+                  }
+                ]
+              }
+            ]
+          },
+          person: {
+            label: "👤 【人】角色狀態引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：……的我與……的媽媽",
+                template: "{part1}的我與{part2}的媽媽",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線 ①【主角狀態】（詞性：形容詞／動態副詞，描繪緊繃心理）",
+                    placeholder: "例：苦讀",
+                    chips: ["苦讀", "焦頭爛額", "神經緊繃", "手忙腳亂"]
+                  },
+                  {
+                    key: "part2",
+                    label: "底線 ②【媽媽神態】（詞性：形容詞，描繪神情動作）",
+                    placeholder: "例：嚴厲",
+                    chips: ["嚴厲", "在一旁緊盯", "目光如炬", "焦急萬分"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：只有……的我",
+                template: "只有{part1}的我",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【主角心境】（詞性：四字成語／形容詞，孤軍奮戰心理）",
+                    placeholder: "例：神經緊繃",
+                    chips: ["神經緊繃", "孤軍奮戰", "忐忑不安", "嚴陣以待"]
+                  }
+                ]
+              }
+            ]
+          },
+          object: {
+            label: "📚 【物】教材景物誇飾引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：重點比……還多的課本和……的測驗卷",
+                template: "重點比{part1}還多的課本和{part2}的測驗卷",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線 ①【比喻物】（詞性：微小名詞，誇飾比喻）",
+                    placeholder: "例：芝麻",
+                    chips: ["芝麻", "繁星", "牛毛", "細沙"]
+                  },
+                  {
+                    key: "part2",
+                    label: "底線 ②【數量狀態】（詞性：四字成語／形容詞，形容數量極多）",
+                    placeholder: "例：堆積如山",
+                    chips: ["堆積如山", "數也數不清", "滿坑滿谷", "厚厚一疊"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：……、快被寫爛的習作",
+                template: "{part1}、快被寫爛的習作",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【動態描摹】（詞性：動詞片語，描繪翻閱頻繁）",
+                    placeholder: "例：堆滿桌子",
+                    chips: ["堆滿桌子", "翻閱無數次", "密密麻麻寫滿字"]
+                  }
+                ]
+              }
+            ]
+          },
+          event: {
+            label: "⚡ 【事】核心事件引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：……全被暫停，只能……",
+                template: "{part1}全被暫停，只能{part2}",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線 ①【休閒娛樂】（詞性：名詞，平日休閒活動）",
+                    placeholder: "例：悠閒的卡通時光",
+                    chips: ["悠閒的卡通時光", "最愛的電玩時間", "假期的玩樂計畫"]
+                  },
+                  {
+                    key: "part2",
+                    label: "底線 ②【苦讀行動】（詞性：四字成語／動詞，應考作為）",
+                    placeholder: "例：挑燈夜讀",
+                    chips: ["挑燈夜讀", "全力以赴", "埋首苦讀", "臨時抱佛腳"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：面對……的壓力，……",
+                template: "面對{part1}的壓力，{part2}",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線 ①【壓力形容】（詞性：形容詞，考前氛圍）",
+                    placeholder: "例：令人喘不過氣",
+                    chips: ["令人喘不過氣", "排山倒海而來", "如影隨形"]
+                  },
+                  {
+                    key: "part2",
+                    label: "底線 ②【應對作為】（詞性：四字成語／動詞）",
+                    placeholder: "例：咬牙苦讀",
+                    chips: ["咬牙苦讀", "奮力一搏", "不敢鬆懈"]
+                  }
+                ]
+              }
+            ]
+          }
+        },
         // 三步段落句模板 (Step 2 組合用)
         sentenceTemplates: [
           {
@@ -1991,6 +2205,182 @@ puzzleSentences: [
           object: { label: "📄 【物】看到什麼景物？", options: ["雪白的考卷和密密麻麻的漆黑鉛字", "如雪片般緩緩飄落的測驗紙"] },
           event: { label: "⚡ 【事】發生什麼核心事件？", options: ["教室安靜得連一根針掉下都聽得見", "心跳比海線風車還快，大腦像當機一樣全空白"] }
         },
+        // 🌟 挑戰者專屬：句型結構框架鷹架
+        guidedFrames: {
+          time: {
+            label: "⏰ 【時】時間情境引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：當……時",
+                template: "當{part1}時",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【鐘聲與情境】（詞性：名詞／動態片語，描述開考緊張刻）",
+                    placeholder: "例：早自習鈴聲響起、月考大魔王逼近",
+                    chips: ["早自習鈴聲響起、月考大魔王逼近", "發下試卷的那一瞬間", "死神鐘聲敲響之際", "監考老師踏進教室時"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：在……的那一刻",
+                template: "在{part1}的那一刻",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【開考瞬間】（詞性：偏正動態片語）",
+                    placeholder: "例：監考老師拆開試卷袋封條",
+                    chips: ["監考老師拆開試卷袋封條", "拿到發燙考卷", "鐘聲震動耳膜"]
+                  }
+                ]
+              }
+            ]
+          },
+          place: {
+            label: "🏫 【地】考場環境引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：在……的教室裡",
+                template: "在{part1}的教室裡",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【考場氣氛】（詞性：形容詞，描摹安靜或緊繃）",
+                    placeholder: "例：安靜無聲",
+                    chips: ["安靜無聲", "鴉雀無聲", "肅殺凝重", "空氣彷彿凍結"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：在……的座位上",
+                template: "在{part1}的座位上",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【考生體感】（詞性：成語／形容詞）",
+                    placeholder: "例：如坐針氈",
+                    chips: ["如坐針氈", "冷汗直流", "心驚膽戰"]
+                  }
+                ]
+              }
+            ]
+          },
+          person: {
+            label: "👤 【人】考場人物神態引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：……的我與……的監考老師",
+                template: "{part1}的我與{part2}的監考老師",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線 ①【自己神態】（詞性：形容詞，考生緊張體態）",
+                    placeholder: "例：如坐針氈",
+                    chips: ["如坐針氈", "大腦當機、手心冒汗", "坐立難安", "瑟瑟發抖"]
+                  },
+                  {
+                    key: "part2",
+                    label: "底線 ②【老師神態】（詞性：形容詞，威嚴神色）",
+                    placeholder: "例：神情嚴肅",
+                    chips: ["神情嚴肅", "臉色鐵青", "目光如炬", "面無表情"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：只有……的我",
+                template: "只有{part1}的我",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【考生神態】（詞性：四字成語／形容詞）",
+                    placeholder: "例：大腦當機、手心發涼",
+                    chips: ["大腦當機、手心發涼", "冷汗直流、屏氣凝神", "心驚肉跳"]
+                  }
+                ]
+              }
+            ]
+          },
+          object: {
+            label: "📄 【物】考卷與鉛字景物引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：……的考卷和……的鉛字",
+                template: "{part1}的考卷和{part2}的鉛字",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線 ①【考卷顏色／狀態】（詞性：形容詞）",
+                    placeholder: "例：雪白",
+                    chips: ["雪白", "令人膽寒", "冰冷沉重", "如雪花飄落"]
+                  },
+                  {
+                    key: "part2",
+                    label: "底線 ②【鉛字密度】（詞性：成語／形容詞）",
+                    placeholder: "例：密密麻麻",
+                    chips: ["密密麻麻", "如黑螞蟻大軍般", "漆黑難懂"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：如……般飄落的測驗紙",
+                template: "如{part1}般飄落的測驗紙",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【譬喻物】（詞性：名詞片語）",
+                    placeholder: "例：雪片",
+                    chips: ["雪片", "落葉", "死神降帖"]
+                  }
+                ]
+              }
+            ]
+          },
+          event: {
+            label: "⚡ 【事】答題崩潰與環境誇飾引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：教室安靜得……",
+                template: "教室安靜得{part1}",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【極度安靜（縮小誇飾）】（詞性：誇飾片語）",
+                    placeholder: "例：連一根針掉下都聽得見",
+                    chips: ["連一根針掉下都聽得見", "連心跳撲通聲都震耳欲聾", "彷彿空無一人的山谷"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：心跳比……還快，大腦像……",
+                template: "心跳比{part1}還快，大腦像{part2}",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線 ①【速度誇飾比喻】（詞性：快速物體名詞）",
+                    placeholder: "例：海線風車",
+                    chips: ["海線風車", "高鐵列車", "打鼓雷鳴"]
+                  },
+                  {
+                    key: "part2",
+                    label: "底線 ②【心理當機狀態】（詞性：動態片語）",
+                    placeholder: "例：當機一樣刷的一聲全空白",
+                    chips: ["當機一樣刷的一聲全空白", "被橡皮擦擦得一乾二淨", "打了結一樣轉不動"]
+                  }
+                ]
+              }
+            ]
+          }
+        },
         sentenceTemplates: [
           {
             type: "開頭句",
@@ -2126,6 +2516,194 @@ puzzleSentences: [
           person: { label: "👤 【人】身邊有誰？", options: ["面無表情唸名字的老師和冷汗直流的我", "火冒三丈的媽媽"] },
           object: { label: "💯 【物】看到什麼景物？", options: ["滿江紅的考卷和刺眼的退步分數", "媽媽高高舉起的降龍十八掌"] },
           event: { label: "⚡ 【事】發生什麼核心事件？", options: ["屁股像坐在針氈上坐立難安，接過考卷心驚膽戰", "回家遭遇家庭風暴，被訓得眼冒金星"] }
+        },
+        // 🌟 挑戰者專屬：句型結構框架鷹架
+        guidedFrames: {
+          time: {
+            label: "⏰ 【時】時間情境引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：當……那節課",
+                template: "當{part1}那一節課",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【發卷時刻】（詞性：動態片語，描述煎熬時段）",
+                    placeholder: "例：熬過考試、發考卷",
+                    chips: ["熬過考試、發考卷", "宣讀成績", "大審判降臨"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：在……時",
+                template: "在{part1}時",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【時間節點】（詞性：名詞/動態片語）",
+                    placeholder: "例：放學踏進家門",
+                    chips: ["放學踏進家門", "交出成績單那一刻", "推開客廳大門之際"]
+                  }
+                ]
+              }
+            ]
+          },
+          place: {
+            label: "🏫 【地】審判空間引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：在……與……上",
+                template: "在{part1}與{part2}上",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線 ①【第一地點】（詞性：空間名詞）",
+                    placeholder: "例：講臺前",
+                    chips: ["講臺前", "走廊上", "教室門口"]
+                  },
+                  {
+                    key: "part2",
+                    label: "底線 ②【第二地點】（詞性：空間名詞）",
+                    placeholder: "例：自己的座位",
+                    chips: ["自己的座位", "如坐針氈的椅子", "課桌旁"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：在……旁",
+                template: "在{part1}旁",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【家庭空間】（詞性：名詞）",
+                    placeholder: "例：客廳沙發",
+                    chips: ["客廳沙發", "餐桌", "暴風圈中心的客廳"]
+                  }
+                ]
+              }
+            ]
+          },
+          person: {
+            label: "👤 【人】衝突對峙引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：……的老師和……的我",
+                template: "{part1}的老師和{part2}的我",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線 ①【老師神態】（詞性：形容詞，宣讀考卷時的表情）",
+                    placeholder: "例：面無表情唸名字",
+                    chips: ["面無表情唸名字", "目光嚴厲", "冷若冰霜"]
+                  },
+                  {
+                    key: "part2",
+                    label: "底線 ②【自己神態】（詞性：形容詞，心驚膽戰）",
+                    placeholder: "例：冷汗直流",
+                    chips: ["冷汗直流", "雙腿發軟", "心驚膽戰", "忐忑不安"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：……的媽媽",
+                template: "{part1}的媽媽",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【家人怒火狀態】（詞性：四字成語／形容詞）",
+                    placeholder: "例：火冒三丈",
+                    chips: ["火冒三丈", "氣得頭頂冒煙", "臉色比包青天還黑", "怒髮衝冠"]
+                  }
+                ]
+              }
+            ]
+          },
+          object: {
+            label: "💯 【物】成績單與降龍十八掌引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：……的考卷和……的分數",
+                template: "{part1}的考卷和{part2}的分數",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線 ①【考卷慘況】（詞性：四字成語／形容詞）",
+                    placeholder: "例：滿江紅",
+                    chips: ["滿江紅", "慘不忍睹", "滿是紅叉叉"]
+                  },
+                  {
+                    key: "part2",
+                    label: "底線 ②【退步分數】（詞性：形容詞）",
+                    placeholder: "例：刺眼",
+                    chips: ["刺眼", "不及格", "令人心碎"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：媽媽高高舉起的……",
+                template: "媽媽高高舉起的{part1}",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【誇飾懲罰物】（詞性：誇飾名詞）",
+                    placeholder: "例：降龍十八掌",
+                    chips: ["降龍十八掌", "愛之深責之切鐵沙掌", "狂風暴雨般的巴掌"]
+                  }
+                ]
+              }
+            ]
+          },
+          event: {
+            label: "⚡ 【事】家庭風暴與身心崩潰引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：屁股像……，接過考卷……",
+                template: "屁股像{part1}，接過考卷{part2}",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線 ①【身體如坐針氈（譬喻）】（詞性：動態片語）",
+                    placeholder: "例：坐在針氈上坐立難安",
+                    chips: ["坐在針氈上坐立難安", "被火烤一樣煎熬", "長了刺般難受"]
+                  },
+                  {
+                    key: "part2",
+                    label: "底線 ②【內心驚恐成語】（詞性：四字成語）",
+                    placeholder: "例：心驚膽戰",
+                    chips: ["心驚膽戰", "魂飛魄散", "手抖得停不下來"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：回家遭遇……，被訓得……",
+                template: "回家遭遇{part1}，被訓得{part2}",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線 ①【家庭衝突（譬喻）】（詞性：名詞片語）",
+                    placeholder: "例：十級大地震般的家庭風暴",
+                    chips: ["十級大地震般的家庭風暴", "狂風暴雨般的責難", "火山爆發"]
+                  },
+                  {
+                    key: "part2",
+                    label: "底線 ②【挨訓結果】（詞性：四字成語）",
+                    placeholder: "例：眼冒金星",
+                    chips: ["眼冒金星", "面紅耳赤", "無地自容", "痛哭流涕"]
+                  }
+                ]
+              }
+            ]
+          }
         },
         sentenceTemplates: [
           {
@@ -2263,6 +2841,170 @@ puzzleSentences: [
           object: { label: "📖 【物】看到什麼景物？", options: ["按部就班的每日複習計畫表", "工整踏實的筆記本"] },
           event: { label: "⚡ 【事】發生什麼核心事件？", options: ["明白天下無不勞而獲，改掉臨時抱佛腳壞習慣", "按部就班努力不懈，超越自我"] }
         },
+        // 🌟 挑戰者專屬：句型結構框架鷹架
+        guidedFrames: {
+          time: {
+            label: "⏰ 【時】沉澱反省時刻引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：經歷了……之後",
+                template: "經歷了{part1}之後",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【歷經的考驗】（詞性：偏正名詞片語）",
+                    placeholder: "例：這次慘痛的月考洗禮",
+                    chips: ["這次慘痛的月考洗禮", "狂風暴雨般的家庭風暴", "這次深刻的反省震撼"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：從……開始",
+                template: "從{part1}開始",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【起步時間】（詞性：時間名詞）",
+                    placeholder: "例：今天",
+                    chips: ["今天", "擦乾眼淚的這一刻", "新學期的第一天"]
+                  }
+                ]
+              }
+            ]
+          },
+          place: {
+            label: "🏠 【地】重新出發環境引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：在……前",
+                template: "在{part1}前",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【書房角落】（詞性：名詞片語）",
+                    placeholder: "例：收拾整齊的書桌",
+                    chips: ["收拾整齊的書桌", "窗明几淨的房間", "自己的小天地"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：在……上",
+                template: "在{part1}上",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【人生道路（譬喻）】（詞性：名詞片語）",
+                    placeholder: "例：未來的求學道路",
+                    chips: ["未來的求學道路", "人生的長跑起跑線", "努力前進的每一步"]
+                  }
+                ]
+              }
+            ]
+          },
+          person: {
+            label: "👤 【人】蛻變自我引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：……的我",
+                template: "{part1}的我",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【奮發狀態】（詞性：四字成語／形容詞）",
+                    placeholder: "例：痛定思痛、決心奮發向上",
+                    chips: ["痛定思痛、決心奮發向上", "腳踏實地、不再偷懶", "滿懷信心、重新出發"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：……的家人與我",
+                template: "{part1}的家人與我",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【和好神態】（詞性：形容詞）",
+                    placeholder: "例：重現笑容",
+                    chips: ["重現笑容", "互相打氣", "彼此諒解"]
+                  }
+                ]
+              }
+            ]
+          },
+          object: {
+            label: "📖 【物】踏實法寶引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：……的計畫表",
+                template: "{part1}的每日複習計畫表",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【計畫特質】（詞性：四字成語／形容詞）",
+                    placeholder: "例：按部就班",
+                    chips: ["按部就班", "井井有條", "踏實認真"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：……的筆記本",
+                template: "{part1}的課堂筆記本",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【筆記態度】（詞性：成語／形容詞）",
+                    placeholder: "例：工整踏實",
+                    chips: ["工整踏實", "密密麻麻寫滿重點", "字跡工整"]
+                  }
+                ]
+              }
+            ]
+          },
+          event: {
+            label: "⚡ 【事】領悟哲理與超越自我引導",
+            patterns: [
+              {
+                id: "p1",
+                name: "句型 A：明白……，改掉……壞習慣",
+                template: "明白天下{part1}，改掉{part2}壞習慣",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線 ①【生活真理】（詞性：哲理片語）",
+                    placeholder: "例：無不勞而獲的道理",
+                    chips: ["無不勞而獲的道理", "沒有白吃的午餐", "只有流汗才有收穫"]
+                  },
+                  {
+                    key: "part2",
+                    label: "底線 ②【陋習成語】（詞性：四字成語）",
+                    placeholder: "例：平時不燒香、臨時抱佛腳",
+                    chips: ["平時不燒香、臨時抱佛腳", "臨渴掘井", "得過且過"]
+                  }
+                ]
+              },
+              {
+                id: "p2",
+                name: "句型 B：……，超越自我",
+                template: "{part1}，超越自我",
+                blanks: [
+                  {
+                    key: "part1",
+                    label: "底線【努力行動】（詞性：四字成語）",
+                    placeholder: "例：按部就班努力不懈",
+                    chips: ["按部就班努力不懈", "腳踏實地全力以赴", "持之以恆精益求精"]
+                  }
+                ]
+              }
+            ]
+          }
+        },
         sentenceTemplates: [
           {
             type: "開頭句",
@@ -2398,6 +3140,7 @@ puzzleSentences: [
           { time: 0, place: 0, person: 0, object: 0, event: 0 }
         ];
         this.step2ClozeData = [ {}, {}, {}, {} ];
+        this.guidedSelections = [ {}, {}, {}, {} ];
         this.isNightMode = false;
         this.loadState();
       }
@@ -2425,6 +3168,7 @@ puzzleSentences: [
               { time: 0, place: 0, person: 0, object: 0, event: 0 }
             ];
             this.step2ClozeData = data.step2ClozeData || [ {}, {}, {}, {} ];
+            this.guidedSelections = data.guidedSelections || [ {}, {}, {}, {} ];
             this.isNightMode = !!data.isNightMode;
           }
         } catch (e) {
@@ -2443,6 +3187,7 @@ puzzleSentences: [
             puzzleSelections: this.puzzleSelections,
             elementSelections: this.elementSelections,
             step2ClozeData: this.step2ClozeData,
+            guidedSelections: this.guidedSelections,
             isNightMode: this.isNightMode
           };
           localStorage.setItem("g4_writing_island_state_v4", JSON.stringify(data));
@@ -4418,36 +5163,41 @@ puzzleSentences: [
           });
 
         } else if (state.tier === "intermediate") {
-          // 🌟🌟 挑戰者 (中成就)：教材推薦按鈕 ＋ 自訂填寫補充框
-          elemKeys.forEach(({ key, color }) => {
-            const item = data.elementOptions[key];
-            if (!item) return;
+          // 🌟🌟 挑戰者 (中成就)：拒絕直接給整句！使用「句型結構框架」＋「詞性導引」＋「推薦好詞積木」親手組裝！
+          if (data.guidedFrames) {
+            this.renderIntermediateGuidedFrames(data);
+          } else {
+            // fallback
+            elemKeys.forEach(({ key, color }) => {
+              const item = data.elementOptions[key];
+              if (!item) return;
 
-            const card = document.createElement("div");
-            card.className = "element-picker-card";
+              const card = document.createElement("div");
+              card.className = "element-picker-card";
 
-            const chosenIdx = curSelections[key] || 0;
-            const customVal = curSelections[`${key}_custom`] || "";
+              const chosenIdx = curSelections[key] || 0;
+              const customVal = curSelections[`${key}_custom`] || "";
 
-            const optBtns = item.options.map((opt, oIdx) => {
-              const isSel = !customVal && chosenIdx === oIdx;
-              return `<button class="picker-opt-btn ${isSel ? 'selected' : ''}" onclick="window.islandApp.selectElementOption('${key}', ${oIdx})">${isSel ? '✓ ' : ''}${opt}</button>`;
-            }).join("");
+              const optBtns = item.options.map((opt, oIdx) => {
+                const isSel = !customVal && chosenIdx === oIdx;
+                return `<button class="picker-opt-btn ${isSel ? 'selected' : ''}" onclick="window.islandApp.selectElementOption('${key}', ${oIdx})">${isSel ? '✓ ' : ''}${opt}</button>`;
+              }).join("");
 
-            card.innerHTML = `
-              <div class="picker-label" style="background: ${color}; padding: 4px 8px; border-radius: 6px; width: fit-content;">
-                <span>${item.label}</span>
-              </div>
-              <div class="picker-options">
-                ${optBtns}
-              </div>
-              <div class="element-custom-row">
-                <span style="font-size: 11px; color: #64748b; white-space: nowrap;">✍️ 或自己寫：</span>
-                <input class="element-custom-input" placeholder="可自行補充個人經歷（例如寫自己的書房）..." value="${customVal}" onchange="window.islandApp.setElementCustomText('${key}', this.value)">
-              </div>
-            `;
-            list.appendChild(card);
-          });
+              card.innerHTML = `
+                <div class="picker-label" style="background: ${color}; padding: 4px 8px; border-radius: 6px; width: fit-content;">
+                  <span>${item.label}</span>
+                </div>
+                <div class="picker-options">
+                  ${optBtns}
+                </div>
+                <div class="element-custom-row">
+                  <span style="font-size: 11px; color: #64748b; white-space: nowrap;">✍️ 或自己寫：</span>
+                  <input class="element-custom-input" placeholder="可自行補充個人經歷..." value="${customVal}" onchange="window.islandApp.setElementCustomText('${key}', this.value)">
+                </div>
+              `;
+              list.appendChild(card);
+            });
+          }
 
         } else {
           // 🌟🌟🌟 大師級 (高成就)：深層審題啟發 ＋ 情境沈堤定位
@@ -4506,6 +5256,180 @@ puzzleSentences: [
         }
       }
 
+      // 🌟 挑戰者專屬：渲染句型結構框架（拒絕直接挑句子，透過句型與詞性引導親自填寫）
+      renderIntermediateGuidedFrames(data) {
+        const list = document.getElementById("elementPickersList");
+        if (!list) return;
+
+        const islandIdx = this.currentIsland;
+        if (!state.guidedSelections[islandIdx]) {
+          state.guidedSelections[islandIdx] = {};
+        }
+        const gSel = state.guidedSelections[islandIdx];
+
+        // 任務提示橫幅
+        const tipCard = document.createElement("div");
+        tipCard.className = "intermediate-guided-banner";
+        tipCard.innerHTML = `
+          <div style="font-size: 13.5px; font-weight: 900; color: #1e40af; display: flex; align-items: center; gap: 6px;">
+            <span>⚔️ 挑戰者句型鷹架：為各要素選句型，依詞性填入好詞！</span>
+          </div>
+          <div style="font-size: 12px; color: #3b82f6; margin-top: 4px; line-height: 1.5;">
+            💡 <strong>拒絕偷懶挑現成句子！</strong>請為每個要素選擇句型，依據<strong>【詞性提示】</strong>親手打字或點選推薦的<strong>好詞積木</strong>填入底線，親手組裝出鮮活生動的作文要素！
+          </div>
+        `;
+        list.appendChild(tipCard);
+
+        const elemKeys = [
+          { key: "time", color: "#fee2e2" },
+          { key: "place", color: "#fef3c7" },
+          { key: "person", color: "#e0e7ff" },
+          { key: "object", color: "#f3e8ff" },
+          { key: "event", color: "#ccfbf1" }
+        ];
+
+        const gf = data.guidedFrames || {};
+
+        elemKeys.forEach(({ key, color }) => {
+          const frameInfo = gf[key];
+          if (!frameInfo) return;
+
+          const card = document.createElement("div");
+          card.className = "element-picker-card guided-frame-card";
+          card.style.border = "1.5px solid #93c5fd";
+          card.style.background = "#ffffff";
+
+          if (!gSel[key]) {
+            gSel[key] = { patternIdx: 0, blanks: {} };
+          }
+          const curKeyData = gSel[key];
+          const patternIdx = curKeyData.patternIdx || 0;
+          const curPattern = frameInfo.patterns[patternIdx] || frameInfo.patterns[0];
+
+          // 句型切換頁籤
+          const patternTabs = frameInfo.patterns.map((p, pIdx) => {
+            const isCur = patternIdx === pIdx;
+            return `<button type="button" class="guided-pattern-tab ${isCur ? 'active' : ''}" onclick="window.islandApp.switchGuidedPattern('${key}', ${pIdx})">${p.name}</button>`;
+          }).join("");
+
+          // 底線輸入與詞性導引
+          let blanksHtml = "";
+          curPattern.blanks.forEach(b => {
+            const currentVal = (curKeyData.blanks && curKeyData.blanks[b.key]) || "";
+            const chipsHtml = b.chips.map(chip => {
+              const safeChip = chip.replace(/'/g, "\\'");
+              return `<button type="button" class="cloze-chip-btn" onclick="window.islandApp.fillGuidedChip('${key}', '${b.key}', '${safeChip}')">+ ${chip}</button>`;
+            }).join("");
+
+            blanksHtml += `
+              <div class="guided-blank-row" style="margin-top: 8px; background: #f8fafc; padding: 8px 10px; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <span style="font-size: 11.5px; font-weight: 800; color: #1e293b;">${b.label}</span>
+                  ${currentVal ? '<span style="font-size: 11px; color: #16a34a; font-weight: 800;">✓ 已填寫</span>' : '<span style="font-size: 11px; color: #dc2626; font-weight: 700;">待填入詞語</span>'}
+                </div>
+                <input class="element-custom-input" 
+                       id="guidedInput_${key}_${b.key}"
+                       value="${currentVal.replace(/"/g, '&quot;')}" 
+                       placeholder="${b.placeholder}" 
+                       style="padding: 7px 10px; font-size: 13px; font-weight: 600; width: 100%; border: 1.5px solid #94a3b8; border-radius: 6px; box-sizing: border-box;"
+                       oninput="window.islandApp.setGuidedBlankText('${key}', '${b.key}', this.value)">
+                <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; align-items: center;">
+                  <span style="font-size: 11px; color: #64748b; font-weight: 700;">🧩 推薦詞語積木：</span>
+                  ${chipsHtml}
+                </div>
+              </div>
+            `;
+          });
+
+          // 組裝預覽
+          const assembledText = this.getAssembledGuidedText(curPattern, curKeyData.blanks);
+
+          card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div class="picker-label" style="background: ${color}; padding: 4px 10px; border-radius: 6px; font-size: 13px;">
+                <span>${frameInfo.label}</span>
+              </div>
+              <span style="font-size: 11px; font-weight: 800; color: #2563eb;">📐 句型鷹架</span>
+            </div>
+
+            <!-- 句型切換頁籤 -->
+            <div style="display: flex; gap: 6px; margin-top: 2px;">
+              ${patternTabs}
+            </div>
+
+            <!-- 底線與詞性導引欄 -->
+            <div style="margin-top: 2px;">
+              ${blanksHtml}
+            </div>
+
+            <!-- 即時組裝成果 -->
+            <div class="guided-assembled-box" id="guidedAssembled_${key}">
+              <span>✨ 【${key === 'time' ? '時' : key === 'place' ? '地' : key === 'person' ? '人' : key === 'object' ? '物' : '事'}】組裝成果：</span><span style="text-decoration: underline;">${assembledText}</span>
+            </div>
+          `;
+
+          list.appendChild(card);
+        });
+      }
+
+      switchGuidedPattern(key, pIdx) {
+        const islandIdx = this.currentIsland;
+        if (!state.guidedSelections[islandIdx]) state.guidedSelections[islandIdx] = {};
+        if (!state.guidedSelections[islandIdx][key]) state.guidedSelections[islandIdx][key] = { patternIdx: 0, blanks: {} };
+        state.guidedSelections[islandIdx][key].patternIdx = pIdx;
+        state.saveState();
+
+        const data = CURRICULUM_DATA[islandIdx];
+        this.renderStep1Pickers(data);
+        this.showToast(`已切換為【${data.guidedFrames[key].patterns[pIdx].name}】！`, 1200);
+      }
+
+      setGuidedBlankText(key, blankKey, text) {
+        const islandIdx = this.currentIsland;
+        if (!state.guidedSelections[islandIdx]) state.guidedSelections[islandIdx] = {};
+        if (!state.guidedSelections[islandIdx][key]) state.guidedSelections[islandIdx][key] = { patternIdx: 0, blanks: {} };
+        if (!state.guidedSelections[islandIdx][key].blanks) state.guidedSelections[islandIdx][key].blanks = {};
+
+        state.guidedSelections[islandIdx][key].blanks[blankKey] = text.trim();
+        state.saveState();
+
+        // 即時刷新組裝文字
+        const data = CURRICULUM_DATA[islandIdx];
+        if (data.guidedFrames && data.guidedFrames[key]) {
+          const frameInfo = data.guidedFrames[key];
+          const pIdx = state.guidedSelections[islandIdx][key].patternIdx || 0;
+          const curPattern = frameInfo.patterns[pIdx] || frameInfo.patterns[0];
+          const assembled = this.getAssembledGuidedText(curPattern, state.guidedSelections[islandIdx][key].blanks);
+          const box = document.getElementById(`guidedAssembled_${key}`);
+          if (box) {
+            box.innerHTML = `<span>✨ 【${key === 'time' ? '時' : key === 'place' ? '地' : key === 'person' ? '人' : key === 'object' ? '物' : '事'}】組裝成果：</span><span style="text-decoration: underline;">${assembled}</span>`;
+          }
+        }
+      }
+
+      fillGuidedChip(key, blankKey, chipText) {
+        const input = document.getElementById(`guidedInput_${key}_${blankKey}`);
+        if (input) {
+          input.value = chipText;
+        }
+        this.setGuidedBlankText(key, blankKey, chipText);
+        this.showToast(`已填入【${chipText}】！`, 1200);
+
+        // 更新該項目卡片上的狀態
+        const data = CURRICULUM_DATA[this.currentIsland];
+        this.renderStep1Pickers(data);
+      }
+
+      getAssembledGuidedText(pattern, blanks = {}) {
+        let text = pattern.template;
+        pattern.blanks.forEach(b => {
+          const val = blanks[b.key];
+          const displayVal = val && val.trim() ? val.trim() : `【______】`;
+          text = text.replace(`{${b.key}}`, displayVal);
+        });
+        return text;
+      }
+
       selectElementOption(key, optIdx) {
         const islandIdx = this.currentIsland;
         if (!state.elementSelections[islandIdx]) {
@@ -4520,7 +5444,7 @@ puzzleSentences: [
         this.showToast(`已選取【${data.elementOptions[key].options[optIdx]}】`, 1500);
       }
 
-            insertToActiveElement(txt) {
+      insertToActiveElement(txt) {
         const key = this.lastFocusedElement || 'time';
         const input = document.getElementById(`masterInput_${key}`);
         if (input) {
@@ -4546,12 +5470,25 @@ puzzleSentences: [
         const islandIdx = this.currentIsland;
         const sel = state.elementSelections[islandIdx] || { time: 0, place: 0, person: 0, object: 0, event: 0 };
         const eo = data.elementOptions;
+
+        // 🌟 挑戰者模式優先採用句型鷹架親手組裝的句子
+        const gSel = (state.guidedSelections && state.guidedSelections[islandIdx]) || {};
+        const getGuidedVal = (key) => {
+          if (state.tier === "intermediate" && data.guidedFrames && data.guidedFrames[key] && gSel[key]) {
+            const frameInfo = data.guidedFrames[key];
+            const pIdx = gSel[key].patternIdx || 0;
+            const pattern = frameInfo.patterns[pIdx] || frameInfo.patterns[0];
+            return this.getAssembledGuidedText(pattern, gSel[key].blanks);
+          }
+          return sel[`${key}_custom`] || (eo && eo[key] && eo[key].options[sel[key] || 0]);
+        };
+
         return {
-          time: sel.time_custom || eo.time.options[sel.time || 0],
-          place: sel.place_custom || eo.place.options[sel.place || 0],
-          person: sel.person_custom || eo.person.options[sel.person || 0],
-          object: sel.object_custom || eo.object.options[sel.object || 0],
-          event: sel.event_custom || eo.event.options[sel.event || 0]
+          time: getGuidedVal("time"),
+          place: getGuidedVal("place"),
+          person: getGuidedVal("person"),
+          object: getGuidedVal("object"),
+          event: getGuidedVal("event")
         };
       }
 
