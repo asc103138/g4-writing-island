@@ -516,9 +516,287 @@
     }
     .rhetoric-status-light.achieved { background: #dcfce7; color: #15803d; }
 
+
+    /* ==================================================== */
+    /* 乃誠作品島 (naicheng-works-island) 靈感風格優化系統   */
+    /* ==================================================== */
+
+    /* 1. 開場儀式感黏土 Loader */
+    #islandLoader {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 45%, #fffdf7 0%, #e0f2fe 100%);
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.65s;
+    }
+    #islandLoader.is-done {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .loader-clay-dots {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .loader-clay-dots .dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      animation: clayBounce 1.2s infinite ease-in-out;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    }
+    .loader-clay-dots .dot-1 { background: #38bdf8; animation-delay: 0s; }
+    .loader-clay-dots .dot-2 { background: #f59e0b; animation-delay: 0.18s; }
+    .loader-clay-dots .dot-3 { background: #10b981; animation-delay: 0.36s; }
+    @keyframes clayBounce {
+      0%, 80%, 100% { transform: scale(0.8) translateY(0); }
+      40% { transform: scale(1.15) translateY(-14px) rotate(8deg); }
+    }
+    .loader-title {
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      color: #0f172a;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .loader-subtitle {
+      font-size: 14px;
+      font-weight: 700;
+      color: #64748b;
+      margin: 0;
+    }
+    .loader-tip {
+      font-size: 12px;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid #e2e8f0;
+      margin-top: 10px;
+    }
+
+    /* 2. 螢幕空間 2D 浮動標籤層 (Screen-Space 2D Island Labels) */
+    .screen-label-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 15;
+    }
+    .island-screen-lbl {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255, 255, 255, 0.94);
+      -webkit-backdrop-filter: blur(12px) saturate(1.3);
+      backdrop-filter: blur(12px) saturate(1.3);
+      border: 1.5px solid rgba(255, 255, 255, 0.95);
+      border-radius: 999px;
+      padding: 5px 12px 5px 6px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.14), 0 1px 3px rgba(15, 23, 42, 0.08);
+      user-select: none;
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, opacity 0.2s ease;
+      white-space: nowrap;
+    }
+    .island-screen-lbl:hover {
+      transform: translate(-50%, -50%) scale(1.15) !important;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.22);
+      z-index: 25;
+    }
+    .lbl-badge-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: var(--island-color, #3b82f6);
+      color: #ffffff;
+      font-size: 11.5px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+      flex-shrink: 0;
+    }
+    .lbl-title-text {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: 0.02em;
+    }
+    .lbl-tag-status {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 999px;
+    }
+    .lbl-tag-status.approved {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #86efac;
+    }
+    .lbl-tag-status.active {
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #7dd3fc;
+    }
+    .lbl-tag-status.locked {
+      background: #f1f5f9;
+      color: #94a3b8;
+    }
+
+    /* 3. 乃誠島同款常駐底部懸浮毛玻璃 HUD 工具列 (#hudToolbar) */
+    .hud-dock-wrapper {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .hud-dock-bar {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.85);
+      -webkit-backdrop-filter: blur(18px) saturate(1.4);
+      backdrop-filter: blur(18px) saturate(1.4);
+      border: 1.5px solid rgba(255, 255, 255, 0.95);
+      border-radius: 999px;
+      padding: 6px 10px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.16), 0 2px 8px rgba(15, 23, 42, 0.06);
+    }
+    .hud-dock-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+    .hud-dock-btn:hover {
+      background: rgba(241, 245, 249, 0.9);
+      color: #0f172a;
+      transform: translateY(-2px);
+    }
+    .hud-dock-btn:active {
+      transform: scale(0.95);
+    }
+    .hud-dock-btn.highlight {
+      background: #0284c7;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    }
+    .hud-dock-btn.highlight:hover {
+      background: #0369a1;
+      color: #ffffff;
+    }
+    .hud-dock-icon {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    /* 4. 日夜模式風格 (Day & Night Mode) */
+    body.night-mode {
+      background: #0a0f1d !important;
+    }
+    body.night-mode .topbar,
+    body.night-mode .hud-dock-bar {
+      background: rgba(15, 23, 42, 0.88) !important;
+      border-color: rgba(255, 255, 255, 0.15) !important;
+      color: #f8fafc !important;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5) !important;
+    }
+    body.night-mode .brand-text,
+    body.night-mode .hud-dock-btn {
+      color: #e2e8f0 !important;
+    }
+    body.night-mode .hud-dock-btn:hover {
+      background: rgba(30, 41, 59, 0.8) !important;
+      color: #38bdf8 !important;
+    }
+    body.night-mode .island-screen-lbl {
+      background: rgba(15, 23, 42, 0.92) !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45) !important;
+    }
+    body.night-mode .lbl-title-text {
+      color: #f1f5f9 !important;
+    }
+
+    /* 5. 島嶼快速導覽彈窗 (Quick Nav Modal) */
+    .quick-nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .quick-nav-card {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.2s;
+      text-align: left;
+    }
+    .quick-nav-card:hover {
+      border-color: #0284c7;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.15);
+    }
+    body.night-mode .quick-nav-card {
+      background: #1e293b;
+      border-color: #334155;
+      color: #f1f5f9;
+    }
+
   </style>
 </head>
 <body>
+  <!-- 乃誠島同款開場儀式感黏土 Loader -->
+  <div id="islandLoader">
+    <div class="loader-clay-dots">
+      <span class="dot dot-1"></span>
+      <span class="dot dot-2"></span>
+      <span class="dot dot-3"></span>
+    </div>
+    <h1 class="loader-title">
+      <span>🏝️</span>
+      <span>《考試前後》3D 寫作冒險島</span>
+    </h1>
+    <p class="loader-subtitle" id="loaderMsg">正在調配靈力墨水、升起寫作島嶼與守門神殿…</p>
+    <div class="loader-tip">💡 提示：點擊半空中的「浮動島嶼標籤」可展開四步階梯向導！</div>
+  </div>
+
   <div id="toastNotification" class="toast-notification"></div>
 
   <!-- 3D WebGL 畫布容器 -->
@@ -526,8 +804,9 @@
     <canvas id="webgl-canvas"></canvas>
   </div>
 
-  <!-- 2D 懸浮標籤圖層 -->
-  <div id="labels-layer"></div>
+  <!-- 乃誠島同款 2D 螢幕浮動標籤圖層 (隨相機旋轉投影) -->
+  <div class="screen-label-layer" id="labels-layer"></div>
+
 
   <!-- 頂部功能列 -->
   <header class="topbar">
@@ -555,28 +834,69 @@
     </div>
   </header>
 
-  <!-- 底部島嶼航行進度列 -->
-  <nav class="bottom-bar">
-    <div class="island-step-dot active" id="step-dot-0" onclick="window.islandApp.flyToIsland(0)">
-      <span>🏝️ 起・月考倒數</span>
+  <!-- 乃誠島風格雙層複合 HUD (進度膠囊 ＋ 常駐懸浮工具列) -->
+  <div class="hud-dock-wrapper">
+    <!-- 上層：五段篇章航行進度標籤 -->
+    <nav class="bottom-bar" style="position: static; transform: none; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+      <div class="island-step-dot active" id="step-dot-0" onclick="window.islandApp.flyToIsland(0)">
+        <span>起・月考倒數</span>
+      </div>
+      <span>➜</span>
+      <div class="island-step-dot" id="step-dot-1" onclick="window.islandApp.flyToIsland(1)">
+        <span>承・考場鐘聲</span>
+      </div>
+      <span>➜</span>
+      <div class="island-step-dot" id="step-dot-2" onclick="window.islandApp.flyToIsland(2)">
+        <span>轉・驚天動地</span>
+      </div>
+      <span>➜</span>
+      <div class="island-step-dot" id="step-dot-3" onclick="window.islandApp.flyToIsland(3)">
+        <span>合・超越自我</span>
+      </div>
+      <span>➜</span>
+      <div class="island-step-dot" id="step-dot-4" onclick="window.islandApp.flyToIsland(4)">
+        <span>🐲 守門獸神殿</span>
+      </div>
+    </nav>
+
+    <!-- 下層：常駐懸浮毛玻璃 HUD 工具列 -->
+    <div class="hud-dock-bar">
+      <button class="hud-dock-btn" onclick="window.islandApp.resetCamera()" title="一鍵還原俯瞰全島視野">
+        <span class="hud-dock-icon">🌐</span>
+        <span>全景俯瞰</span>
+      </button>
+      <button class="hud-dock-btn" onclick="window.islandApp.openQuickNavModal()" title="快速查看全島任務與進度">
+        <span class="hud-dock-icon">🗺️</span>
+        <span>島嶼導覽</span>
+      </button>
+      <button class="hud-dock-btn highlight" onclick="window.islandApp.flyToIsland(4)" title="進入守門神殿生成四格漫畫">
+        <span class="hud-dock-icon">🐲</span>
+        <span>守門神殿</span>
+      </button>
+      <button class="hud-dock-btn" id="hudDayNightBtn" onclick="window.islandApp.toggleDayNight()" title="切換白天校園與深夜挑燈夜讀">
+        <span class="hud-dock-icon" id="hudDayNightIcon">☀️</span>
+        <span id="hudDayNightText">日間校園</span>
+      </button>
+      <button class="hud-dock-btn" onclick="window.islandApp.openTeacherModal()" title="教師批閱通行門">
+        <span class="hud-dock-icon">👨‍🏫</span>
+        <span>教師認證</span>
+      </button>
     </div>
-    <span>➜</span>
-    <div class="island-step-dot" id="step-dot-1" onclick="window.islandApp.flyToIsland(1)">
-      <span>🏫 承・考場鐘聲</span>
+  </div>
+
+  <!-- 島嶼快速導覽彈窗 (Quick Nav Modal) -->
+  <div class="modal-backdrop" id="quickNavModalBackdrop">
+    <div class="teacher-modal-card" style="width: 580px; max-width: 90vw;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 18px; font-weight: 900; color: var(--primary);">🗺️ 作文冒險島全景導覽</h3>
+        <button onclick="window.islandApp.closeQuickNavModal()" style="background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
+      </div>
+      <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin: 4px 0 10px 0;">
+        記敘文「起、承、轉、合」四座微縮島嶼已全面啟航！依序通關並獲得教師蓋章，即可解鎖守門神殿～
+      </p>
+      <div class="quick-nav-grid" id="quickNavGrid"></div>
     </div>
-    <span>➜</span>
-    <div class="island-step-dot" id="step-dot-2" onclick="window.islandApp.flyToIsland(2)">
-      <span>⚡ 轉・驚天動地</span>
-    </div>
-    <span>➜</span>
-    <div class="island-step-dot" id="step-dot-3" onclick="window.islandApp.flyToIsland(3)">
-      <span>🌅 合・超越自我</span>
-    </div>
-    <span>➜</span>
-    <div class="island-step-dot" id="step-dot-4" onclick="window.islandApp.flyToIsland(4)">
-      <span>🐲 守門獸試煉</span>
-    </div>
-  </nav>
+  </div>
 
     <!-- 側邊寫作任務抽屜 (四步階梯向導) -->
   <aside class="drawer" id="islandDrawer">
@@ -1755,6 +2075,7 @@ puzzleSentences: [
           { time: 0, place: 0, person: 0, object: 0, event: 0 }
         ];
         this.step2ClozeData = [ {}, {}, {}, {} ];
+        this.isNightMode = false;
         this.loadState();
       }
       loadState() {
@@ -1781,6 +2102,7 @@ puzzleSentences: [
               { time: 0, place: 0, person: 0, object: 0, event: 0 }
             ];
             this.step2ClozeData = data.step2ClozeData || [ {}, {}, {}, {} ];
+            this.isNightMode = !!data.isNightMode;
           }
         } catch (e) {
           console.warn("無法讀取舊存檔", e);
@@ -1797,7 +2119,8 @@ puzzleSentences: [
             teacherComments: this.teacherComments,
             puzzleSelections: this.puzzleSelections,
             elementSelections: this.elementSelections,
-            step2ClozeData: this.step2ClozeData
+            step2ClozeData: this.step2ClozeData,
+            isNightMode: this.isNightMode
           };
           localStorage.setItem("g4_writing_island_state_v4", JSON.stringify(data));
         } catch (e) {
@@ -1859,16 +2182,19 @@ puzzleSentences: [
         // ① 環境光亮度 >= 0.6，避免昏暗與恐怖感
         const ambient = new THREE.AmbientLight(0xfff8ee, 0.65);
         this.scene.add(ambient);
+        this.ambientLight = ambient;
 
         // ② 半球光 (HemisphereLight)：天空淡藍 0xdff0ff，地面淡草綠 0xe8f5e9，賦予模型粉嫩自然漸層
         const hemiLight = new THREE.HemisphereLight(0xdff0ff, 0xe8f5e9, 0.68);
         hemiLight.position.set(0, 50, 0);
         this.scene.add(hemiLight);
+        this.hemiLight = hemiLight;
 
         // ③ 方向光 (DirectionalLight)：設定為斜上方 45 度溫暖陽光
         const sun = new THREE.DirectionalLight(0xfffaed, 1.15);
         sun.position.set(48, 52, 48); // 45 度角斜照陽光
         sun.castShadow = true;
+        this.sun = sun;
 
         // 【風格生成規範 4】：輕量化陰影 (Performance Shadow 1024x1024)
         sun.shadow.mapSize.width = 1024;
@@ -1885,13 +2211,13 @@ puzzleSentences: [
       }
 
       initSea() {
-        const seaGeo = new THREE.PlaneGeometry(350, 350, 40, 40);
+        const seaGeo = new THREE.PlaneGeometry(350, 350, 44, 44);
         const seaMat = new THREE.MeshStandardMaterial({
           color: 0x38bdf8,
-          roughness: 0.15,
-          metalness: 0.1,
+          roughness: 0.22,
+          metalness: 0.08,
           transparent: true,
-          opacity: 0.88,
+          opacity: 0.9,
           flatShading: true
         });
         const sea = new THREE.Mesh(seaGeo, seaMat);
@@ -1900,6 +2226,13 @@ puzzleSentences: [
         sea.receiveShadow = true;
         this.scene.add(sea);
         this.sea = sea;
+
+        // 保存原始頂點 Z 軸陣列以供程序化微波浪
+        const pos = seaGeo.attributes.position;
+        this.seaOriginalZ = new Float32Array(pos.count);
+        for (let i = 0; i < pos.count; i++) {
+          this.seaOriginalZ[i] = pos.getZ(i);
+        }
 
         // 海面漂浮幾隻摺紙小船
         for (let i = 0; i < 4; i++) {
@@ -2390,6 +2723,7 @@ puzzleSentences: [
       }
 
             createMarkers() {
+        if (!this.labelsContainer) return;
         this.labelsContainer.innerHTML = "";
         this.markers = [];
 
@@ -2516,6 +2850,23 @@ puzzleSentences: [
           this.guardianMesh.position.y = 4.0 + Math.sin(now * 1.5) * 0.25;
         }
 
+        // 乃誠島同款：程序化動態微波浪
+        if (this.sea && this.seaOriginalZ) {
+          const pos = this.sea.geometry.attributes.position;
+          for (let i = 0; i < pos.count; i++) {
+            const u = pos.getX(i);
+            const v = pos.getY(i);
+            const wave = Math.sin(u * 0.05 + now * 1.5) * 0.38 + Math.cos(v * 0.05 + now * 1.2) * 0.28;
+            pos.setZ(i, this.seaOriginalZ[i] + wave);
+          }
+          pos.needsUpdate = true;
+        }
+
+        // 乃誠島同款：2D 螢幕浮動標籤投影更新
+        if (window.islandApp && window.islandApp.updateScreenLabels) {
+          window.islandApp.updateScreenLabels();
+        }
+
         this.renderer.render(this.scene, this.camera);
       }
     }
@@ -2540,7 +2891,225 @@ puzzleSentences: [
         this.updateTierDisplay();
         this.updateTeacherModeUI();
         this.updateNavStepDots();
+        this.initScreenLabels();
+        this.applyDayNightMode();
         this.loadIslandData(0);
+
+        // 乃誠島同款開場儀式感：資源就緒後平滑淡出 Loader 並滑翔進場
+        setTimeout(() => {
+          const loader = document.getElementById("islandLoader");
+          if (loader) loader.classList.add("is-done");
+          this.sceneDirector.flyTo(new THREE.Vector3(0, 52, 64), new THREE.Vector3(0, 0, 0));
+        }, 550);
+      }
+
+      // ====================================================
+      // 乃誠島同款 2D 螢幕浮動標籤投影系統
+      // ====================================================
+      initScreenLabels() {
+        const layer = document.getElementById("labels-layer") || document.getElementById("screenLabelLayer");
+        if (!layer) return;
+        layer.innerHTML = "";
+
+        const landmarkMeta = [
+          { index: 0, num: "01", name: "起・月考倒數", color: "#5fa8d3" },
+          { index: 1, num: "02", name: "承・考場鐘聲", color: "#70c1b3" },
+          { index: 2, num: "03", name: "轉・驚天動地", color: "#f39c12" },
+          { index: 3, num: "04", name: "合・超越自我", color: "#9b59b6" },
+          { index: 4, num: "05", name: "🐲 守門神殿", color: "#e11d48" }
+        ];
+
+        this.screenLabelElements = landmarkMeta.map(meta => {
+          const el = document.createElement("div");
+          el.className = "island-screen-lbl";
+          el.style.setProperty("--island-color", meta.color);
+          el.innerHTML = `
+            <span class="lbl-badge-num">${meta.num}</span>
+            <span class="lbl-title-text">${meta.name}</span>
+            <span class="lbl-tag-status" id="screenLblStatus_${meta.index}">待探索</span>
+          `;
+          el.onclick = () => this.flyToIsland(meta.index);
+          layer.appendChild(el);
+          return { index: meta.index, el: el };
+        });
+      }
+
+      updateScreenLabels() {
+        if (!this.screenLabelElements || !this.sceneDirector) return;
+        const camera = this.sceneDirector.camera;
+        if (!camera) return;
+
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const isDrawerOpen = document.getElementById("islandDrawer")?.classList.contains("open");
+        const isGuardianOpen = document.getElementById("guardianModalBackdrop")?.classList.contains("open");
+
+        this.screenLabelElements.forEach(({ index, el }) => {
+          let pos;
+          if (index < 4) {
+            const data = CURRICULUM_DATA[index];
+            pos = new THREE.Vector3(data.position[0], data.position[1] + 9.5, data.position[2]);
+          } else {
+            pos = new THREE.Vector3(0, 16.5, 0); // 守門神殿頂部
+          }
+
+          const dist = camera.position.distanceTo(pos);
+          const screenPos = pos.clone().project(camera);
+
+          // 若在相機背後或抽屜展開時淡出
+          if (screenPos.z >= 1 || isDrawerOpen || isGuardianOpen) {
+            el.style.display = "none";
+            return;
+          }
+
+          el.style.display = "flex";
+          const x = (screenPos.x * 0.5 + 0.5) * w;
+          const y = (-(screenPos.y * 0.5) + 0.5) * h;
+          const scale = Math.max(0.75, Math.min(1.08, 62 / dist));
+          el.style.transform = `translate(-50%, -50%) translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${scale.toFixed(2)})`;
+
+          // 更新蓋章或鎖定狀態
+          const statusEl = document.getElementById(`screenLblStatus_${index}`);
+          if (statusEl) {
+            if (index < 4) {
+              const isApproved = state.teacherApprovals[index];
+              const isCurrent = this.currentIsland === index;
+              if (isApproved) {
+                statusEl.className = "lbl-tag-status approved";
+                statusEl.textContent = `💮 ${state.teacherStamps[index] || "甲上"}`;
+              } else if (isCurrent) {
+                statusEl.className = "lbl-tag-status active";
+                statusEl.textContent = "✍️ 寫作中";
+              } else if (index > 0 && !state.teacherApprovals[index - 1]) {
+                statusEl.className = "lbl-tag-status locked";
+                statusEl.textContent = "🔒 待解鎖";
+              } else {
+                statusEl.className = "lbl-tag-status";
+                statusEl.textContent = "可探索";
+              }
+            } else {
+              const allDone = state.teacherApprovals.slice(0, 4).every(Boolean);
+              statusEl.className = allDone ? "lbl-tag-status approved" : "lbl-tag-status locked";
+              statusEl.textContent = allDone ? "🐲 試煉開啟" : "🔒 待全島通關";
+            }
+          }
+        });
+      }
+
+      // ====================================================
+      // 乃誠島同款日夜氛圍雙模系統 (Day & Night Mode)
+      // ====================================================
+      toggleDayNight() {
+        state.isNightMode = !state.isNightMode;
+        state.saveState();
+        this.applyDayNightMode();
+        this.showToast(state.isNightMode ? "🌙 已切換為【深夜挑燈苦讀模式】！挑燈夜戰月考倒數～" : "☀️ 已切換為【明亮校園日間模式】！迎向朝陽～", 2200);
+      }
+
+      applyDayNightMode() {
+        const isNight = !!state.isNightMode;
+        document.body.classList.toggle("night-mode", isNight);
+
+        const iconEl = document.getElementById("hudDayNightIcon");
+        const textEl = document.getElementById("hudDayNightText");
+        if (iconEl && textEl) {
+          iconEl.textContent = isNight ? "🌙" : "☀️";
+          textEl.textContent = isNight ? "挑燈夜戰" : "日間校園";
+        }
+
+        if (this.sceneDirector) {
+          const sd = this.sceneDirector;
+          if (isNight) {
+            sd.scene.background = new THREE.Color(0x0c1222);
+            if (sd.sea) sd.sea.material.color.setHex(0x1e293b);
+            if (sd.ambientLight) {
+              sd.ambientLight.color.setHex(0x38bdf8);
+              sd.ambientLight.intensity = 0.42;
+            }
+            if (sd.hemiLight) {
+              sd.hemiLight.color.setHex(0x1e1b4b);
+              sd.hemiLight.groundColor.setHex(0x022c22);
+              sd.hemiLight.intensity = 0.48;
+            }
+            if (sd.sun) sd.sun.intensity = 0.55;
+          } else {
+            sd.scene.background = null;
+            if (sd.sea) sd.sea.material.color.setHex(0x38bdf8);
+            if (sd.ambientLight) {
+              sd.ambientLight.color.setHex(0xfff8ee);
+              sd.ambientLight.intensity = 0.65;
+            }
+            if (sd.hemiLight) {
+              sd.hemiLight.color.setHex(0xdff0ff);
+              sd.hemiLight.groundColor.setHex(0xe8f5e9);
+              sd.hemiLight.intensity = 0.68;
+            }
+            if (sd.sun) sd.sun.intensity = 1.15;
+          }
+        }
+      }
+
+      // ====================================================
+      // 乃誠島同款全景導覽快速彈窗 (Quick Nav Modal)
+      // ====================================================
+      openQuickNavModal() {
+        const modal = document.getElementById("quickNavModalBackdrop");
+        if (!modal) return;
+        modal.classList.add("open");
+
+        const grid = document.getElementById("quickNavGrid");
+        if (!grid) return;
+        grid.innerHTML = "";
+
+        const allIslands = [
+          ...CURRICULUM_DATA,
+          {
+            id: 4,
+            name: "守門獸神殿・四格漫畫與全文謄寫",
+            shortName: "守門神殿",
+            prompt: "匯聚起承轉合四段篇章，審查矛盾裂痕，召喚守門獸生成四格漫畫並謄寫稿紙！"
+          }
+        ];
+
+        allIslands.forEach(item => {
+          const card = document.createElement("div");
+          card.className = "quick-nav-card";
+
+          let statusText = "可進入探索";
+          let statusColor = "#0284c7";
+          if (item.id < 4) {
+            if (state.teacherApprovals[item.id]) {
+              statusText = `💮 ${state.teacherStamps[item.id] || "甲上"}`;
+              statusColor = "#16a34a";
+            } else if (item.id > 0 && !state.teacherApprovals[item.id - 1]) {
+              statusText = "🔒 航道未解鎖";
+              statusColor = "#dc2626";
+            }
+          } else {
+            const allApproved = state.teacherApprovals.slice(0, 4).every(Boolean);
+            statusText = allApproved ? "🐲 試煉開啟" : "🔒 待四島全數通關";
+            statusColor = allApproved ? "#e11d48" : "#dc2626";
+          }
+
+          card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <strong style="font-size: 14px; color: var(--primary);">${item.name}</strong>
+              <span style="font-size: 11px; font-weight: 800; color: ${statusColor}; background: rgba(0,0,0,0.05); padding: 2px 8px; border-radius: 999px;">${statusText}</span>
+            </div>
+            <div style="font-size: 12px; color: #64748b; line-height: 1.4;">
+              ${item.prompt}
+            </div>
+          `;
+          card.onclick = () => {
+            this.closeQuickNavModal();
+            this.flyToIsland(item.id);
+          };
+          grid.appendChild(card);
+        });
+      }
+
+      closeQuickNavModal() {
+        document.getElementById("quickNavModalBackdrop")?.classList.remove("open");
       }
 
       showToast(message, duration = 3000) {
