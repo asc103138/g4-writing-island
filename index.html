@@ -1466,42 +1466,98 @@
       return board;
     }
 
+    // ---------- 雲朵專屬：蓬鬆棉花糖柔和白雲模組 (告別生硬石塊感) ----------
+    // 專屬純白蓬鬆棉花糖雲朵材質 (圓潤柔和、高透光微發光、無生硬碎石陰影、無棱角)
+    const softCloudMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 1.0,
+      metalness: 0.0,
+      flatShading: false, // 必須為平滑曲面，徹底告別石頭棱角
+      emissive: 0xffffff,
+      emissiveIntensity: 0.85, // 85% 柔和純白透光，確保任何角度都像白雪棉花糖般純淨白皙，絕無發黑如石頭
+      transparent: true,
+      opacity: 0.98
+    });
+
+    const softCloudBaseMat = new THREE.MeshStandardMaterial({
+      color: 0xf0f9ff, // 底部透著淡淡純淨天空藍，富有立體通透感
+      roughness: 1.0,
+      metalness: 0.0,
+      flatShading: false,
+      emissive: 0xe0f2fe,
+      emissiveIntensity: 0.78, // 底層也是清亮的天藍色柔光，絕無暗濁泥灰感
+      transparent: true,
+      opacity: 0.95
+    });
+
+    // 專門用於雲朵的軟體幾何泡泡 (不投射生硬陰影、圓潤細緻高細分球體)
+    function cloudPuff(rx, ry, rz, mat = softCloudMat, ws = 24, hs = 18) {
+      const geo = new THREE.SphereGeometry(1, ws, hs);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.scale.set(rx, ry, rz);
+      mesh.castShadow = false;
+      mesh.receiveShadow = false;
+      return mesh;
+    }
+
+    // 區域小島上方漂浮的棉花糖白雲
     function cloud(scale = 1) {
       const g = new THREE.Group();
-      const m = getMat(0xffffff, { roughness: 0.9 });
-      for (const [x, y, z, r] of [[0,0,0,0.8], [0.6,-0.1,0.1,0.6], [-0.6,-0.1,0,0.55], [0.2,0.3,-0.1,0.5], [-0.3,0.1,0.4,0.45]]) {
-        g.add(at(ball(r, m, 10, 8), x, y, z));
-      }
+      // 底部微扁平，頂部如棉花糖膨脹
+      const puffs = [
+        [0, -0.2, 0, 1.6, 0.65, 1.2, softCloudBaseMat],
+        [0, 0.35, 0, 1.3, 1.05, 1.2, softCloudMat],
+        [-0.95, 0.1, 0.1, 1.0, 0.85, 0.95, softCloudMat],
+        [0.95, 0.15, -0.1, 1.05, 0.9, 1.0, softCloudMat],
+        [-1.6, -0.15, 0, 0.7, 0.55, 0.65, softCloudMat],
+        [1.6, -0.1, 0, 0.75, 0.6, 0.7, softCloudMat],
+        [0.3, 0.05, 0.65, 0.85, 0.7, 0.8, softCloudMat]
+      ];
+      puffs.forEach(([x, y, z, rx, ry, rz, mat]) => {
+        const p = cloudPuff(rx, ry, rz, mat, 22, 16);
+        p.position.set(x, y, z);
+        g.add(p);
+      });
       g.scale.setScalar(scale);
       return g;
     }
 
-    // 晴空萬里專屬：大型立體低多邊形棉花糖晴空雲朵 (蓬鬆圓潤多球堆疊)
+    // 晴空萬里專屬：大型立體棉花糖晴空雲朵 (蓬鬆圓潤、動漫風格、多層飽滿堆疊)
     function createFluffySkyCloud(scale = 1.0) {
       const g = new THREE.Group();
-      const cloudMat = getMat(0xffffff, { 
-        roughness: 0.65, 
-        metalness: 0.05,
-        flatShading: true
-      });
 
-      // 核心飽滿球體群 (底部微平，頂部隆起，富有層次)
-      const spheres = [
-        [0, 0, 0, 2.6],
-        [2.2, -0.4, 0.2, 2.0],
-        [-2.2, -0.3, -0.1, 2.1],
-        [1.0, 1.2, -0.3, 2.2],
-        [-1.1, 1.1, 0.4, 1.9],
-        [3.6, -0.8, 0, 1.4],
-        [-3.6, -0.7, 0.2, 1.3],
-        [0.4, -0.6, 1.5, 1.7],
-        [-0.5, -0.5, -1.4, 1.6]
+      // 經典動漫童話積雲結構：厚實微扁底座 + 多團飽滿膨起雪白棉花糖
+      // [x, y, z, rx, ry, rz, mat]
+      const puffs = [
+        // 1. 寬扁底座 (支撐感，如棉花糖底座)
+        [0, -0.6, 0, 4.4, 1.4, 2.8, softCloudBaseMat],
+        [2.8, -0.7, 0.2, 3.2, 1.2, 2.3, softCloudBaseMat],
+        [-2.8, -0.7, -0.2, 3.2, 1.2, 2.3, softCloudBaseMat],
+        
+        // 2. 中央大圓頂 (最飽滿的核心主峰)
+        [0, 0.7, 0, 3.4, 2.6, 3.0, softCloudMat],
+        
+        // 3. 左側圓頂與肩部
+        [-1.9, 0.5, 0.3, 2.7, 2.2, 2.5, softCloudMat],
+        [-3.8, -0.1, 0.1, 2.1, 1.7, 2.0, softCloudMat],
+        [-5.0, -0.5, 0.0, 1.5, 1.2, 1.4, softCloudMat],
+
+        // 4. 右側圓頂與舒展
+        [1.9, 0.6, -0.2, 2.9, 2.3, 2.6, softCloudMat],
+        [3.8, 0.0, -0.1, 2.3, 1.8, 2.1, softCloudMat],
+        [5.0, -0.4, 0.0, 1.6, 1.3, 1.5, softCloudMat],
+
+        // 5. 前後立體層次泡泡 (豐富厚度)
+        [0.9, 0.1, 1.5, 2.5, 1.9, 2.1, softCloudMat],
+        [-1.1, 0.0, -1.4, 2.4, 1.8, 2.0, softCloudMat],
+        [1.3, -0.3, -1.3, 2.1, 1.6, 1.9, softCloudMat],
+        [-0.8, -0.2, 1.4, 2.0, 1.5, 1.8, softCloudMat]
       ];
 
-      spheres.forEach(([x, y, z, r]) => {
-        const b = ball(r, cloudMat, 8, 6);
-        b.position.set(x, y, z);
-        g.add(b);
+      puffs.forEach(([x, y, z, rx, ry, rz, mat]) => {
+        const p = cloudPuff(rx, ry, rz, mat, 24, 18);
+        p.position.set(x, y, z);
+        g.add(p);
       });
 
       g.scale.setScalar(scale);
@@ -2300,24 +2356,22 @@ puzzleSentences: [
         this.skyClouds = [];
         const cloudGroup = new THREE.Group();
 
-        // 佈置 16 朵不同大小、高度與方位的晴空白雲
+        // 佈置 14 朵不同大小、高度與方位的晴空白雲 (全數設置於遠景高空，不阻擋島嶼與鏡頭)
         const cloudConfigs = [
-          { r: 70, theta: 0.3, y: 38, scale: 2.4, speed: 0.08 },
-          { r: 85, theta: 1.1, y: 44, scale: 3.0, speed: 0.06 },
-          { r: 65, theta: 2.2, y: 36, scale: 2.2, speed: 0.09 },
-          { r: 95, theta: 2.9, y: 52, scale: 3.4, speed: 0.05 },
-          { r: 75, theta: 3.8, y: 40, scale: 2.6, speed: 0.07 },
-          { r: 90, theta: 4.6, y: 48, scale: 3.2, speed: 0.06 },
-          { r: 80, theta: 5.4, y: 42, scale: 2.5, speed: 0.08 },
-          { r: 105, theta: 0.8, y: 56, scale: 3.8, speed: 0.04 },
-          { r: 120, theta: 2.0, y: 62, scale: 4.2, speed: 0.035 },
-          { r: 110, theta: 3.5, y: 58, scale: 3.6, speed: 0.045 },
-          { r: 125, theta: 4.9, y: 65, scale: 4.5, speed: 0.03 },
-          { r: 55, theta: 1.7, y: 34, scale: 1.8, speed: 0.1 },
-          { r: 60, theta: 3.2, y: 35, scale: 2.0, speed: 0.09 },
-          { r: 50, theta: 5.0, y: 33, scale: 1.6, speed: 0.11 },
-          { r: 100, theta: 6.0, y: 50, scale: 3.5, speed: 0.05 },
-          { r: 115, theta: 0.0, y: 60, scale: 4.0, speed: 0.04 }
+          { r: 105, theta: 0.3, y: 52, scale: 1.4, speed: 0.06 },
+          { r: 120, theta: 0.8, y: 58, scale: 1.7, speed: 0.05 },
+          { r: 135, theta: 1.4, y: 62, scale: 1.9, speed: 0.04 },
+          { r: 110, theta: 2.0, y: 54, scale: 1.3, speed: 0.06 },
+          { r: 125, theta: 2.6, y: 60, scale: 1.6, speed: 0.045 },
+          { r: 140, theta: 3.2, y: 65, scale: 1.8, speed: 0.035 },
+          { r: 115, theta: 3.8, y: 56, scale: 1.5, speed: 0.055 },
+          { r: 130, theta: 4.4, y: 60, scale: 1.7, speed: 0.04 },
+          { r: 145, theta: 4.9, y: 64, scale: 1.9, speed: 0.035 },
+          { r: 110, theta: 5.3, y: 50, scale: 1.2, speed: 0.065 },
+          { r: 125, theta: 5.7, y: 57, scale: 1.6, speed: 0.05 },
+          { r: 135, theta: 6.1, y: 61, scale: 1.5, speed: 0.045 },
+          { r: 150, theta: 1.9, y: 68, scale: 2.0, speed: 0.03 },
+          { r: 145, theta: 3.5, y: 66, scale: 1.8, speed: 0.035 }
         ];
 
         cloudConfigs.forEach(cfg => {
@@ -2658,13 +2712,33 @@ puzzleSentences: [
         house.add(at(gableRoof(6.6, 2.2, 5.6, getMat(0x3b82f6)), 0, 3.6, 0));
         house.add(at(rbox(1.1, 2.0, 0.1, getMat(0x854d0e)), 0, 1.0, 2.52));
 
-        // 屋頂上方憤怒黑雷雲與金色閃電折線
+        // 屋頂上方憤怒黑雷雲與金色閃電折線 (卡通蓬鬆雷雲，非粗糙石塊)
         const stormCloud = new THREE.Group();
         stormCloud.position.set(0, 6.8, 0);
-        const darkCloudMat = getMat(0x4b5563);
-        for (const [cx, cy, cz, cr] of [[0,0,0,1.1], [0.8,-0.1,0.2,0.85], [-0.8,-0.1,0,0.8], [0.3,0.4,-0.1,0.7]]) {
-          stormCloud.add(at(ball(cr, darkCloudMat, 10, 8), cx, cy, cz));
-        }
+        const darkCloudMat = new THREE.MeshStandardMaterial({
+          color: 0x475569, // 柔和藍灰卡通雷雲
+          roughness: 0.9,
+          metalness: 0.0,
+          flatShading: false, // 圓潤柔順，無石塊稜角
+          emissive: 0x334155,
+          emissiveIntensity: 0.28,
+          transparent: true,
+          opacity: 0.95
+        });
+        const stormPuffs = [
+          [0, -0.2, 0, 1.8, 0.8, 1.3],
+          [0, 0.45, 0, 1.5, 1.15, 1.3],
+          [-1.2, 0.2, 0.1, 1.2, 0.95, 1.05],
+          [1.2, 0.25, -0.1, 1.25, 1.0, 1.1],
+          [-1.9, -0.1, 0, 0.85, 0.65, 0.75],
+          [1.9, -0.1, 0, 0.9, 0.7, 0.8],
+          [0.3, 0.1, 0.75, 1.0, 0.8, 0.9]
+        ];
+        stormPuffs.forEach(([cx, cy, cz, rx, ry, rz]) => {
+          const p = cloudPuff(rx, ry, rz, darkCloudMat, 16, 12);
+          p.position.set(cx, cy, cz);
+          stormCloud.add(p);
+        });
 
         // 金色折線立體閃電
         const boltMat = getMat(0xfacc15, { emissive: 0xfacc15, emissiveIntensity: 0.8 });
