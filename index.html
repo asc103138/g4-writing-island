@@ -468,6 +468,54 @@
     .preview-title { font-size: 12px; font-weight: 900; color: #b45309; }
     .preview-text { font-size: 13.5px; line-height: 1.7; color: #78350f; font-family: var(--font-sans); }
 
+
+    /* 三層成就模式專屬特色樣式 */
+    /* 1. 初探者檢核打勾清單 */
+    .beginner-checklist {
+      background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 12px; padding: 12px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .check-item {
+      display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; color: #166534;
+      cursor: pointer; background: #ffffff; padding: 8px 12px; border-radius: 8px; border: 1px solid #bbf7d0;
+      transition: all .15s ease;
+    }
+    .check-item.checked { background: #dcfce7; border-color: #22c55e; }
+    .check-box-icon {
+      width: 20px; height: 20px; border-radius: 6px; border: 2px solid #22c55e;
+      display: inline-grid; place-items: center; font-size: 13px; font-weight: 900;
+    }
+
+    /* 2. 挑戰者自訂填寫框 */
+    .element-custom-row {
+      display: flex; gap: 6px; align-items: center; margin-top: 4px;
+    }
+    .element-custom-input {
+      flex: 1; padding: 6px 10px; border-radius: 6px; border: 1.5px solid #cbd5e1;
+      font-size: 12.5px; font-family: var(--font-sans);
+    }
+    .element-custom-input:focus { border-color: var(--primary); outline: none; }
+
+    /* 3. 大師級金色修辭挑戰 */
+    .master-challenge-card {
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      border: 2px solid #f59e0b; border-radius: 14px; padding: 14px;
+      display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.15);
+    }
+    .master-badge-tag {
+      background: #b45309; color: #fff; font-size: 11px; font-weight: 900;
+      padding: 3px 8px; border-radius: 999px; width: fit-content;
+    }
+    .master-rhetoric-box {
+      background: #ffffff; border: 1.5px solid #fde68a; border-radius: 10px; padding: 10px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .rhetoric-status-light {
+      display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700;
+      color: #92400e; padding: 3px 8px; border-radius: 6px; background: #fef3c7;
+    }
+    .rhetoric-status-light.achieved { background: #dcfce7; color: #15803d; }
+
   </style>
 </head>
 <body>
@@ -2141,6 +2189,9 @@
       // ====================================================
       // 階梯向導切換 (Step 1 ➔ Step 2 ➔ Step 3 ➔ Step 4)
       // ====================================================
+            // ====================================================
+      // 階梯向導切換 (依據 low / mid / high 成就全面分流)
+      // ====================================================
       goToStep(step) {
         this.currentStep = step;
         const data = CURRICULUM_DATA[this.currentIsland];
@@ -2159,23 +2210,13 @@
         }
 
         // 2. 切換各步驟專屬邏輯
-        if (step === 2) {
-          // 根據 Step 1 所選要素，動態產生 Step 2 的句子
+        if (step === 1) {
+          this.renderStep1Pickers(data);
+        } else if (step === 2) {
           this.renderStep2Sentences(data);
         } else if (step === 3) {
-          // 根據 Step 2 的三句或草稿，自動整合成段落帶入 Step 3 輸入框
-          const textarea = document.getElementById("paragraphInput");
-          if (!state.paragraphs[this.currentIsland] || state.paragraphs[this.currentIsland].trim() === "") {
-            const combined = this.getCombinedStep2Text(data);
-            textarea.value = combined;
-            state.paragraphs[this.currentIsland] = combined;
-            state.saveState();
-          } else {
-            textarea.value = state.paragraphs[this.currentIsland];
-          }
-          this.onTextChange();
+          this.renderStep3Editor(data);
         } else if (step === 4) {
-          // 展示最終預覽並更新教師審核狀態
           const finalEl = document.getElementById("finalParagraphPreview");
           if (finalEl) {
             finalEl.textContent = state.paragraphs[this.currentIsland] || "尚未填寫段落內容";
@@ -2190,10 +2231,7 @@
         document.getElementById("drawerTitle").textContent = `🏝️ ${data.name}`;
         document.getElementById("peerExemplar").textContent = data.peer;
 
-        // 初始化 Step 1 要素選擇器
-        this.renderStep1Pickers(data);
-
-        // 初始化好詞百寶箱
+        // 好詞百寶箱初始化
         const wordWrap = document.getElementById("wordChips");
         if (wordWrap) {
           wordWrap.innerHTML = "";
@@ -2206,7 +2244,7 @@
           });
         }
 
-        // 決定預設停留步驟：若已蓋章 ➔ Step 4；若已有內容 ➔ Step 3；全新 ➔ Step 1
+        // 依據完成狀態決定停留步數
         if (state.teacherApprovals[index]) {
           this.goToStep(4);
         } else if (state.paragraphs[index] && state.paragraphs[index].length >= 30) {
@@ -2217,7 +2255,7 @@
       }
 
       // ----------------------------------------------------
-      // Step 1: 渲染五要素點選器
+      // Step 1: 渲染五要素選擇器 (三層成就本質差異化)
       // ----------------------------------------------------
       renderStep1Pickers(data) {
         const list = document.getElementById("elementPickersList");
@@ -2235,30 +2273,97 @@
           { key: "event", color: "#ccfbf1" }
         ];
 
-        elemKeys.forEach(({ key, color }) => {
-          const item = data.elementOptions[key];
-          if (!item) return;
+        if (state.tier === "beginner") {
+          // 🌟 初探者 (低成就)：純二選一按鈕連連看，免打字，零挫折感
+          elemKeys.forEach(({ key, color }) => {
+            const item = data.elementOptions[key];
+            if (!item) return;
 
-          const card = document.createElement("div");
-          card.className = "element-picker-card";
+            const card = document.createElement("div");
+            card.className = "element-picker-card";
 
-          const chosenIdx = curSelections[key] || 0;
+            const chosenIdx = curSelections[key] || 0;
+            const optBtns = item.options.map((opt, oIdx) => {
+              const isSel = chosenIdx === oIdx;
+              return `<button class="picker-opt-btn ${isSel ? 'selected' : ''}" onclick="window.islandApp.selectElementOption('${key}', ${oIdx})">${isSel ? '✓ ' : ''}${opt}</button>`;
+            }).join("");
 
-          const optBtns = item.options.map((opt, oIdx) => {
-            const isSel = chosenIdx === oIdx;
-            return `<button class="picker-opt-btn ${isSel ? 'selected' : ''}" onclick="window.islandApp.selectElementOption('${key}', ${oIdx})">${isSel ? '✓ ' : ''}${opt}</button>`;
-          }).join("");
+            card.innerHTML = `
+              <div class="picker-label" style="background: ${color}; padding: 4px 8px; border-radius: 6px; width: fit-content;">
+                <span>${item.label}</span>
+              </div>
+              <div class="picker-options">
+                ${optBtns}
+              </div>
+            `;
+            list.appendChild(card);
+          });
 
-          card.innerHTML = `
-            <div class="picker-label" style="background: ${color}; padding: 4px 8px; border-radius: 6px; width: fit-content;">
-              <span>${item.label}</span>
+        } else if (state.tier === "intermediate") {
+          // 🌟🌟 挑戰者 (中成就)：教材推薦按鈕 ＋ 自訂填寫補充框
+          elemKeys.forEach(({ key, color }) => {
+            const item = data.elementOptions[key];
+            if (!item) return;
+
+            const card = document.createElement("div");
+            card.className = "element-picker-card";
+
+            const chosenIdx = curSelections[key] || 0;
+            const customVal = curSelections[`${key}_custom`] || "";
+
+            const optBtns = item.options.map((opt, oIdx) => {
+              const isSel = !customVal && chosenIdx === oIdx;
+              return `<button class="picker-opt-btn ${isSel ? 'selected' : ''}" onclick="window.islandApp.selectElementOption('${key}', ${oIdx})">${isSel ? '✓ ' : ''}${opt}</button>`;
+            }).join("");
+
+            card.innerHTML = `
+              <div class="picker-label" style="background: ${color}; padding: 4px 8px; border-radius: 6px; width: fit-content;">
+                <span>${item.label}</span>
+              </div>
+              <div class="picker-options">
+                ${optBtns}
+              </div>
+              <div class="element-custom-row">
+                <span style="font-size: 11px; color: #64748b; white-space: nowrap;">✍️ 或自己寫：</span>
+                <input class="element-custom-input" placeholder="可自行補充個人經歷（例如寫自己的書房）..." value="${customVal}" onchange="window.islandApp.setElementCustomText('${key}', this.value)">
+              </div>
+            `;
+            list.appendChild(card);
+          });
+
+        } else {
+          // 🌟🌟🌟 大師級 (高成就)：全開放式五要素心智地圖 ＋ 成語錦囊激發
+          const tipCard = document.createElement("div");
+          tipCard.className = "master-challenge-card";
+          tipCard.innerHTML = `
+            <span class="master-badge-tag">👑 大師級思維定位</span>
+            <div style="font-size: 12.5px; line-height: 1.5; color: #78350f;">
+              高水準的作文不落俗套！請不依賴預設按鈕，運用四上高級成語自行設定這場月考風暴的獨特舞台：
             </div>
-            <div class="picker-options">
-              ${optBtns}
+            <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px;">
+              <span style="font-size: 11px; color: #b45309; font-weight: 700;">推薦成語錦囊：</span>
+              ${data.words.map(w => `<span class="chip" style="font-size: 11px; padding: 2px 6px;" onclick="window.islandApp.insertText('${w}')">${w}</span>`).join("")}
             </div>
           `;
-          list.appendChild(card);
-        });
+          list.appendChild(tipCard);
+
+          elemKeys.forEach(({ key, color }) => {
+            const item = data.elementOptions[key];
+            if (!item) return;
+
+            const card = document.createElement("div");
+            card.className = "element-picker-card";
+            const curVal = curSelections[`${key}_custom`] || item.options[0];
+
+            card.innerHTML = `
+              <div class="picker-label" style="background: ${color}; padding: 4px 8px; border-radius: 6px; width: fit-content;">
+                <span>${item.label}</span>
+              </div>
+              <input class="element-custom-input" style="padding: 8px 10px; font-weight: 600;" placeholder="請輸入你設定的${item.label.substring(6)}..." value="${curVal}" onchange="window.islandApp.setElementCustomText('${key}', this.value)">
+            `;
+            list.appendChild(card);
+          });
+        }
       }
 
       selectElementOption(key, optIdx) {
@@ -2267,6 +2372,7 @@
           state.elementSelections[islandIdx] = { time: 0, place: 0, person: 0, object: 0, event: 0 };
         }
         state.elementSelections[islandIdx][key] = optIdx;
+        delete state.elementSelections[islandIdx][`${key}_custom`];
         state.saveState();
 
         const data = CURRICULUM_DATA[islandIdx];
@@ -2274,41 +2380,87 @@
         this.showToast(`已選取【${data.elementOptions[key].options[optIdx]}】`, 1500);
       }
 
-      // 取得當前要素選取的實際文字物件
+      setElementCustomText(key, text) {
+        const islandIdx = this.currentIsland;
+        if (!state.elementSelections[islandIdx]) {
+          state.elementSelections[islandIdx] = { time: 0, place: 0, person: 0, object: 0, event: 0 };
+        }
+        state.elementSelections[islandIdx][`${key}_custom`] = text.trim();
+        state.saveState();
+        this.showToast(`已記錄自訂${key}！`, 1500);
+      }
+
       getSelectedElements(data) {
         const islandIdx = this.currentIsland;
         const sel = state.elementSelections[islandIdx] || { time: 0, place: 0, person: 0, object: 0, event: 0 };
         const eo = data.elementOptions;
         return {
-          time: eo.time.options[sel.time || 0],
-          place: eo.place.options[sel.place || 0],
-          person: eo.person.options[sel.person || 0],
-          object: eo.object.options[sel.object || 0],
-          event: eo.event.options[sel.event || 0]
+          time: sel.time_custom || eo.time.options[sel.time || 0],
+          place: sel.place_custom || eo.place.options[sel.place || 0],
+          person: sel.person_custom || eo.person.options[sel.person || 0],
+          object: sel.object_custom || eo.object.options[sel.object || 0],
+          event: sel.event_custom || eo.event.options[sel.event || 0]
         };
       }
 
       // ----------------------------------------------------
-      // Step 2: 渲染三步句子與積木
+      // Step 2: 渲染三步句子與積木 (依三層成就全面分流)
       // ----------------------------------------------------
       renderStep2Sentences(data) {
         const puzzleSec = document.getElementById("puzzleClozeSection");
         const stdSec = document.getElementById("standardSentenceSection");
 
-        if (state.tier === "beginner" && data.puzzleSentences) {
+        if (state.tier === "beginner") {
+          // 🌟 初探者 (低成就)：卡槽拼圖換裝
           if (puzzleSec) puzzleSec.style.display = "flex";
           if (stdSec) stdSec.style.display = "none";
           this.renderBeginnerPuzzle(data);
-        } else {
+        } else if (state.tier === "intermediate") {
+          // 🌟🌟 挑戰者 (中成就)：五大教材句型積木組裝
           if (puzzleSec) puzzleSec.style.display = "none";
           if (stdSec) stdSec.style.display = "flex";
           this.renderIntermediateSentences(data);
+        } else {
+          // 🌟🌟🌟 大師級 (高成就)：雙重誇飾挑戰台 (放大法 vs 縮小法)
+          if (puzzleSec) puzzleSec.style.display = "none";
+          if (stdSec) stdSec.style.display = "flex";
+          this.renderMasterRhetoricSentences(data);
         }
 
         const previewEl = document.getElementById("step2CombinedPreview");
         if (previewEl) {
           previewEl.textContent = this.getCombinedStep2Text(data);
         }
+      }
+
+      renderBeginnerPuzzle(data) {
+        const list = document.getElementById("puzzleSentencesList");
+        if (!list || !data.puzzleSentences) return;
+        list.innerHTML = "";
+
+        const islandIdx = this.currentIsland;
+        const curSelections = state.puzzleSelections[islandIdx] || [0, 0, 0, 0];
+
+        data.puzzleSentences.forEach((ps, sentIdx) => {
+          const row = document.createElement("div");
+          row.className = "puzzle-sentence";
+
+          const chosenOpt = ps.options[curSelections[sentIdx]] || ps.options[0];
+
+          let optBtnsHtml = ps.options.map((opt, oIdx) => {
+            const isActive = curSelections[sentIdx] === oIdx;
+            return `<button class="puzzle-opt-btn ${isActive ? 'active' : ''}" onclick="window.islandApp.selectPuzzleOption(${sentIdx}, ${oIdx})">${opt}</button>`;
+          }).join("");
+
+          row.innerHTML = `
+            <div><strong>句 ${sentIdx + 1}：</strong>${ps.prefix} <span style="color: #0284c7; font-weight: 900; text-decoration: underline;">${chosenOpt}</span>${ps.suffix}</div>
+            <div class="puzzle-options-group">
+              <span style="font-size: 11px; color: #64748b; line-height: 22px;">可替換詞彙：</span>
+              ${optBtnsHtml}
+            </div>
+          `;
+          list.appendChild(row);
+        });
       }
 
       renderIntermediateSentences(data) {
@@ -2343,34 +2495,57 @@
         }
       }
 
-      renderBeginnerPuzzle(data) {
-        const list = document.getElementById("puzzleSentencesList");
-        if (!list || !data.puzzleSentences) return;
-        list.innerHTML = "";
+      renderMasterRhetoricSentences(data) {
+        const stdSec = document.getElementById("standardSentenceSection");
+        if (!stdSec) return;
+        const e = this.getSelectedElements(data);
+        const t = data.sentenceTemplates;
 
-        const islandIdx = this.currentIsland;
-        const curSelections = state.puzzleSelections[islandIdx] || [0, 0, 0, 0];
+        const s1 = t[0].getSentence(e);
+        const s2 = t[1].getSentence(e);
+        const s3 = t[2].getSentence(e);
 
-        data.puzzleSentences.forEach((ps, sentIdx) => {
-          const row = document.createElement("div");
-          row.className = "puzzle-sentence";
-
-          const chosenOpt = ps.options[curSelections[sentIdx]] || ps.options[0];
-
-          let optBtnsHtml = ps.options.map((opt, oIdx) => {
-            const isActive = curSelections[sentIdx] === oIdx;
-            return `<button class="puzzle-opt-btn ${isActive ? 'active' : ''}" onclick="window.islandApp.selectPuzzleOption(${sentIdx}, ${oIdx})">${opt}</button>`;
-          }).join("");
-
-          row.innerHTML = `
-            <div><strong>句 ${sentIdx + 1}：</strong>${ps.prefix} <span style="color: #0284c7; font-weight: 900; text-decoration: underline;">${chosenOpt}</span>${ps.suffix}</div>
-            <div class="puzzle-options-group">
-              <span style="font-size: 11px; color: #64748b; line-height: 22px;">可替換詞彙：</span>
-              ${optBtnsHtml}
+        stdSec.innerHTML = `
+          <div class="master-challenge-card">
+            <span class="master-badge-tag">⚔️ 雙重誇飾法修辭挑戰台</span>
+            <div style="font-size: 12.5px; color: #78350f;">
+              四年級教材大師標準：段落中必須同時兼備「放大法」與「縮小法」形成極致張力！
             </div>
-          `;
-          list.appendChild(row);
-        });
+            <div class="master-rhetoric-box">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="font-size: 12.5px; color: #b45309;">① 誇飾放大法挑戰：</strong>
+                <span class="rhetoric-status-light achieved">✓ 已融入（重點比芝麻還多）</span>
+              </div>
+              <div style="font-size: 12px; color: #555;">把實際事物誇大敘述，營造震撼力（例：比玉山還高、火冒三丈）。</div>
+            </div>
+            <div class="master-rhetoric-box">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="font-size: 12.5px; color: #b45309;">② 誇飾縮小法挑戰：</strong>
+                <span class="rhetoric-status-light achieved">✓ 已融入（連一根針掉下都聽得見）</span>
+              </div>
+              <div style="font-size: 12px; color: #555;">把實際事物縮小敘述，突顯極致特徵（例：比老鼠膽子小、比螞蟻聲音小）。</div>
+            </div>
+          </div>
+
+          <div class="sentence-block-card">
+            <div class="sentence-block-title">
+              <span>① 開頭句（時空定錨）</span>
+            </div>
+            <div class="sentence-block-text">${s1}</div>
+          </div>
+          <div class="sentence-block-card">
+            <div class="sentence-block-title">
+              <span>② 發展句（誇飾修辭聚焦）</span>
+            </div>
+            <div class="sentence-block-text">${s2}</div>
+          </div>
+          <div class="sentence-block-card">
+            <div class="sentence-block-title">
+              <span>③ 結尾句（情感轉折）</span>
+            </div>
+            <div class="sentence-block-text">${s3}</div>
+          </div>
+        `;
       }
 
       selectPuzzleOption(sentIdx, optIdx) {
@@ -2388,7 +2563,6 @@
         }
       }
 
-      // 取得 Step 2 合併出的段落文字 (首行空兩格)
       getCombinedStep2Text(data) {
         const islandIdx = this.currentIsland;
         if (state.tier === "beginner" && data.puzzleSentences) {
@@ -2403,6 +2577,77 @@
           return "　　" + t.map(item => item.getSentence(e)).join("");
         }
       }
+
+      // ----------------------------------------------------
+      // Step 3: 渲染編輯器與檢驗 (三層成就專屬任務)
+      // ----------------------------------------------------
+      renderStep3Editor(data) {
+        const textarea = document.getElementById("paragraphInput");
+        if (!state.paragraphs[this.currentIsland] || state.paragraphs[this.currentIsland].trim() === "") {
+          const combined = this.getCombinedStep2Text(data);
+          textarea.value = combined;
+          state.paragraphs[this.currentIsland] = combined;
+          state.saveState();
+        } else {
+          textarea.value = state.paragraphs[this.currentIsland];
+        }
+        this.onTextChange();
+
+        // 依據成就模式，在輸入框上方或下方加入專屬檢驗工具
+        let customBox = document.getElementById("step3TierExtraBox");
+        if (!customBox) {
+          customBox = document.createElement("div");
+          customBox.id = "step3TierExtraBox";
+          const area = document.querySelector(".writing-area");
+          if (area) area.parentNode.insertBefore(customBox, area.nextSibling);
+        }
+
+        if (state.tier === "beginner") {
+          // 🌟 初探者：小朗讀家檢核清單（零文字壓力，給予 100% 成功信心）
+          customBox.innerHTML = `
+            <div class="beginner-checklist">
+              <strong style="font-size: 13px; color: #166534;">🌟 小朗讀家自我檢核清單（請小聲朗讀並打勾）：</strong>
+              <div class="check-item checked" onclick="this.classList.toggle('checked')">
+                <span class="check-box-icon">✓</span>
+                <span>段落開頭已經為你自動空了兩格</span>
+              </div>
+              <div class="check-item checked" onclick="this.classList.toggle('checked')">
+                <span class="check-box-icon">✓</span>
+                <span>句子通順，有寫出月考前的緊張氣氛</span>
+              </div>
+              <div class="check-item checked" onclick="this.classList.toggle('checked')">
+                <span class="check-box-icon">✓</span>
+                <span>字數靈力能量條達到 50 字以上合格標準</span>
+              </div>
+            </div>
+          `;
+        } else if (state.tier === "intermediate") {
+          // 🌟🌟 挑戰者：擴寫與連接詞提醒
+          customBox.innerHTML = `
+            <div style="background: #eef2ff; border: 1.5px solid #c7d2fe; border-radius: 10px; padding: 10px; font-size: 12.5px; color: #3730a3;">
+              <strong>⚔️ 挑戰者修潤秘訣：</strong>試著在段落中加入轉折語（如：然而、取而代之的是、誰叫我……呢），讓文氣更連貫！
+            </div>
+          `;
+        } else {
+          // 🌟🌟🌟 大師級：深度修辭檢驗燈
+          const currentText = state.paragraphs[this.currentIsland] || "";
+          const hasHyperbole = currentText.includes("比") || currentText.includes("堆積如山") || currentText.includes("包青天") || currentText.includes("針");
+          const wordCount = currentText.replace(/\s/g, '').length;
+
+          customBox.innerHTML = `
+            <div class="master-challenge-card" style="padding: 10px 14px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="color: #92400e; font-size: 13px;">👑 大師段落審查指標：</strong>
+                <span style="font-size: 11px; font-weight: 700; color: ${wordCount >= 70 ? '#15803d' : '#b45309'};">${wordCount >= 70 ? '✓ 字數達標 (≥70字)' : '⏳ 尚需充實 (需≥70字)'}</span>
+              </div>
+              <div style="font-size: 12px; color: #78350f; line-height: 1.5;">
+                ${hasHyperbole ? '✓ 已偵測到誇飾修辭法！通關將獲得金色守門獸勳章！' : '⚠️ 請加入誇飾法（如：重點比芝麻多、臉色比包青天黑）以解鎖大師殊榮！'}
+              </div>
+            </div>
+          `;
+        }
+      }
+
 
       // ----------------------------------------------------
       // Step 3: 輸入框文字修改與靈力回饋
