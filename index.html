@@ -992,18 +992,58 @@
     // 0. 模型建造工具包 (微縮模型風格元件)
     // ----------------------------------------------------
     const matCache = new Map();
+    // 【風格生成規範 1】：一律使用 MeshStandardMaterial，粗糙度 0.6~0.8，金屬度 0.05~0.1，營造黏土/玩具溫潤質感
     function getMat(color, opts = {}) {
       const key = `${color}_${JSON.stringify(opts)}`;
       if (!matCache.has(key)) {
         matCache.set(key, new THREE.MeshStandardMaterial({
           color: color,
-          roughness: 0.75,
-          metalness: 0.05,
-          flatShading: true,
+          roughness: opts.roughness !== undefined ? opts.roughness : 0.72,
+          metalness: opts.metalness !== undefined ? opts.metalness : 0.08,
+          flatShading: opts.flatShading !== undefined ? opts.flatShading : true,
           ...opts
         }));
       }
       return matCache.get(key);
+    }
+
+    // 【風格生成規範 2】：雙層 Mesh 賽璐珞/四格漫畫黑邊外框線 (Toon Shading Outline)
+    function addComicOutline(mesh, thickness = 0.04, color = 0x1e293b) {
+      if (!mesh || !mesh.geometry) return mesh;
+      const outlineMat = new THREE.MeshBasicMaterial({
+        color: color,
+        side: THREE.BackSide
+      });
+      const outlineMesh = new THREE.Mesh(mesh.geometry, outlineMat);
+      outlineMesh.scale.multiplyScalar(1 + thickness);
+      mesh.add(outlineMesh);
+      return mesh;
+    }
+
+    // 【風格生成規範 5】：低多邊形 Q 版卡通樹木 (像《動物森友會》般的可愛手作感)
+    function createCuteTree(scale = 1.0, leafColor = 0x52b788) {
+      const tree = new THREE.Group();
+      // 樹幹 (溫潤木質)
+      const trunkMat = getMat(0x8d5b4c, { roughness: 0.85, metalness: 0.05 });
+      const trunk = cyl(0.28 * scale, 0.42 * scale, 1.8 * scale, 6, trunkMat);
+      trunk.position.y = 0.9 * scale;
+      tree.add(trunk);
+
+      // 樹冠 (由 3 顆不同大小與偏置的低多邊形球體堆疊出立體繪本蓬鬆感)
+      const foliageMat = getMat(leafColor, { roughness: 0.65, metalness: 0.05 });
+      const crown1 = ball(1.15 * scale, foliageMat, 7, 6);
+      crown1.position.y = 2.1 * scale;
+      tree.add(crown1);
+
+      const crown2 = ball(0.85 * scale, foliageMat, 6, 5);
+      crown2.position.set(0.32 * scale, 2.7 * scale, 0.18 * scale);
+      tree.add(crown2);
+
+      const crown3 = ball(0.78 * scale, foliageMat, 6, 5);
+      crown3.position.set(-0.35 * scale, 2.55 * scale, -0.22 * scale);
+      tree.add(crown3);
+
+      return tree;
     }
 
     function rbox(w, h, d, mat, r = 0.08) {
@@ -1815,14 +1855,24 @@ puzzleSentences: [
       }
 
       initLights() {
-        const ambient = new THREE.AmbientLight(0xfff8ee, 0.95);
+        // 【風格生成規範 3】：明亮立體燈光 (Playful Lighting)
+        // ① 環境光亮度 >= 0.6，避免昏暗與恐怖感
+        const ambient = new THREE.AmbientLight(0xfff8ee, 0.65);
         this.scene.add(ambient);
 
-        const sun = new THREE.DirectionalLight(0xfffaed, 1.35);
-        sun.position.set(50, 70, 35);
+        // ② 半球光 (HemisphereLight)：天空淡藍 0xdff0ff，地面淡草綠 0xe8f5e9，賦予模型粉嫩自然漸層
+        const hemiLight = new THREE.HemisphereLight(0xdff0ff, 0xe8f5e9, 0.68);
+        hemiLight.position.set(0, 50, 0);
+        this.scene.add(hemiLight);
+
+        // ③ 方向光 (DirectionalLight)：設定為斜上方 45 度溫暖陽光
+        const sun = new THREE.DirectionalLight(0xfffaed, 1.15);
+        sun.position.set(48, 52, 48); // 45 度角斜照陽光
         sun.castShadow = true;
-        sun.shadow.mapSize.width = 2048;
-        sun.shadow.mapSize.height = 2048;
+
+        // 【風格生成規範 4】：輕量化陰影 (Performance Shadow 1024x1024)
+        sun.shadow.mapSize.width = 1024;
+        sun.shadow.mapSize.height = 1024;
         sun.shadow.camera.near = 1;
         sun.shadow.camera.far = 200;
         const d = 55;
@@ -1830,6 +1880,7 @@ puzzleSentences: [
         sun.shadow.camera.right = d;
         sun.shadow.camera.top = d;
         sun.shadow.camera.bottom = -d;
+        sun.shadow.bias = -0.0005;
         this.scene.add(sun);
       }
 
@@ -1895,6 +1946,16 @@ puzzleSentences: [
           beacon.position.set(5.5, 9.4, -4.5);
           beacon.name = `beacon_${i}`;
           islandGroup.add(beacon);
+
+          // 【風格生成規範 5】：每座島嶼草地上點綴 2 棵 Q 版卡通樹木 (粉嫩童趣配色)
+          const treeColors = [0x52b788, 0x48cae4, 0xf4a261, 0xa78bfa];
+          const t1 = createCuteTree(0.9, treeColors[i % treeColors.length]);
+          t1.position.set(-6.5, 3.8, 4.5);
+          islandGroup.add(t1);
+
+          const t2 = createCuteTree(0.75, treeColors[(i + 1) % treeColors.length]);
+          t2.position.set(-5.2, 3.8, 6.0);
+          islandGroup.add(t2);
 
           // 3. 專屬島嶼微縮建築群
           if (i === 0) this.buildStudyHouseDiorama(islandGroup);
@@ -2240,9 +2301,14 @@ puzzleSentences: [
         const headGroup = new THREE.Group();
         headGroup.position.set(0, 5.2, 1.2);
 
-        // 頭部與長吻
-        headGroup.add(at(rbox(2.8, 2.2, 2.8, bodyMat), 0, 0, 0));
-        headGroup.add(at(rbox(2.2, 1.2, 2.2, getMat(0xf43f5e)), 0, -0.4, 1.8));
+        // 【風格生成規範 2】：頭部與長吻加上賽璐珞漫畫黑邊外框線 (Toon Shading Outline)
+        const dragonHeadMesh = rbox(2.8, 2.2, 2.8, bodyMat);
+        addComicOutline(dragonHeadMesh, 0.045, 0x0f172a);
+        headGroup.add(at(dragonHeadMesh, 0, 0, 0));
+
+        const snoutMesh = rbox(2.2, 1.2, 2.2, getMat(0xf43f5e));
+        addComicOutline(snoutMesh, 0.045, 0x0f172a);
+        headGroup.add(at(snoutMesh, 0, -0.4, 1.8));
 
         // 銳利白獠牙
         for (const tx of [-0.7, 0.7]) {
