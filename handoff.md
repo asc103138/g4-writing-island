@@ -1,5 +1,48 @@
 # handoff.md - 多 Agent 交接紀錄
 
+## 2026-11-09 全面落實最新造島技能 (learning-island-builder & g4-writing-island-builder)：晶瑩水體浪花、微風植被、高度依附、情境氣候暴雨與 Action-Ready 守門獸
+- **執行人**：Antigravity Agent
+- **使用者核心要求**：「我剛剛優化了我的造島技能，現在使用我的新技能重新對這座島的所有部件進行優化」
+- **對齊規範**：`learning-island-builder/SKILL.md`（8-Pass Pipeline、ACESFilmic、透光水體、岸邊拍岸浪花、微風草簇、高度契約、彈簧相機）與 `g4-writing-island-builder/SKILL.md`（轉之島家庭風暴雷陣雨氣候連動、Action-Ready 守門獸 4 段情緒變換、神殿成就印章插槽）。
+- **完成項目**：
+  1. **Pass 2: 渲染管線與色彩大氣升級 (Tone Mapping & Atmosphere)**：
+     - 配置 `renderer.outputColorSpace = THREE.SRGBColorSpace`、`toneMapping = THREE.ACESFilmicToneMapping`、`toneMappingExposure = 1.08`，杜絕灰暗塑料感，呈現童話繪本的明亮通透。
+     - 啟用柔和指數霧氣 `scene.fog = new THREE.FogExp2(0xddeeff, 0.007)`，營造微縮模型盒的遠景景深感。
+     - 配置斜上方 45 度陽光、`HemisphereLight`（天青 `0xddeeff` / 地綠 `0x88bb77`，0.55）與輕量軟陰影。
+  2. **Pass 3: 晶瑩水體光學與岸邊浪花系統 (Water Optics & Shoreline Contact Foam)**：
+     - 海面水體材質升級為透光黏土質感：`color: 0x4fc3f7, roughness: 0.15, metalness: 0.1, opacity: 0.78, depthWrite: false`。
+     - 頂點雙波長動態微波浪：$$y = \sin(x \times 0.15 + t \times 1.5) \times 0.22 + \cos(z \times 0.18 + t \times 1.2) \times 0.18$$。
+     - 岸邊接觸浪花帶：每座島嶼與神殿外圍建立白色半透明浪花圈，在主迴圈中進行縮放與透明度呼吸循環（$0.58 \sim 0.80$），模擬真實拍浪白沫。
+  3. **Pass 4: 微風搖曳低多邊形植被 (Rooted Wind Clumped Grass)**：
+     - 建立 `createWindyGrassClump` 函式：三角交叉草葉卡片，底部頂點牢牢錨定在地面（$y=0$ 不離地浮空）。
+     - 在每座島嶼草地上生成群聚草簇，於渲染迴圈中實作微風正弦擺動：`rotation.z = Math.sin(t * 2.6 + x * 0.35) * 0.14`，葉尖搖曳、根部牢固。
+  4. **Pass 3/4: 地形依附與防浮空契約 (Attachment Contract)**：
+     - 實作高度採樣函式 `getTerrainHeight(lx, lz)`，綜合微丘陵、雙層草地台地與沙灘坡度精確計算地表 Y 坐標。
+     - 所有樹木、木柵欄、花叢、石階梯、海岬燈塔、草簇一律動態呼叫 `getTerrainHeight` 錨定高度，杜絕懸空。
+  5. **Pass 6: 情境氣候連動系統 (Weather Envelope & Wet Surfaces)**：
+     - 實作 `setWeather(mode)`：
+       - 當學生進入「**轉之島（第 3 段・波瀾與結果）**」時，自動切換為 `setWeather('storm')`！
+       - 天空轉為暗紫陰雲色 `0x1e1b2e`，濃霧色 `0x2a2838`，光線調暗冷調。
+       - 啟動轉之島上方 160 根輕量垂直落雨粒子系統。
+       - 地表物理濕潤響應：轉之島草地與石階 `roughness` 降為 0.22 展現積水倒影。
+       - 金黃折線閃電微弱隨機微爍。
+       - 離開轉之島回到全景或其他島時，自動切回 `setWeather('sunny')` 溫暖晴朗。
+  6. **Pass 6: Action-Ready 守門獸規格升級 (Pivots, Sockets & Emotion Morphs)**：
+     - 守門獸「文字饕餮」建立獨立關節軸心：`headPivot` 頸部樞紐、`armLeftPivot` 與 `armRightPivot` 雙前爪、`tailPivot` 尾鰭關節。
+     - 實作四格情緒切換 `setKeeperExpression(stage)`：
+       - `stage 1 (起)`：好奇探頭、眨眼、神態祥和。
+       - `stage 2 (承)`：緊張冒汗（浮現小汗珠滴答）、握拳專注。
+       - `stage 3 (轉)`：驚訝張嘴、小幅後仰震動、冒冷汗。
+       - `stage 4 (合)`：歡呼舉起雙爪、頭頂旋轉小金星光環飛舞。
+     - 神殿四根墨玉毛筆圖騰柱上建立實體成就印章插槽 `badgePillars`：教師蓋章通過後，實體徽章亮起發光。
+  7. **Pass 7: 電影級彈簧相機導演 (Spring-Damped Camera Director)**：
+     - 運鏡內插升級為帶阻尼的三次方平滑內插（$t = 1 - (1-p)^3$），全景、特寫與守門神殿無縫過渡。
+  8. **Playwright 完整實機視覺檢驗**：
+     - 晴天全景：水體晶瑩、微風草簇、拍岸浪花、天頂立體雲群正常運作。
+     - 轉之島暴雨模式：成功觸發 `weather: "storm"`, `stage: 3`，暗紫天穹、落雨粒子與濕潤地表完美呈現。
+     - 守門神殿與神獸：成功切換 `weather: "sunny"`, `stage: 5`，頭頂金星旋轉、雙爪歡呼、四座石柱印章徽章亮起金綠寶石光。
+     - 重置鏡頭：順暢回歸全景與日間晴空。
+
 ## 2026-11-09 挑戰者 Step 1 深度進化：漸進式思考鷹架（拒絕直接攤開現成答案，先動腦思考詞性，卡住才按需點開靈感提點）
 - **執行人**：Antigravity Agent
 - **使用者核心反饋**：「這樣的方式還是會讓學生完全沒有思考僅依照提示就選出不屬於自己的答案。我要的引導是告訴他這裡要使用形容詞、具體使用什麼形容詞讓他自己思考，但思考不出來時可以透過你的引導讓他想出來」

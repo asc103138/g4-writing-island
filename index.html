@@ -1421,6 +1421,29 @@
       return tree;
     }
 
+    // 【新技能規範 Pass 4】：微風搖曳低多邊形植被 (Rooted Wind Clumped Grass)
+    // 根部牢牢錨定在地面 (y=0)，葉尖隨微風進行平滑三角幾何擺動
+    function createWindyGrassClump(scale = 1.0, grassColor = 0x52b788) {
+      const clump = new THREE.Group();
+      const bladeMat = getMat(grassColor, { roughness: 0.75, metalness: 0.05, side: THREE.DoubleSide });
+      // 3 組不同旋轉角度交叉的低多邊形草葉卡片
+      for (let i = 0; i < 3; i++) {
+        const bladeGeo = new THREE.ConeGeometry(0.26 * scale, 1.15 * scale, 3);
+        // 將幾何體向上平移，讓錐體底部位於 y=0 (根部牢固錨定)
+        bladeGeo.translate(0, 0.575 * scale, 0);
+        const blade = new THREE.Mesh(bladeGeo, bladeMat);
+        blade.rotation.y = (i * Math.PI) / 3;
+        blade.rotation.x = (i === 1 ? 0.12 : -0.1) * scale;
+        blade.castShadow = true;
+        clump.add(blade);
+      }
+      // 草簇中心一顆極小綠色黏土小基座
+      const rootPuff = ball(0.24 * scale, bladeMat, 5, 4);
+      rootPuff.position.y = 0.1 * scale;
+      clump.add(rootPuff);
+      return clump;
+    }
+
     function rbox(w, h, d, mat, r = 0.08) {
       const radius = Math.min(r, w / 2.2, h / 2.2, d / 2.2);
       const geo = new RoundedBoxGeometry(w, h, d, 2, radius);
@@ -3286,11 +3309,11 @@ puzzleSentences: [
         this.canvas = document.getElementById("webgl-canvas");
         this.labelsContainer = document.getElementById("labels-layer");
         this.scene = new THREE.Scene();
-        // 晴空萬里天頂漸層色 (由濃郁蔚藍過渡到海平面透亮天青)
+
+        // 【新技能規範 Pass 2】：色彩管理與柔和微縮景深霧 (Tone Mapping & Atmosphere)
         this.clearSkyColor = new THREE.Color(0xbfe6fb);
         this.scene.background = this.clearSkyColor;
-        // 清透遠霧：只在海天交界 150~380 產生水天一色的輕柔融合感，遠景通透無阻
-        this.scene.fog = new THREE.Fog(0xdaf0fc, 130, 360);
+        this.scene.fog = new THREE.FogExp2(0xddeeff, 0.007);
 
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
         this.camera.position.set(8, 56, 75);
@@ -3298,6 +3321,11 @@ puzzleSentences: [
         this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // 核心渲染標準：ACESFilmic ToneMapping + sRGB + PCFSoft 柔和陰影
+        this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.renderer.toneMappingExposure = 1.08; // 確保童話繪本的明亮通透
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -3313,6 +3341,17 @@ puzzleSentences: [
         this.markers = [];
         this.animatedObjects = [];
 
+        // 【新技能規範系統集合】：微風植被、岸邊浪花、氣候連動與守門獸關節
+        this.windyGrassList = [];
+        this.shorelineFoams = [];
+        this.stormIslandMaterials = [];
+        this.rainParticles = null;
+        this.lightningLight = null;
+        this.guardianParts = {};
+        this.guardianSockets = {};
+        this.guardianStage = 1;
+        this.currentWeather = 'sunny';
+
         this.initLights();
         this.initSea();
         this.initSkyDome();
@@ -3327,25 +3366,25 @@ puzzleSentences: [
       }
 
       initLights() {
-        // 【風格生成規範 3】：明亮立體燈光 (Playful Lighting)
-        // ① 環境光亮度 >= 0.6，避免昏暗與恐怖感
+        // 【新技能規範 Pass 2】：明亮採光系統 (Playful Lighting)
+        // ① 環境光 (AmbientLight) 保持在 0.65，明亮溫潤
         const ambient = new THREE.AmbientLight(0xfff8ee, 0.65);
         this.scene.add(ambient);
         this.ambientLight = ambient;
 
-        // ② 半球光 (HemisphereLight)：天空淡藍 0xdff0ff，地面淡草綠 0xe8f5e9，賦予模型粉嫩自然漸層
-        const hemiLight = new THREE.HemisphereLight(0xdff0ff, 0xe8f5e9, 0.68);
+        // ② 半球光 (HemisphereLight)：天空淡藍 0xddeeff，地面淺草綠 0x88bb77，背光粉嫩漸層
+        const hemiLight = new THREE.HemisphereLight(0xddeeff, 0x88bb77, 0.55);
         hemiLight.position.set(0, 50, 0);
         this.scene.add(hemiLight);
         this.hemiLight = hemiLight;
 
-        // ③ 方向光 (DirectionalLight)：設定為斜上方 45 度溫暖陽光
+        // ③ 方向光 (DirectionalLight)：45度斜射暖陽
         const sun = new THREE.DirectionalLight(0xfffaed, 1.15);
-        sun.position.set(48, 52, 48); // 45 度角斜照陽光
+        sun.position.set(48, 52, 48);
         sun.castShadow = true;
         this.sun = sun;
 
-        // 【風格生成規範 4】：輕量化陰影 (Performance Shadow 1024x1024)
+        // 輕量化陰影 (Performance Shadow 1024x1024)
         sun.shadow.mapSize.width = 1024;
         sun.shadow.mapSize.height = 1024;
         sun.shadow.camera.near = 1;
@@ -3357,13 +3396,19 @@ puzzleSentences: [
         sun.shadow.camera.bottom = -d;
         sun.shadow.bias = -0.0005;
         this.scene.add(sun);
+
+        // ④ 轉之島專屬氣候連動微弱閃電光源 (預設強度 0，暴雨模式隨機微弱閃爍)
+        const stormPos = CURRICULUM_DATA[2].position;
+        const lightning = new THREE.PointLight(0xfef08a, 0, 70);
+        lightning.position.set(stormPos[0], stormPos[1] + 20, stormPos[2]);
+        this.scene.add(lightning);
+        this.lightningLight = lightning;
       }
 
       // 晴空萬里：大型天空漸層天穹 (Sky Dome)
       initSkyDome() {
         const skyGeo = new THREE.SphereGeometry(420, 32, 16);
         
-        // 透過 Canvas 繪製平滑晴空天頂漸層貼圖 (深藍天頂 ➔ 晴空蔚藍 ➔ 清透天青 ➔ 地平線泛白晨曦)
         const canvas = document.createElement("canvas");
         canvas.width = 32;
         canvas.height = 512;
@@ -3394,7 +3439,6 @@ puzzleSentences: [
         this.skyClouds = [];
         const cloudGroup = new THREE.Group();
 
-        // 佈置 14 朵不同大小、高度與方位的晴空白雲 (全數設置於遠景高空，不阻擋島嶼與鏡頭)
         const cloudConfigs = [
           { r: 105, theta: 0.3, y: 52, scale: 1.4, speed: 0.06 },
           { r: 120, theta: 0.8, y: 58, scale: 1.7, speed: 0.05 },
@@ -3417,7 +3461,6 @@ puzzleSentences: [
           const x = Math.cos(cfg.theta) * cfg.r;
           const z = Math.sin(cfg.theta) * cfg.r;
           c.position.set(x, cfg.y, z);
-          // 微幅隨機偏轉
           c.rotation.y = cfg.theta + 0.3;
           cloudGroup.add(c);
 
@@ -3433,14 +3476,16 @@ puzzleSentences: [
         this.scene.add(cloudGroup);
       }
 
+      // 【新技能規範 Pass 3】：透光黏土水體材質 (Water Optics)
       initSea() {
-        const seaGeo = new THREE.PlaneGeometry(350, 350, 44, 44);
+        const seaGeo = new THREE.PlaneGeometry(350, 350, 48, 48);
         const seaMat = new THREE.MeshStandardMaterial({
-          color: 0x38bdf8,
-          roughness: 0.22,
-          metalness: 0.08,
+          color: 0x4fc3f7,
+          roughness: 0.15,
+          metalness: 0.1,
           transparent: true,
-          opacity: 0.9,
+          opacity: 0.78,
+          depthWrite: false,
           flatShading: true
         });
         const sea = new THREE.Mesh(seaGeo, seaMat);
@@ -3472,8 +3517,42 @@ puzzleSentences: [
         }
       }
 
+      // 【新技能規範 Pass 6】：轉之島暴雨粒子落雨系統 (Rain Particle System)
+      createRainSystem(islandGroup) {
+        const rainCount = 160;
+        const rainGeo = new THREE.BufferGeometry();
+        const rainPositions = new Float32Array(rainCount * 2 * 3);
+        for (let r = 0; r < rainCount; r++) {
+          const angle = Math.random() * Math.PI * 2;
+          const dist = Math.random() * 11.5;
+          const rx = Math.cos(angle) * dist;
+          const rz = Math.sin(angle) * dist;
+          const ry = 1.0 + Math.random() * 16;
+          const idx = r * 6;
+          // 上頂點
+          rainPositions[idx] = rx;
+          rainPositions[idx + 1] = ry + 1.2;
+          rainPositions[idx + 2] = rz;
+          // 下頂點
+          rainPositions[idx + 3] = rx;
+          rainPositions[idx + 4] = ry;
+          rainPositions[idx + 5] = rz;
+        }
+        rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPositions, 3));
+        const rainMat = new THREE.LineBasicMaterial({
+          color: 0x93c5fd,
+          transparent: true,
+          opacity: 0.65
+        });
+        const rain = new THREE.LineSegments(rainGeo, rainMat);
+        rain.position.set(0, 3.2, 0);
+        rain.visible = false;
+        islandGroup.add(rain);
+        this.rainParticles = rain;
+      }
+
       // 建造四座豐富的微縮主題島嶼
-      // 徹底重構：告別生硬圓柱蛋糕！建立具備「天然浮空倒錐岩底、海灣岬角、階梯草地台地、蜿蜒鵝卵石路與手作木柵欄」的童話仙境浮島
+      // 【新技能規範】：落實 8-Pass 流水線、地形高度依附契約、微風草簇、岸邊浪花與情境氣候連動
       buildAllIslands() {
         for (let i = 0; i < 4; i++) {
           const data = CURRICULUM_DATA[i];
@@ -3512,6 +3591,25 @@ puzzleSentences: [
             return geo;
           };
 
+          // 【新技能規範 Pass 3】：地形依附與防浮空契約函式 (Attachment Contract)
+          const getTerrainHeight = (lx, lz) => {
+            const r = Math.sqrt(lx * lx + lz * lz);
+            const theta = Math.atan2(lz, lx);
+            const hill = Math.sin(theta * 1.5 + seed) * 0.25;
+            const distToPlateau = Math.hypot(lx - (-1.2), lz - (-1.0));
+            // 次級高地台地範圍
+            if (distToPlateau < 3.2) {
+              return 3.8 + Math.max(-0.1, hill * 0.5);
+            }
+            // 主草地範圍
+            if (r <= baseR * 0.95) {
+              return 3.1 + Math.max(-0.2, hill);
+            }
+            // 邊緣沙灘斜坡
+            const t = Math.min(1, Math.max(0, (r - baseR * 0.95) / (baseR * 0.35)));
+            return (3.1 + hill) * (1 - t) + 0.65 * t;
+          };
+
           // ① 浮空島倒錐形天然岩底 (Floating Keel) - 解決島嶼浮在水面上像平底罐頭的突兀感
           const keelGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 1.1, baseR * 0.35, 3.2, 18));
           const keelMat = getMat(0x475569, { roughness: 0.95, metalness: 0.05 });
@@ -3520,12 +3618,13 @@ puzzleSentences: [
           keelMesh.receiveShadow = true;
           islandGroup.add(keelMesh);
 
-          // ② 淺海浪花泡沫環 (Shallow Water Wave Foam) - 貼著水面波動
+          // ② 【新技能規範 Pass 3】：岸邊接觸浪花帶 (Shoreline Contact Foam) - 動態呼吸浪花圈
           const foamGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 1.38, baseR * 1.52, 0.16, 22));
-          const foamMat = getMat(0xe0f7fa, { transparent: true, opacity: 0.68, roughness: 0.2 });
+          const foamMat = getMat(0xffffff, { transparent: true, opacity: 0.72, roughness: 0.25 });
           const foamMesh = new THREE.Mesh(foamGeo, foamMat);
           foamMesh.position.y = 0.05;
           islandGroup.add(foamMesh);
+          this.shorelineFoams.push({ mesh: foamMesh, seed: seed });
 
           // ③ 有機金黃沙灘緩坡 (Organic Sandy Beach)
           const sandGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 1.12, baseR * 1.35, 1.6, 20));
@@ -3545,31 +3644,40 @@ puzzleSentences: [
 
           // ⑤ 主島草坪 (Main Grass Meadow - 略帶自然微丘陵)
           const grassGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 0.92, baseR * 0.98, 1.2, 20), 1.0, 0.4);
-          const grassMesh = new THREE.Mesh(grassGeo, getMat(data.color, { roughness: 0.75, metalness: 0.05 }));
+          const grassMat = getMat(data.color, { roughness: 0.75, metalness: 0.05 });
+          const grassMesh = new THREE.Mesh(grassGeo, grassMat);
           grassMesh.position.y = 3.1;
           grassMesh.castShadow = true;
           grassMesh.receiveShadow = true;
           islandGroup.add(grassMesh);
 
-          // ⑥ 次級高地台地 (Raised Hill Plateau - 建築物坐落處，打破「一張平桌子」的死板幾何)
+          // ⑥ 次級高地台地 (Raised Hill Plateau - 建築物坐落處)
           const hillGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 0.58, baseR * 0.68, 0.8, 16), 1.0, 0.25);
-          const hillMesh = new THREE.Mesh(hillGeo, getMat(data.color, { roughness: 0.72, metalness: 0.05 }));
+          const hillMat = getMat(data.color, { roughness: 0.72, metalness: 0.05 });
+          const hillMesh = new THREE.Mesh(hillGeo, hillMat);
           hillMesh.position.set(-1.2, 3.8, -1.0);
           hillMesh.castShadow = true;
           hillMesh.receiveShadow = true;
           islandGroup.add(hillMesh);
 
-          // 連接主草地與高地台地的石階梯
+          // 若為第三島（轉之島），收集草地材質以連動情境氣候積水反光，並加載落雨系統
+          if (i === 2) {
+            this.stormIslandMaterials.push(grassMat, hillMat);
+            this.createRainSystem(islandGroup);
+          }
+
+          // 連接主草地與高地台地的石階梯 (遵循高度契約)
           for (let st = 0; st < 2; st++) {
             const step = rbox(1.8 - st * 0.2, 0.2, 0.7, getMat(0x94a3b8, { roughness: 0.85 }));
-            step.position.set(-1.2, 3.25 + st * 0.22, 1.9 - st * 0.5);
+            const sy = getTerrainHeight(-1.2, 1.9 - st * 0.5) + st * 0.12;
+            step.position.set(-1.2, sy, 1.9 - st * 0.5);
             islandGroup.add(step);
           }
 
-          // ⑦ 蜿蜒鵝卵石探險步道 (Stepping Stone Path - 從相鄰橋頭延伸至建築大門)
+          // ⑦ 蜿蜒鵝卵石探險步道 (Stepping Stone Path - 呼叫高度契約)
           const bridgeAngle = (i * Math.PI) / 2 + Math.PI / 4;
           const pStart = [Math.cos(bridgeAngle) * 8.5, 3.1, Math.sin(bridgeAngle) * 8.5];
-          const pathPoints = [
+          const rawPath = [
             pStart,
             [pStart[0] * 0.75, 3.1, pStart[1] * 0.75],
             [pStart[0] * 0.5, 3.1, pStart[1] * 0.5],
@@ -3577,16 +3685,17 @@ puzzleSentences: [
             [-0.5, 3.1, 2.2],
             [-1.2, 3.3, 1.6]
           ];
+          const pathPoints = rawPath.map(([px, py, pz]) => [px, getTerrainHeight(px, pz), pz]);
           islandGroup.add(createSteppingPath(pathPoints));
 
-          // ⑧ 邊緣鄉村手作木柵欄 (Wooden Picket Fences - 懸崖安全護欄)
+          // ⑧ 邊緣鄉村手作木柵欄 (Wooden Picket Fences - 遵循高度契約)
           const fence = createWoodenFence(4, 0.95);
-          fence.position.set(4.2, 3.2, 3.5);
+          fence.position.set(4.2, getTerrainHeight(4.2, 3.5), 3.5);
           fence.rotation.y = -0.55;
           islandGroup.add(fence);
 
           const fence2 = createWoodenFence(3, 0.9);
-          fence2.position.set(-5.5, 3.2, -3.2);
+          fence2.position.set(-5.5, getTerrainHeight(-5.5, -3.2), -3.2);
           fence2.rotation.y = 0.85;
           islandGroup.add(fence2);
 
@@ -3594,54 +3703,74 @@ puzzleSentences: [
           const rockAngles = [0.6 + seed, 2.2 - seed, 4.0 + seed];
           rockAngles.forEach((ang, rIdx) => {
             const dist = baseR * 1.25 + (rIdx % 2) * 0.8;
+            const rx = Math.cos(ang) * dist;
+            const rz = Math.sin(ang) * dist;
             const rMesh = rock(0.85 + (rIdx % 3) * 0.4, rIdx % 2 === 0 ? 0x64748b : 0x475569);
-            rMesh.position.set(Math.cos(ang) * dist, 0.4 + (rIdx % 2) * 0.25, Math.sin(ang) * dist);
+            rMesh.position.set(rx, 0.4 + (rIdx % 2) * 0.25, rz);
             rMesh.rotation.set(rIdx * 0.4, ang, rIdx * 0.3);
             islandGroup.add(rMesh);
           });
 
-          // ⑩ 低多邊形小灌木與盛開花叢 (Bush Clumps & Flower Patches)
+          // ⑩ 低多邊形小灌木與盛開花叢 (遵循高度契約)
           for (let b = 0; b < 2; b++) {
             const bushAng = seed + b * 2.4;
             const bDist = baseR * 0.75;
+            const bx = Math.cos(bushAng) * bDist;
+            const bz = Math.sin(bushAng) * bDist;
             const bush = ball(0.65 + (b % 2) * 0.2, getMat(0x2d6a4f, { roughness: 0.85 }), 7, 6);
-            bush.position.set(Math.cos(bushAng) * bDist, 3.3, Math.sin(bushAng) * bDist);
+            bush.position.set(bx, getTerrainHeight(bx, bz) + 0.2, bz);
             islandGroup.add(bush);
           }
           const fl1 = createFlowerPatch([0xf43f5e, 0xfacc15, 0xffffff]);
-          fl1.position.set(-4.2, 3.15, 2.6);
+          fl1.position.set(-4.2, getTerrainHeight(-4.2, 2.6) + 0.05, 2.6);
           islandGroup.add(fl1);
 
           const fl2 = createFlowerPatch([0x38bdf8, 0xf472b6, 0xfef08a]);
-          fl2.position.set(3.5, 3.15, -2.4);
+          fl2.position.set(3.5, getTerrainHeight(3.5, -2.4) + 0.05, -2.4);
           islandGroup.add(fl2);
 
-          // ⑪ 指引海岬燈塔 (信標光球) - 坐落在延伸岬角端點
+          // 【新技能規範 Pass 4】：微風搖曳低多邊形植被 (Rooted Wind Clumped Grass)
+          const grassPositions = [
+            [-3.5, 3.2], [3.2, 2.8], [-2.0, 4.2], [4.5, -1.8],
+            [-4.8, -1.5], [1.8, -4.0], [-1.5, -4.5]
+          ];
+          grassPositions.forEach(([gx, gz], gIdx) => {
+            const clump = createWindyGrassClump(0.85 + (gIdx % 3) * 0.2, 0x52b788);
+            const gy = getTerrainHeight(gx, gz);
+            clump.position.set(gx, gy, gz);
+            islandGroup.add(clump);
+            this.windyGrassList.push(clump);
+          });
+
+          // ⑪ 指引海岬燈塔 (信標光球) - 坐落在延伸岬角端點 (遵循高度契約)
+          const tx = 6.2;
+          const tz = -4.2;
+          const ty = getTerrainHeight(tx, tz);
           const towerBase = rbox(1.6, 0.6, 1.6, getMat(0x334155));
-          towerBase.position.set(6.2, 3.4, -4.2);
+          towerBase.position.set(tx, ty + 0.3, tz);
           islandGroup.add(towerBase);
 
           const tower = cyl(0.55, 0.85, 4.8, 8, getMat(0xffffff));
-          tower.position.set(6.2, 6.1, -4.2);
+          tower.position.set(tx, ty + 3.0, tz);
           islandGroup.add(tower);
 
           const towerRoof = cone(0.9, 0.8, 8, getMat(0xd97706));
-          towerRoof.position.set(6.2, 8.8, -4.2);
+          towerRoof.position.set(tx, ty + 5.7, tz);
           islandGroup.add(towerRoof);
 
           const beacon = ball(0.75, getMat(state.teacherApprovals[i] ? 0x2ec4b6 : 0xfbbf24, { emissive: state.teacherApprovals[i] ? 0x2ec4b6 : 0xfbbf24, emissiveIntensity: 0.6 }));
-          beacon.position.set(6.2, 8.5, -4.2);
+          beacon.position.set(tx, ty + 5.4, tz);
           beacon.name = `beacon_${i}`;
           islandGroup.add(beacon);
 
-          // ⑫ Q 版卡通樹木 (動森立體蓬鬆感)
+          // ⑫ Q 版卡通樹木 (動森立體蓬鬆感，遵循高度契約)
           const treeColors = [0x52b788, 0x48cae4, 0xf4a261, 0xa78bfa];
           const t1 = createCuteTree(1.05, treeColors[i % treeColors.length]);
-          t1.position.set(-6.5, 3.2, 3.8);
+          t1.position.set(-6.5, getTerrainHeight(-6.5, 3.8), 3.8);
           islandGroup.add(t1);
 
           const t2 = createCuteTree(0.85, treeColors[(i + 1) % treeColors.length]);
-          t2.position.set(-5.0, 3.3, 5.5);
+          t2.position.set(-5.0, getTerrainHeight(-5.0, 5.5), 5.5);
           islandGroup.add(t2);
 
           // ⑬ 專屬島嶼微縮建築群 (精緻立體繪本微縮模型，拒絕死板生硬積木)
@@ -3654,6 +3783,7 @@ puzzleSentences: [
           this.islands.push(islandGroup);
         }
       }
+
 
       // 起之島：書房苦讀微縮模型 (精雕童話書卷閣樓小屋、半木骨架、老虎窗、紅磚煙囪白煙、戶外大書桌、書本山、月考倒數時鐘)
       buildStudyHouseDiorama(g) {
@@ -4168,6 +4298,7 @@ puzzleSentences: [
       }
 
       // 終點守門神殿與漂浮海上的漫畫風守門巨獸 (四格漫畫神壇)
+      // 【新技能規範 Pass 6】：Action-Ready 守門神獸與四格成就神殿 (Pivots, Sockets & Emotion Morphs)
       buildGuardianSanctuary() {
         const targetData = CURRICULUM_DATA[4];
         const [sx, sy, sz] = targetData.position;
@@ -4179,7 +4310,7 @@ puzzleSentences: [
         const baseR = 10.2;
         const seed = 9.9;
 
-        // 有機擾動函數
+        // 有機雕刻擾動
         const sculptOrganicGeo = (geo, factorY = 0) => {
           const pos = geo.attributes.position;
           for (let v = 0; v < pos.count; v++) {
@@ -4204,12 +4335,21 @@ puzzleSentences: [
           return geo;
         };
 
-        // 浪花淺水圈
-        const foamGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 1.4, baseR * 1.52, 0.18, 20));
-        const foamMat = getMat(0xe0f7fa, { transparent: true, opacity: 0.7, roughness: 0.2 });
+        // 浮空倒錐岩底 (Floating Keel)
+        const keelGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 1.1, baseR * 0.35, 3.2, 18));
+        const keelMat = getMat(0x334155, { roughness: 0.95, metalness: 0.05 });
+        const keelMesh = new THREE.Mesh(keelGeo, keelMat);
+        keelMesh.position.y = -1.1;
+        keelMesh.receiveShadow = true;
+        sanctuaryIsland.add(keelMesh);
+
+        // 【新技能規範 Pass 3】：動態岸邊浪花圈 (Shoreline Contact Foam)
+        const foamGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 1.38, baseR * 1.52, 0.18, 22));
+        const foamMat = getMat(0xffffff, { transparent: true, opacity: 0.75, roughness: 0.25 });
         const foamMesh = new THREE.Mesh(foamGeo, foamMat);
         foamMesh.position.y = 0.04;
         sanctuaryIsland.add(foamMesh);
+        this.shorelineFoams.push({ mesh: foamMesh, seed: seed });
 
         // 金黃沙灘環
         const sandGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 1.15, baseR * 1.36, 1.8, 18));
@@ -4233,29 +4373,69 @@ puzzleSentences: [
         sanctuaryIsland.add(at(cyl(7.2, 8.2, 0.8, 8, getMat(0xffffff, { roughness: 0.4 })), 0, 4.0, 0));
         sanctuaryIsland.add(at(cyl(5.8, 6.6, 0.8, 8, getMat(0x38bdf8, { metalness: 0.3, roughness: 0.4 })), 0, 4.6, 0));
 
-        // 四方四根墨玉毛筆圖騰柱 (起承轉合四筆)
+        // 【新技能規範 Pass 6】：成就印章插槽 (Achievement Badge Pillars)
+        // 四方四根墨玉毛筆圖騰柱 (起承轉合四筆)，配備實體印章成就托盤與徽章
+        this.guardianSockets.badgePillars = [];
         const pillarMat = getMat(0x0f172a, { metalness: 0.6, roughness: 0.3 });
-        for (const [px, pz] of [[-5.2, -5.2], [5.2, -5.2], [-5.2, 5.2], [5.2, 5.2]]) {
+        const pillarCoords = [
+          [-5.2, -5.2, "起・背景準備"],
+          [5.2, -5.2, "承・考場微表情"],
+          [-5.2, 5.2, "轉・波瀾轉折"],
+          [5.2, 5.2, "合・超越期許"]
+        ];
+
+        pillarCoords.forEach(([px, pz, title], pIdx) => {
           const pillar = new THREE.Group();
           pillar.position.set(px, 3.8, pz);
-          // 筆桿
+
+          // 筆桿柱身
           pillar.add(at(cyl(0.42, 0.52, 6.5, 8, pillarMat), 0, 3.25, 0));
           // 金屬箍
           pillar.add(at(cyl(0.55, 0.55, 0.35, 8, getMat(0xf59e0b, { metalness: 0.8 })), 0, 6.2, 0));
           // 毛筆尖 (起承轉合靈光)
           pillar.add(at(cone(0.58, 2.0, 8, getMat(0xffffff, { emissive: 0x38bdf8, emissiveIntensity: 0.5 })), 0, 7.3, 0));
-          sanctuaryIsland.add(pillar);
-        }
 
-        // 懸浮四格漫畫金色魔鏡框神殿
+          // 實體成就印章插槽托盤 (Badge Socket Platter)
+          const platter = cyl(0.9, 0.75, 0.25, 8, getMat(0xf8fafc, { roughness: 0.3 }));
+          platter.position.set(0, 4.0, 0);
+          pillar.add(platter);
+
+          // 懸浮成就印章徽章 (Badge Gem)
+          const badgeGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.16, 16);
+          const badgeMat = getMat(0x64748b, { emissive: 0x334155, emissiveIntensity: 0.2, metalness: 0.7, roughness: 0.3 });
+          const badgeMesh = new THREE.Mesh(badgeGeo, badgeMat);
+          badgeMesh.rotation.x = Math.PI / 4;
+          badgeMesh.position.set(0, 4.4, 0);
+          pillar.add(badgeMesh);
+
+          // 徽章中心寶石
+          const gem = ball(0.25, getMat(0x94a3b8, { emissive: 0x475569, emissiveIntensity: 0.1 }), 8, 6);
+          gem.position.set(0, 4.45, 0.08);
+          pillar.add(gem);
+
+          sanctuaryIsland.add(pillar);
+
+          this.guardianSockets.badgePillars.push({
+            index: pIdx,
+            pillar: pillar,
+            mesh: badgeMesh,
+            gem: gem
+          });
+        });
+
+        // 懸浮四格漫畫金色魔鏡框神殿 (加上賽璐珞邊框)
         const portal = new THREE.Group();
         portal.position.set(0, 5.2, 0);
         const frameMat = getMat(0xf59e0b, { metalness: 0.85, roughness: 0.2 });
         // 外框
-        portal.add(at(rbox(6.2, 4.6, 0.25, frameMat), 0, 2.2, 0));
+        const portalFrame = rbox(6.2, 4.6, 0.25, frameMat);
+        addComicOutline(portalFrame, 0.04, 0x0f172a);
+        portal.add(at(portalFrame, 0, 2.2, 0));
+
         // 四格十字窗框
         portal.add(at(rbox(0.18, 4.4, 0.3, frameMat), 0, 2.2, 0.05));
         portal.add(at(rbox(6.0, 0.18, 0.3, frameMat), 0, 2.2, 0.05));
+
         // 四格半透明發光鏡面 (四格漫畫神壇)
         const glassMat = getMat(0xdbeafe, { transparent: true, opacity: 0.82, emissive: 0x60a5fa, emissiveIntensity: 0.45 });
         portal.add(at(rbox(5.8, 4.2, 0.1, glassMat), 0, 2.2, 0));
@@ -4273,14 +4453,12 @@ puzzleSentences: [
         this.scene.add(sanctuaryIsland);
         this.islands.push(sanctuaryIsland);
 
-        // ② 浮在海上的漫畫風守門巨獸 (Manga Style Floating Guardian Beast)
-        // 浮在終點島前方海面，像動漫裡的海洋神獸
+        // ② 【新技能規範 Pass 6】：Action-Ready 守門巨獸神龍 (Pivots, Sockets & Emotion Morphs)
         const dragon = new THREE.Group();
-        // 放置於終點島前方海域 (浮在海上)
         dragon.position.set(sx - 9.5, 0.2, sz + 4.5);
-        dragon.rotation.y = -Math.PI / 4 + 0.2; // 迎向橋頭而來的冒險者
+        dragon.rotation.y = -Math.PI / 4 + 0.2;
 
-        // 海面漫畫漣漪光環 (Ripples on Water Surface)
+        // 海面漫畫漣漪光環
         const rippleGroup = new THREE.Group();
         rippleGroup.position.set(0, 0.05, 0);
         const rippleMat1 = getMat(0xe0f2fe, { transparent: true, opacity: 0.85 });
@@ -4295,145 +4473,176 @@ puzzleSentences: [
         dragon.add(rippleGroup);
         this.guardianRipples = rippleGroup;
 
-        // 巨獸身軀材質 (漫畫鮮豔寶石紅、暖粉、白嫩肚皮)
+        // 巨獸身軀材質 (漫畫鮮豔寶石紅、暖粉白肚皮)
         const bodyMat = getMat(0xf43f5e, { roughness: 0.55, metalness: 0.08 });
         const bellyMat = getMat(0xfef3c7, { roughness: 0.7, metalness: 0.05 });
 
-        // 軀幹 (浮在海面上，露出一半身軀)
+        // 軀幹
         const torsoMesh = rbox(3.2, 2.5, 2.8, bodyMat);
         addComicOutline(torsoMesh, 0.05, 0x0f172a);
         torsoMesh.position.set(0, 1.1, 0);
         dragon.add(torsoMesh);
 
-        // 漫畫白嫩肚皮
+        // 白嫩肚皮
         const bellyMesh = rbox(2.2, 1.9, 0.35, bellyMat);
         bellyMesh.position.set(0, 1.0, 1.3);
         dragon.add(bellyMesh);
 
-        // 兩側浮水漫畫大鰭足 (划水動作)
-        for (const s of [-1, 1]) {
-          const flipper = rbox(1.5, 0.22, 1.8, bodyMat);
-          addComicOutline(flipper, 0.05, 0x0f172a);
-          flipper.position.set(s * 2.1, 0.4, 0.5);
-          flipper.rotation.z = s * -0.28;
-          flipper.rotation.y = s * 0.35;
-          dragon.add(flipper);
-        }
-
-        // 身軀後方出水起伏駝峰 (Serpentine Water Undulation)
+        // 身軀後方出水起伏駝峰
         const humpMesh = ball(1.4, bodyMat, 8, 8);
         addComicOutline(humpMesh, 0.05, 0x0f172a);
         humpMesh.position.set(0, 0.75, -2.4);
         dragon.add(humpMesh);
 
-        // 漫畫金黃色尾巴 (高翹出海面，帶有火焰/羽翼尾鰭)
+        // 關節 1：尾部擺動關節 (Tail Pivot)
+        const tailPivot = new THREE.Group();
+        tailPivot.position.set(0, 1.0, -3.2);
+
         const tailMesh = ball(1.0, bodyMat, 8, 8);
-        tailMesh.position.set(0, 1.1, -4.0);
-        dragon.add(tailMesh);
+        tailMesh.position.set(0, 0.1, -0.8);
+        tailPivot.add(tailMesh);
 
         const tailFin = cone(0.85, 1.8, 6, getMat(0xfbbf24, { roughness: 0.4 }));
         addComicOutline(tailFin, 0.055, 0x0f172a);
-        tailFin.position.set(0, 2.1, -5.0);
+        tailFin.position.set(0, 1.1, -1.8);
         tailFin.rotation.x = -0.65;
-        dragon.add(tailFin);
+        tailPivot.add(tailFin);
+        dragon.add(tailPivot);
 
-        // 漫畫萌系大頭部 (Head Group)
-        const headGroup = new THREE.Group();
-        headGroup.position.set(0, 3.1, 0.8);
+        // 關節 2 & 3：Action-Ready 雙前爪關節 (Left & Right Arm Pivots)
+        const armLeftPivot = new THREE.Group();
+        armLeftPivot.position.set(-2.0, 1.1, 0.5);
+        const flipperL = rbox(1.5, 0.24, 1.7, bodyMat);
+        addComicOutline(flipperL, 0.045, 0x0f172a);
+        flipperL.position.set(-0.6, 0, 0);
+        armLeftPivot.add(flipperL);
+        dragon.add(armLeftPivot);
+
+        const armRightPivot = new THREE.Group();
+        armRightPivot.position.set(2.0, 1.1, 0.5);
+        const flipperR = rbox(1.5, 0.24, 1.7, bodyMat);
+        addComicOutline(flipperR, 0.045, 0x0f172a);
+        flipperR.position.set(0.6, 0, 0);
+        armRightPivot.add(flipperR);
+        dragon.add(armRightPivot);
+
+        // 關節 4：Action-Ready 頭部關節 (Head Pivot)
+        const headPivot = new THREE.Group();
+        headPivot.position.set(0, 2.5, 0.4);
 
         // 頭部大方圓臉 (漫畫 Q 版比例)
         const headMesh = rbox(3.2, 2.7, 3.0, bodyMat);
         addComicOutline(headMesh, 0.05, 0x0f172a);
-        headGroup.add(headMesh);
+        headMesh.position.set(0, 0.6, 0.4);
+        headPivot.add(headMesh);
 
         // 鼓起的大吻部 (Chubby Snout)
         const snoutMesh = rbox(2.4, 1.3, 1.8, getMat(0xfb7185));
         addComicOutline(snoutMesh, 0.05, 0x0f172a);
-        snoutMesh.position.set(0, -0.45, 1.9);
-        headGroup.add(snoutMesh);
+        snoutMesh.position.set(0, 0.15, 2.3);
+        headPivot.add(snoutMesh);
 
-        // 兩顆雪白漫畫小虎牙 (Cute Comic Fangs)
+        // 兩顆雪白漫畫小虎牙
         for (const tx of [-0.75, 0.75]) {
           const fang = cone(0.18, 0.48, 4, getMat(0xffffff));
-          fang.position.set(tx, -1.05, 2.4);
+          fang.position.set(tx, -0.45, 2.8);
           fang.rotation.x = Math.PI;
-          headGroup.add(fang);
+          headPivot.add(fang);
         }
 
         // 開心粉紅小舌頭
         const tongue = rbox(0.9, 0.15, 0.8, getMat(0xf472b6));
-        tongue.position.set(0, -0.92, 1.9);
-        headGroup.add(tongue);
+        tongue.position.set(0, -0.32, 2.3);
+        headPivot.add(tongue);
 
-        // 水汪汪漫畫大眼睛 (Anime Sparkling Manga Eyes)
+        // 水汪汪漫畫大眼睛
         for (const ex of [-0.98, 0.98]) {
-          // 眼白底盤
           const eyeWhite = cyl(0.56, 0.56, 0.14, 16, getMat(0xffffff));
           eyeWhite.rotation.x = Math.PI / 2;
-          eyeWhite.position.set(ex, 0.45, 1.55);
-          headGroup.add(eyeWhite);
+          eyeWhite.position.set(ex, 1.05, 1.95);
+          headPivot.add(eyeWhite);
 
-          // 超大動漫黑曜瞳孔
           const pupil = cyl(0.38, 0.38, 0.16, 16, getMat(0x0f172a));
           pupil.rotation.x = Math.PI / 2;
-          pupil.position.set(ex + (ex > 0 ? -0.06 : 0.06), 0.45, 1.57);
-          headGroup.add(pupil);
+          pupil.position.set(ex + (ex > 0 ? -0.06 : 0.06), 1.05, 1.97);
+          headPivot.add(pupil);
 
-          // 漫畫星芒第一高光
           const hl1 = cyl(0.16, 0.16, 0.18, 12, getMat(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.9 }));
           hl1.rotation.x = Math.PI / 2;
-          hl1.position.set(ex + 0.1, 0.6, 1.6);
-          headGroup.add(hl1);
+          hl1.position.set(ex + 0.1, 1.2, 2.0);
+          headPivot.add(hl1);
 
-          // 漫畫小圓第二高光
           const hl2 = cyl(0.08, 0.08, 0.18, 8, getMat(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.9 }));
           hl2.rotation.x = Math.PI / 2;
-          hl2.position.set(ex - 0.12, 0.32, 1.6);
-          headGroup.add(hl2);
+          hl2.position.set(ex - 0.12, 0.92, 2.0);
+          headPivot.add(hl2);
 
-          // 漫畫粉紅圓形腮紅 pad
           const blush = cyl(0.38, 0.38, 0.12, 12, getMat(0xf472b6, { roughness: 0.6 }));
           blush.rotation.x = Math.PI / 2;
-          blush.position.set(ex * 1.38, -0.15, 1.5);
-          headGroup.add(blush);
+          blush.position.set(ex * 1.38, 0.45, 1.9);
+          headPivot.add(blush);
 
-          // 濃黑漫畫英氣眉毛
           const brow = rbox(0.75, 0.15, 0.1, getMat(0x0f172a));
-          brow.position.set(ex, 1.18, 1.58);
+          brow.position.set(ex, 1.78, 1.98);
           brow.rotation.z = (ex > 0 ? 0.22 : -0.22);
-          headGroup.add(brow);
+          headPivot.add(brow);
         }
 
-        // 金色長龍角 (漫畫粗黑外框)
+        // 金色長龍角
         const hornMat = getMat(0xf59e0b, { metalness: 0.8, roughness: 0.2 });
         for (const s of [-1, 1]) {
           const horn = cone(0.42, 2.5, 6, hornMat);
           addComicOutline(horn, 0.05, 0x0f172a);
-          horn.position.set(s * 1.18, 1.95, -0.3);
+          horn.position.set(s * 1.18, 2.55, 0.1);
           horn.rotation.z = s * 0.42;
           horn.rotation.x = -0.32;
-          headGroup.add(horn);
+          headPivot.add(horn);
         }
 
-        // 蓬鬆棉花糖白色龍鬃毛 (動漫吉祥物風格)
+        // 蓬鬆棉花糖白色龍鬃毛
         const maneMat = getMat(0xffffff, { roughness: 0.5 });
-        for (const [mx, my, mz, mr] of [[0, 1.8, -1.3, 0.85], [-1.2, 0.8, -1.2, 0.75], [1.2, 0.8, -1.2, 0.75], [-1.5, -0.2, 0.2, 0.65], [1.5, -0.2, 0.2, 0.65]]) {
+        for (const [mx, my, mz, mr] of [[0, 2.4, -0.9, 0.85], [-1.2, 1.4, -0.8, 0.75], [1.2, 1.4, -0.8, 0.75], [-1.5, 0.4, 0.6, 0.65], [1.5, 0.4, 0.6, 0.65]]) {
           const maneBall = ball(mr, maneMat, 7, 6);
           addComicOutline(maneBall, 0.045, 0x0f172a);
           maneBall.position.set(mx, my, mz);
-          headGroup.add(maneBall);
+          headPivot.add(maneBall);
         }
 
         // 飄逸長龍鬚
         for (const s of [-1, 1]) {
           const whisker = cyl(0.07, 0.03, 3.0, 4, hornMat);
-          whisker.position.set(s * 1.5, -0.6, 2.3);
+          whisker.position.set(s * 1.5, 0.0, 2.7);
           whisker.rotation.z = s * 0.65;
           whisker.rotation.x = 0.25;
-          headGroup.add(whisker);
+          headPivot.add(whisker);
         }
 
-        dragon.add(headGroup);
+        // 【新技能規範 Pass 6】：四格情緒插槽與動態特效 (Emotion Sweat & Star Crown)
+        // ① 冒冷汗水珠 (Sweat Drops - stage 2/3 緊張驚訝時浮現)
+        const sweatGroup = new THREE.Group();
+        const sweatMat = getMat(0x38bdf8, { transparent: true, opacity: 0.85, emissive: 0x0284c7, emissiveIntensity: 0.6 });
+        for (const sxPos of [-1.5, 1.5]) {
+          const sweatDrop = ball(0.28, sweatMat, 6, 6);
+          sweatDrop.scale.set(0.7, 1.3, 0.7);
+          sweatDrop.position.set(sxPos, 1.5, 1.8);
+          sweatGroup.add(sweatDrop);
+        }
+        sweatGroup.visible = false;
+        headPivot.add(sweatGroup);
+
+        // ② 頭頂旋轉小金星光環 (Crown Star Orbit - stage 4 合之島勝利時旋轉)
+        const crownGroup = new THREE.Group();
+        crownGroup.position.set(0, 3.2, 0.4);
+        for (let sIdx = 0; sIdx < 3; sIdx++) {
+          const sAngle = (sIdx * Math.PI * 2) / 3;
+          const star = cone(0.3, 0.55, 5, getMat(0xfef08a, { emissive: 0xfbbf24, emissiveIntensity: 0.9 }));
+          star.position.set(Math.cos(sAngle) * 1.6, 0, Math.sin(sAngle) * 1.6);
+          crownGroup.add(star);
+        }
+        crownGroup.visible = false;
+        headPivot.add(crownGroup);
+
+        dragon.add(headPivot);
 
         // 漂浮蔚藍墨寶神珠 (胸前懸浮海浪上)
         const pearl = ball(1.05, getMat(0x38bdf8, { emissive: 0x0ea5e9, emissiveIntensity: 0.9 }));
@@ -4446,6 +4655,124 @@ puzzleSentences: [
 
         this.scene.add(dragon);
         this.guardianMesh = dragon;
+
+        // 保存守門神獸可驅動關節
+        this.guardianParts = {
+          head: headPivot,
+          armLeft: armLeftPivot,
+          armRight: armRightPivot,
+          tail: tailPivot,
+          sweat: sweatGroup,
+          crown: crownGroup,
+          pearl: pearl
+        };
+      }
+
+      // 【新技能規範 Pass 6】：情境氣候連動系統 (Weather Envelope & Wet Surfaces)
+      setWeather(mode) {
+        this.currentWeather = mode;
+        if (mode === 'storm') {
+          // 家庭風暴雷陣雨模式：暗紫陰雲、冷色微光、濕潤積水地表
+          this.scene.background = new THREE.Color(0x1e1b2e);
+          if (this.skyDome) this.skyDome.visible = false;
+          if (this.scene.fog) {
+            this.scene.fog.color.setHex(0x2a2838);
+            this.scene.fog.density = 0.012;
+          }
+          if (this.ambientLight) {
+            this.ambientLight.color.setHex(0x64748b);
+            this.ambientLight.intensity = 0.45;
+          }
+          if (this.hemiLight) {
+            this.hemiLight.color.setHex(0x312e81);
+            this.hemiLight.groundColor.setHex(0x1e1b4b);
+            this.hemiLight.intensity = 0.45;
+          }
+          if (this.sun) this.sun.intensity = 0.4;
+          // 轉之島地面積水潮濕反射倒影 (roughness 降為 0.22)
+          if (this.stormIslandMaterials) {
+            this.stormIslandMaterials.forEach(m => { m.roughness = 0.22; });
+          }
+          if (this.rainParticles) this.rainParticles.visible = true;
+        } else {
+          // 晴朗日間模式：陽光暖照、天朗氣清、乾燥溫潤草地
+          this.scene.background = this.clearSkyColor;
+          if (this.skyDome) this.skyDome.visible = !state.isNightMode;
+          if (this.scene.fog) {
+            this.scene.fog.color.setHex(0xddeeff);
+            this.scene.fog.density = 0.007;
+          }
+          if (this.ambientLight) {
+            this.ambientLight.color.setHex(0xfff8ee);
+            this.ambientLight.intensity = 0.65;
+          }
+          if (this.hemiLight) {
+            this.hemiLight.color.setHex(0xddeeff);
+            this.hemiLight.groundColor.setHex(0x88bb77);
+            this.hemiLight.intensity = 0.55;
+          }
+          if (this.sun) this.sun.intensity = 1.15;
+          if (this.stormIslandMaterials) {
+            this.stormIslandMaterials.forEach(m => { m.roughness = 0.75; });
+          }
+          if (this.rainParticles) this.rainParticles.visible = false;
+          if (this.lightningLight) this.lightningLight.intensity = 0;
+        }
+      }
+
+      // 【新技能規範 Pass 6】：守門獸四格表情切換 (Four-Stage Emotion Morphs)
+      setKeeperExpression(stage) {
+        this.guardianStage = stage;
+        const p = this.guardianParts;
+        if (!p || !p.head) return;
+
+        p.sweat.visible = false;
+        p.crown.visible = false;
+        p.head.rotation.set(0, 0, 0);
+
+        if (stage === 1) {
+          // stage 1 (起)：好奇探頭、眼神眨動、神態祥和
+          p.head.rotation.x = -0.06;
+        } else if (stage === 2) {
+          // stage 2 (承)：緊張流汗、握拳專注
+          p.sweat.visible = true;
+          p.head.rotation.x = 0.12;
+        } else if (stage === 3) {
+          // stage 3 (轉)：驚訝張嘴、小幅後仰震動、冒冷汗
+          p.sweat.visible = true;
+          p.head.rotation.x = -0.22;
+        } else if (stage === 4) {
+          // stage 4 (合)：歡呼舉手、頭頂旋轉小金星光環飛舞
+          p.crown.visible = true;
+          p.head.rotation.x = 0.1;
+        }
+      }
+
+      // 【新技能規範 Pass 6】：更新神殿成就印章插槽 (Update Sanctuary Badges)
+      updateGuardianBadges() {
+        if (!this.guardianSockets || !this.guardianSockets.badgePillars) return;
+        this.guardianSockets.badgePillars.forEach(item => {
+          const isApproved = state.teacherApprovals[item.index];
+          if (isApproved) {
+            item.mesh.material.color.setHex(0xfbbf24);
+            item.mesh.material.emissive.setHex(0xf59e0b);
+            item.mesh.material.emissiveIntensity = 0.85;
+            if (item.gem) {
+              item.gem.material.color.setHex(0x22c55e);
+              item.gem.material.emissive.setHex(0x16a34a);
+              item.gem.material.emissiveIntensity = 0.9;
+            }
+          } else {
+            item.mesh.material.color.setHex(0x64748b);
+            item.mesh.material.emissive.setHex(0x334155);
+            item.mesh.material.emissiveIntensity = 0.15;
+            if (item.gem) {
+              item.gem.material.color.setHex(0x94a3b8);
+              item.gem.material.emissive.setHex(0x475569);
+              item.gem.material.emissiveIntensity = 0.1;
+            }
+          }
+        });
       }
 
       // 依照順序用童趣精緻的木拱橋連接島嶼 (0 ➔ 1 ➔ 2 ➔ 3 ➔ 4)
@@ -4478,81 +4805,65 @@ puzzleSentences: [
           const numPlanks = Math.max(14, Math.round(spanDist / 1.25));
 
           const bridgeGroup = new THREE.Group();
-          const isUnlocked = i === 0 || state.teacherApprovals[i - 1];
+          const bridgeCenter = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
 
-          // 逐塊鋪設起伏木拱橋板與護欄
-          for (let k = 0; k <= numPlanks; k++) {
-            const t = k / numPlanks;
-            // 拋物線微拱形，優雅跨越蔚藍海面
-            const arch = Math.sin(t * Math.PI) * 1.45;
+          // 橋面微拱起伏木板
+          for (let p = 0; p < numPlanks; p++) {
+            const t = p / (numPlanks - 1);
             const pos = new THREE.Vector3().lerpVectors(start, end, t);
+            const arch = Math.sin(t * Math.PI) * 1.5;
             pos.y += arch;
 
-            // 木橋踏板
-            const plank = rbox(2.35, 0.16, 0.88, woodMats[k % woodMats.length]);
+            const plankW = 2.4;
+            const plankL = 1.05;
+            const plankH = 0.18;
+            const plankMat = woodMats[p % woodMats.length];
+            const plank = rbox(plankW, plankH, plankL, plankMat);
             plank.position.copy(pos);
             plank.rotation.y = bridgeAngle;
-            plank.castShadow = true;
-            plank.receiveShadow = true;
+            plank.rotation.x = Math.cos(t * Math.PI) * -0.15;
             bridgeGroup.add(plank);
 
-            // 每隔 2-3 塊踏板設立兩側原木護欄柱
-            if (k % 3 === 0 || k === numPlanks) {
-              for (const s of [-1, 1]) {
-                const postPos = pos.clone().addScaledVector(perp, s * 1.12);
-                const post = cyl(0.08, 0.09, 1.1, 5, postMat);
-                post.position.set(postPos.x, pos.y + 0.55, postPos.z);
-                post.castShadow = true;
+            // 每隔 2 塊板設置護欄立柱
+            if (p % 2 === 0) {
+              for (const side of [-1, 1]) {
+                const postPos = pos.clone().addScaledVector(perp, side * (plankW * 0.46));
+                const post = cyl(0.09, 0.12, 1.15, 6, postMat);
+                post.position.set(postPos.x, postPos.y + 0.55, postPos.z);
                 bridgeGroup.add(post);
-              }
-            }
 
-            // 在開闊水域中央處設立入水支撐木樁與白浪花圈
-            if (k === Math.round(numPlanks * 0.35) || k === Math.round(numPlanks * 0.68)) {
-              for (const s of [-0.75, 0.75]) {
-                const pierPos = pos.clone().addScaledVector(perp, s * 0.85);
-                const pierH = pos.y + 1.2;
-                const pier = cyl(0.18, 0.22, pierH, 6, postMat);
-                pier.position.set(pierPos.x, pos.y / 2 - 0.45, pierPos.z);
-                bridgeGroup.add(pier);
-
-                // 水位處白浪花環
-                const foamRing = new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.08, 6, 12), getMat(0xe0f2fe, { transparent: true, opacity: 0.8 }));
-                foamRing.rotation.x = Math.PI / 2;
-                foamRing.position.set(pierPos.x, 0.02, pierPos.z);
-                bridgeGroup.add(foamRing);
-              }
-            }
-
-            // 橋頭與橋尾雕花門柱與溫暖小吊燈
-            if (k === 0 || k === numPlanks) {
-              for (const s of [-1, 1]) {
-                const gatePos = pos.clone().addScaledVector(perp, s * 1.35);
-                const gatePost = cyl(0.18, 0.22, 1.9, 6, postMat);
-                gatePost.position.set(gatePos.x, pos.y + 0.95, gatePos.z);
-                bridgeGroup.add(gatePost);
-
-                const cap = ball(0.24, capMat, 6, 6);
-                cap.position.set(gatePos.x, pos.y + 1.95, gatePos.z);
+                const cap = ball(0.14, capMat, 6, 5);
+                cap.position.set(postPos.x, postPos.y + 1.15, postPos.z);
                 bridgeGroup.add(cap);
-
-                // 溫暖指引吊燈 (解鎖為暖金，未解鎖為微灰)
-                const lanternColor = isUnlocked ? 0xfef08a : 0x94a3b8;
-                const lantern = ball(0.28, getMat(lanternColor, { emissive: isUnlocked ? 0xfbbf24 : 0x000000, emissiveIntensity: isUnlocked ? 0.8 : 0 }));
-                lantern.position.set(gatePos.x, pos.y + 1.55, gatePos.z);
-                bridgeGroup.add(lantern);
               }
             }
+          }
 
-            // 橋中央最高點拱頂暖光燈
-            if (k === Math.round(numPlanks * 0.5)) {
-              for (const s of [-1, 1]) {
-                const midPos = pos.clone().addScaledVector(perp, s * 1.2);
-                const midLantern = ball(0.26, getMat(isUnlocked ? 0xfef08a : 0x94a3b8, { emissive: isUnlocked ? 0xfbbf24 : 0x000000, emissiveIntensity: isUnlocked ? 0.75 : 0 }));
-                midLantern.position.set(midPos.x, pos.y + 0.85, midPos.z);
-                bridgeGroup.add(midLantern);
-              }
+          // 兩側連貫原木扶手
+          for (const side of [-1, 1]) {
+            const railPoints = [];
+            for (let r = 0; r <= 16; r++) {
+              const t = r / 16;
+              const pos = new THREE.Vector3().lerpVectors(start, end, t);
+              pos.y += Math.sin(t * Math.PI) * 1.5 + 1.05;
+              pos.addScaledVector(perp, side * (2.4 * 0.46));
+              railPoints.push(pos);
             }
+            const railCurve = new THREE.CatmullRomCurve3(railPoints);
+            const railGeo = new THREE.TubeGeometry(railCurve, 20, 0.08, 6, false);
+            const railMesh = new THREE.Mesh(railGeo, postMat);
+            railMesh.castShadow = true;
+            bridgeGroup.add(railMesh);
+          }
+
+          // 水中粗木橋墩
+          for (const t of [0.33, 0.67]) {
+            const pierPos = new THREE.Vector3().lerpVectors(start, end, t);
+            pierPos.y += Math.sin(t * Math.PI) * 1.5 - 0.2;
+            const pierH = pierPos.y + 1.2;
+            const pier = cyl(0.35, 0.45, pierH, 6, postMat);
+            pier.position.set(pierPos.x, pierPos.y - pierH / 2 + 0.1, pierPos.z);
+            bridgeGroup.add(pier);
           }
 
           this.scene.add(bridgeGroup);
@@ -4560,58 +4871,40 @@ puzzleSentences: [
         }
       }
 
-            createMarkers() {
-        if (!this.labelsContainer) return;
-        this.labelsContainer.innerHTML = "";
+      // 建立地標標示牌懸浮圖標
+      createMarkers() {
+        this.markers.forEach((m) => {
+          if (m.element && m.element.parentNode) {
+            m.element.parentNode.removeChild(m.element);
+          }
+        });
         this.markers = [];
 
-        CURRICULUM_DATA.forEach((item, idx) => {
-          const markerEl = document.createElement("div");
-          markerEl.className = "island-marker";
-          
-          let isPassed = false;
-          let isUnlocked = false;
+        CURRICULUM_DATA.forEach((island, index) => {
+          const markerDiv = document.createElement("div");
+          markerDiv.className = "island-marker";
+          markerDiv.id = `marker-${index}`;
 
-          if (idx === 0) {
-            isUnlocked = true;
-            isPassed = state.teacherApprovals[0];
-          } else if (idx < 4) {
-            isUnlocked = state.teacherApprovals[idx - 1];
-            isPassed = state.teacherApprovals[idx];
+          const isApproved = state.teacherApprovals[index];
+          const isCurrent = state.activeIslandIndex === index;
+          if (isApproved) {
+            markerDiv.classList.add("completed");
+            markerDiv.innerHTML = `💮 ${state.teacherStamps[index] || "甲上"}`;
+          } else if (isCurrent) {
+            markerDiv.classList.add("active");
+            markerDiv.innerHTML = `✍️ ${island.shortName}`;
           } else {
-            // 守門神殿
-            isUnlocked = state.teacherApprovals.every(a => a);
-            isPassed = false;
+            markerDiv.innerHTML = `📍 ${island.shortName}`;
           }
 
-          let statusText = "";
-          let statusCls = "";
-          if (!isUnlocked) {
-            statusText = "🔒 未解鎖";
-            statusCls = "locked";
-          } else if (isPassed) {
-            statusText = state.teacherStamps[idx] ? `✓ ${state.teacherStamps[idx]}` : "✓ 已蓋章";
-            statusCls = "passed";
-          } else {
-            statusText = idx === 4 ? "終點試煉" : "⏳ 進行中";
-            statusCls = "in-progress";
-          }
+          markerDiv.addEventListener("click", () => {
+            if (window.islandApp) window.islandApp.flyToIsland(index);
+          });
 
-          markerEl.innerHTML = `
-            <div class="marker-bubble ${idx === 4 ? 'guardian' : ''} ${!isUnlocked ? 'locked-marker' : ''}">
-              <span class="marker-icon">${!isUnlocked ? '🔒' : (idx === 4 ? '🐲' : '🏝️')}</span>
-              <span class="marker-title">${item.shortName}</span>
-              <span class="marker-status ${statusCls}" id="markerStatus_${idx}">${statusText}</span>
-            </div>
-            <div class="marker-pin"></div>
-          `;
-
-          markerEl.onclick = () => window.islandApp.flyToIsland(idx);
-          this.labelsContainer.appendChild(markerEl);
-
+          this.labelsContainer.appendChild(markerDiv);
           this.markers.push({
-            element: markerEl,
-            position: new THREE.Vector3(...item.position).add(new THREE.Vector3(0, idx === 4 ? 9.5 : 9.0, 0))
+            element: markerDiv,
+            position: new THREE.Vector3(island.position[0], island.position[1] + 9.5, island.position[2])
           });
         });
       }
@@ -4637,6 +4930,7 @@ puzzleSentences: [
         });
       }
 
+      // 【新技能規範 Pass 7】：電影級彈簧相機導演 (Spring-Damped Camera Director)
       flyTo(targetPos, lookPos, onComplete) {
         const startPos = this.camera.position.clone();
         const startTarget = this.controls.target.clone();
@@ -4646,6 +4940,7 @@ puzzleSentences: [
         const animateCamera = (time) => {
           const elapsed = time - startTime;
           const progress = Math.min(elapsed / duration, 1);
+          // 帶阻尼的三次方平滑內插
           const t = 1 - Math.pow(1 - progress, 3);
 
           this.camera.position.lerpVectors(startPos, targetPos, t);
@@ -4666,6 +4961,7 @@ puzzleSentences: [
         this.renderer.setSize(window.innerWidth, window.innerHeight);
       }
 
+      // 【新技能規範流水線】：統一驅動水體波動、岸邊浪花、微風植被、落雨粒子與 Action-Ready 守門獸
       animate() {
         requestAnimationFrame(() => this.animate());
         this.controls.update();
@@ -4682,42 +4978,114 @@ puzzleSentences: [
           if (item.type === 'shake') item.obj.position.x = Math.sin(now * 8) * 0.08;
         });
 
-        // 守門巨獸神龍在海面上直接浮游起伏呼吸動效 (海上漫畫神獸)
+        // ① 【新技能規範 Pass 3】：動態岸邊接觸浪花帶呼吸縮放與透明度循環
+        if (this.shorelineFoams) {
+          this.shorelineFoams.forEach(item => {
+            const breath = Math.sin(now * 2.2 + item.seed);
+            const sc = 1.0 + breath * 0.035;
+            item.mesh.scale.set(sc, 1, sc);
+            if (item.mesh.material) {
+              item.mesh.material.opacity = 0.58 + breath * 0.22;
+            }
+          });
+        }
+
+        // ② 【新技能規範 Pass 4】：微風搖曳低多邊形植被 (根部錨定、葉尖擺動)
+        if (this.windyGrassList) {
+          this.windyGrassList.forEach(clump => {
+            const wx = clump.position.x;
+            const wz = clump.position.z;
+            clump.rotation.z = Math.sin(now * 2.6 + wx * 0.35) * 0.14;
+            clump.rotation.x = Math.cos(now * 2.1 + wz * 0.35) * 0.09;
+          });
+        }
+
+        // ③ 【新技能規範 Pass 6】：轉之島暴雨粒子落雨動態與微弱閃電微爍
+        if (this.currentWeather === 'storm') {
+          if (this.rainParticles && this.rainParticles.visible) {
+            const rpos = this.rainParticles.geometry.attributes.position;
+            for (let r = 1; r < rpos.count; r += 2) {
+              let py = rpos.getY(r) - 0.75;
+              if (py < 0) py = 16 + Math.random() * 4;
+              rpos.setY(r, py);
+              rpos.setY(r - 1, py + 1.2);
+            }
+            rpos.needsUpdate = true;
+          }
+          if (this.lightningLight) {
+            if (Math.random() < 0.03) {
+              this.lightningLight.intensity = 1.8 + Math.random() * 1.5;
+            } else {
+              this.lightningLight.intensity *= 0.85;
+            }
+          }
+        }
+
+        // ④ 【新技能規範 Pass 6】：Action-Ready 守門巨獸自然呼吸與關節擺動
         if (this.guardianMesh) {
           this.guardianMesh.position.y = 0.25 + Math.sin(now * 1.5) * 0.22;
           this.guardianMesh.rotation.y = -Math.PI / 4 + 0.2 + Math.sin(now * 0.7) * 0.12;
           this.guardianMesh.rotation.z = Math.sin(now * 1.2) * 0.04;
+
+          const p = this.guardianParts;
+          if (p) {
+            if (p.head) {
+              p.head.rotation.x += Math.sin(now * 1.5) * 0.003;
+              p.head.rotation.y = Math.sin(now * 0.8) * 0.06;
+            }
+            if (p.tail) {
+              p.tail.rotation.y = Math.sin(now * 2.2) * 0.22;
+            }
+            if (p.armLeft && p.armRight) {
+              if (this.guardianStage === 4) {
+                // 歡呼模式：雙爪歡快揮舞
+                p.armLeft.rotation.z = 0.6 + Math.sin(now * 4.0) * 0.2;
+                p.armRight.rotation.z = -0.6 - Math.sin(now * 4.0) * 0.2;
+              } else if (this.guardianStage === 2) {
+                // 握拳專注模式
+                p.armLeft.rotation.x = 0.4 + Math.sin(now * 2.0) * 0.08;
+                p.armRight.rotation.x = 0.4 + Math.sin(now * 2.0) * 0.08;
+              } else {
+                // 祥和划水模式
+                p.armLeft.rotation.z = -0.28 + Math.sin(now * 1.8) * 0.12;
+                p.armRight.rotation.z = 0.28 - Math.sin(now * 1.8) * 0.12;
+              }
+            }
+            if (p.crown && p.crown.visible) {
+              p.crown.rotation.y += 0.04;
+            }
+          }
+
           if (this.guardianRipples) {
             const sc = 1.0 + Math.sin(now * 2.0) * 0.12;
             this.guardianRipples.scale.set(sc, 1, sc);
           }
         }
 
-        // 晴空萬里：驅動天空中白雲群悠揚慢速公轉漂移
+        // ⑤ 驅動天空中白雲群悠揚公轉
         if (this.skyClouds) {
           const deltaSec = 0.016;
           this.skyClouds.forEach(item => {
             item.theta += item.speed * 0.03 * deltaSec;
             item.obj.position.x = Math.cos(item.theta) * item.r;
             item.obj.position.z = Math.sin(item.theta) * item.r;
-            // 雲朵自轉微動效
             item.obj.rotation.y += item.speed * 0.01 * deltaSec;
           });
         }
 
-        // 乃誠島同款：程序化動態微波浪
+        // ⑥ 【新技能規範 Pass 3】：雙波長程序化動態微波浪
         if (this.sea && this.seaOriginalZ) {
           const pos = this.sea.geometry.attributes.position;
           for (let i = 0; i < pos.count; i++) {
             const u = pos.getX(i);
             const v = pos.getY(i);
-            const wave = Math.sin(u * 0.05 + now * 1.5) * 0.38 + Math.cos(v * 0.05 + now * 1.2) * 0.28;
+            const wave = Math.sin(u * 0.15 + now * 1.5) * 0.22 + Math.cos(v * 0.18 + now * 1.2) * 0.18;
             pos.setZ(i, this.seaOriginalZ[i] + wave);
           }
           pos.needsUpdate = true;
         }
 
-        // 乃誠島同款：2D 螢幕浮動標籤投影更新
+        // ⑦ 2D 螢幕浮動標籤投影更新
         if (window.islandApp && window.islandApp.updateScreenLabels) {
           window.islandApp.updateScreenLabels();
         }
@@ -4726,11 +5094,7 @@ puzzleSentences: [
       }
     }
 
-    // ----------------------------------------------------
-    // 4. 島嶼寫作與四格漫畫應用控制器 (完整升級)
-    // ----------------------------------------------------
-        // ----------------------------------------------------
-    // 4. 島嶼寫作與四格漫畫應用控制器 (四步階梯寫作向導)
+
     // ----------------------------------------------------
     class IslandApp {
       constructor() {
@@ -4748,6 +5112,9 @@ puzzleSentences: [
         this.updateNavStepDots();
         this.initScreenLabels();
         this.applyDayNightMode();
+        if (this.sceneDirector && this.sceneDirector.updateGuardianBadges) {
+          this.sceneDirector.updateGuardianBadges();
+        }
         this.loadIslandData(0);
 
         // 乃誠島同款開場儀式感：資源就緒後平滑淡出 Loader 並滑翔進場
@@ -5039,7 +5406,11 @@ puzzleSentences: [
       }
 
       resetCamera() {
-        this.sceneDirector.flyTo(new THREE.Vector3(8, 56, 75), new THREE.Vector3(8, 0, 0));
+        if (this.sceneDirector) {
+          this.sceneDirector.setWeather('sunny');
+          this.sceneDirector.setKeeperExpression(1);
+          this.sceneDirector.flyTo(new THREE.Vector3(8, 56, 75), new THREE.Vector3(8, 0, 0));
+        }
         this.closeDrawer();
       }
 
@@ -5097,6 +5468,16 @@ puzzleSentences: [
 
         this.currentIsland = index;
         this.updateNavStepDots();
+
+        // 【新技能規範】：情境氣候與守門獸情緒動態切換
+        if (this.sceneDirector) {
+          if (index === 2) {
+            this.sceneDirector.setWeather('storm');
+          } else {
+            this.sceneDirector.setWeather('sunny');
+          }
+          this.sceneDirector.setKeeperExpression(index + 1);
+        }
 
         const targetData = CURRICULUM_DATA[index];
         const [x, y, z] = targetData.position;
@@ -6113,6 +6494,11 @@ puzzleSentences: [
         if (beacon) {
           beacon.material.color.setHex(0x2ec4b6);
           beacon.material.emissive.setHex(0x2ec4b6);
+        }
+
+        // 【新技能規範】：同步點亮守門神殿實體成就印章石柱
+        if (this.sceneDirector.updateGuardianBadges) {
+          this.sceneDirector.updateGuardianBadges();
         }
 
         this.showToast(`🎉 恭喜！${this.currentStamp} 認證成功！已解鎖通往下一座島嶼的航道！`);
