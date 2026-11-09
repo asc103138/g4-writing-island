@@ -1466,6 +1466,224 @@
       return board;
     }
 
+    // ---------- 高質感微縮建築與童趣景觀手作工具包 (告別死板幾何積木感) ----------
+    // 立體木窗框與十字窗格 (附可選花台)
+    function createArtisanWindow(w = 1.3, h = 1.4, frameColor = 0xffffff, glassColor = 0xbae6fd, hasFlowerBox = false) {
+      const g = new THREE.Group();
+      const fMat = getMat(frameColor, { roughness: 0.5 });
+      const gMat = getMat(glassColor, { roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.85 });
+
+      // 玻璃內嵌
+      const glass = rbox(w - 0.16, h - 0.16, 0.05, gMat);
+      g.add(glass);
+
+      // 上下左右窗框 (立體向外突出)
+      const t = 0.09;
+      const d = 0.12;
+      g.add(at(rbox(w, t, d, fMat), 0, h / 2 - t / 2, 0.03));
+      g.add(at(rbox(w + 0.15, t * 1.3, d * 1.4, fMat), 0, -h / 2 + t / 2, 0.04)); // 窗台突出板
+      g.add(at(rbox(t, h - t * 2, d, fMat), -w / 2 + t / 2, 0, 0.03));
+      g.add(at(rbox(t, h - t * 2, d, fMat), w / 2 - t / 2, 0, 0.03));
+
+      // 十字木窗欞
+      g.add(at(rbox(w - 0.16, 0.05, 0.06, fMat), 0, 0, 0.02));
+      g.add(at(rbox(0.05, h - 0.16, 0.06, fMat), 0, 0, 0.02));
+
+      // 窗下可愛木花台與彩色小花
+      if (hasFlowerBox) {
+        const boxMat = getMat(0x854d0e, { roughness: 0.8 });
+        const box = rbox(w * 0.95, 0.32, 0.35, boxMat);
+        box.position.set(0, -h / 2 - 0.12, 0.18);
+        g.add(box);
+
+        // 花台小花朵
+        const flColors = [0xf43f5e, 0xfacc15, 0xffffff, 0xf472b6];
+        for (let fl = 0; fl < 4; fl++) {
+          const fx = -w * 0.35 + fl * (w * 0.24);
+          const fPetal = ball(0.12, getMat(flColors[fl % flColors.length], { roughness: 0.6 }), 6, 5);
+          fPetal.position.set(fx, -h / 2 + 0.12, 0.18);
+          g.add(fPetal);
+        }
+      }
+      return g;
+    }
+
+    // 實木厚門與立體雕花門框 (金屬把手 + 小門簷)
+    function createArtisanDoor(w = 1.3, h = 2.4, frameColor = 0x5c3a21, doorColor = 0x854d0e) {
+      const g = new THREE.Group();
+      const fMat = getMat(frameColor, { roughness: 0.7 });
+      const dMat = getMat(doorColor, { roughness: 0.65 });
+
+      // 門板
+      const door = rbox(w - 0.16, h - 0.08, 0.12, dMat);
+      door.position.y = h / 2;
+      g.add(door);
+
+      // 門板上下兩塊內凹立體木格飾條
+      const trimMat = getMat(0x713f12);
+      g.add(at(rbox(w * 0.65, h * 0.36, 0.14, trimMat), 0, h * 0.72, 0.01));
+      g.add(at(rbox(w * 0.65, h * 0.36, 0.14, trimMat), 0, h * 0.28, 0.01));
+
+      // 左右上外框
+      const t = 0.1;
+      g.add(at(rbox(t, h, 0.18, fMat), -w / 2 + t / 2, h / 2, 0.02));
+      g.add(at(rbox(t, h, 0.18, fMat), w / 2 - t / 2, h / 2, 0.02));
+      g.add(at(rbox(w + 0.12, t * 1.2, 0.22, fMat), 0, h - t / 2, 0.04));
+
+      // 金黃金屬球形門把手
+      const knobMat = getMat(0xf59e0b, { metalness: 0.85, roughness: 0.2 });
+      const knob = ball(0.09, knobMat, 8, 6);
+      knob.position.set(w * 0.28, h * 0.48, 0.12);
+      g.add(knob);
+
+      return g;
+    }
+
+    // 復古掛牆暖黃提燈
+    function createWallLantern() {
+      const g = new THREE.Group();
+      const ironMat = getMat(0x1e293b, { roughness: 0.4 });
+      const lampMat = getMat(0xfef08a, { emissive: 0xfbbf24, emissiveIntensity: 0.85, roughness: 0.3 });
+
+      // 鐵製懸臂
+      g.add(at(cyl(0.04, 0.04, 0.35, 4, ironMat), 0, 0, 0.1));
+      // 燈帽與燈底
+      g.add(at(cone(0.2, 0.15, 6, ironMat), 0, 0.2, 0.22));
+      g.add(at(rbox(0.2, 0.04, 0.2, ironMat), 0, -0.12, 0.22));
+      // 發光暖黃燈芯
+      g.add(at(ball(0.12, lampMat, 8, 6), 0, 0.04, 0.22));
+      return g;
+    }
+
+    // 寬簷雙折斜屋頂 (含前後挑出屋簷與凸出屋脊壓條，拒絕單薄幾何三角)
+    function createArtisanRoof(w, h, len, tileColor, ridgeColor = 0x451a03, eaves = 0.35) {
+      const g = new THREE.Group();
+      const rw = w + eaves * 2;
+      const rlen = len + eaves * 2;
+      const rMat = getMat(tileColor, { roughness: 0.65 });
+      const ridgeMat = getMat(ridgeColor, { roughness: 0.75 });
+
+      // 主斜屋面 (使用厚度擠出)
+      const roof = gableRoof(rw, h, rlen, rMat);
+      g.add(roof);
+
+      // 屋脊壓條 (Ridge beam)
+      const ridge = rbox(0.35, 0.35, rlen + 0.08, ridgeMat);
+      ridge.position.y = h;
+      g.add(ridge);
+
+      // 兩側封簷底飾板
+      const fasciaL = rbox(0.12, 0.18, rlen, ridgeMat);
+      fasciaL.position.set(-rw / 2 + 0.06, 0.05, 0);
+      g.add(fasciaL);
+      const fasciaR = rbox(0.12, 0.18, rlen, ridgeMat);
+      fasciaR.position.set(rw / 2 - 0.06, 0.05, 0);
+      g.add(fasciaR);
+
+      return g;
+    }
+
+    // 可愛老虎窗 (Dormer Window - 從斜屋頂突出的閣樓小窗)
+    function createDormerWindow(wallColor = 0xfdf0d5, roofColor = 0xc1121f) {
+      const g = new THREE.Group();
+      // 小身軀
+      g.add(at(rbox(1.3, 1.2, 1.3, getMat(wallColor)), 0, 0.6, 0));
+      // 小斜屋頂
+      g.add(at(createArtisanRoof(1.4, 0.7, 1.4, roofColor, 0x5c3a21, 0.15), 0, 1.2, 0));
+      // 前方小白框窗
+      const win = createArtisanWindow(0.9, 0.9, 0xffffff, 0xfef08a, false);
+      win.position.set(0, 0.55, 0.66);
+      g.add(win);
+      return g;
+    }
+
+    // 磚石煙囪與裊裊漂浮白煙圈 (悠閒手作繪本感)
+    function createChimneyWithSmoke(h = 2.4, brickColor = 0x991b1b) {
+      const g = new THREE.Group();
+      const bMat = getMat(brickColor, { roughness: 0.85 });
+      const rimMat = getMat(0x374151, { roughness: 0.8 });
+
+      // 煙囪主幹
+      g.add(at(rbox(0.85, h, 0.85, bMat), 0, h / 2, 0));
+      // 頂部外凸磚緣
+      g.add(at(rbox(1.05, 0.22, 1.05, rimMat), 0, h - 0.05, 0));
+      // 雙排煙口
+      g.add(at(cyl(0.18, 0.2, 0.35, 6, rimMat), -0.22, h + 0.15, 0));
+      g.add(at(cyl(0.18, 0.2, 0.35, 6, rimMat), 0.22, h + 0.15, 0));
+
+      // 3 朵漸變大小、圓潤柔順的白色棉花糖悠閒煙圈
+      const puffs = [
+        { y: h + 0.5, r: 0.28, x: 0.05, z: 0.02 },
+        { y: h + 1.1, r: 0.42, x: 0.22, z: 0.1 },
+        { y: h + 1.85, r: 0.58, x: 0.45, z: 0.2 }
+      ];
+      puffs.forEach(p => {
+        const puff = ball(p.r, softCloudMat, 16, 12);
+        puff.position.set(p.x, p.y, p.z);
+        puff.castShadow = false;
+        puff.receiveShadow = false;
+        g.add(puff);
+      });
+
+      return g;
+    }
+
+    // 鄉村木柵欄 (手作木樁與雙橫桿)
+    function createWoodenFence(posts = 3, spacing = 1.0) {
+      const g = new THREE.Group();
+      const wMat = getMat(0xfef3c7, { roughness: 0.75 }); // 暖米白/原木色
+
+      for (let p = 0; p < posts; p++) {
+        const x = p * spacing;
+        // 木樁 (頂部削尖倒角)
+        const post = rbox(0.14, 0.95, 0.14, wMat);
+        post.position.set(x, 0.47, 0);
+        post.rotation.z = (p % 2 === 0 ? 0.03 : -0.03); // 微幅自然歪斜手作感
+        g.add(post);
+      }
+      const totalLen = (posts - 1) * spacing + 0.2;
+      const midX = ((posts - 1) * spacing) / 2;
+      // 上下兩道橫木板
+      g.add(at(rbox(totalLen, 0.1, 0.06, wMat), midX, 0.3, 0.04));
+      g.add(at(rbox(totalLen, 0.1, 0.06, wMat), midX, 0.65, 0.04));
+      return g;
+    }
+
+    // 自然鵝卵石步道 (打破平面幾何感，引導視線通向房屋大門)
+    function createSteppingPath(points) {
+      const g = new THREE.Group();
+      const stoneColors = [0x94a3b8, 0xcbd5e1, 0x64748b, 0xe2e8f0];
+      points.forEach(([x, y, z], idx) => {
+        const rad = 0.5 + (idx % 3) * 0.12;
+        const sMat = getMat(stoneColors[idx % stoneColors.length], { roughness: 0.85 });
+        const pGeo = new THREE.CylinderGeometry(rad, rad * 1.1, 0.08, 8);
+        const stone = new THREE.Mesh(pGeo, sMat);
+        stone.position.set(x, y + 0.04, z);
+        stone.rotation.y = idx * 0.8;
+        stone.scale.set(1.0 + (idx % 2) * 0.2, 1.0, 0.85);
+        stone.receiveShadow = true;
+        g.add(stone);
+      });
+      return g;
+    }
+
+    // 可愛花叢與小草坪
+    function createFlowerPatch(colors = [0xf43f5e, 0xfacc15, 0xffffff]) {
+      const g = new THREE.Group();
+      // 綠草小底丘
+      g.add(at(ball(0.55, getMat(0x2d6a4f, { roughness: 0.85 }), 7, 5), 0, 0.15, 0));
+      // 4~5 朵彩色小圓球花朵
+      colors.forEach((c, idx) => {
+        const ang = idx * (Math.PI * 2 / colors.length);
+        const dist = 0.32;
+        const fl = ball(0.12, getMat(c, { roughness: 0.6 }), 6, 5);
+        fl.position.set(Math.cos(ang) * dist, 0.35 + (idx % 2) * 0.06, Math.sin(ang) * dist);
+        g.add(fl);
+      });
+      return g;
+    }
+
+
     // ---------- 雲朵專屬：蓬鬆棉花糖柔和白雲模組 (告別生硬石塊感) ----------
     // 專屬純白蓬鬆棉花糖雲朵材質 (圓潤柔和、高透光微發光、無生硬碎石陰影、無棱角)
     const softCloudMat = new THREE.MeshStandardMaterial({
@@ -2435,18 +2653,18 @@ puzzleSentences: [
       }
 
       // 建造四座豐富的微縮主題島嶼
-      // 建立真正的有機自然手作島嶼 (告別死板圓柱，具備自然海灣、海岬、浪花環、起伏丘陵與天然礁石)
+      // 徹底重構：告別生硬圓柱蛋糕！建立具備「天然浮空倒錐岩底、海灣岬角、階梯草地台地、蜿蜒鵝卵石路與手作木柵欄」的童話仙境浮島
       buildAllIslands() {
         for (let i = 0; i < 4; i++) {
           const data = CURRICULUM_DATA[i];
           const islandGroup = new THREE.Group();
           islandGroup.position.set(...data.position);
 
-          const seed = i * 2.1 + 0.8;
+          const seed = i * 2.3 + 1.1;
           const baseR = 10.5;
 
-          // 輔助函數：將幾何體頂點依照極坐標賦予自然海灣有機擾動
-          const sculptOrganicGeo = (geo, factorY = 0) => {
+          // 輔助函數：依照極坐標對圓柱/圓錐進行多頻率有機自然形狀雕刻
+          const sculptOrganicGeo = (geo, factorR = 1.0, factorY = 0) => {
             const pos = geo.attributes.position;
             for (let v = 0; v < pos.count; v++) {
               const x = pos.getX(v);
@@ -2455,19 +2673,18 @@ puzzleSentences: [
               const r = Math.sqrt(x * x + z * z);
               const theta = Math.atan2(z, x);
 
-              if (r > 0.4) {
-                // 複合三角函數創造自然海灣與凸上海岬
+              if (r > 0.3) {
+                // 三重自然正弦/餘弦複合擾動，形成自然海灣、微凸海岬
                 const noise = 1 + 
-                  0.16 * Math.sin(theta * 2 + seed) + 
-                  0.11 * Math.cos(theta * 3 - seed * 1.3) + 
-                  0.07 * Math.sin(theta * 5 + seed * 2.2);
-                pos.setX(v, x * noise);
-                pos.setZ(v, z * noise);
+                  0.18 * Math.sin(theta * 2 + seed) + 
+                  0.12 * Math.cos(theta * 3 - seed * 1.4) + 
+                  0.08 * Math.sin(theta * 5 + seed * 2.5);
+                pos.setX(v, x * noise * factorR);
+                pos.setZ(v, z * noise * factorR);
 
-                // 頂部草皮微幅丘陵起伏 (讓島嶼有地勢高低感)
-                if (factorY > 0 && y > 0.1) {
+                if (factorY > 0 && y > 0.05) {
                   const hill = Math.sin(theta * 1.5 + seed) * factorY;
-                  pos.setY(v, y + Math.max(-0.2, hill));
+                  pos.setY(v, y + Math.max(-0.25, hill));
                 }
               }
             }
@@ -2475,77 +2692,139 @@ puzzleSentences: [
             return geo;
           };
 
-          // ① 浪花淺水線 (Shallow Water Foam Ring) - 貼水面，半透明白浪花線，勾勒海島自然邊緣
-          const foamGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 1.42, baseR * 1.55, 0.18, 20));
-          const foamMat = getMat(0xe0f7fa, { transparent: true, opacity: 0.65, roughness: 0.2 });
+          // ① 浮空島倒錐形天然岩底 (Floating Keel) - 解決島嶼浮在水面上像平底罐頭的突兀感
+          const keelGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 1.1, baseR * 0.35, 3.2, 18));
+          const keelMat = getMat(0x475569, { roughness: 0.95, metalness: 0.05 });
+          const keelMesh = new THREE.Mesh(keelGeo, keelMat);
+          keelMesh.position.y = -1.1;
+          keelMesh.receiveShadow = true;
+          islandGroup.add(keelMesh);
+
+          // ② 淺海浪花泡沫環 (Shallow Water Wave Foam) - 貼著水面波動
+          const foamGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 1.38, baseR * 1.52, 0.16, 22));
+          const foamMat = getMat(0xe0f7fa, { transparent: true, opacity: 0.68, roughness: 0.2 });
           const foamMesh = new THREE.Mesh(foamGeo, foamMat);
-          foamMesh.position.y = 0.04;
+          foamMesh.position.y = 0.05;
           islandGroup.add(foamMesh);
 
-          // ② 有機金黃沙灘 (Organic Sandy Beach) - 緩坡入水，邊緣不規則
-          const sandGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 1.15, baseR * 1.38, 1.8, 18));
-          const sandMesh = new THREE.Mesh(sandGeo, getMat(0xf4d35e, { roughness: 0.85, metalness: 0.05 }));
-          sandMesh.position.y = 0.55;
+          // ③ 有機金黃沙灘緩坡 (Organic Sandy Beach)
+          const sandGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 1.12, baseR * 1.35, 1.6, 20));
+          const sandMesh = new THREE.Mesh(sandGeo, getMat(0xf4d35e, { roughness: 0.88, metalness: 0.04 }));
+          sandMesh.position.y = 0.65;
           sandMesh.castShadow = true;
           sandMesh.receiveShadow = true;
           islandGroup.add(sandMesh);
 
-          // ③ 粗獷泥岩崖壁 (Organic Rock Cliff) - 陡峭具手作低多邊形切面
-          const cliffGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 0.98, baseR * 1.16, 2.6, 18));
+          // ④ 粗獷泥岩崖壁 (Layered Rocky Cliff)
+          const cliffGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 0.96, baseR * 1.12, 2.4, 20));
           const cliffMesh = new THREE.Mesh(cliffGeo, getMat(0x8d5b4c, { roughness: 0.85, metalness: 0.08 }));
-          cliffMesh.position.y = 2.0;
+          cliffMesh.position.y = 1.95;
           cliffMesh.castShadow = true;
           cliffMesh.receiveShadow = true;
           islandGroup.add(cliffMesh);
 
-          // ④ 頂部起伏草皮 (Undulating Grass Surface) - 具丘陵地勢起伏
-          const grassGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 0.94, baseR * 1.0, 1.2, 18), 0.7);
+          // ⑤ 主島草坪 (Main Grass Meadow - 略帶自然微丘陵)
+          const grassGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 0.92, baseR * 0.98, 1.2, 20), 1.0, 0.4);
           const grassMesh = new THREE.Mesh(grassGeo, getMat(data.color, { roughness: 0.75, metalness: 0.05 }));
-          grassMesh.position.y = 3.3;
+          grassMesh.position.y = 3.1;
           grassMesh.castShadow = true;
           grassMesh.receiveShadow = true;
           islandGroup.add(grassMesh);
 
-          // ⑤ 海灘礁石群 (Natural Coastal Rocks) - 散落在海灣與沙灘邊緣
-          const rockAngles = [0.8 + seed, 2.4 - seed, 4.2 + seed];
+          // ⑥ 次級高地台地 (Raised Hill Plateau - 建築物坐落處，打破「一張平桌子」的死板幾何)
+          const hillGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 0.58, baseR * 0.68, 0.8, 16), 1.0, 0.25);
+          const hillMesh = new THREE.Mesh(hillGeo, getMat(data.color, { roughness: 0.72, metalness: 0.05 }));
+          hillMesh.position.set(-1.2, 3.8, -1.0);
+          hillMesh.castShadow = true;
+          hillMesh.receiveShadow = true;
+          islandGroup.add(hillMesh);
+
+          // 連接主草地與高地台地的石階梯
+          for (let st = 0; st < 2; st++) {
+            const step = rbox(1.8 - st * 0.2, 0.2, 0.7, getMat(0x94a3b8, { roughness: 0.85 }));
+            step.position.set(-1.2, 3.25 + st * 0.22, 1.9 - st * 0.5);
+            islandGroup.add(step);
+          }
+
+          // ⑦ 蜿蜒鵝卵石探險步道 (Stepping Stone Path - 從相鄰橋頭延伸至建築大門)
+          const bridgeAngle = (i * Math.PI) / 2 + Math.PI / 4;
+          const pStart = [Math.cos(bridgeAngle) * 8.5, 3.1, Math.sin(bridgeAngle) * 8.5];
+          const pathPoints = [
+            pStart,
+            [pStart[0] * 0.75, 3.1, pStart[1] * 0.75],
+            [pStart[0] * 0.5, 3.1, pStart[1] * 0.5],
+            [0.2, 3.1, 2.8],
+            [-0.5, 3.1, 2.2],
+            [-1.2, 3.3, 1.6]
+          ];
+          islandGroup.add(createSteppingPath(pathPoints));
+
+          // ⑧ 邊緣鄉村手作木柵欄 (Wooden Picket Fences - 懸崖安全護欄)
+          const fence = createWoodenFence(4, 0.95);
+          fence.position.set(4.2, 3.2, 3.5);
+          fence.rotation.y = -0.55;
+          islandGroup.add(fence);
+
+          const fence2 = createWoodenFence(3, 0.9);
+          fence2.position.set(-5.5, 3.2, -3.2);
+          fence2.rotation.y = 0.85;
+          islandGroup.add(fence2);
+
+          // ⑨ 天然低多邊形礁石堆 (Coastal Rocks & Boulders)
+          const rockAngles = [0.6 + seed, 2.2 - seed, 4.0 + seed];
           rockAngles.forEach((ang, rIdx) => {
-            const dist = baseR * 1.22 + (rIdx % 2) * 0.8;
-            const rMesh = rock(0.7 + (rIdx % 3) * 0.35, rIdx % 2 === 0 ? 0x64748b : 0x475569);
-            rMesh.position.set(Math.cos(ang) * dist, 0.4 + (rIdx % 2) * 0.2, Math.sin(ang) * dist);
+            const dist = baseR * 1.25 + (rIdx % 2) * 0.8;
+            const rMesh = rock(0.85 + (rIdx % 3) * 0.4, rIdx % 2 === 0 ? 0x64748b : 0x475569);
+            rMesh.position.set(Math.cos(ang) * dist, 0.4 + (rIdx % 2) * 0.25, Math.sin(ang) * dist);
             rMesh.rotation.set(rIdx * 0.4, ang, rIdx * 0.3);
             islandGroup.add(rMesh);
           });
 
-          // ⑥ 低多邊形草叢與小灌木 (Bush Clumps)
-          for (let b = 0; b < 3; b++) {
-            const bushAng = seed + b * 2.0;
+          // ⑩ 低多邊形小灌木與盛開花叢 (Bush Clumps & Flower Patches)
+          for (let b = 0; b < 2; b++) {
+            const bushAng = seed + b * 2.4;
             const bDist = baseR * 0.75;
-            const bush = ball(0.55 + (b % 2) * 0.2, getMat(0x2d6a4f, { roughness: 0.8 }), 6, 5);
-            bush.position.set(Math.cos(bushAng) * bDist, 3.8, Math.sin(bushAng) * bDist);
+            const bush = ball(0.65 + (b % 2) * 0.2, getMat(0x2d6a4f, { roughness: 0.85 }), 7, 6);
+            bush.position.set(Math.cos(bushAng) * bDist, 3.3, Math.sin(bushAng) * bDist);
             islandGroup.add(bush);
           }
+          const fl1 = createFlowerPatch([0xf43f5e, 0xfacc15, 0xffffff]);
+          fl1.position.set(-4.2, 3.15, 2.6);
+          islandGroup.add(fl1);
 
-          // ⑦ 指引燈塔 (信標光球) - 坐落在島嶼邊緣凸上海岬
-          const tower = cyl(0.5, 0.9, 5.0, 6, getMat(0xffffff));
-          tower.position.set(5.8, 6.2, -4.2);
+          const fl2 = createFlowerPatch([0x38bdf8, 0xf472b6, 0xfef08a]);
+          fl2.position.set(3.5, 3.15, -2.4);
+          islandGroup.add(fl2);
+
+          // ⑪ 指引海岬燈塔 (信標光球) - 坐落在延伸岬角端點
+          const towerBase = rbox(1.6, 0.6, 1.6, getMat(0x334155));
+          towerBase.position.set(6.2, 3.4, -4.2);
+          islandGroup.add(towerBase);
+
+          const tower = cyl(0.55, 0.85, 4.8, 8, getMat(0xffffff));
+          tower.position.set(6.2, 6.1, -4.2);
           islandGroup.add(tower);
 
-          const beacon = ball(0.85, getMat(state.teacherApprovals[i] ? 0x2ec4b6 : 0xfbbf24, { emissive: state.teacherApprovals[i] ? 0x2ec4b6 : 0xfbbf24, emissiveIntensity: 0.5 }));
-          beacon.position.set(5.8, 9.1, -4.2);
+          const towerRoof = cone(0.9, 0.8, 8, getMat(0xd97706));
+          towerRoof.position.set(6.2, 8.8, -4.2);
+          islandGroup.add(towerRoof);
+
+          const beacon = ball(0.75, getMat(state.teacherApprovals[i] ? 0x2ec4b6 : 0xfbbf24, { emissive: state.teacherApprovals[i] ? 0x2ec4b6 : 0xfbbf24, emissiveIntensity: 0.6 }));
+          beacon.position.set(6.2, 8.5, -4.2);
           beacon.name = `beacon_${i}`;
           islandGroup.add(beacon);
 
-          // ⑧ Q 版卡通樹木 (動森手作感)
+          // ⑫ Q 版卡通樹木 (動森立體蓬鬆感)
           const treeColors = [0x52b788, 0x48cae4, 0xf4a261, 0xa78bfa];
-          const t1 = createCuteTree(0.95, treeColors[i % treeColors.length]);
-          t1.position.set(-6.2, 3.8, 4.2);
+          const t1 = createCuteTree(1.05, treeColors[i % treeColors.length]);
+          t1.position.set(-6.5, 3.2, 3.8);
           islandGroup.add(t1);
 
-          const t2 = createCuteTree(0.78, treeColors[(i + 1) % treeColors.length]);
-          t2.position.set(-4.8, 3.9, 5.8);
+          const t2 = createCuteTree(0.85, treeColors[(i + 1) % treeColors.length]);
+          t2.position.set(-5.0, 3.3, 5.5);
           islandGroup.add(t2);
 
-          // ⑨ 專屬島嶼微縮建築群
+          // ⑬ 專屬島嶼微縮建築群 (精緻立體繪本微縮模型，拒絕死板生硬積木)
           if (i === 0) this.buildStudyHouseDiorama(islandGroup);
           else if (i === 1) this.buildSchoolExamDiorama(islandGroup);
           else if (i === 2) this.buildStormHouseDiorama(islandGroup);
@@ -2556,134 +2835,241 @@ puzzleSentences: [
         }
       }
 
-      // 起之島：書房苦讀微縮模型 (小屋、書桌、檯燈、堆積如山之書冊、倒數大時鐘)
+      // 起之島：書房苦讀微縮模型 (精雕童話書卷閣樓小屋、半木骨架、老虎窗、紅磚煙囪白煙、戶外大書桌、書本山、月考倒數時鐘)
       buildStudyHouseDiorama(g) {
-        // 書房小屋
         const house = new THREE.Group();
-        house.position.set(-2, 3.8, 0);
+        house.position.set(-1.8, 3.9, -1.2); // 穩坐於後方高地台地上
 
-        // 主屋身
-        const wallMat = getMat(0xfdf0d5);
-        house.add(at(rbox(6.2, 3.8, 5.2, wallMat), 0, 1.9, 0));
+        // ① 石砌地基基石 (Plinth)
+        const plinth = rbox(6.5, 0.45, 5.5, getMat(0x64748b, { roughness: 0.9 }));
+        plinth.position.y = 0.22;
+        house.add(plinth);
 
-        // 紅瓦斜人字屋頂
-        const roofMat = getMat(0xc1121f);
-        house.add(at(gableRoof(7.0, 2.5, 5.8, roofMat), 0, 3.8, 0));
+        // ② 主屋體 (暖米白抹灰泥牆面)
+        const stuccoMat = getMat(0xfdf0d5, { roughness: 0.78 });
+        const mainBody = rbox(6.0, 3.8, 5.0, stuccoMat);
+        mainBody.position.y = 2.35;
+        house.add(mainBody);
 
-        // 煙囪
-        house.add(at(rbox(0.8, 1.8, 0.8, getMat(0x780000)), 1.8, 5.2, 0.8));
+        // ③ 半木結構原木骨架 (Half-timbering beams)
+        const timberMat = getMat(0x5c3a21, { roughness: 0.85 });
+        // 四個轉角木柱
+        for (const [cx, cz] of [[-3.0, -2.5], [3.0, -2.5], [-3.0, 2.5], [3.0, 2.5]]) {
+          house.add(at(rbox(0.25, 3.8, 0.25, timberMat), cx, 2.35, cz));
+        }
+        // 中腰水平原木橫樑
+        house.add(at(rbox(6.06, 0.22, 5.06, timberMat), 0, 2.35, 0));
+        // 正面木裝飾撐架
+        house.add(at(rbox(0.18, 1.8, 0.08, timberMat), -1.8, 3.2, 2.54));
+        house.add(at(rbox(0.18, 1.8, 0.08, timberMat), 1.8, 3.2, 2.54));
 
-        // 木門與窗戶
-        house.add(at(rbox(1.2, 2.2, 0.1, getMat(0x663f25)), 0, 1.1, 2.62));
-        house.add(at(rbox(1.4, 1.4, 0.08, getMat(0xa8dadc)), -1.8, 2.2, 2.62));
-        house.add(at(rbox(1.4, 1.4, 0.08, getMat(0xa8dadc)), 1.8, 2.2, 2.62));
+        // ④ 雙折深紅瓦寬簷斜屋頂 (含前後挑簷與屋脊壓條)
+        const roof = createArtisanRoof(6.2, 2.8, 5.2, 0xc1121f, 0x451a03, 0.4);
+        roof.position.y = 4.25;
+        house.add(roof);
+
+        // ⑤ 屋頂童趣老虎窗 (Dormer Window)
+        const dormer = createDormerWindow(0xfdf0d5, 0xc1121f);
+        dormer.position.set(0, 4.6, 2.2);
+        house.add(dormer);
+
+        // ⑥ 紅磚煙囪與 3 朵白色棉花糖悠閒漂浮煙圈
+        const chimney = createChimneyWithSmoke(2.8, 0x991b1b);
+        chimney.position.set(1.9, 4.25, -0.8);
+        house.add(chimney);
+
+        // ⑦ 立體前廊露台與遮雨木簷 (Front Porch)
+        const deck = rbox(2.4, 0.25, 1.4, getMat(0x854d0e, { roughness: 0.7 }));
+        deck.position.set(0, 0.4, 2.9);
+        house.add(deck);
+
+        // 前廊兩側小木柱與小斜簷
+        house.add(at(rbox(0.12, 1.8, 0.12, timberMat), -1.05, 1.4, 3.4));
+        house.add(at(rbox(0.12, 1.8, 0.12, timberMat), 1.05, 1.4, 3.4));
+        const porchRoof = gableRoof(2.4, 0.6, 1.2, getMat(0xc1121f));
+        porchRoof.position.set(0, 2.3, 3.0);
+        house.add(porchRoof);
+
+        // ⑧ 實木雕花大門 (含金屬把手)
+        const door = createArtisanDoor(1.3, 2.2, 0x5c3a21, 0x854d0e);
+        door.position.set(0, 0.45, 2.52);
+        house.add(door);
+
+        // ⑨ 門旁復古暖黃掛壁提燈
+        const lantern = createWallLantern();
+        lantern.position.set(0.9, 2.0, 2.54);
+        house.add(lantern);
+
+        // ⑩ 兩側立體木窗與窗台花箱
+        const winL = createArtisanWindow(1.3, 1.4, 0xffffff, 0xfef08a, true);
+        winL.position.set(-1.8, 2.0, 2.53);
+        house.add(winL);
+
+        const winR = createArtisanWindow(1.3, 1.4, 0xffffff, 0xfef08a, true);
+        winR.position.set(1.8, 2.0, 2.53);
+        house.add(winR);
 
         g.add(house);
 
-        // 屋外苦讀大書桌區
+        // 屋外苦讀大書桌區 (厚實橡木桌、散落考卷、彩色精裝書本山、綠罩檯燈)
         const deskGroup = new THREE.Group();
-        deskGroup.position.set(2.8, 3.8, 3.2);
+        deskGroup.position.set(2.8, 3.2, 3.0);
 
-        // 木書桌
-        deskGroup.add(at(rbox(3.2, 0.25, 2.0, getMat(0x854d0e)), 0, 1.4, 0));
-        deskGroup.add(at(cyl(0.12, 0.12, 1.4, 5, getMat(0x713f12)), -1.3, 0.7, -0.8));
-        deskGroup.add(at(cyl(0.12, 0.12, 1.4, 5, getMat(0x713f12)), 1.3, 0.7, -0.8));
-        deskGroup.add(at(cyl(0.12, 0.12, 1.4, 5, getMat(0x713f12)), -1.3, 0.7, 0.8));
-        deskGroup.add(at(cyl(0.12, 0.12, 1.4, 5, getMat(0x713f12)), 1.3, 0.7, 0.8));
+        // 橡木大書桌 (厚桌面與車削桌腳)
+        deskGroup.add(at(rbox(3.4, 0.28, 2.2, getMat(0x78350f, { roughness: 0.65 })), 0, 1.4, 0));
+        for (const [dx, dz] of [[-1.4, -0.9], [1.4, -0.9], [-1.4, 0.9], [1.4, 0.9]]) {
+          deskGroup.add(at(cyl(0.14, 0.1, 1.4, 6, getMat(0x5c3a21)), dx, 0.7, dz));
+        }
 
-        // 堆積如山的書本與測驗卷 (放大法)
-        const colors = [0xe63946, 0x457b9d, 0x2a9d8f, 0xe9c46a, 0xffffff];
+        // 散落翻開的試卷
+        const testPaper = rbox(1.0, 0.04, 0.8, getMat(0xffffff, { roughness: 0.9 }));
+        testPaper.position.set(0.3, 1.56, 0.1);
+        testPaper.rotation.y = 0.2;
+        deskGroup.add(testPaper);
+
+        // 堆積如山的彩色精裝書本 (放大誇飾)
+        const colors = [0xe63946, 0x457b9d, 0x2a9d8f, 0xe9c46a, 0x8b5cf6, 0xffffff];
         for (let b = 0; b < 6; b++) {
-          const book = rbox(0.9, 0.18, 0.7, getMat(colors[b % colors.length]));
-          book.position.set(-0.8, 1.6 + b * 0.19, -0.3 + (b % 2) * 0.05);
-          book.rotation.y = (b * 0.2);
+          const book = rbox(1.1, 0.2, 0.8, getMat(colors[b % colors.length], { roughness: 0.6 }));
+          book.position.set(-0.9, 1.62 + b * 0.21, -0.3 + (b % 2) * 0.06);
+          book.rotation.y = (b * 0.18);
           deskGroup.add(book);
         }
 
-        // 發光檯燈
+        // 復古發光綠罩檯燈
         const lamp = new THREE.Group();
-        lamp.add(at(cyl(0.25, 0.3, 0.1, 8, getMat(0x333333)), 0.9, 1.5, -0.5));
-        lamp.add(at(cyl(0.05, 0.05, 0.9, 5, getMat(0x333333)), 0.9, 1.9, -0.5));
-        lamp.add(at(cone(0.35, 0.4, 8, getMat(0xf4a261, { emissive: 0xf4a261, emissiveIntensity: 0.6 })), 0.9, 2.3, -0.5));
+        lamp.add(at(cyl(0.28, 0.32, 0.1, 8, getMat(0x1e293b)), 1.0, 1.55, -0.5));
+        lamp.add(at(cyl(0.06, 0.06, 0.9, 6, getMat(0xd97706, { metalness: 0.8 })), 1.0, 2.0, -0.5));
+        lamp.add(at(cone(0.4, 0.42, 8, getMat(0x166534, { emissive: 0x22c55e, emissiveIntensity: 0.4 })), 1.0, 2.4, -0.5));
         deskGroup.add(lamp);
 
         g.add(deskGroup);
 
         // 月考倒數大鐘樓
         const clockTower = new THREE.Group();
-        clockTower.position.set(-5.5, 3.8, 3.5);
-        clockTower.add(at(cyl(0.8, 1.0, 5.0, 8, getMat(0x4a5568)), 0, 2.5, 0));
+        clockTower.position.set(-5.5, 3.2, 3.5);
+        clockTower.add(at(cyl(0.9, 1.1, 5.2, 8, getMat(0x334155)), 0, 2.6, 0));
         // 大時鐘面
-        const clockDial = cyl(1.2, 1.2, 0.25, 16, getMat(0xffffff));
+        const clockDial = cyl(1.3, 1.3, 0.28, 20, getMat(0xffffff));
         clockDial.rotation.x = Math.PI / 2;
-        clockDial.position.set(0, 4.8, 0.8);
+        clockDial.position.set(0, 5.0, 0.9);
         clockTower.add(clockDial);
         // 指針指在深夜 11:55
-        const hand = rbox(0.1, 0.7, 0.05, getMat(0xd90429));
-        hand.position.set(0, 4.8, 0.95);
+        const hand = rbox(0.12, 0.75, 0.06, getMat(0xd90429));
+        hand.position.set(0, 5.0, 1.08);
         clockTower.add(hand);
 
         // 標語招牌：倒數 3 天！
-        clockTower.add(at(signBoard("倒數３天！", 1.8, 0.5), 0, 1.8, 1.0));
+        clockTower.add(at(signBoard("倒數３天！", 1.8, 0.55), 0, 1.8, 1.1));
         g.add(clockTower);
 
-        // 漂浮蓬鬆白雲
+        // 漂浮蓬鬆棉花糖柔和白雲
         const cl = cloud(1.2);
-        cl.position.set(-2, 10.5, -1);
+        cl.position.set(-1.8, 10.5, -1.2);
         g.add(cl);
         this.animatedObjects.push({ obj: cl, type: 'float', base: 10.5 });
       }
 
-      // 承之島：學校考場微縮模型 (兩層樓校舍、校園大鐘、整齊課桌椅、黑板)
+      // 承之島：學校考場微縮模型 (典雅英倫紅磚校舍、古典三角門楣門柱、多扇拱窗、八角銅頂鐘樓、整齊桌椅、黑板、升旗台)
       buildSchoolExamDiorama(g) {
         const school = new THREE.Group();
-        school.position.set(-1, 3.8, -2.5);
+        school.position.set(-1.0, 3.9, -2.5); // 穩坐於後方高地上
 
-        // 兩層學校紅磚教學樓
-        school.add(at(rbox(7.5, 4.8, 4.2, getMat(0xd97706)), 0, 2.4, 0));
-        school.add(at(rbox(8.0, 0.3, 4.6, getMat(0xffffff)), 0, 4.8, 0));
+        // ① 白色花崗岩地基 (Granite Plinth)
+        const plinth = rbox(8.2, 0.5, 4.8, getMat(0xe2e8f0, { roughness: 0.85 }));
+        plinth.position.y = 0.25;
+        school.add(plinth);
 
-        // 教室大門與多扇黑框窗戶
-        school.add(at(rbox(1.4, 2.2, 0.1, getMat(0x1e3a8a)), 0, 1.1, 2.12));
-        for (let x = -2.6; x <= 2.6; x += 1.8) {
-          if (Math.abs(x) > 0.5) {
-            school.add(at(rbox(1.1, 1.2, 0.08, getMat(0xdbeafe)), x, 1.5, 2.12));
-            school.add(at(rbox(1.1, 1.2, 0.08, getMat(0xdbeafe)), x, 3.4, 2.12));
-          }
+        // ② 主建築兩層紅磚校舍 (Red-brick Academy)
+        const brickMat = getMat(0xb91c1c, { roughness: 0.82 });
+        const mainBuilding = rbox(7.8, 4.8, 4.4, brickMat);
+        mainBuilding.position.y = 2.9;
+        school.add(mainBuilding);
+
+        // ③ 樓層白色腰線與轉角立柱飾邊 (Classical Moldings)
+        const whiteTrim = getMat(0xffffff, { roughness: 0.6 });
+        school.add(at(rbox(7.9, 0.22, 4.5, whiteTrim), 0, 2.9, 0)); // 一二樓分隔腰線
+        school.add(at(rbox(8.0, 0.3, 4.6, whiteTrim), 0, 5.3, 0));  // 屋簷下封簷條
+
+        // ④ 正門古典多立克門柱與三角門楣 (Classical Portico Entrance)
+        const portico = new THREE.Group();
+        portico.position.set(0, 0.5, 2.2);
+        // 兩根白色立柱
+        portico.add(at(cyl(0.18, 0.22, 2.4, 8, whiteTrim), -1.1, 1.2, 0.4));
+        portico.add(at(cyl(0.18, 0.22, 2.4, 8, whiteTrim), 1.1, 1.2, 0.4));
+        // 三角門楣山花 (Pediment)
+        const pediment = gableRoof(2.8, 0.9, 0.8, whiteTrim);
+        pediment.position.set(0, 2.85, 0.4);
+        portico.add(pediment);
+        // 深藍雙開校門
+        const schoolDoor = createArtisanDoor(1.6, 2.3, 0x1e3a8a, 0x1e293b);
+        schoolDoor.position.set(0, 0.05, 0.02);
+        portico.add(schoolDoor);
+        school.add(portico);
+
+        // ⑤ 雙層典雅學院窗戶 (一樓大方窗，二樓拱形窗)
+        for (let x of [-2.6, 2.6]) {
+          // 一樓窗
+          const win1 = createArtisanWindow(1.3, 1.3, 0xffffff, 0xdbeafe, false);
+          win1.position.set(x, 1.8, 2.23);
+          school.add(win1);
+          // 二樓拱形窗
+          const win2 = createArtisanWindow(1.3, 1.3, 0xffffff, 0xdbeafe, false);
+          win2.position.set(x, 4.0, 2.23);
+          // 拱形裝飾頂
+          const arch = cyl(0.65, 0.65, 0.08, 12, whiteTrim);
+          arch.rotation.x = Math.PI / 2;
+          arch.position.set(x, 4.75, 2.25);
+          school.add(arch);
+          school.add(win2);
         }
 
-        // 考場鐘樓 (大銅鐘)
+        // ⑥ 石板青藍斜屋頂 (Slate Roof)
+        const roof = createArtisanRoof(8.0, 1.8, 4.6, 0x1e3a8a, 0x0f172a, 0.35);
+        roof.position.y = 5.4;
+        school.add(roof);
+
+        // ⑦ 八角古典鐘塔閣樓 (Octagonal Cupola with Bell & Spire)
         const bellTower = new THREE.Group();
-        bellTower.position.set(0, 5.0, 0);
-        bellTower.add(at(cyl(1.1, 1.3, 2.2, 6, getMat(0xffffff)), 0, 1.1, 0));
-        bellTower.add(at(cone(1.4, 1.8, 6, getMat(0x1d4ed8)), 0, 3.1, 0));
+        bellTower.position.set(0, 6.3, 0);
+        // 下層木百葉閣樓
+        bellTower.add(at(cyl(1.2, 1.3, 1.8, 8, whiteTrim), 0, 0.9, 0));
         // 金銅鐘
-        const bell = cyl(0.4, 0.7, 0.9, 8, getMat(0xf59e0b, { metalness: 0.8, roughness: 0.2 }));
-        bell.position.set(0, 1.2, 0.8);
+        const bell = cyl(0.4, 0.65, 0.85, 8, getMat(0xf59e0b, { metalness: 0.85, roughness: 0.2 }));
+        bell.position.set(0, 0.9, 0.4);
         bellTower.add(bell);
+        // 上層青銅尖頂
+        bellTower.add(at(cone(1.5, 2.2, 8, getMat(0x0f766e, { roughness: 0.5 })), 0, 2.9, 0));
+        // 避雷針與金球
+        bellTower.add(at(cyl(0.04, 0.04, 0.8, 4, getMat(0xf59e0b, { metalness: 0.9 })), 0, 4.3, 0));
+        bellTower.add(at(ball(0.15, getMat(0xf59e0b, { metalness: 0.9 }), 8, 6), 0, 4.7, 0));
         school.add(bellTower);
 
         g.add(school);
 
-        // 操場前排列整齊的考試桌椅與考卷
+        // 操場考場廣場 (校園地磚道與四套精緻課桌椅)
         for (let r = 0; r < 2; r++) {
           for (let c = 0; c < 2; c++) {
             const desk = new THREE.Group();
             const dx = -2.2 + c * 4.4;
-            const dz = 2.5 + r * 2.8;
-            desk.position.set(dx, 3.8, dz);
+            const dz = 2.4 + r * 2.8;
+            desk.position.set(dx, 3.2, dz);
 
             // 課桌
-            desk.add(at(rbox(1.8, 0.18, 1.2, getMat(0xb45309)), 0, 1.1, 0));
-            desk.add(at(cyl(0.08, 0.08, 1.1, 4, getMat(0x78350f)), -0.7, 0.55, -0.4));
-            desk.add(at(cyl(0.08, 0.08, 1.1, 4, getMat(0x78350f)), 0.7, 0.55, -0.4));
-            desk.add(at(cyl(0.08, 0.08, 1.1, 4, getMat(0x78350f)), -0.7, 0.55, 0.4));
-            desk.add(at(cyl(0.08, 0.08, 1.1, 4, getMat(0x78350f)), 0.7, 0.55, 0.4));
+            desk.add(at(rbox(1.9, 0.18, 1.25, getMat(0xb45309, { roughness: 0.7 })), 0, 1.1, 0));
+            // 墨綠色金屬烤漆桌腳
+            const legMat = getMat(0x166534, { roughness: 0.5, metalness: 0.3 });
+            desk.add(at(cyl(0.07, 0.07, 1.1, 5, legMat), -0.75, 0.55, -0.45));
+            desk.add(at(cyl(0.07, 0.07, 1.1, 5, legMat), 0.75, 0.55, -0.45));
+            desk.add(at(cyl(0.07, 0.07, 1.1, 5, legMat), -0.75, 0.55, 0.45));
+            desk.add(at(cyl(0.07, 0.07, 1.1, 5, legMat), 0.75, 0.55, 0.45));
 
-            // 雪白的考試卷
-            desk.add(at(rbox(0.9, 0.04, 0.7, getMat(0xffffff)), 0, 1.22, 0));
+            // 雪白考試卷
+            desk.add(at(rbox(0.9, 0.04, 0.7, getMat(0xffffff)), 0, 1.21, 0));
+            // 黃色 2B 鉛筆
+            desk.add(at(rbox(0.05, 0.04, 0.4, getMat(0xfacc15)), 0.6, 1.22, 0.1));
 
-            // 椅子
+            // 學生椅子
             desk.add(at(rbox(1.2, 0.12, 0.8, getMat(0xd97706)), 0, 0.65, 1.0));
             desk.add(at(rbox(1.2, 0.9, 0.1, getMat(0xd97706)), 0, 1.15, 1.35));
 
@@ -2691,57 +3077,118 @@ puzzleSentences: [
           }
         }
 
-        // 大黑板：安靜作答！
-        g.add(at(signBoard("考場：安靜作答！", 2.2, 0.6, '#14532d', '#ffffff'), 3.6, 5.0, 3.0, -0.4));
+        // 大黑板：安靜作答！(附木框與粉筆槽)
+        const bbGroup = new THREE.Group();
+        bbGroup.position.set(3.8, 4.4, 3.0);
+        bbGroup.rotation.y = -0.4;
+        bbGroup.add(signBoard("考場：安靜作答！", 2.4, 0.7, '#14532d', '#ffffff'));
+        g.add(bbGroup);
 
         // 升旗台
         const flagPole = new THREE.Group();
-        flagPole.position.set(-5.5, 3.8, 2.5);
-        flagPole.add(at(cyl(0.08, 0.1, 7.5, 6, getMat(0xd1d5db, { metalness: 0.8 })), 0, 3.75, 0));
-        flagPole.add(at(rbox(1.4, 0.8, 0.04, getMat(0xef4444)), 0.7, 6.8, 0));
+        flagPole.position.set(-5.5, 3.2, 2.5);
+        flagPole.add(at(rbox(1.4, 0.5, 1.4, getMat(0x64748b)), 0, 0.25, 0));
+        flagPole.add(at(cyl(0.08, 0.1, 7.5, 6, getMat(0xd1d5db, { metalness: 0.8 })), 0, 4.0, 0));
+        flagPole.add(at(rbox(1.4, 0.8, 0.04, getMat(0xef4444)), 0.7, 7.2, 0));
         g.add(flagPole);
       }
 
-      // 轉之島：家庭風暴與成績揭曉微縮模型 (客廳小屋、憤怒烏雲、金色閃電折線、巨型滿江紅試卷)
+      // 轉之島：家庭風暴與成績揭曉微縮模型 (L型雙向美式洋房、震歪百葉窗、3D動漫怒氣符號、旋轉雷雲閃電、滿江紅59分考卷碑)
       buildStormHouseDiorama(g) {
         const house = new THREE.Group();
-        house.position.set(-1.5, 3.8, -1.0);
+        house.position.set(-1.5, 3.9, -1.2); // 穩坐於後方高地上
 
-        // 溫馨平房
-        house.add(at(rbox(5.8, 3.6, 5.0, getMat(0xfef08a)), 0, 1.8, 0));
-        house.add(at(gableRoof(6.6, 2.2, 5.6, getMat(0x3b82f6)), 0, 3.6, 0));
-        house.add(at(rbox(1.1, 2.0, 0.1, getMat(0x854d0e)), 0, 1.0, 2.52));
+        // ① 白色木棧地基
+        const plinth = rbox(6.8, 0.4, 5.8, getMat(0x475569));
+        plinth.position.y = 0.2;
+        house.add(plinth);
 
-        // 屋頂上方憤怒黑雷雲與金色閃電折線 (卡通蓬鬆雷雲，非粗糙石塊)
+        // ② L 型複合洋房主體 (打破單調立方體)
+        const wallMat = getMat(0xfef08a, { roughness: 0.75 }); // 鵝黃色木板牆
+        // 主房身
+        const mainWing = rbox(5.4, 3.6, 4.6, wallMat);
+        mainWing.position.set(-0.3, 2.0, 0);
+        house.add(mainWing);
+
+        // 向前凸出的側翼客廳 (打破方塊幾何)
+        const sideWing = rbox(2.8, 3.2, 2.4, wallMat);
+        sideWing.position.set(1.6, 1.8, 1.5);
+        house.add(sideWing);
+
+        // ③ 雙向交叉天藍斜屋頂 (Cross-gable Blue Roof)
+        const roof1 = createArtisanRoof(5.6, 2.2, 4.8, 0x2563eb, 0x1e3a8a, 0.35);
+        roof1.position.set(-0.3, 3.8, 0);
+        house.add(roof1);
+
+        const roof2 = createArtisanRoof(3.0, 1.7, 2.6, 0x2563eb, 0x1e3a8a, 0.3);
+        roof2.position.set(1.6, 3.4, 1.5);
+        house.add(roof2);
+
+        // ④ 大門與前廊
+        const door = createArtisanDoor(1.2, 2.1, 0x854d0e, 0x78350f);
+        door.position.set(-0.6, 0.4, 2.32);
+        house.add(door);
+
+        // ⑤ 窗戶與「被震歪」的百葉窗 (強烈動漫誇飾感)
+        const win1 = createArtisanWindow(1.2, 1.2, 0xffffff, 0x93c5fd, false);
+        win1.position.set(-2.0, 1.8, 2.33);
+        house.add(win1);
+
+        // 震歪的百葉窗板
+        const shutterL = rbox(0.35, 1.2, 0.06, getMat(0x1e40af));
+        shutterL.position.set(-2.8, 1.8, 2.36);
+        shutterL.rotation.z = -0.25; // 歪斜！
+        house.add(shutterL);
+
+        const shutterR = rbox(0.35, 1.2, 0.06, getMat(0x1e40af));
+        shutterR.position.set(-1.2, 1.8, 2.36);
+        shutterR.rotation.z = 0.32; // 歪斜！
+        house.add(shutterR);
+
+        // ⑥ 屋頂上方立體漫畫怒氣符號「💢」(3D Red Comic Vein)
+        const angerMark = new THREE.Group();
+        angerMark.position.set(0, 6.2, 0.5);
+        const redVeinMat = getMat(0xdc2626, { roughness: 0.4, emissive: 0xb91c1c, emissiveIntensity: 0.6 });
+        // 四個弧形凸起拼成經典動漫十字青筋怒氣符號
+        for (let a = 0; a < 4; a++) {
+          const vein = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.08, 6, 12, Math.PI * 0.65), redVeinMat);
+          vein.rotation.z = a * (Math.PI / 2) + 0.35;
+          vein.position.set(Math.cos(a * Math.PI / 2) * 0.28, Math.sin(a * Math.PI / 2) * 0.28, 0);
+          angerMark.add(vein);
+        }
+        house.add(angerMark);
+        this.animatedObjects.push({ obj: angerMark, type: 'pulse', speed: 2.5 });
+
+        // ⑦ 屋頂上方憤怒黑雷雲與金色閃電 (圓潤柔順球體組合，無石塊稜角)
         const stormCloud = new THREE.Group();
-        stormCloud.position.set(0, 6.8, 0);
+        stormCloud.position.set(0, 7.8, 0);
         const darkCloudMat = new THREE.MeshStandardMaterial({
-          color: 0x475569, // 柔和藍灰卡通雷雲
+          color: 0x475569,
           roughness: 0.9,
           metalness: 0.0,
-          flatShading: false, // 圓潤柔順，無石塊稜角
+          flatShading: false,
           emissive: 0x334155,
-          emissiveIntensity: 0.28,
+          emissiveIntensity: 0.35,
           transparent: true,
-          opacity: 0.95
+          opacity: 0.96
         });
         const stormPuffs = [
-          [0, -0.2, 0, 1.8, 0.8, 1.3],
-          [0, 0.45, 0, 1.5, 1.15, 1.3],
-          [-1.2, 0.2, 0.1, 1.2, 0.95, 1.05],
-          [1.2, 0.25, -0.1, 1.25, 1.0, 1.1],
-          [-1.9, -0.1, 0, 0.85, 0.65, 0.75],
-          [1.9, -0.1, 0, 0.9, 0.7, 0.8],
-          [0.3, 0.1, 0.75, 1.0, 0.8, 0.9]
+          [0, -0.2, 0, 1.9, 0.85, 1.35],
+          [0, 0.45, 0, 1.6, 1.2, 1.35],
+          [-1.3, 0.2, 0.1, 1.25, 1.0, 1.1],
+          [1.3, 0.25, -0.1, 1.3, 1.05, 1.15],
+          [-2.0, -0.1, 0, 0.9, 0.7, 0.8],
+          [2.0, -0.1, 0, 0.95, 0.75, 0.85],
+          [0.3, 0.1, 0.8, 1.05, 0.85, 0.95]
         ];
         stormPuffs.forEach(([cx, cy, cz, rx, ry, rz]) => {
-          const p = cloudPuff(rx, ry, rz, darkCloudMat, 16, 12);
+          const p = cloudPuff(rx, ry, rz, darkCloudMat, 18, 14);
           p.position.set(cx, cy, cz);
           stormCloud.add(p);
         });
 
         // 金色折線立體閃電
-        const boltMat = getMat(0xfacc15, { emissive: 0xfacc15, emissiveIntensity: 0.8 });
+        const boltMat = getMat(0xfacc15, { emissive: 0xfacc15, emissiveIntensity: 0.9 });
         const bolt1 = cyl(0.12, 0.12, 1.6, 4, boltMat);
         bolt1.rotation.z = 0.45;
         bolt1.position.set(-0.6, -1.2, 0.8);
@@ -2756,13 +3203,13 @@ puzzleSentences: [
         g.add(house);
         this.animatedObjects.push({ obj: stormCloud, type: 'shake' });
 
-        // 刺眼的滿江紅巨型考卷雕像
+        // 刺眼的滿江紅巨型考卷雕像 (石基座 + 大叉叉與 59 分)
         const paperMonument = new THREE.Group();
-        paperMonument.position.set(3.8, 3.8, 2.0);
+        paperMonument.position.set(3.8, 3.2, 2.0);
         paperMonument.rotation.y = -0.3;
 
         // 石基座
-        paperMonument.add(at(rbox(3.2, 0.6, 1.2, getMat(0x374151)), 0, 0.3, 0));
+        paperMonument.add(at(rbox(3.2, 0.6, 1.4, getMat(0x374151)), 0, 0.3, 0));
 
         // 巨型試卷板面
         const tex = canvasTexture(512, 512, (ctx, w, h) => {
@@ -2771,7 +3218,6 @@ puzzleSentences: [
           for (let y = 60; y < h; y += 45) {
             ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(w - 40, y); ctx.stroke();
           }
-          // 刺眼的滿江紅分數 59 分與大叉叉
           ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 14;
           ctx.beginPath(); ctx.moveTo(w * 0.15, h * 0.15); ctx.lineTo(w * 0.85, h * 0.85); ctx.stroke();
           ctx.beginPath(); ctx.moveTo(w * 0.85, h * 0.15); ctx.lineTo(w * 0.15, h * 0.85); ctx.stroke();
@@ -2788,76 +3234,109 @@ puzzleSentences: [
 
         // 媽媽生氣人偶與主角抱頭人偶
         const mom = figure(0xd97706, 0xffd166, 0x111111);
-        mom.position.set(0.8, 3.8, 4.2);
+        mom.position.set(0.8, 3.2, 4.2);
         mom.scale.setScalar(1.2);
         g.add(mom);
 
         const kid = figure(0x3b82f6);
-        kid.position.set(2.4, 3.8, 4.2);
+        kid.position.set(2.4, 3.2, 4.2);
         kid.scale.setScalar(0.9);
         g.add(kid);
       }
 
-      // 合之島：超越自我微縮模型 (超越之門、第一名大金盃、旋轉金星、百科全書螺旋天梯、金色風車)
+      // 合之島：超越自我微縮模型 (三級大理石圓台階座、六根典雅石柱、圓形金邊穹頂、第一名金獎盃、金色風車、百科全書螺旋天梯)
       buildTrophyTempleDiorama(g) {
-        // 榮譽殿堂 (超越之門)
+        // ① 希臘圓形神殿基台 (Neoclassical Round Podium)
         const temple = new THREE.Group();
-        temple.position.set(-1.5, 3.8, -1.5);
+        temple.position.set(-1.2, 3.9, -1.2); // 穩坐於後方高地之上
 
-        // 圓柱
-        const colMat = getMat(0xffffff, { roughness: 0.3 });
-        for (const [x, z] of [[-2.2, -1.8], [2.2, -1.8], [-2.2, 1.8], [2.2, 1.8]]) {
-          temple.add(at(cyl(0.35, 0.45, 4.5, 8, colMat), x, 2.25, z));
+        const marbleMat = getMat(0xf8fafc, { roughness: 0.4 });
+        // 三級圓環階梯基石
+        for (let st = 0; st < 3; st++) {
+          const stepR = 3.6 - st * 0.35;
+          temple.add(at(cyl(stepR, stepR + 0.1, 0.28, 20, marbleMat), 0, 0.14 + st * 0.28, 0));
         }
-        // 頂部金橫額
-        temple.add(at(rbox(5.8, 0.8, 4.8, getMat(0xf59e0b, { metalness: 0.7, roughness: 0.3 })), 0, 4.8, 0));
-        temple.add(at(signBoard("超越自我・征服考試", 3.2, 0.7, '#d97706', '#ffffff'), 0, 5.6, 2.45));
+
+        // ② 環狀六根典雅多立克立柱 (Hexastyle Colonnade)
+        const colRadius = 2.4;
+        const colHeight = 4.2;
+        for (let c = 0; c < 6; c++) {
+          const ang = c * (Math.PI * 2 / 6);
+          const cx = Math.cos(ang) * colRadius;
+          const cz = Math.sin(ang) * colRadius;
+          // 柱礎
+          temple.add(at(cyl(0.38, 0.42, 0.2, 8, marbleMat), cx, 0.94, cz));
+          // 柱身
+          temple.add(at(cyl(0.3, 0.35, colHeight, 10, marbleMat), cx, 0.94 + colHeight / 2, cz));
+          // 柱頭
+          temple.add(at(cyl(0.42, 0.32, 0.2, 8, marbleMat), cx, 0.94 + colHeight, cz));
+        }
+
+        // ③ 環形純白過樑與金邊半球穹頂 (Dome & Entablature)
+        const entablature = cyl(2.8, 2.7, 0.5, 20, marbleMat);
+        entablature.position.y = 0.94 + colHeight + 0.25;
+        temple.add(entablature);
+
+        // 金色半球穹頂
+        const domeGeo = new THREE.SphereGeometry(2.5, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.5);
+        const domeMat = getMat(0xf59e0b, { metalness: 0.65, roughness: 0.25 });
+        const domeMesh = new THREE.Mesh(domeGeo, domeMat);
+        domeMesh.position.y = 0.94 + colHeight + 0.5;
+        temple.add(domeMesh);
+
+        // 頂端金星
+        const topStar = ball(0.35, getMat(0xfef08a, { emissive: 0xfbbf24, emissiveIntensity: 0.8 }), 8, 6);
+        topStar.position.y = 0.94 + colHeight + 3.1;
+        temple.add(topStar);
+
+        // 正面懸掛金色橫額
+        temple.add(at(signBoard("超越自我・征服考試", 3.2, 0.7, '#d97706', '#ffffff'), 0, 4.8, 2.7));
         g.add(temple);
 
-        // 巨大的第一名金獎盃
+        // ④ 神殿正中心：發光的巨大第一名金獎盃
         const trophy = new THREE.Group();
-        trophy.position.set(-1.5, 5.2, 0);
+        trophy.position.set(-1.2, 5.0, -1.2);
 
-        const goldMat = getMat(0xfbbf24, { metalness: 0.85, roughness: 0.2 });
-        // 底座
-        trophy.add(at(cyl(0.9, 1.1, 0.6, 8, getMat(0x1e293b)), 0, 0.3, 0));
-        // 盃身與手把
-        trophy.add(at(cyl(0.3, 0.2, 0.7, 8, goldMat), 0, 0.95, 0));
-        trophy.add(at(cyl(1.1, 0.4, 1.6, 12, goldMat), 0, 2.0, 0));
-        // 盃耳
+        const goldMat = getMat(0xfbbf24, { metalness: 0.88, roughness: 0.18 });
+        // 深紅絲絨底座
+        trophy.add(at(cyl(0.85, 1.0, 0.5, 10, getMat(0x991b1b)), 0, 0.25, 0));
+        // 金色杯柱與杯身
+        trophy.add(at(cyl(0.28, 0.2, 0.6, 8, goldMat), 0, 0.8, 0));
+        trophy.add(at(cyl(1.1, 0.4, 1.5, 16, goldMat), 0, 1.8, 0));
+        // 雙金耳捲邊
         for (const s of [-1, 1]) {
-          const ear = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.1, 6, 12, Math.PI), goldMat);
-          ear.position.set(s * 1.0, 2.2, 0);
+          const ear = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.1, 8, 16, Math.PI), goldMat);
+          ear.position.set(s * 1.0, 2.0, 0);
           ear.rotation.z = s * (Math.PI / 2);
           trophy.add(ear);
         }
-        // 頂部旋轉五角星
-        const star = cone(0.5, 0.8, 5, getMat(0xfef08a, { emissive: 0xfbbf24, emissiveIntensity: 0.8 }));
-        star.position.set(0, 3.2, 0);
+        // 杯口發光立體旋轉五角星
+        const star = cone(0.5, 0.8, 5, getMat(0xfef08a, { emissive: 0xfbbf24, emissiveIntensity: 0.9 }));
+        star.position.set(0, 2.9, 0);
         trophy.add(star);
         g.add(trophy);
         this.animatedObjects.push({ obj: trophy, type: 'spin', speed: 0.8 });
 
-        // 百科全書螺旋天梯 (步步高升)
+        // ⑤ 彩色精裝百科全書螺旋天梯 (步步高升，直入雲海)
         const stairColors = [0xef4444, 0xf97316, 0xeab308, 0x22c55e, 0x06b6d4, 0x6366f1, 0xa855f7];
         for (let s = 0; s < 7; s++) {
-          const bookStep = rbox(1.5, 0.35, 1.0, getMat(stairColors[s]));
+          const bookStep = rbox(1.5, 0.32, 1.0, getMat(stairColors[s], { roughness: 0.6 }));
           const theta = s * 0.45;
-          const r = 3.6;
-          bookStep.position.set(2.5 + Math.cos(theta) * 1.5, 3.8 + s * 0.45, 1.5 + Math.sin(theta) * 1.5);
+          bookStep.position.set(2.6 + Math.cos(theta) * 1.6, 3.4 + s * 0.48, 1.2 + Math.sin(theta) * 1.6);
           bookStep.rotation.y = -theta;
           g.add(bookStep);
         }
 
-        // 金色四葉風車 (高美濕地意象)
+        // ⑥ 金色四葉童話大風車 (在微風中緩緩旋轉)
         const mill = new THREE.Group();
-        mill.position.set(5.5, 3.8, -3.5);
-        mill.add(at(cyl(0.5, 0.8, 6.0, 8, getMat(0xffffff)), 0, 3.0, 0));
+        mill.position.set(5.5, 3.2, -3.5);
+        mill.add(at(cyl(0.55, 0.85, 6.2, 8, getMat(0xffffff, { roughness: 0.6 })), 0, 3.1, 0));
+        mill.add(at(cone(0.95, 1.2, 8, getMat(0xd97706)), 0, 6.8, 0));
         const blades = new THREE.Group();
-        blades.position.set(0, 5.8, 0.7);
+        blades.position.set(0, 6.0, 0.75);
         for (let b = 0; b < 4; b++) {
-          const blade = rbox(0.35, 2.2, 0.05, getMat(0xf59e0b));
-          blade.position.y = 1.1;
+          const blade = rbox(0.38, 2.4, 0.06, getMat(0xf59e0b, { roughness: 0.5 }));
+          blade.position.y = 1.2;
           const bg = new THREE.Group();
           bg.rotation.z = b * (Math.PI / 2);
           bg.add(blade);
