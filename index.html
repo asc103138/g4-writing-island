@@ -717,6 +717,16 @@
 
         <!-- 寫作輸入區 -->
         <div class="writing-area">
+          <!-- 讓學生主動匯入 Step 2 填空成果按鈕 -->
+          <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 4px;">
+            <div style="font-size: 12.5px; color: #1e40af; font-weight: 700;">
+              📥 已完成 Step 2 填空？點擊右側將你組好的句子帶入文字框開始潤飾：
+            </div>
+            <button type="button" style="padding: 6px 14px; background: #2563eb; color: white; border-radius: 8px; font-size: 12.5px; font-weight: 800; border: none; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 4px rgba(37,99,235,0.2);" onclick="window.islandApp.importStep2ToEditor()">
+              📋 匯入我的填空句子
+            </button>
+          </div>
+
           <div class="textarea-wrapper">
             <textarea class="writing-textarea" id="paragraphInput" placeholder="請在此微調你的段落內容……" oninput="window.islandApp.onTextChange()"></textarea>
           </div>
@@ -838,6 +848,27 @@
         </div>
       </div>
 
+      <div style="padding: 10px 12px; background: #f0fdf4; border: 1.5px dashed #22c55e; border-radius: 10px; display: flex; flex-direction: column; gap: 6px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 13px; font-weight: 900; color: #166534;">⚙️ 教師分層學習輔導（難度調整）</span>
+          <span id="currentTierTeacherDisplay" style="font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #dcfce7; color: #15803d; font-weight: 800;">目前：挑戰者</span>
+        </div>
+        <div style="font-size: 11.5px; color: #15803d; line-height: 1.4;">
+          經評估若學生需要補救教學，可切換為【初探者】；表現優良可調升回【挑戰者】或【大師級】。
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 2px;">
+          <button type="button" style="flex: 1; padding: 6px 4px; font-size: 11.5px; font-weight: 800; background: #fef2f2; border: 1.5px solid #f87171; color: #991b1b; border-radius: 6px; cursor: pointer;" onclick="window.islandApp.teacherSwitchTier('beginner')">
+            🧩 轉入初探者(補救)
+          </button>
+          <button type="button" style="flex: 1; padding: 6px 4px; font-size: 11.5px; font-weight: 800; background: #e0f2fe; border: 1.5px solid #38bdf8; color: #0369a1; border-radius: 6px; cursor: pointer;" onclick="window.islandApp.teacherSwitchTier('intermediate')">
+            ⚔️ 設為挑戰者
+          </button>
+          <button type="button" style="flex: 1; padding: 6px 4px; font-size: 11.5px; font-weight: 800; background: #fef3c7; border: 1.5px solid #fbbf24; color: #92400e; border-radius: 6px; cursor: pointer;" onclick="window.islandApp.teacherSwitchTier('master')">
+            👑 升為大師級
+          </button>
+        </div>
+      </div>
+
       <div style="display: flex; flex-direction: column; gap: 6px;">
         <label style="font-size: 13px; font-weight: 700; color: #555;">快捷退件指導（若未達標請勾選）：</label>
         <div class="quick-reject-group">
@@ -866,29 +897,34 @@
       <p style="font-size: 13px; color: #666; line-height: 1.5;">依據自己的寫作信心選擇，各模式皆配備專屬鷹架，保證能順利通關！</p>
       
       <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 6px;">
-        <button style="padding: 12px; border-radius: 10px; border: 2px solid #a8dadc; background: #f1faee; text-align: left; display: flex; justify-content: space-between; align-items: center;" onclick="window.islandApp.setTier('beginner')">
+        <!-- 初探者按鈕對學生隱藏，僅限教師操作啟用 -->
+        <button id="tierBtnBeginner" style="display: none; padding: 12px; border-radius: 10px; border: 2px solid #a8dadc; background: #f1faee; text-align: left; justify-content: space-between; align-items: center;" onclick="window.islandApp.setTier('beginner')">
           <div>
-            <strong style="color: var(--primary); font-size: 15px;">🌟 初探者（低成就・拼圖鷹架）</strong>
-            <div style="font-size: 12px; color: #555; margin-top: 2px;">提供克漏字語意拼圖，輕鬆組裝即享 100% 通關成功！</div>
+            <strong style="color: var(--primary); font-size: 15px;">🌟 初探者（低成就・拼圖補救模式）</strong>
+            <div style="font-size: 12px; color: #555; margin-top: 2px;">提供克漏字語意拼圖，輕鬆組裝通關！</div>
           </div>
           <span style="font-size: 20px;">🧩</span>
         </button>
 
-        <button style="padding: 12px; border-radius: 10px; border: 2px solid var(--primary); background: #e3f2fd; text-align: left; display: flex; justify-content: space-between; align-items: center;" onclick="window.islandApp.setTier('intermediate')">
+        <button style="padding: 12px; border-radius: 10px; border: 2px solid var(--primary); background: #e3f2fd; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="window.islandApp.setTier('intermediate')">
           <div>
-            <strong style="color: var(--primary); font-size: 15px;">🌟🌟 挑戰者（中成就・骨架引導・推薦）</strong>
-            <div style="font-size: 12px; color: #555; margin-top: 2px;">提供情境題幹與好詞積木，自由擴寫挑戰 60~80 字段落。</div>
+            <strong style="color: var(--primary); font-size: 15px;">🌟🌟 挑戰者（中成就・引導填空・全班預設推薦）</strong>
+            <div style="font-size: 12px; color: #555; margin-top: 2px;">透過引導提問親自動手填空實作，組裝 50~80 字段落。</div>
           </div>
           <span style="font-size: 20px;">⚔️</span>
         </button>
 
-        <button style="padding: 12px; border-radius: 10px; border: 2px solid #f4a261; background: #fff8f0; text-align: left; display: flex; justify-content: space-between; align-items: center;" onclick="window.islandApp.setTier('master')">
+        <button style="padding: 12px; border-radius: 10px; border: 2px solid #f4a261; background: #fff8f0; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="window.islandApp.setTier('master')">
           <div>
             <strong style="color: #b05a14; font-size: 15px;">🌟🌟🌟 大師級（高成就・修辭挑戰）</strong>
-            <div style="font-size: 12px; color: #555; margin-top: 2px;">挑戰雙重誇飾法與同理心描摹，解鎖守門獸金色特級徽章！</div>
+            <div style="font-size: 12px; color: #555; margin-top: 2px;">深層審題思維定位，挑戰雙重誇飾法與同理心描摹！</div>
           </div>
           <span style="font-size: 20px;">👑</span>
         </button>
+
+        <div style="font-size: 11.5px; color: #64748b; background: #f1f5f9; padding: 6px 10px; border-radius: 6px; text-align: center;">
+          💡 全班同學一律由【🌟🌟 挑戰者模式】展開冒險！若寫作遇到困難需啟動【初探者補救模式】，請舉手由老師從認證門開啟。
+        </div>
       </div>
     </div>
   </div>
@@ -1147,7 +1183,75 @@
           }
         ],
         // 初探者拼圖填空
-        puzzleSentences: [
+                clozeSentences: [
+          {
+            index: 1,
+            title: "① 開頭句（時空與生活變化引導）",
+            guide: "💡 引導提問：什麼時候，你的生活有了什麼天翻地覆的變化？",
+            template: "每當{part1}，我的生活就{part2}。",
+            blanks: [
+              {
+                key: "part1",
+                label: "填空 ①【時空情境】",
+                placeholder: "例：期末月考倒數的日子裡",
+                chips: ["期末月考倒數的日子裡", "月考前一個禮拜", "考期一步步逼近之際"]
+              },
+              {
+                key: "part2",
+                label: "填空 ②【生活變化（誇飾）】",
+                placeholder: "例：風雲變色，鬧得人仰馬翻",
+                chips: ["風雲變色，鬧得人仰馬翻", "變得緊張萬分，草木皆兵", "像被龍捲風席捲一樣手忙腳亂"]
+              }
+            ]
+          },
+          {
+            index: 2,
+            title: "② 發展句（環境與作業壓迫引導）",
+            guide: "💡 引導提問：在你的書桌前，堆滿了哪些令人喘不過氣的作業與課本？（運用誇飾法）",
+            template: "在{part1}，桌上擺滿了{part2}。",
+            blanks: [
+              {
+                key: "part1",
+                label: "填空 ①【地點環境】",
+                placeholder: "例：凌亂的書桌前",
+                chips: ["凌亂的書桌前", "深夜發燙的檯燈下", "滿是雜物的房間角落"]
+              },
+              {
+                key: "part2",
+                label: "填空 ②【作業景物（誇飾法）】",
+                placeholder: "例：重點比芝麻還多的課本和堆積如山的測驗卷",
+                chips: ["重點比芝麻還多的課本和堆積如山的測驗卷", "厚重如磚頭、快被寫爛的習作", "堆積如山、令人喘不過氣的講義"]
+              }
+            ]
+          },
+          {
+            index: 3,
+            title: "③ 結尾句（神態交鋒與懊惱感慨引導）",
+            guide: "💡 引導提問：看著身邊嚴肅的家人，你內心有何感慨與懊惱？",
+            template: "看著平時笑咪咪的媽媽臉色{part1}，我只能{part2}，誰叫我{part3}！",
+            blanks: [
+              {
+                key: "part1",
+                label: "填空 ①【神態誇飾】",
+                placeholder: "例：比包青天還黑",
+                chips: ["比包青天還黑", "氣得像隨時會爆發的火山", "陰沉得像暴風雨前的烏雲"]
+              },
+              {
+                key: "part2",
+                label: "填空 ②【苦讀動作】",
+                placeholder: "例：硬著頭皮挑燈夜戰",
+                chips: ["硬著頭皮挑燈夜戰", "咬緊牙關認真苦讀", "臨陣磨槍，祈求奇蹟"]
+              },
+              {
+                key: "part3",
+                label: "填空 ③【平時壞習慣】",
+                placeholder: "例：平時不燒香，臨時抱佛腳呢",
+                chips: ["平時不燒香，臨時抱佛腳呢", "上課不專心，平時太貪玩呢", "只顧著看電視玩耍呢"]
+              }
+            ]
+          }
+        ],
+puzzleSentences: [
           { prefix: "每到月考前，我的生活就", options: ["風雲變色，鬧得人仰馬翻", "變得緊張萬分，草木皆兵"], defaultIdx: 0, suffix: "。" },
           { prefix: "悠閒的卡通時光全被暫停，桌上擺滿了", options: ["重點比芝麻還多的課本和習作", "堆積如山的測驗卷和講義"], defaultIdx: 0, suffix: "。" },
           { prefix: "平時笑咪咪的媽媽，此時臉色", options: ["比鐵面無私的包青天還要黑", "氣得像隨時會爆發的火山"], defaultIdx: 0, suffix: "。" },
@@ -1221,7 +1325,69 @@
             options: ["連一根針掉下都聽得見", "大腦刷的一聲變成空白"]
           }
         ],
-        puzzleSentences: [
+                clozeSentences: [
+          {
+            index: 1,
+            title: "① 開頭句（考前氣氛引導）",
+            guide: "💡 引導提問：考試即將開始，原本吵鬧的教室變得如何？",
+            template: "{part1}，原本熱鬧的教室頓時變得{part2}。",
+            blanks: [
+              {
+                key: "part1",
+                label: "填空 ①【時間情境】",
+                placeholder: "例：早自習鈴聲響起、月考大魔王逼近時",
+                chips: ["早自習鈴聲響起、月考大魔王逼近時", "發下試卷的前一秒鐘", "死神鐘聲敲響之際"]
+              },
+              {
+                key: "part2",
+                label: "填空 ②【氣氛形容】",
+                placeholder: "例：草木皆兵，人人自危",
+                chips: ["草木皆兵，人人自危", "安靜得像空無一人的山谷", "鴉雀無聲，空氣彷彿凍結"]
+              }
+            ]
+          },
+          {
+            index: 2,
+            title: "② 發展句（鐘聲與試卷飄落引導）",
+            guide: "💡 引導提問：令人心驚的鐘聲敲響，考卷如何發到桌上？",
+            template: "「噹！噹！噹！」比{part1}響起，考卷如{part2}緩緩飄落在桌上。",
+            blanks: [
+              {
+                key: "part1",
+                label: "填空 ①【鐘聲譬喻】",
+                placeholder: "例：死神喪鐘更驚心的鈴聲",
+                chips: ["死神喪鐘更驚心的鈴聲", "火警警報更刺耳的鐘聲", "雷公擂鼓更嚇人的鐘響"]
+              },
+              {
+                key: "part2",
+                label: "填空 ②【試卷飄落動態】",
+                placeholder: "例：雪片般，密密麻麻的漆黑鉛字映入眼簾",
+                chips: ["雪片般，密密麻麻的漆黑鉛字映入眼簾", "漫天落葉般，黑壓壓的題目令人暈眩", "冰冷雪花般，帶著無情字跡"]
+              }
+            ]
+          },
+          {
+            index: 3,
+            title: "③ 結尾句（極度寂靜與大腦空白引導）",
+            guide: "💡 引導提問：教室安靜到什麼極致程度？看著眼前題目，你的心跳與大腦有何極端反應？",
+            template: "此時全班安靜得{part1}，看著密密麻麻的題目，我心跳比海線風車還快，大腦{part2}！",
+            blanks: [
+              {
+                key: "part1",
+                label: "填空 ①【縮小法（安靜極致）】",
+                placeholder: "例：連一根針掉在地上都聽得見",
+                chips: ["連一根針掉在地上都聽得見", "連微風吹過窗櫺的聲音都清清楚楚", "連彼此屏息的心跳聲都能聽見"]
+              },
+              {
+                key: "part2",
+                label: "填空 ②【大腦當機反應】",
+                placeholder: "例：像當機一樣全刷的一聲變成空白",
+                chips: ["像當機一樣全刷的一聲變成空白", "緊張得像被冰塊凍住，完全無法運轉", "像一團亂麻，所有的注音改錯全忘光了"]
+              }
+            ]
+          }
+        ],
+puzzleSentences: [
           { prefix: "月考鈴聲即將響起，原本熱鬧的教室", options: ["頓時變得草木皆兵，人人自危", "安靜得像空無一人的山谷"], defaultIdx: 0, suffix: "。" },
           { prefix: "「噹！噹！噹！」比死神喪鐘更驚心的鐘聲響起，考卷", options: ["如雪片般緩緩飄落到大家桌上", "刷的一聲發下，氣氛緊張到了極點"], defaultIdx: 0, suffix: "。" },
           { prefix: "此時教室裡十分安靜，", options: ["連一根針掉下去的聲音都聽得見", "只聽見窗外微風吹過的聲響"], defaultIdx: 0, suffix: "。" },
@@ -1295,7 +1461,69 @@
             options: ["氣得火冒三丈，使出降龍十八掌", "臉色比包青天還黑，展開狂風暴雨"]
           }
         ],
-        puzzleSentences: [
+                clozeSentences: [
+          {
+            index: 1,
+            title: "① 開頭句（揭曉大審判時刻引導）",
+            guide: "💡 引導提問：熬過考試後，最刺激驚悚的發考卷時刻降臨了！",
+            template: "{part1}，迎接我們的是{part2}！",
+            blanks: [
+              {
+                key: "part1",
+                label: "填空 ①【時間情境】",
+                placeholder: "例：熬過了考試的煎熬，發考卷那一節課",
+                chips: ["熬過了考試的煎熬，發考卷那一節課", "放學踏進家門的前一刻", "老師拿著厚厚一疊成績單走進教室時"]
+              },
+              {
+                key: "part2",
+                label: "填空 ②【揭曉時刻誇飾】",
+                placeholder: "例：驚天地、泣鬼神的「發考卷」時刻",
+                chips: ["驚天地、泣鬼神的「發考卷」時刻", "令全班心驚膽戰的終極大審判", "讓人如坐針氈的生死關頭"]
+              }
+            ]
+          },
+          {
+            index: 2,
+            title: "② 發展句（身體緊繃與刺眼分數引導）",
+            guide: "💡 引導提問：等待叫到自己名字時，你的身體反應如何？走上臺看見了什麼刺眼成績？",
+            template: "等待叫名字時，我冷汗直流，屁股像{part1}；走上講臺接過考卷，看著{part2}，心情跌到了谷底。",
+            blanks: [
+              {
+                key: "part1",
+                label: "填空 ①【身體緊繃誇飾】",
+                placeholder: "例：坐在針氈上一樣，坐立難安",
+                chips: ["坐在針氈上一樣，坐立難安", "被強力膠水黏住，雙腿發軟發抖", "有成千上萬隻螞蟻在爬一樣焦躁"]
+              },
+              {
+                key: "part2",
+                label: "填空 ②【刺眼分數形容】",
+                placeholder: "例：滿江紅的考卷和刺眼的退步分數",
+                chips: ["滿江紅的考卷和刺眼的退步分數", "慘不忍睹的紅色大鴨蛋", "如同紅色警報般怵目驚心的低分"]
+              }
+            ]
+          },
+          {
+            index: 3,
+            title: "③ 結尾句（家庭風暴降臨引導）",
+            guide: "💡 引導提問：回到家向媽媽報告成績時，迎來了什麼暴風雨？",
+            template: "回到家交出成績單，媽媽氣得{part1}，使出{part2}把我訓得眼冒金星！",
+            blanks: [
+              {
+                key: "part1",
+                label: "填空 ①【憤怒神態誇飾】",
+                placeholder: "例：火冒三丈，頭頂幾乎冒出煙來",
+                chips: ["火冒三丈，頭頂幾乎冒出煙來", "臉色比包青天還黑", "像一座隨時會噴發的巨大火山"]
+              },
+              {
+                key: "part2",
+                label: "填空 ②【家庭風暴形容】",
+                placeholder: "例：降龍十八掌與連環碎碎念",
+                chips: ["降龍十八掌與連環碎碎念", "狂風暴雨般的雷霆之怒", "排山倒海的嚴厲訓誡"]
+              }
+            ]
+          }
+        ],
+puzzleSentences: [
           { prefix: "熬過了考試的煎熬，接下來迎接的是", options: ["驚天地、泣鬼神的「發考卷」時刻", "令全班心驚膽戰的揭曉時刻"], defaultIdx: 0, suffix: "。" },
           { prefix: "等待叫名字的時候，我冷汗直流，屁股", options: ["像坐在針氈上一樣，坐立難安", "像被膠水黏住，雙腿發抖不敢起身"], defaultIdx: 0, suffix: "。" },
           { prefix: "走上講臺接過考卷，看著滿江紅的分數，", options: ["果然不出所料，這次成績又退步了", "我的心像沉入冰冷的海底"], defaultIdx: 0, suffix: "。" },
@@ -1369,7 +1597,73 @@
             options: ["不再成為月考大魔王俘虜", "征服考試並超越自我"]
           }
         ],
-        puzzleSentences: [
+                clozeSentences: [
+          {
+            index: 1,
+            title: "① 開頭句（痛定思痛的深刻領悟引導）",
+            guide: "💡 引導提問：這場月考震撼教育結束後，你獲得了什麼寶貴的領悟？",
+            template: "經過這次月考慘痛的洗禮，我{part1}，深深體會到{part2}的道理。",
+            blanks: [
+              {
+                key: "part1",
+                label: "填空 ①【反省心境】",
+                placeholder: "例：撫平眼淚並痛定思痛",
+                chips: ["撫平眼淚並痛定思痛", "坐在書桌前大徹大悟", "洗去臉上的淚水深刻反省"]
+              },
+              {
+                key: "part2",
+                label: "填空 ②【名言警句或心得】",
+                placeholder: "例：「平時不燒香，臨時抱佛腳只會害慘自己」",
+                chips: [
+                  "「平時不燒香，臨時抱佛腳只會害慘自己」",
+                  "「天下沒有白吃的午餐，一分耕耘才有一分收穫」",
+                  "「腳踏實地、按部就班才是成功的不二法門」"
+                ]
+              }
+            ]
+          },
+          {
+            index: 2,
+            title: "② 發展句（立下踏實改變行動引導）",
+            guide: "💡 引導提問：你具體採取了什麼改變行動？在書桌前立下了什麼約定？",
+            template: "我下定決心改掉壞習慣，在書桌前{part1}，每天{part2}。",
+            blanks: [
+              {
+                key: "part1",
+                label: "填空 ①【書桌前的改變行動】",
+                placeholder: "例：貼上按部就班的每日複習計畫表",
+                chips: ["貼上按部就班的每日複習計畫表", "收拾乾淨凌亂的書桌，擺好整齊筆記", "立下了不再拖延作業的堅定約定"]
+              },
+              {
+                key: "part2",
+                label: "填空 ②【每日複習目標】",
+                placeholder: "例：扎扎實實複習當天進度，絕不再臨渴掘井",
+                chips: ["扎扎實實複習當天進度，絕不再臨渴掘井", "提早做好準備，不再沉迷卡通手機", "認真訂正每一題錯題，不讓疑惑留到明天"]
+              }
+            ]
+          },
+          {
+            index: 3,
+            title: "③ 結尾句（自信期許與迎向未來引導）",
+            guide: "💡 引導提問：擦乾眼淚後的你，對下一次的挑戰有什麼堅定自信的期許？",
+            template: "擦乾眼淚重新出發，我相信只要{part1}，下一次月考我一定能{part2}！",
+            blanks: [
+              {
+                key: "part1",
+                label: "填空 ①【堅持信念】",
+                placeholder: "例：持之以恆、按部就班的努力",
+                chips: ["持之以恆、按部就班的努力", "腳踏實地做好每一次學習準備", "改掉三心二意的毛病"]
+              },
+              {
+                key: "part2",
+                label: "填空 ②【成功期許願景】",
+                placeholder: "例：抬頭挺胸拿下好成績，超越過去的自我",
+                chips: ["抬頭挺胸拿下好成績，超越過去的自我", "讓媽媽刮目相看，笑逐顏開", "自信滿滿地面對試卷，不再臨陣慌亂"]
+              }
+            ]
+          }
+        ],
+puzzleSentences: [
           { prefix: "經過這次月考的慘痛教訓，我深深明白", options: ["天下絕不可能不勞而獲，唯有努力不懈方能成功", "凡事臨渴掘井必定會嚐到失敗的苦果"], defaultIdx: 0, suffix: "。" },
           { prefix: "我痛定思痛，下定決心一定要改掉", options: ["「平時不燒香，臨時抱佛腳」的壞習慣", "平日貪玩散漫、考前才抱佛腳的壞毛病"], defaultIdx: 0, suffix: "。" },
           { prefix: "從今天起，我每天都要", options: ["按部就班複習功課，腳踏實地完成習作", "妥善安排時間，不讓作業堆積如山"], defaultIdx: 0, suffix: "。" },
@@ -1420,6 +1714,7 @@
           { time: 0, place: 0, person: 0, object: 0, event: 0 },
           { time: 0, place: 0, person: 0, object: 0, event: 0 }
         ];
+        this.step2ClozeData = [ {}, {}, {}, {} ];
         this.loadState();
       }
       loadState() {
@@ -1445,6 +1740,7 @@
               { time: 0, place: 0, person: 0, object: 0, event: 0 },
               { time: 0, place: 0, person: 0, object: 0, event: 0 }
             ];
+            this.step2ClozeData = data.step2ClozeData || [ {}, {}, {}, {} ];
           }
         } catch (e) {
           console.warn("無法讀取舊存檔", e);
@@ -1460,7 +1756,8 @@
             teacherStamps: this.teacherStamps,
             teacherComments: this.teacherComments,
             puzzleSelections: this.puzzleSelections,
-            elementSelections: this.elementSelections
+            elementSelections: this.elementSelections,
+            step2ClozeData: this.step2ClozeData
           };
           localStorage.setItem("g4_writing_island_state_v4", JSON.stringify(data));
         } catch (e) {
@@ -2193,11 +2490,32 @@
 
       updateTierDisplay() {
         const names = { 
-          beginner: "🌟 初探者模式", 
+          beginner: "🧩 初探者（補救模式）", 
           intermediate: "🌟🌟 挑戰者模式", 
-          master: "🌟🌟🌟 大師模式" 
+          master: "👑 大師級模式" 
         };
-        document.getElementById("tierDisplay").textContent = names[state.tier];
+        const el = document.getElementById("tierDisplay");
+        if (el) el.textContent = names[state.tier] || "🌟🌟 挑戰者模式";
+        const teacherTierEl = document.getElementById("currentTierTeacherDisplay");
+        if (teacherTierEl) {
+          teacherTierEl.textContent = `目前：${names[state.tier] || "挑戰者"}`;
+        }
+      }
+
+      teacherSwitchTier(tier) {
+        if (!state.teacherMode) {
+          const pwd = document.getElementById("teacherPwdInput").value;
+          if (pwd !== "888") {
+            this.showToast("🔒 請先於上方輸入教師通關密碼（888），方可進行分層輔導調度！");
+            return;
+          }
+        }
+        state.tier = tier;
+        state.saveState();
+        this.updateTierDisplay();
+        this.loadIslandData(this.currentIsland);
+        const label = tier === "beginner" ? "初探者（補救拼圖）" : (tier === "intermediate" ? "挑戰者（引導填空）" : "大師級（修辭挑戰）");
+        this.showToast(`💮 教師特權生效：已將該生調整為【${label}】！`, 2500);
       }
 
       updateTeacherModeUI() {
@@ -2627,35 +2945,144 @@
       }
 
       renderIntermediateSentences(data) {
-        const e = this.getSelectedElements(data);
-        const t = data.sentenceTemplates;
+        const stdSec = document.getElementById("standardSentenceSection");
+        if (!stdSec) return;
 
-        const s1 = t[0].getSentence(e);
-        const s2 = t[1].getSentence(e);
-        const s3 = t[2].getSentence(e);
-
-        const el1 = document.getElementById("sentenceText1");
-        const el2 = document.getElementById("sentenceText2");
-        const el3 = document.getElementById("sentenceText3");
-
-        if (el1) el1.textContent = s1;
-        if (el2) el2.textContent = s2;
-        if (el3) el3.textContent = s3;
-
-        // 渲染誇飾法積木
-        const synWrap = document.getElementById("step2SyntaxChips");
-        if (synWrap) {
-          synWrap.innerHTML = "";
-          data.syntax.forEach(s => {
-            const btn = document.createElement("button");
-            btn.className = "chip highlight";
-            btn.textContent = `+ ${s}`;
-            btn.onclick = () => {
-              this.showToast(`已將【${s}】加入句中！`, 1500);
-            };
-            synWrap.appendChild(btn);
-          });
+        const islandIdx = this.currentIsland;
+        if (!state.step2ClozeData[islandIdx]) {
+          state.step2ClozeData[islandIdx] = {};
         }
+        const clozeData = state.step2ClozeData[islandIdx];
+
+        stdSec.innerHTML = "";
+
+        // 任務指引卡片
+        const tipCard = document.createElement("div");
+        tipCard.style.cssText = "background: #eff6ff; border-left: 3.5px solid #2563eb; padding: 10px 14px; border-radius: 8px; margin-bottom: 6px;";
+        tipCard.innerHTML = `
+          <div style="font-size: 13px; font-weight: 800; color: #1e40af;">✍️ 挑戰者任務：請依序完成以下三句「引導填空」實作</div>
+          <div style="font-size: 12px; color: #3b82f6; margin-top: 3px; line-height: 1.4;">
+            請閱讀引導提問，在空格中<strong>親手打字輸入</strong>或<strong>點選下方推薦好詞積木</strong>！未填的空格會以【______】提示，完成後即可組裝出專屬段落。
+          </div>
+        `;
+        stdSec.appendChild(tipCard);
+
+        const clozeList = data.clozeSentences || [];
+        clozeList.forEach((cloze, sIdx) => {
+          const card = document.createElement("div");
+          card.className = "cloze-card";
+
+          // 構建填空輸入列 HTML
+          let blanksHtml = "";
+          cloze.blanks.forEach((b, bIdx) => {
+            const blankKey = `s${sIdx}_${b.key}`;
+            const currentVal = clozeData[blankKey] || "";
+            const chipsHtml = b.chips.map(chip => {
+              const safeChip = chip.replace(/'/g, "\\'");
+              return `<button type="button" class="cloze-chip-btn" onclick="window.islandApp.fillClozeChip(${sIdx}, '${b.key}', '${safeChip}')">+ ${chip}</button>`;
+            }).join("");
+
+            blanksHtml += `
+              <div class="cloze-blank-item">
+                <div class="cloze-blank-meta">
+                  <span class="cloze-blank-label">${b.label}</span>
+                  ${currentVal ? '<span style="font-size: 11px; color: #16a34a; font-weight: 700;">✓ 已填寫</span>' : '<span style="font-size: 11px; color: #94a3b8;">待填寫</span>'}
+                </div>
+                <input class="cloze-blank-input" 
+                       id="clozeInput_${sIdx}_${b.key}"
+                       value="${currentVal.replace(/"/g, '&quot;')}" 
+                       placeholder="${b.placeholder}" 
+                       oninput="window.islandApp.setClozeBlank(${sIdx}, '${b.key}', this.value)">
+                <div class="cloze-chips-row">
+                  <span style="font-size: 11px; color: #64748b; font-weight: 700;">🧩 點選積木填入：</span>
+                  ${chipsHtml}
+                </div>
+              </div>
+            `;
+          });
+
+          // 即時組裝該句預覽
+          const sentencePreview = this.getAssembledSentence(cloze, sIdx, clozeData);
+
+          card.innerHTML = `
+            <div class="cloze-header">
+              <span class="cloze-title">
+                <span>📝 ${cloze.title}</span>
+              </span>
+            </div>
+            <div class="cloze-guide-box">
+              ${cloze.guide}
+            </div>
+            <div class="cloze-blanks-container">
+              ${blanksHtml}
+            </div>
+            <div class="cloze-sentence-preview" id="clozeSentPreview_${sIdx}">
+              <strong>句 ${sIdx + 1} 組裝成果：</strong>${sentencePreview}
+            </div>
+          `;
+          stdSec.appendChild(card);
+        });
+
+        // 渲染誇飾法加分積木
+        const syntaxCard = document.createElement("div");
+        syntaxCard.style.cssText = "background: #fffdf5; border: 1.5px solid #fef08a; border-radius: 10px; padding: 10px 14px;";
+        syntaxCard.innerHTML = `
+          <div style="font-size: 12px; font-weight: 800; color: #854d0e; margin-bottom: 6px;">
+            ✨ 本島推薦誇飾修辭加分詞（可點擊複製或打入上方空格中）：
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            ${(data.syntax || []).map(s => `<span class="chip highlight" style="font-size: 11.5px; cursor: pointer;" onclick="navigator.clipboard.writeText('${s}'); window.islandApp.showToast('已複製【${s}】！可貼入空格中～', 1200);">${s}</span>`).join("")}
+          </div>
+        `;
+        stdSec.appendChild(syntaxCard);
+
+        const previewEl = document.getElementById("step2CombinedPreview");
+        if (previewEl) {
+          previewEl.textContent = this.getCombinedStep2Text(data);
+        }
+      }
+
+      getAssembledSentence(cloze, sIdx, clozeData) {
+        let text = cloze.template;
+        cloze.blanks.forEach(b => {
+          const key = `s${sIdx}_${b.key}`;
+          const val = clozeData[key];
+          if (val && val.trim() !== "") {
+            text = text.replace(`{${b.key}}`, `<span class="cloze-blank-highlight">${val.trim()}</span>`);
+          } else {
+            text = text.replace(`{${b.key}}`, `<span class="cloze-blank-empty">【______】</span>`);
+          }
+        });
+        return text;
+      }
+
+      setClozeBlank(sIdx, blankKey, val) {
+        const islandIdx = this.currentIsland;
+        if (!state.step2ClozeData[islandIdx]) state.step2ClozeData[islandIdx] = {};
+        state.step2ClozeData[islandIdx][`s${sIdx}_${blankKey}`] = val;
+        state.saveState();
+
+        const data = CURRICULUM_DATA[islandIdx];
+        const cloze = data.clozeSentences ? data.clozeSentences[sIdx] : null;
+        if (cloze) {
+          const pEl = document.getElementById(`clozeSentPreview_${sIdx}`);
+          if (pEl) {
+            pEl.innerHTML = `<strong>句 ${sIdx + 1} 組裝成果：</strong>` + this.getAssembledSentence(cloze, sIdx, state.step2ClozeData[islandIdx]);
+          }
+        }
+        const previewEl = document.getElementById("step2CombinedPreview");
+        if (previewEl) {
+          previewEl.textContent = this.getCombinedStep2Text(data);
+        }
+      }
+
+      fillClozeChip(sIdx, blankKey, text) {
+        const input = document.getElementById(`clozeInput_${sIdx}_${blankKey}`);
+        if (input) {
+          input.value = text;
+        }
+        this.setClozeBlank(sIdx, blankKey, text);
+        this.showToast(`已填入【${text}】！`, 1200);
       }
 
       renderMasterRhetoricSentences(data) {
@@ -2734,6 +3161,18 @@
             const chosen = ps.options[selections[idx]] || ps.options[0];
             return `${ps.prefix}${chosen}${ps.suffix}`;
           }).join("");
+        } else if (data.clozeSentences) {
+          const clozeData = state.step2ClozeData[islandIdx] || {};
+          const sentences = data.clozeSentences.map((cloze, sIdx) => {
+            let sText = cloze.template;
+            cloze.blanks.forEach(b => {
+              const key = `s${sIdx}_${b.key}`;
+              const val = clozeData[key];
+              sText = sText.replace(`{${b.key}}`, (val && val.trim()) ? val.trim() : "【______】");
+            });
+            return sText;
+          });
+          return "　　" + sentences.join("");
         } else {
           const e = this.getSelectedElements(data);
           const t = data.sentenceTemplates;
@@ -2746,14 +3185,8 @@
       // ----------------------------------------------------
       renderStep3Editor(data) {
         const textarea = document.getElementById("paragraphInput");
-        if (!state.paragraphs[this.currentIsland] || state.paragraphs[this.currentIsland].trim() === "") {
-          const combined = this.getCombinedStep2Text(data);
-          textarea.value = combined;
-          state.paragraphs[this.currentIsland] = combined;
-          state.saveState();
-        } else {
-          textarea.value = state.paragraphs[this.currentIsland];
-        }
+        // 開始時絕不幫學生填寫進去！文字框由學生手寫或點擊按鈕主動匯入
+        textarea.value = state.paragraphs[this.currentIsland] || "";
         this.onTextChange();
 
         // 依據成就模式，在輸入框上方或下方加入專屬檢驗工具
@@ -2825,6 +3258,28 @@
         area.focus();
         area.selectionStart = area.selectionEnd = start + txt.length;
         this.onTextChange();
+      }
+
+      importStep2ToEditor() {
+        const data = CURRICULUM_DATA[this.currentIsland];
+        const textarea = document.getElementById("paragraphInput");
+        const currentVal = textarea.value.trim();
+        if (currentVal && currentVal.length > 5) {
+          if (!confirm("文字框內已有你寫的內容，確定要以 Step 2 的填空成果重新覆蓋嗎？")) {
+            return;
+          }
+        }
+        const combined = this.getCombinedStep2Text(data);
+        if (combined.includes("【______】")) {
+          if (!confirm("Step 2 還有部分空格未完成（含有【______】），仍要現在匯入文字框嗎？")) {
+            return;
+          }
+        }
+        textarea.value = combined;
+        state.paragraphs[this.currentIsland] = combined;
+        state.saveState();
+        this.onTextChange();
+        this.showToast("📋 已將 Step 2 填空成果帶入文字框！請開始進行修辭微調～", 2500);
       }
 
       onTextChange() {
