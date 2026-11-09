@@ -1399,6 +1399,15 @@
       return mesh;
     }
 
+    // 天然低多邊形礁石 (岩塊切面)
+    function rock(scale = 1.0, color = 0x64748b) {
+      const geo = new THREE.DodecahedronGeometry(scale, 0);
+      const mesh = new THREE.Mesh(geo, getMat(color, { roughness: 0.9, metalness: 0.05 }));
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      return mesh;
+    }
+
     function at(obj, x, y, z, ry = 0) {
       obj.position.set(x, y, z);
       obj.rotation.y = ry;
@@ -2250,47 +2259,117 @@ puzzleSentences: [
       }
 
       // 建造四座豐富的微縮主題島嶼
+      // 建立真正的有機自然手作島嶼 (告別死板圓柱，具備自然海灣、海岬、浪花環、起伏丘陵與天然礁石)
       buildAllIslands() {
         for (let i = 0; i < 4; i++) {
           const data = CURRICULUM_DATA[i];
           const islandGroup = new THREE.Group();
           islandGroup.position.set(...data.position);
 
-          // 1. 島嶼地盤層次 (沙灘底座 + 岩壁 + 豐美草地階梯)
-          const baseRadius = 11;
-          const sandMesh = cyl(baseRadius * 1.25, baseRadius * 1.5, 2.5, 12, getMat(0xf4d35e));
-          sandMesh.position.y = -0.6;
+          const seed = i * 2.1 + 0.8;
+          const baseR = 10.5;
+
+          // 輔助函數：將幾何體頂點依照極坐標賦予自然海灣有機擾動
+          const sculptOrganicGeo = (geo, factorY = 0) => {
+            const pos = geo.attributes.position;
+            for (let v = 0; v < pos.count; v++) {
+              const x = pos.getX(v);
+              const y = pos.getY(v);
+              const z = pos.getZ(v);
+              const r = Math.sqrt(x * x + z * z);
+              const theta = Math.atan2(z, x);
+
+              if (r > 0.4) {
+                // 複合三角函數創造自然海灣與凸上海岬
+                const noise = 1 + 
+                  0.16 * Math.sin(theta * 2 + seed) + 
+                  0.11 * Math.cos(theta * 3 - seed * 1.3) + 
+                  0.07 * Math.sin(theta * 5 + seed * 2.2);
+                pos.setX(v, x * noise);
+                pos.setZ(v, z * noise);
+
+                // 頂部草皮微幅丘陵起伏 (讓島嶼有地勢高低感)
+                if (factorY > 0 && y > 0.1) {
+                  const hill = Math.sin(theta * 1.5 + seed) * factorY;
+                  pos.setY(v, y + Math.max(-0.2, hill));
+                }
+              }
+            }
+            geo.computeVertexNormals();
+            return geo;
+          };
+
+          // ① 浪花淺水線 (Shallow Water Foam Ring) - 貼水面，半透明白浪花線，勾勒海島自然邊緣
+          const foamGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 1.42, baseR * 1.55, 0.18, 20));
+          const foamMat = getMat(0xe0f7fa, { transparent: true, opacity: 0.65, roughness: 0.2 });
+          const foamMesh = new THREE.Mesh(foamGeo, foamMat);
+          foamMesh.position.y = 0.04;
+          islandGroup.add(foamMesh);
+
+          // ② 有機金黃沙灘 (Organic Sandy Beach) - 緩坡入水，邊緣不規則
+          const sandGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 1.15, baseR * 1.38, 1.8, 18));
+          const sandMesh = new THREE.Mesh(sandGeo, getMat(0xf4d35e, { roughness: 0.85, metalness: 0.05 }));
+          sandMesh.position.y = 0.55;
+          sandMesh.castShadow = true;
+          sandMesh.receiveShadow = true;
           islandGroup.add(sandMesh);
 
-          const cliffMesh = cyl(baseRadius, baseRadius * 1.25, 3.2, 12, getMat(0x8d5b4c));
-          cliffMesh.position.y = 1.4;
+          // ③ 粗獷泥岩崖壁 (Organic Rock Cliff) - 陡峭具手作低多邊形切面
+          const cliffGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 0.98, baseR * 1.16, 2.6, 18));
+          const cliffMesh = new THREE.Mesh(cliffGeo, getMat(0x8d5b4c, { roughness: 0.85, metalness: 0.08 }));
+          cliffMesh.position.y = 2.0;
+          cliffMesh.castShadow = true;
+          cliffMesh.receiveShadow = true;
           islandGroup.add(cliffMesh);
 
-          const grassMesh = cyl(baseRadius * 0.96, baseRadius, 1.2, 12, getMat(data.color));
-          grassMesh.position.y = 3.2;
+          // ④ 頂部起伏草皮 (Undulating Grass Surface) - 具丘陵地勢起伏
+          const grassGeo = sculptOrganicGeo(new THREE.CylinderGeometry(baseR * 0.94, baseR * 1.0, 1.2, 18), 0.7);
+          const grassMesh = new THREE.Mesh(grassGeo, getMat(data.color, { roughness: 0.75, metalness: 0.05 }));
+          grassMesh.position.y = 3.3;
+          grassMesh.castShadow = true;
+          grassMesh.receiveShadow = true;
           islandGroup.add(grassMesh);
 
-          // 2. 指引燈塔 (信標光球)
-          const tower = cyl(0.6, 1.1, 5.5, 6, getMat(0xffffff));
-          tower.position.set(5.5, 6.2, -4.5);
+          // ⑤ 海灘礁石群 (Natural Coastal Rocks) - 散落在海灣與沙灘邊緣
+          const rockAngles = [0.8 + seed, 2.4 - seed, 4.2 + seed];
+          rockAngles.forEach((ang, rIdx) => {
+            const dist = baseR * 1.22 + (rIdx % 2) * 0.8;
+            const rMesh = rock(0.7 + (rIdx % 3) * 0.35, rIdx % 2 === 0 ? 0x64748b : 0x475569);
+            rMesh.position.set(Math.cos(ang) * dist, 0.4 + (rIdx % 2) * 0.2, Math.sin(ang) * dist);
+            rMesh.rotation.set(rIdx * 0.4, ang, rIdx * 0.3);
+            islandGroup.add(rMesh);
+          });
+
+          // ⑥ 低多邊形草叢與小灌木 (Bush Clumps)
+          for (let b = 0; b < 3; b++) {
+            const bushAng = seed + b * 2.0;
+            const bDist = baseR * 0.75;
+            const bush = ball(0.55 + (b % 2) * 0.2, getMat(0x2d6a4f, { roughness: 0.8 }), 6, 5);
+            bush.position.set(Math.cos(bushAng) * bDist, 3.8, Math.sin(bushAng) * bDist);
+            islandGroup.add(bush);
+          }
+
+          // ⑦ 指引燈塔 (信標光球) - 坐落在島嶼邊緣凸上海岬
+          const tower = cyl(0.5, 0.9, 5.0, 6, getMat(0xffffff));
+          tower.position.set(5.8, 6.2, -4.2);
           islandGroup.add(tower);
 
           const beacon = ball(0.85, getMat(state.teacherApprovals[i] ? 0x2ec4b6 : 0xfbbf24, { emissive: state.teacherApprovals[i] ? 0x2ec4b6 : 0xfbbf24, emissiveIntensity: 0.5 }));
-          beacon.position.set(5.5, 9.4, -4.5);
+          beacon.position.set(5.8, 9.1, -4.2);
           beacon.name = `beacon_${i}`;
           islandGroup.add(beacon);
 
-          // 【風格生成規範 5】：每座島嶼草地上點綴 2 棵 Q 版卡通樹木 (粉嫩童趣配色)
+          // ⑧ Q 版卡通樹木 (動森手作感)
           const treeColors = [0x52b788, 0x48cae4, 0xf4a261, 0xa78bfa];
-          const t1 = createCuteTree(0.9, treeColors[i % treeColors.length]);
-          t1.position.set(-6.5, 3.8, 4.5);
+          const t1 = createCuteTree(0.95, treeColors[i % treeColors.length]);
+          t1.position.set(-6.2, 3.8, 4.2);
           islandGroup.add(t1);
 
-          const t2 = createCuteTree(0.75, treeColors[(i + 1) % treeColors.length]);
-          t2.position.set(-5.2, 3.8, 6.0);
+          const t2 = createCuteTree(0.78, treeColors[(i + 1) % treeColors.length]);
+          t2.position.set(-4.8, 3.9, 5.8);
           islandGroup.add(t2);
 
-          // 3. 專屬島嶼微縮建築群
+          // ⑨ 專屬島嶼微縮建築群
           if (i === 0) this.buildStudyHouseDiorama(islandGroup);
           else if (i === 1) this.buildSchoolExamDiorama(islandGroup);
           else if (i === 2) this.buildStormHouseDiorama(islandGroup);
@@ -2844,10 +2923,10 @@ puzzleSentences: [
           if (item.type === 'shake') item.obj.position.x = Math.sin(now * 8) * 0.08;
         });
 
-        // 守門巨獸神龍盤旋呼吸動畫
+        // 守門巨獸神龍在海面上直接浮游起伏呼吸動效 (海上神獸)
         if (this.guardianMesh) {
-          this.guardianMesh.rotation.y = Math.sin(now * 0.5) * 0.15;
-          this.guardianMesh.position.y = 4.0 + Math.sin(now * 1.5) * 0.25;
+          this.guardianMesh.position.y = 1.8 + Math.sin(now * 1.4) * 0.35;
+          this.guardianMesh.rotation.y = Math.sin(now * 0.6) * 0.18;
         }
 
         // 乃誠島同款：程序化動態微波浪
@@ -2950,7 +3029,7 @@ puzzleSentences: [
             const data = CURRICULUM_DATA[index];
             pos = new THREE.Vector3(data.position[0], data.position[1] + 9.5, data.position[2]);
           } else {
-            pos = new THREE.Vector3(0, 16.5, 0); // 守門神殿頂部
+            pos = new THREE.Vector3(0, 9.8, 0); // 海上守門神獸標籤
           }
 
           const dist = camera.position.distanceTo(pos);
