@@ -367,6 +367,107 @@
     .island-step-dot.completed { background: #dcfce7; color: #15803d; border-color: #86efac; }
     .stamp-badge.rejected { background: #ffe4e6; color: #e11d48; border: 1.5px solid #fda4af; }
 
+
+    /* 階梯寫作向導 (Step Wizard) 樣式 */
+    .step-wizard-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: #ffffff; border-bottom: 1.5px solid var(--line);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .wizard-step {
+      display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px;
+      font-size: 12px; font-weight: 700; color: #64748b; background: #f1f5f9; cursor: pointer;
+      transition: all .18s ease;
+    }
+    .wizard-step.active {
+      background: var(--primary); color: #ffffff; box-shadow: 0 2px 8px rgba(29, 95, 138, 0.3);
+    }
+    .wizard-step.done {
+      background: #dcfce7; color: #15803d; border: 1px solid #86efac;
+    }
+    .step-num {
+      width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,0.12);
+      display: inline-flex; align-items: center; justify-content: center; font-size: 11px;
+    }
+    .wizard-step.active .step-num { background: #ffffff; color: var(--primary); font-weight: 900; }
+    .wizard-arrow { font-size: 11px; color: #cbd5e1; }
+
+    /* 階梯面板切換 */
+    .wizard-panel {
+      display: none; flex-direction: column; gap: 14px; animation: fadeIn .2s ease;
+    }
+    .wizard-panel.active { display: flex; }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(4px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Step 1 五要素點選卡樣式 */
+    .step-header-card {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border-left: 4px solid #16a34a; border-radius: 10px; padding: 12px 14px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .step-header-title { font-size: 14px; font-weight: 900; color: #166534; display: flex; align-items: center; gap: 6px; }
+    .step-header-desc { font-size: 12px; color: #14532d; line-height: 1.5; }
+
+    .element-picker-card {
+      background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px;
+      display: flex; flex-direction: column; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .picker-label {
+      font-size: 12.5px; font-weight: 900; display: flex; align-items: center; gap: 6px;
+    }
+    .picker-options { display: flex; flex-wrap: wrap; gap: 6px; }
+    .picker-opt-btn {
+      padding: 6px 12px; border-radius: 8px; font-size: 12.5px; font-weight: 700;
+      background: #f8fafc; color: #334155; border: 1.5px solid #cbd5e1; cursor: pointer;
+      transition: all .15s ease; text-align: left;
+    }
+    .picker-opt-btn:hover { background: #e2e8f0; color: #0f172a; }
+    .picker-opt-btn.selected {
+      background: #ecfdf5; color: #047857; border-color: #10b981; font-weight: 900;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+    }
+
+    /* 導航切換按鈕組 */
+    .step-actions-bar {
+      display: flex; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line);
+    }
+    .btn-step-prev {
+      padding: 10px 16px; border-radius: 10px; font-size: 13.5px; font-weight: 700;
+      background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; cursor: pointer;
+    }
+    .btn-step-prev:hover { background: #e2e8f0; }
+    .btn-step-next {
+      flex: 1; padding: 11px; border-radius: 10px; font-size: 14.5px; font-weight: 900;
+      background: var(--primary); color: white; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      box-shadow: 0 4px 12px rgba(29, 95, 138, 0.25);
+    }
+    .btn-step-next:hover { background: #154668; }
+    .btn-step-next.finish { background: #16a34a; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3); }
+    .btn-step-next.finish:hover { background: #15803d; }
+
+    /* Step 2 句子積木卡樣式 */
+    .sentence-block-card {
+      background: #ffffff; border: 1.5px solid #e0e7ff; border-radius: 12px; padding: 12px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .sentence-block-title { font-size: 13px; font-weight: 900; color: #3730a3; display: flex; justify-content: space-between; }
+    .sentence-block-text {
+      background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px;
+      font-size: 13px; line-height: 1.6; color: #1e293b; font-weight: 600;
+    }
+
+    /* 組合預覽框 */
+    .preview-box {
+      background: #fefce8; border: 1.5px dashed #f59e0b; border-radius: 12px; padding: 12px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .preview-title { font-size: 12px; font-weight: 900; color: #b45309; }
+    .preview-text { font-size: 13.5px; line-height: 1.7; color: #78350f; font-family: var(--font-sans); }
+
   </style>
 </head>
 <body>
@@ -429,115 +530,232 @@
     </div>
   </nav>
 
-  <!-- 側邊寫作任務抽屜 -->
+    <!-- 側邊寫作任務抽屜 (四步階梯向導) -->
   <aside class="drawer" id="islandDrawer">
     <div class="drawer-header">
       <h2 class="drawer-title" id="drawerTitle">🏝️ 第一段：起之島・考前準備</h2>
       <button class="drawer-close" onclick="window.islandApp.closeDrawer()">✕</button>
     </div>
-    <div class="drawer-body">
-      <!-- CLT 認知負荷 ≤ 60字 精靈任務卡 -->
-      <div class="clt-prompt-card">
-        <span class="sprite-avatar" id="spriteAvatar">🧚‍♂️</span>
-        <div>
-          <div class="sprite-speaker" id="spriteName">島嶼書精靈・墨墨</div>
-          <div class="sprite-text" id="spritePrompt">
-            月考快到了！你是認真苦讀還是貪玩抱佛腳？請運用誇飾法寫出考前的緊張生活與堆積如山的作業。
-          </div>
-        </div>
+
+    <!-- 寫作四步階梯導航列 -->
+    <div class="step-wizard-bar">
+      <div class="wizard-step active" id="wizardTab1" onclick="window.islandApp.goToStep(1)">
+        <span class="step-num">1</span>
+        <span class="step-txt">選五要素</span>
       </div>
-
-      <!-- 🌟 人、事、時、地、物五要素段落組織導航 -->
-      <div class="elements-box" id="elementsGuideBox">
-        <div class="tool-title" style="margin-bottom: 4px;">
-          <span>🧭 人事時地物・段落組織導航</span>
-          <span style="font-size: 11px; color: #15803d; font-weight: 700;">四年級寫作金鑰</span>
-        </div>
-        <div class="elements-grid" id="elementsGrid"></div>
+      <span class="wizard-arrow">➔</span>
+      <div class="wizard-step" id="wizardTab2" onclick="window.islandApp.goToStep(2)">
+        <span class="step-num">2</span>
+        <span class="step-txt">組段落句</span>
       </div>
-
-      <!-- 🧩 初探者・拼圖填空組裝器 (僅在初探者模式顯現) -->
-      <div class="puzzle-box" id="puzzleBox" style="display: none;">
-        <div class="tool-title" style="margin-bottom: 2px;">
-          <span>🧩 初探者・段落拼圖填空器</span>
-          <span style="font-size: 11px; color: #0284c7; font-weight: 700;">點選詞彙即時組裝</span>
-        </div>
-        <div id="puzzleSentencesList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+      <span class="wizard-arrow">➔</span>
+      <div class="wizard-step" id="wizardTab3" onclick="window.islandApp.goToStep(3)">
+        <span class="step-num">3</span>
+        <span class="step-txt">潤飾檢驗</span>
       </div>
-
-      <!-- 💡 段落三步組織句積木 (開頭句／發展句／結尾句) -->
-      <div class="starters-box" id="startersBox">
-        <div class="tool-title" style="margin-bottom: 4px;">
-          <span>💡 段落組織三步句（點擊即可放入段落）</span>
-          <span style="font-size: 11px; color: #b45309; font-weight: 700;">結構化指引</span>
-        </div>
-        <div id="startersList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+      <span class="wizard-arrow">➔</span>
+      <div class="wizard-step" id="wizardTab4" onclick="window.islandApp.goToStep(4)">
+        <span class="step-num">4</span>
+        <span class="step-txt">教師蓋章</span>
       </div>
-
-      <!-- 四上期末好詞百寶箱與誇飾積木 -->
-      <div class="tools-accordion">
-        <div class="tool-box">
-          <div class="tool-title">
-            <span>📚 四上翰林期末好詞庫（點擊直接放入）</span>
-            <span style="font-size: 11px; color: var(--text-muted);">教材核可</span>
-          </div>
-          <div class="chips-group" id="wordChips"></div>
-        </div>
-
-        <div class="tool-box">
-          <div class="tool-title">
-            <span>💡 誇飾法句型積木（放大法／縮小法）</span>
-            <span style="font-size: 11px; color: var(--accent);">加分解鎖金框</span>
-          </div>
-          <div class="chips-group" id="syntaxChips"></div>
-        </div>
-
-        <div class="tool-box">
-          <div class="tool-title">
-            <span>👀 四年級同儕佳作觀摩卡</span>
-          </div>
-          <div style="font-size: 12.5px; line-height: 1.5; color: #4a5568; background: #f7fafc; padding: 8px 10px; border-radius: 8px;" id="peerExemplar">
-          </div>
-        </div>
-      </div>
-
-      <!-- 寫作輸入區 -->
-      <div class="writing-area">
-        <div class="textarea-wrapper">
-          <textarea class="writing-textarea" id="paragraphInput" placeholder="請在此輸入你的段落內容……" oninput="window.islandApp.onTextChange()"></textarea>
-        </div>
-        
-        <!-- 字數靈力能量條 (50~80字) -->
-        <div class="energy-bar-wrap">
-          <div class="energy-bar-label">
-            <span>段落靈力值（建議 50 ~ 80 字）</span>
-            <span id="charCountLabel">0 / 80 字</span>
-          </div>
-          <div class="energy-bar-bg">
-            <div class="energy-bar-fill" id="energyFill"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 教師逐段批改印章卡片 -->
-      <div class="teacher-review-card">
-        <div class="teacher-stamp-display">
-          <span style="font-size: 13.5px; font-weight: 900; color: #333;">👨‍🏫 教師批改狀態</span>
-          <span class="stamp-badge unreviewed" id="stampBadge">⏳ 待教師蓋章</span>
-        </div>
-        <div id="teacherFeedbackBox" style="display: none;" class="red-pen-feedback"></div>
-      </div>
-
     </div>
 
-    <!-- 底部操作按鈕 -->
-    <div class="drawer-actions">
-      <button class="btn-teacher" onclick="window.islandApp.openTeacherModal()">
-        <span>💮 教師批改蓋章</span>
-      </button>
-      <button class="btn-main" id="btnNextIsland" onclick="window.islandApp.submitAndNext()">
-        <span>通往下一座島 ➔</span>
-      </button>
+    <div class="drawer-body">
+
+      <!-- ============================================== -->
+      <!-- 面板 1：【第 1 步：人、事、時、地、物五要素選擇】 -->
+      <!-- ============================================== -->
+      <div class="wizard-panel active" id="wizardPanel1">
+        <div class="step-header-card">
+          <div class="step-header-title">
+            <span>🎯 第 1 步：定錨故事舞台（人事時地物）</span>
+          </div>
+          <div class="step-header-desc">
+            寫作就像搭積木！請依照順序點選下方 5 個要素，為你的段落打好穩固骨架：
+          </div>
+        </div>
+
+        <!-- 5 個要素點選卡容器 -->
+        <div id="elementPickersList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+
+        <div class="step-actions-bar">
+          <button class="btn-step-next" onclick="window.islandApp.goToStep(2)">
+            <span>確認要素，前往第 2 步組句子 ➔</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- 面板 2：【第 2 步：段落句子三步組裝】 -->
+      <!-- ============================================== -->
+      <div class="wizard-panel" id="wizardPanel2">
+        <div class="step-header-card" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-left-color: #2563eb;">
+          <div class="step-header-title" style="color: #1e40af;">
+            <span>💡 第 2 步：組裝段落句子（開頭 ➔ 發展 ➔ 結尾）</span>
+          </div>
+          <div class="step-header-desc" style="color: #1e3a8a;">
+            系統已根據你選的要素串好三句骨架！你可以點選好詞與誇飾積木來強化語氣：
+          </div>
+        </div>
+
+        <!-- 初探者拼圖專區 (若為 beginner 模式顯現) -->
+        <div id="puzzleClozeSection" style="display: none; flex-direction: column; gap: 10px;">
+          <div class="tool-title" style="color: #0284c7;">
+            <span>🧩 初探者・句型拼圖切換</span>
+            <span style="font-size: 11px; color: #64748b;">點選詞彙即時切換</span>
+          </div>
+          <div id="puzzleSentencesList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+
+        <!-- 挑戰者 / 大師 三步句子積木專區 -->
+        <div id="standardSentenceSection" style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="sentence-block-card" id="sentenceCard1">
+            <div class="sentence-block-title">
+              <span>① 開頭句（時間＋情節）</span>
+              <span style="font-size: 11px; color: #6366f1;">自然引出背景</span>
+            </div>
+            <div class="sentence-block-text" id="sentenceText1"></div>
+            <div class="chips-group" id="sentenceStartersGroup1"></div>
+          </div>
+
+          <div class="sentence-block-card" id="sentenceCard2">
+            <div class="sentence-block-title">
+              <span>② 發展句（地點＋景物＋誇飾）</span>
+              <span style="font-size: 11px; color: #f59e0b;">突顯緊張張力</span>
+            </div>
+            <div class="sentence-block-text" id="sentenceText2"></div>
+            <div style="font-size: 11.5px; font-weight: 700; color: #555; margin-top: 4px;">點選加入誇飾好詞：</div>
+            <div class="chips-group" id="step2SyntaxChips"></div>
+          </div>
+
+          <div class="sentence-block-card" id="sentenceCard3">
+            <div class="sentence-block-title">
+              <span>③ 結尾句（人物＋情感）</span>
+              <span style="font-size: 11px; color: #e11d48;">生動收尾</span>
+            </div>
+            <div class="sentence-block-text" id="sentenceText3"></div>
+            <div class="chips-group" id="sentenceStartersGroup3"></div>
+          </div>
+        </div>
+
+        <!-- 即時組合預覽 -->
+        <div class="preview-box">
+          <div class="preview-title">👁️ 目前段落組裝預覽：</div>
+          <div class="preview-text" id="step2CombinedPreview"></div>
+        </div>
+
+        <div class="step-actions-bar">
+          <button class="btn-step-prev" onclick="window.islandApp.goToStep(1)">
+            <span>← 上一步：重選要素</span>
+          </button>
+          <button class="btn-step-next" onclick="window.islandApp.goToStep(3)">
+            <span>滿意句子，前往第 3 步潤飾段落 ➔</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- 面板 3：【第 3 步：段落潤飾與靈力檢驗】 -->
+      <!-- ============================================== -->
+      <div class="wizard-panel" id="wizardPanel3">
+        <div class="step-header-card" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-left-color: #d97706;">
+          <div class="step-header-title" style="color: #92400e;">
+            <span>📝 第 3 步：段落檢查與字數靈力充能</span>
+          </div>
+          <div class="step-header-desc" style="color: #78350f;">
+            恭喜！以下是你組裝好的完整段落，請通讀一遍微調字句，讓靈力條充滿能量（50~80字）！
+          </div>
+        </div>
+
+        <!-- 寫作輸入區 -->
+        <div class="writing-area">
+          <div class="textarea-wrapper">
+            <textarea class="writing-textarea" id="paragraphInput" placeholder="請在此微調你的段落內容……" oninput="window.islandApp.onTextChange()"></textarea>
+          </div>
+          
+          <!-- 字數靈力能量條 (50~80字) -->
+          <div class="energy-bar-wrap">
+            <div class="energy-bar-label">
+              <span>段落靈力值（建議 50 ~ 80 字）</span>
+              <span id="charCountLabel">0 / 80 字</span>
+            </div>
+            <div class="energy-bar-bg">
+              <div class="energy-bar-fill" id="energyFill"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 輔助好詞百寶箱與同儕佳作 -->
+        <div class="tools-accordion">
+          <div class="tool-box">
+            <div class="tool-title">
+              <span>📚 四上翰林好詞庫（點擊直接插入）</span>
+            </div>
+            <div class="chips-group" id="wordChips"></div>
+          </div>
+
+          <div class="tool-box">
+            <div class="tool-title">
+              <span>👀 四年級同儕佳作觀摩</span>
+            </div>
+            <div style="font-size: 12.5px; line-height: 1.5; color: #4a5568; background: #f7fafc; padding: 8px 10px; border-radius: 8px;" id="peerExemplar"></div>
+          </div>
+        </div>
+
+        <div class="step-actions-bar">
+          <button class="btn-step-prev" onclick="window.islandApp.goToStep(2)">
+            <span>← 上一步：修改句子</span>
+          </button>
+          <button class="btn-step-next finish" onclick="window.islandApp.goToStep(4)">
+            <span>段落完成！請老師蓋章審查 ➔</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- 面板 4：【第 4 步：教師批改與解鎖啟航】 -->
+      <!-- ============================================== -->
+      <div class="wizard-panel" id="wizardPanel4">
+        <div class="step-header-card" style="background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); border-left-color: #db2777;">
+          <div class="step-header-title" style="color: #9d174d;">
+            <span>💮 第 4 步：教師批改審核與啟航</span>
+          </div>
+          <div class="step-header-desc" style="color: #831843;">
+            請舉手請老師過目蓋章！老師蓋下核准印章後，本島燈塔將點亮，解鎖通往下一島的航道！
+          </div>
+        </div>
+
+        <!-- 最終段落完整預覽卡 -->
+        <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-size: 12.5px; font-weight: 900; color: var(--primary);">📄 本段作文最終預覽：</div>
+          <div id="finalParagraphPreview" style="font-size: 14px; line-height: 1.8; color: #1e293b; font-family: var(--font-serif); background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; white-space: pre-wrap;"></div>
+        </div>
+
+        <!-- 教師批改狀態卡 -->
+        <div class="teacher-review-card">
+          <div class="teacher-stamp-display">
+            <span style="font-size: 13.5px; font-weight: 900; color: #333;">👨‍🏫 教師批改狀態</span>
+            <span class="stamp-badge unreviewed" id="stampBadge">⏳ 待教師蓋章</span>
+          </div>
+          <div id="teacherFeedbackBox" style="display: none;" class="red-pen-feedback"></div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 6px;">
+          <button class="btn-teacher" style="flex: 1; padding: 12px;" onclick="window.islandApp.openTeacherModal()">
+            <span>💮 教師批改蓋章面板</span>
+          </button>
+        </div>
+
+        <div class="step-actions-bar">
+          <button class="btn-step-prev" onclick="window.islandApp.goToStep(3)">
+            <span>← 上一步：修改段落</span>
+          </button>
+          <button class="btn-step-next" id="btnNextIsland" onclick="window.islandApp.submitAndNext()">
+            <span>需經教師批改方能啟航 🔒</span>
+          </button>
+        </div>
+      </div>
+
     </div>
   </aside>
 
@@ -812,7 +1030,7 @@
         // ----------------------------------------------------
     // 1. 教材資料庫與寫作大綱（深度整合第三單元《考試前後》）
     // ----------------------------------------------------
-    const CURRICULUM_DATA = [
+        const CURRICULUM_DATA = [
       {
         id: 0,
         name: "起之島・考前準備",
@@ -821,46 +1039,38 @@
         color: 0x5fa8d3,
         prompt: "月考即將來臨！你是認真苦讀還是貪玩抱佛腳？請運用誇飾法寫出考前堆積如山的作業與緊張氣氛。",
         spriteName: "書精靈・小墨",
-        // 人事時地物五要素導航
-        elements: {
-          time: "月考前一週、期末倒數的日子",
-          place: "凌亂的書桌前、深夜檯燈下",
-          person: "咬牙苦讀的我、嚴厲的媽媽",
-          object: "堆積如山的測驗卷、重點比芝麻還多的課本",
-          event: "暫停心愛的卡通與球賽、挑燈夜戰全力複習功課"
+        // 五要素選項庫 (Step 1 點選用)
+        elementOptions: {
+          time: { label: "⏰ 【時】何時發生？", options: ["每當月考前一個禮拜", "期末月考倒數的日子裡"] },
+          place: { label: "🏠 【地】在什麼地方？", options: ["在凌亂的書桌前", "在深夜明亮的檯燈下"] },
+          person: { label: "👤 【人】身邊有誰？", options: ["苦讀的我與嚴厲的媽媽", "神經緊繃的我"] },
+          object: { label: "📚 【物】看到什麼景物？", options: ["重點比芝麻還多的課本和堆積如山的測驗卷", "堆滿桌子、快被寫爛的習作"] },
+          event: { label: "⚡ 【事】發生什麼核心事件？", options: ["悠閒的卡通時光全被暫停，只能挑燈夜讀", "面對令人喘不過氣的壓力，咬牙苦讀"] }
         },
-        // 段落組織三步句積木
-        starters: [
-          { tag: "開頭句", text: "每當月考前一個禮拜，我的生活就風雲變色，鬧得人仰馬翻。" },
-          { tag: "發展句", text: "悠閒的卡通時光全被暫停，取而代之的是重點比芝麻還多的課本和堆積如山的測驗卷。" },
-          { tag: "結尾句", text: "看著媽媽臉色比包青天還黑，我只能咬緊牙關認真苦讀，誰叫我平時不燒香呢！" }
-        ],
-        // 初探者拼圖填空骨架 (Cloze Puzzle)
-        puzzleSentences: [
+        // 三步段落句模板 (Step 2 組合用)
+        sentenceTemplates: [
           {
-            prefix: "每到月考前，我的生活就",
-            options: ["風雲變色，鬧得人仰馬翻", "變得緊張萬分，草木皆兵"],
-            defaultIdx: 0,
-            suffix: "。"
+            type: "開頭句",
+            getSentence: (e) => `${e.time}，我的生活就風雲變色，鬧得人仰馬翻。`,
+            options: ["風雲變色，鬧得人仰馬翻", "變得緊張萬分，草木皆兵"]
           },
           {
-            prefix: "悠閒的卡通時光全被暫停，桌上擺滿了",
-            options: ["重點比芝麻還多的課本和習作", "堆積如山的測驗卷和講義"],
-            defaultIdx: 0,
-            suffix: "。"
+            type: "發展句",
+            getSentence: (e) => `${e.place}，擺滿了${e.object}。`,
+            options: ["重點比芝麻還多的課本", "堆積如山的測驗卷", "快被寫爛的習作"]
           },
           {
-            prefix: "平時笑咪咪的媽媽，此時臉色",
-            options: ["比鐵面無私的包青天還要黑", "氣得像隨時會爆發的火山"],
-            defaultIdx: 0,
-            suffix: "。"
-          },
-          {
-            prefix: "面對令人喘不過氣的壓力，我只能",
-            options: ["咬緊牙關熬過漫長夜讀，認真苦讀", "臨陣磨槍，祈求文昌帝君保佑"],
-            defaultIdx: 0,
-            suffix: "。"
+            type: "結尾句",
+            getSentence: (e) => `看著平時笑咪咪的媽媽臉色比包青天還黑，${e.event}，誰叫我平時不燒香呢！`,
+            options: ["媽媽臉色比包青天還黑", "氣得像隨時會爆發的火山"]
           }
+        ],
+        // 初探者拼圖填空
+        puzzleSentences: [
+          { prefix: "每到月考前，我的生活就", options: ["風雲變色，鬧得人仰馬翻", "變得緊張萬分，草木皆兵"], defaultIdx: 0, suffix: "。" },
+          { prefix: "悠閒的卡通時光全被暫停，桌上擺滿了", options: ["重點比芝麻還多的課本和習作", "堆積如山的測驗卷和講義"], defaultIdx: 0, suffix: "。" },
+          { prefix: "平時笑咪咪的媽媽，此時臉色", options: ["比鐵面無私的包青天還要黑", "氣得像隨時會爆發的火山"], defaultIdx: 0, suffix: "。" },
+          { prefix: "面對令人喘不過氣的壓力，我只能", options: ["咬緊牙關熬過漫長夜讀，認真苦讀", "臨陣磨槍，祈求文昌帝君保佑"], defaultIdx: 0, suffix: "。" }
         ],
         words: ["風雲變色", "堆積如山", "苦讀之夜", "臨陣磨槍", "臨渴掘井", "按部就班", "緊張萬分", "重點如麻"],
         syntax: ["重點比芝麻還多", "測驗卷堆積如山", "習作快被寫爛了", "媽媽臉色比包青天還黑", "比汽車速度還快"],
@@ -874,46 +1084,35 @@
         color: 0x70c1b3,
         prompt: "考卷發下那一刻！教室氣氛如何？看著密密麻麻的題目，你的心跳與腦海產生了什麼誇張的變化？",
         spriteName: "鐘聲精靈・噹噹",
-        // 人事時地物五要素導航
-        elements: {
-          time: "早自習結束、考試鐘聲響起的瞬間",
-          place: "寂靜無聲的四年級教室",
-          person: "如坐針氈的我、神情嚴肅的監考老師、抓耳撓腮的同學",
-          object: "雪白的考卷、密密麻麻的鉛字、發抖的鉛筆",
-          event: "教室安靜得連根針掉下都聽得見、心跳飆速、大腦當機全空白"
+        elementOptions: {
+          time: { label: "⏰ 【時】何時發生？", options: ["早自習鈴聲響起、月考大魔王逼近時", "發下試卷的那一瞬間"] },
+          place: { label: "🏫 【地】在什麼地方？", options: ["在安靜無聲的教室裡", "在如坐針氈的座位上"] },
+          person: { label: "👤 【人】身邊有誰？", options: ["如坐針氈的我與神情嚴肅的監考老師", "大腦當機、手心冒汗的我"] },
+          object: { label: "📄 【物】看到什麼景物？", options: ["雪白的考卷和密密麻麻的漆黑鉛字", "如雪片般緩緩飄落的測驗紙"] },
+          event: { label: "⚡ 【事】發生什麼核心事件？", options: ["教室安靜得連一根針掉下都聽得見", "心跳比海線風車還快，大腦像當機一樣全空白"] }
         },
-        // 段落組織三步句積木
-        starters: [
-          { tag: "開頭句", text: "在月考大魔王的步步逼近下，原本熱鬧的早自習頓時變得草木皆兵。" },
-          { tag: "發展句", text: "「噹——噹——」比死神喪鐘更驚心的鈴聲響起，雪白的考卷如寒雪飄落桌上。" },
-          { tag: "結尾句", text: "教室安靜得連一根針掉下都聽得見，看著密密麻麻的鉛字，我的大腦像當機一樣全變成空白！" }
-        ],
-        // 初探者拼圖填空骨架 (Cloze Puzzle)
-        puzzleSentences: [
+        sentenceTemplates: [
           {
-            prefix: "月考鈴聲即將響起，原本熱鬧的教室",
-            options: ["頓時變得草木皆兵，人人自危", "安靜得像空無一人的山谷"],
-            defaultIdx: 0,
-            suffix: "。"
+            type: "開頭句",
+            getSentence: (e) => `${e.time}，原本熱鬧的教室頓時變得草木皆兵，人人自危。`,
+            options: ["頓時變得草木皆兵，人人自危", "安靜得像空無一人的山谷"]
           },
           {
-            prefix: "「噹！噹！噹！」比死神喪鐘更驚心的鐘聲響起，考卷",
-            options: ["如雪片般緩緩飄落到大家桌上", "刷的一聲發下，氣氛緊張到了極點"],
-            defaultIdx: 0,
-            suffix: "。"
+            type: "發展句",
+            getSentence: (e) => `「噹！噹！噹！」比死神喪鐘更驚心的鐘聲響起，${e.object}緩緩飄落在桌上。`,
+            options: ["雪白的考卷如雪花飄落", "密密麻麻的鉛字映入眼簾"]
           },
           {
-            prefix: "此時教室裡十分安靜，",
-            options: ["連一根針掉下去的聲音都聽得見", "只聽見窗外微風吹過的聲響"],
-            defaultIdx: 0,
-            suffix: "。"
-          },
-          {
-            prefix: "看著密密麻麻的題目，我的心跳比海線風車還快，大腦",
-            options: ["像當機一樣，所有注音和改錯全變成空白", "緊張得像被冰凍住，不知如何下筆"],
-            defaultIdx: 0,
-            suffix: "。"
+            type: "結尾句",
+            getSentence: (e) => `${e.place}，${e.event}！`,
+            options: ["連一根針掉下都聽得見", "大腦刷的一聲變成空白"]
           }
+        ],
+        puzzleSentences: [
+          { prefix: "月考鈴聲即將響起，原本熱鬧的教室", options: ["頓時變得草木皆兵，人人自危", "安靜得像空無一人的山谷"], defaultIdx: 0, suffix: "。" },
+          { prefix: "「噹！噹！噹！」比死神喪鐘更驚心的鐘聲響起，考卷", options: ["如雪片般緩緩飄落到大家桌上", "刷的一聲發下，氣氛緊張到了極點"], defaultIdx: 0, suffix: "。" },
+          { prefix: "此時教室裡十分安靜，", options: ["連一根針掉下去的聲音都聽得見", "只聽見窗外微風吹過的聲響"], defaultIdx: 0, suffix: "。" },
+          { prefix: "看著密密麻麻的題目，我的心跳比海線風車還快，大腦", options: ["像當機一樣，所有注音和改錯全變成空白", "緊張得像被冰凍住，不知如何下筆"], defaultIdx: 0, suffix: "。" }
         ],
         words: ["草木皆兵", "人仰馬翻", "大腦當機", "一片空白", "如坐針氈", "冷汗直流", "安靜無聲", "心跳加速"],
         syntax: ["鐘聲比死神喪鐘還驚心", "大腦像當機一樣全空白", "教室安靜得連根針掉下都聽得見", "心跳比高美濕地風車還快"],
@@ -927,46 +1126,35 @@
         color: 0xf39c12,
         prompt: "發考卷時是驚天動地還是心驚膽戰？看到刺眼的分數，你內心有何震撼？回家後遭遇了什麼樣的家庭風暴？",
         spriteName: "考卷精靈・白白",
-        // 人事時地物五要素導航
-        elements: {
-          time: "月考後發考卷的時刻、放學回家進門時",
-          place: "講臺前、家裡的客廳沙發",
-          person: "面無表情發考卷的老師、滿頭冷汗的我、火冒三丈的媽媽",
-          object: "滿江紅的考卷、刺眼的退步分數、高高舉起的降龍十八掌",
-          event: "屁股像坐在針氈上、心驚膽戰領考卷、回家迎來狂風暴雨般的責備"
+        elementOptions: {
+          time: { label: "⏰ 【時】何時發生？", options: ["熬過考試、發考卷那一節課", "放學踏進家門時"] },
+          place: { label: "🏫 【地】在什麼地方？", options: ["在講臺前與自己的座位上", "在客廳沙發旁"] },
+          person: { label: "👤 【人】身邊有誰？", options: ["面無表情唸名字的老師和冷汗直流的我", "火冒三丈的媽媽"] },
+          object: { label: "💯 【物】看到什麼景物？", options: ["滿江紅的考卷和刺眼的退步分數", "媽媽高高舉起的降龍十八掌"] },
+          event: { label: "⚡ 【事】發生什麼核心事件？", options: ["屁股像坐在針氈上坐立難安，接過考卷心驚膽戰", "回家遭遇家庭風暴，被訓得眼冒金星"] }
         },
-        // 段落組織三步句積木
-        starters: [
-          { tag: "開頭句", text: "熬過了月考之後，接下來迎接的是另一番折磨——驚天地、泣鬼神的「發考卷」！" },
-          { tag: "發展句", text: "回想考試的粗心，我屁股像坐在針氈上坐立難安，接過考卷果然分數又退步了。" },
-          { tag: "結尾句", text: "回到家交出考卷，媽媽氣得火冒三丈，使出「降龍十八掌」把我打得眼冒金星！" }
-        ],
-        // 初探者拼圖填空骨架 (Cloze Puzzle)
-        puzzleSentences: [
+        sentenceTemplates: [
           {
-            prefix: "熬過了考試的煎熬，接下來迎接的是",
-            options: ["驚天地、泣鬼神的「發考卷」時刻", "令全班心驚膽戰的揭曉時刻"],
-            defaultIdx: 0,
-            suffix: "。"
+            type: "開頭句",
+            getSentence: (e) => `${e.time}，迎接我們的是驚天地、泣鬼神的「發考卷」時刻！`,
+            options: ["驚天地、泣鬼神的發考卷時刻", "令人坐立難安的成績揭曉"]
           },
           {
-            prefix: "等待叫名字的時候，我冷汗直流，屁股",
-            options: ["像坐在針氈上一樣，坐立難安", "像被膠水黏住，雙腿發抖不敢起身"],
-            defaultIdx: 0,
-            suffix: "。"
+            type: "發展句",
+            getSentence: (e) => `等待叫名字時，我屁股像坐在針氈上坐立難安，拿到${e.object}，果然又退步了。`,
+            options: ["屁股像坐在針氈上", "冷汗直流雙腿發軟"]
           },
           {
-            prefix: "走上講臺接過考卷，看著滿江紅的分數，",
-            options: ["果然不出所料，這次成績又退步了", "我的心像沉入冰冷的海底"],
-            defaultIdx: 0,
-            suffix: "。"
-          },
-          {
-            prefix: "回到家面對追問，媽媽看到分數",
-            options: ["氣得火冒三丈，使出降龍十八掌把我訓得眼冒金星", "臉色比雷公怒吼還可怕，展開一陣狂風暴雨的訓話"],
-            defaultIdx: 0,
-            suffix: "。"
+            type: "結尾句",
+            getSentence: (e) => `回家交出成績單，媽媽氣得火冒三丈，使出「降龍十八掌」把我打得眼冒金星！`,
+            options: ["氣得火冒三丈，使出降龍十八掌", "臉色比包青天還黑，展開狂風暴雨"]
           }
+        ],
+        puzzleSentences: [
+          { prefix: "熬過了考試的煎熬，接下來迎接的是", options: ["驚天地、泣鬼神的「發考卷」時刻", "令全班心驚膽戰的揭曉時刻"], defaultIdx: 0, suffix: "。" },
+          { prefix: "等待叫名字的時候，我冷汗直流，屁股", options: ["像坐在針氈上一樣，坐立難安", "像被膠水黏住，雙腿發抖不敢起身"], defaultIdx: 0, suffix: "。" },
+          { prefix: "走上講臺接過考卷，看著滿江紅的分數，", options: ["果然不出所料，這次成績又退步了", "我的心像沉入冰冷的海底"], defaultIdx: 0, suffix: "。" },
+          { prefix: "回到家面對追問，媽媽看到分數", options: ["氣得火冒三丈，使出降龍十八掌把我訓得眼冒金星", "臉色比雷公怒吼還可怕，展開一陣狂風暴雨的訓話"], defaultIdx: 0, suffix: "。" }
         ],
         words: ["驚天地泣鬼神", "火冒三丈", "眼冒金星", "坐立難安", "慘痛教訓", "退步落後", "膽戰心驚", "歡笑收穫"],
         syntax: ["屁股像坐在針氈上", "媽媽氣得火冒三丈", "降龍十八掌打得眼冒金星", "聲音比雷公怒吼還大"],
@@ -980,46 +1168,35 @@
         color: 0x9b59b6,
         prompt: "經歷了這次月考的洗禮，你學到了什麼啟示？如何改掉平時不燒香的壞習慣，期許自己按部就班超越自我？",
         spriteName: "智慧石像・智者",
-        // 人事時地物五要素導航
-        elements: {
-          time: "經歷這場慘痛的月考風暴之後、從今天開始",
-          place: "重整心情的書桌前、未來的求學路上",
-          person: "痛定思痛、決心奮發向上的我",
-          object: "每天落實的複習進度表、端正認真的態度",
-          event: "領悟天下無不勞而獲、改掉臨時抱佛腳、按部就班超越自我"
+        elementOptions: {
+          time: { label: "⏰ 【時】何時發生？", options: ["經歷了這次慘痛的月考洗禮之後", "從今天開始的每一天"] },
+          place: { label: "🏠 【地】在什麼地方？", options: ["在自己的書桌前", "在未來的求學道路上"] },
+          person: { label: "👤 【人】身邊有誰？", options: ["痛定思痛、決心奮發向上的我", "重現笑容的家人與我"] },
+          object: { label: "📖 【物】看到什麼景物？", options: ["按部就班的每日複習計畫表", "工整踏實的筆記本"] },
+          event: { label: "⚡ 【事】發生什麼核心事件？", options: ["明白天下無不勞而獲，改掉臨時抱佛腳壞習慣", "按部就班努力不懈，超越自我"] }
         },
-        // 段落組織三步句積木
-        starters: [
-          { tag: "開頭句", text: "經過這次月考的慘痛教訓，我深深明白天下絕不可能不勞而獲。" },
-          { tag: "發展句", text: "我一定要改掉「平時不燒香，臨時抱佛腳」的壞習慣，每天按部就班認真複習。" },
-          { tag: "結尾句", text: "唯有努力不懈方能成功，未來的我不再當月考大魔王的俘虜，我要征服考試、超越自己！" }
-        ],
-        // 初探者拼圖填空骨架 (Cloze Puzzle)
-        puzzleSentences: [
+        sentenceTemplates: [
           {
-            prefix: "經過這次月考的慘痛教訓，我深深明白",
-            options: ["天下絕不可能不勞而獲，唯有努力不懈方能成功", "凡事臨渴掘井必定會嚐到失敗的苦果"],
-            defaultIdx: 0,
-            suffix: "。"
+            type: "開頭句",
+            getSentence: (e) => `${e.time}，我深深明白天下絕不可能不勞而獲。`,
+            options: ["天下絕不可能不勞而獲", "凡事臨渴掘井必定會嚐到苦果"]
           },
           {
-            prefix: "我痛定思痛，下定決心一定要改掉",
-            options: ["「平時不燒香，臨時抱佛腳」的壞習慣", "平日貪玩散漫、考前才抱佛腳的壞毛病"],
-            defaultIdx: 0,
-            suffix: "。"
+            type: "發展句",
+            getSentence: (e) => `我下定決心改掉「平時不燒香，臨時抱佛腳」的壞習慣，每天在${e.place}按部就班複習功課。`,
+            options: ["改掉平時不燒香壞習慣", "腳踏實地做好每一份練習"]
           },
           {
-            prefix: "從今天起，我每天都要",
-            options: ["按部就班複習功課，腳踏實地完成習作", "妥善安排時間，不讓作業堆積如山"],
-            defaultIdx: 0,
-            suffix: "。"
-          },
-          {
-            prefix: "希望在未來的日子裡，我不僅不再成為月考的俘虜，",
-            options: ["更能夠征服考試，超越自我", "還能歡笑收穫滿滿的成果與信心"],
-            defaultIdx: 0,
-            suffix: "！"
+            type: "結尾句",
+            getSentence: (e) => `唯有努力不懈方能成功，未來的我不再當月考魔王的俘虜，我要征服考試、超越自己！`,
+            options: ["不再成為月考大魔王俘虜", "征服考試並超越自我"]
           }
+        ],
+        puzzleSentences: [
+          { prefix: "經過這次月考的慘痛教訓，我深深明白", options: ["天下絕不可能不勞而獲，唯有努力不懈方能成功", "凡事臨渴掘井必定會嚐到失敗的苦果"], defaultIdx: 0, suffix: "。" },
+          { prefix: "我痛定思痛，下定決心一定要改掉", options: ["「平時不燒香，臨時抱佛腳」的壞習慣", "平日貪玩散漫、考前才抱佛腳的壞毛病"], defaultIdx: 0, suffix: "。" },
+          { prefix: "從今天起，我每天都要", options: ["按部就班複習功課，腳踏實地完成習作", "妥善安排時間，不讓作業堆積如山"], defaultIdx: 0, suffix: "。" },
+          { prefix: "希望在未來的日子裡，我不僅不再成為月考的俘虜，", options: ["更能夠征服考試，超越自我", "還能歡笑收穫滿滿的成果與信心"], defaultIdx: 0, suffix: "！" }
         ],
         words: ["痛定思痛", "按部就班", "不勞而獲", "努力不懈", "超越自我", "征服考試", "良藥苦口", "腳踏實地"],
         syntax: ["改掉平時不燒香的毛病", "不再成為月考的大魔王俘虜", "征服考試並超越自我", "唯有努力不懈方能成功"],
@@ -1042,12 +1219,13 @@
     const SLANG_FILTER = ["超廢", "完蛋了", "超狂", "GG", "芭比Q", "傻眼貓咪", "廢到笑", "很瞎", "很扯", "狂按猛按"];
 
     // ----------------------------------------------------
+        // ----------------------------------------------------
     // 2. 狀態管理器 (持久化支援)
     // ----------------------------------------------------
     class IslandStateManager {
       constructor() {
         this.tier = "intermediate";
-        this.teacherMode = false; // false: 密碼保護(888), true: 免密碼巡堂模式
+        this.teacherMode = false;
         this.activeIslandIndex = 0;
         this.paragraphs = ["", "", "", ""];
         this.teacherApprovals = [false, false, false, false];
@@ -1059,11 +1237,17 @@
           [0, 0, 0, 0],
           [0, 0, 0, 0]
         ];
+        this.elementSelections = [
+          { time: 0, place: 0, person: 0, object: 0, event: 0 },
+          { time: 0, place: 0, person: 0, object: 0, event: 0 },
+          { time: 0, place: 0, person: 0, object: 0, event: 0 },
+          { time: 0, place: 0, person: 0, object: 0, event: 0 }
+        ];
         this.loadState();
       }
       loadState() {
         try {
-          const raw = localStorage.getItem("g4_writing_island_state_v3");
+          const raw = localStorage.getItem("g4_writing_island_state_v4");
           if (raw) {
             const data = JSON.parse(raw);
             this.tier = data.tier || "intermediate";
@@ -1077,6 +1261,12 @@
               [0, 0, 0, 0],
               [0, 0, 0, 0],
               [0, 0, 0, 0]
+            ];
+            this.elementSelections = data.elementSelections || [
+              { time: 0, place: 0, person: 0, object: 0, event: 0 },
+              { time: 0, place: 0, person: 0, object: 0, event: 0 },
+              { time: 0, place: 0, person: 0, object: 0, event: 0 },
+              { time: 0, place: 0, person: 0, object: 0, event: 0 }
             ];
           }
         } catch (e) {
@@ -1092,9 +1282,10 @@
             teacherApprovals: this.teacherApprovals,
             teacherStamps: this.teacherStamps,
             teacherComments: this.teacherComments,
-            puzzleSelections: this.puzzleSelections
+            puzzleSelections: this.puzzleSelections,
+            elementSelections: this.elementSelections
           };
-          localStorage.setItem("g4_writing_island_state_v3", JSON.stringify(data));
+          localStorage.setItem("g4_writing_island_state_v4", JSON.stringify(data));
         } catch (e) {
           console.warn("儲存失敗", e);
         }
@@ -1102,6 +1293,7 @@
     }
 
     const state = new IslandStateManager();
+
 
 
     // ----------------------------------------------------
@@ -1791,10 +1983,14 @@
     // ----------------------------------------------------
     // 4. 島嶼寫作與四格漫畫應用控制器 (完整升級)
     // ----------------------------------------------------
+        // ----------------------------------------------------
+    // 4. 島嶼寫作與四格漫畫應用控制器 (四步階梯寫作向導)
+    // ----------------------------------------------------
     class IslandApp {
       constructor() {
         this.sceneDirector = new IslandScene();
         this.currentIsland = 0;
+        this.currentStep = 1; // 1:選五要素, 2:組段落句, 3:潤飾檢驗, 4:教師蓋章
         this.currentStamp = "💯 甲上";
         this.rejectTags = [];
         this.initUI();
@@ -1861,7 +2057,6 @@
         this.closeDrawer();
       }
 
-      // 更新底部導航列與解鎖狀態
       updateNavStepDots() {
         for (let i = 0; i < 5; i++) {
           const dot = document.getElementById(`step-dot-${i}`);
@@ -1895,7 +2090,6 @@
         }
       }
 
-      // 航道巡航防呆與平滑飛入
       flyToIsland(index) {
         // 防呆審查：未解鎖不得跨島
         if (index > 0 && index < 4) {
@@ -1922,12 +2116,10 @@
         const [x, y, z] = targetData.position;
 
         if (index === 4) {
-          // 守門神殿
           this.sceneDirector.flyTo(new THREE.Vector3(0, 24, 28), new THREE.Vector3(0, 6, 0), () => {
             this.openGuardianModal();
           });
         } else {
-          // 聚焦特寫微縮島嶼
           const camTarget = new THREE.Vector3(x + 13, y + 16, z + 18);
           const lookTarget = new THREE.Vector3(x, y + 3.5, z);
           this.sceneDirector.flyTo(camTarget, lookTarget, () => {
@@ -1937,6 +2129,7 @@
       }
 
       openDrawer(index) {
+        this.currentIsland = index;
         this.loadIslandData(index);
         document.getElementById("islandDrawer").classList.add("open");
       }
@@ -1945,61 +2138,214 @@
         document.getElementById("islandDrawer").classList.remove("open");
       }
 
-      // 渲染人事時地物五要素導航
-      renderElementsGuide(data) {
-        const grid = document.getElementById("elementsGrid");
-        if (!grid || !data.elements) return;
-        const e = data.elements;
-        grid.innerHTML = `
-          <div class="element-item">
-            <span class="element-tag tag-time">⏰ 【時】時間</span>
-            <span>${e.time}</span>
-          </div>
-          <div class="element-item">
-            <span class="element-tag tag-place">🏠 【地】地點</span>
-            <span>${e.place}</span>
-          </div>
-          <div class="element-item">
-            <span class="element-tag tag-person">👤 【人】人物</span>
-            <span>${e.person}</span>
-          </div>
-          <div class="element-item">
-            <span class="element-tag tag-object">📚 【物】景物</span>
-            <span>${e.object}</span>
-          </div>
-          <div class="element-item" style="grid-column: span 2;">
-            <span class="element-tag tag-event">⚡ 【事】情節焦點</span>
-            <span>${e.event}</span>
-          </div>
-        `;
+      // ====================================================
+      // 階梯向導切換 (Step 1 ➔ Step 2 ➔ Step 3 ➔ Step 4)
+      // ====================================================
+      goToStep(step) {
+        this.currentStep = step;
+        const data = CURRICULUM_DATA[this.currentIsland];
+
+        // 1. 更新頂端 Tabs 樣式
+        for (let s = 1; s <= 4; s++) {
+          const tab = document.getElementById(`wizardTab${s}`);
+          const panel = document.getElementById(`wizardPanel${s}`);
+          if (tab) {
+            tab.classList.toggle("active", s === step);
+            tab.classList.toggle("done", s < step);
+          }
+          if (panel) {
+            panel.classList.toggle("active", s === step);
+          }
+        }
+
+        // 2. 切換各步驟專屬邏輯
+        if (step === 2) {
+          // 根據 Step 1 所選要素，動態產生 Step 2 的句子
+          this.renderStep2Sentences(data);
+        } else if (step === 3) {
+          // 根據 Step 2 的三句或草稿，自動整合成段落帶入 Step 3 輸入框
+          const textarea = document.getElementById("paragraphInput");
+          if (!state.paragraphs[this.currentIsland] || state.paragraphs[this.currentIsland].trim() === "") {
+            const combined = this.getCombinedStep2Text(data);
+            textarea.value = combined;
+            state.paragraphs[this.currentIsland] = combined;
+            state.saveState();
+          } else {
+            textarea.value = state.paragraphs[this.currentIsland];
+          }
+          this.onTextChange();
+        } else if (step === 4) {
+          // 展示最終預覽並更新教師審核狀態
+          const finalEl = document.getElementById("finalParagraphPreview");
+          if (finalEl) {
+            finalEl.textContent = state.paragraphs[this.currentIsland] || "尚未填寫段落內容";
+          }
+          this.updateTeacherUI(this.currentIsland);
+        }
       }
 
-      // 渲染段落組織三步句
-      renderStarters(data) {
-        const list = document.getElementById("startersList");
-        if (!list || !data.starters) return;
+      // 載入當前島嶼資料
+      loadIslandData(index) {
+        const data = CURRICULUM_DATA[index];
+        document.getElementById("drawerTitle").textContent = `🏝️ ${data.name}`;
+        document.getElementById("peerExemplar").textContent = data.peer;
+
+        // 初始化 Step 1 要素選擇器
+        this.renderStep1Pickers(data);
+
+        // 初始化好詞百寶箱
+        const wordWrap = document.getElementById("wordChips");
+        if (wordWrap) {
+          wordWrap.innerHTML = "";
+          data.words.forEach(w => {
+            const btn = document.createElement("button");
+            btn.className = "chip";
+            btn.textContent = w;
+            btn.onclick = () => this.insertText(w);
+            wordWrap.appendChild(btn);
+          });
+        }
+
+        // 決定預設停留步驟：若已蓋章 ➔ Step 4；若已有內容 ➔ Step 3；全新 ➔ Step 1
+        if (state.teacherApprovals[index]) {
+          this.goToStep(4);
+        } else if (state.paragraphs[index] && state.paragraphs[index].length >= 30) {
+          this.goToStep(3);
+        } else {
+          this.goToStep(1);
+        }
+      }
+
+      // ----------------------------------------------------
+      // Step 1: 渲染五要素點選器
+      // ----------------------------------------------------
+      renderStep1Pickers(data) {
+        const list = document.getElementById("elementPickersList");
+        if (!list || !data.elementOptions) return;
         list.innerHTML = "";
-        data.starters.forEach(s => {
-          const btn = document.createElement("button");
-          btn.className = "starter-btn";
-          btn.innerHTML = `<strong style="color: #b45309;">${s.tag}：</strong>${s.text}`;
-          btn.onclick = () => this.insertText(s.text);
-          list.appendChild(btn);
+
+        const islandIdx = this.currentIsland;
+        const curSelections = state.elementSelections[islandIdx] || { time: 0, place: 0, person: 0, object: 0, event: 0 };
+
+        const elemKeys = [
+          { key: "time", color: "#fee2e2" },
+          { key: "place", color: "#fef3c7" },
+          { key: "person", color: "#e0e7ff" },
+          { key: "object", color: "#f3e8ff" },
+          { key: "event", color: "#ccfbf1" }
+        ];
+
+        elemKeys.forEach(({ key, color }) => {
+          const item = data.elementOptions[key];
+          if (!item) return;
+
+          const card = document.createElement("div");
+          card.className = "element-picker-card";
+
+          const chosenIdx = curSelections[key] || 0;
+
+          const optBtns = item.options.map((opt, oIdx) => {
+            const isSel = chosenIdx === oIdx;
+            return `<button class="picker-opt-btn ${isSel ? 'selected' : ''}" onclick="window.islandApp.selectElementOption('${key}', ${oIdx})">${isSel ? '✓ ' : ''}${opt}</button>`;
+          }).join("");
+
+          card.innerHTML = `
+            <div class="picker-label" style="background: ${color}; padding: 4px 8px; border-radius: 6px; width: fit-content;">
+              <span>${item.label}</span>
+            </div>
+            <div class="picker-options">
+              ${optBtns}
+            </div>
+          `;
+          list.appendChild(card);
         });
       }
 
-      // 渲染初探者拼圖填空器 (Cloze)
-      renderPuzzleCloze(data) {
-        const box = document.getElementById("puzzleBox");
-        const list = document.getElementById("puzzleSentencesList");
-        if (!box || !list) return;
+      selectElementOption(key, optIdx) {
+        const islandIdx = this.currentIsland;
+        if (!state.elementSelections[islandIdx]) {
+          state.elementSelections[islandIdx] = { time: 0, place: 0, person: 0, object: 0, event: 0 };
+        }
+        state.elementSelections[islandIdx][key] = optIdx;
+        state.saveState();
 
-        if (state.tier !== "beginner" || !data.puzzleSentences) {
-          box.style.display = "none";
-          return;
+        const data = CURRICULUM_DATA[islandIdx];
+        this.renderStep1Pickers(data);
+        this.showToast(`已選取【${data.elementOptions[key].options[optIdx]}】`, 1500);
+      }
+
+      // 取得當前要素選取的實際文字物件
+      getSelectedElements(data) {
+        const islandIdx = this.currentIsland;
+        const sel = state.elementSelections[islandIdx] || { time: 0, place: 0, person: 0, object: 0, event: 0 };
+        const eo = data.elementOptions;
+        return {
+          time: eo.time.options[sel.time || 0],
+          place: eo.place.options[sel.place || 0],
+          person: eo.person.options[sel.person || 0],
+          object: eo.object.options[sel.object || 0],
+          event: eo.event.options[sel.event || 0]
+        };
+      }
+
+      // ----------------------------------------------------
+      // Step 2: 渲染三步句子與積木
+      // ----------------------------------------------------
+      renderStep2Sentences(data) {
+        const puzzleSec = document.getElementById("puzzleClozeSection");
+        const stdSec = document.getElementById("standardSentenceSection");
+
+        if (state.tier === "beginner" && data.puzzleSentences) {
+          if (puzzleSec) puzzleSec.style.display = "flex";
+          if (stdSec) stdSec.style.display = "none";
+          this.renderBeginnerPuzzle(data);
+        } else {
+          if (puzzleSec) puzzleSec.style.display = "none";
+          if (stdSec) stdSec.style.display = "flex";
+          this.renderIntermediateSentences(data);
         }
 
-        box.style.display = "flex";
+        const previewEl = document.getElementById("step2CombinedPreview");
+        if (previewEl) {
+          previewEl.textContent = this.getCombinedStep2Text(data);
+        }
+      }
+
+      renderIntermediateSentences(data) {
+        const e = this.getSelectedElements(data);
+        const t = data.sentenceTemplates;
+
+        const s1 = t[0].getSentence(e);
+        const s2 = t[1].getSentence(e);
+        const s3 = t[2].getSentence(e);
+
+        const el1 = document.getElementById("sentenceText1");
+        const el2 = document.getElementById("sentenceText2");
+        const el3 = document.getElementById("sentenceText3");
+
+        if (el1) el1.textContent = s1;
+        if (el2) el2.textContent = s2;
+        if (el3) el3.textContent = s3;
+
+        // 渲染誇飾法積木
+        const synWrap = document.getElementById("step2SyntaxChips");
+        if (synWrap) {
+          synWrap.innerHTML = "";
+          data.syntax.forEach(s => {
+            const btn = document.createElement("button");
+            btn.className = "chip highlight";
+            btn.textContent = `+ ${s}`;
+            btn.onclick = () => {
+              this.showToast(`已將【${s}】加入句中！`, 1500);
+            };
+            synWrap.appendChild(btn);
+          });
+        }
+      }
+
+      renderBeginnerPuzzle(data) {
+        const list = document.getElementById("puzzleSentencesList");
+        if (!list || !data.puzzleSentences) return;
         list.innerHTML = "";
 
         const islandIdx = this.currentIsland;
@@ -2027,7 +2373,6 @@
         });
       }
 
-      // 初探者點選拼圖選項
       selectPuzzleOption(sentIdx, optIdx) {
         const islandIdx = this.currentIsland;
         if (!state.puzzleSelections[islandIdx]) state.puzzleSelections[islandIdx] = [0, 0, 0, 0];
@@ -2035,78 +2380,36 @@
         state.saveState();
 
         const data = CURRICULUM_DATA[islandIdx];
-        this.renderPuzzleCloze(data);
+        this.renderBeginnerPuzzle(data);
 
-        // 自動組裝四句填空拼圖至輸入框
-        const fullParagraph = data.puzzleSentences.map((ps, idx) => {
-          const chosen = ps.options[state.puzzleSelections[islandIdx][idx]] || ps.options[0];
-          return `${ps.prefix}${chosen}${ps.suffix}`;
-        }).join("");
-
-        const textarea = document.getElementById("paragraphInput");
-        textarea.value = fullParagraph;
-        this.onTextChange();
+        const previewEl = document.getElementById("step2CombinedPreview");
+        if (previewEl) {
+          previewEl.textContent = this.getCombinedStep2Text(data);
+        }
       }
 
-      loadIslandData(index) {
-        const data = CURRICULUM_DATA[index];
-        document.getElementById("drawerTitle").textContent = `🏝️ ${data.name}`;
-        document.getElementById("spriteName").textContent = `島精靈・${data.spriteName}`;
-        document.getElementById("spritePrompt").textContent = data.prompt;
-        document.getElementById("peerExemplar").textContent = data.peer;
-
-        // 1. 人事時地物五要素導航
-        this.renderElementsGuide(data);
-
-        // 2. 組織三步句
-        this.renderStarters(data);
-
-        // 3. 初探者拼圖填空器
-        this.renderPuzzleCloze(data);
-
-        // 4. 好詞晶片
-        const wordWrap = document.getElementById("wordChips");
-        wordWrap.innerHTML = "";
-        data.words.forEach(w => {
-          const btn = document.createElement("button");
-          btn.className = "chip";
-          btn.textContent = w;
-          btn.onclick = () => this.insertText(w);
-          wordWrap.appendChild(btn);
-        });
-
-        // 5. 句型積木
-        const synWrap = document.getElementById("syntaxChips");
-        synWrap.innerHTML = "";
-        data.syntax.forEach(s => {
-          const btn = document.createElement("button");
-          btn.className = "chip highlight";
-          btn.textContent = `+ ${s}`;
-          btn.onclick = () => this.insertText(`，${s}，`);
-          synWrap.appendChild(btn);
-        });
-
-        // 6. 輸入框文字初始化
-        const textarea = document.getElementById("paragraphInput");
-        if (state.paragraphs[index]) {
-          textarea.value = state.paragraphs[index];
-        } else if (state.tier === "beginner" && data.puzzleSentences) {
-          // 初探者若無草稿，依拼圖預設值組合
-          const initial = data.puzzleSentences.map((ps, sIdx) => {
-            const chosen = ps.options[state.puzzleSelections[index][sIdx]] || ps.options[0];
+      // 取得 Step 2 合併出的段落文字 (首行空兩格)
+      getCombinedStep2Text(data) {
+        const islandIdx = this.currentIsland;
+        if (state.tier === "beginner" && data.puzzleSentences) {
+          const selections = state.puzzleSelections[islandIdx] || [0, 0, 0, 0];
+          return "　　" + data.puzzleSentences.map((ps, idx) => {
+            const chosen = ps.options[selections[idx]] || ps.options[0];
             return `${ps.prefix}${chosen}${ps.suffix}`;
           }).join("");
-          textarea.value = initial;
         } else {
-          textarea.value = "";
+          const e = this.getSelectedElements(data);
+          const t = data.sentenceTemplates;
+          return "　　" + t.map(item => item.getSentence(e)).join("");
         }
-
-        this.onTextChange();
-        this.updateTeacherUI(index);
       }
 
+      // ----------------------------------------------------
+      // Step 3: 輸入框文字修改與靈力回饋
+      // ----------------------------------------------------
       insertText(txt) {
         const area = document.getElementById("paragraphInput");
+        if (!area) return;
         const start = area.selectionStart;
         const end = area.selectionEnd;
         const old = area.value;
@@ -2121,7 +2424,7 @@
         state.paragraphs[this.currentIsland] = val;
         state.saveState();
 
-        const len = val.length;
+        const len = val.replace(/\s/g, '').length;
         document.getElementById("charCountLabel").textContent = `${len} / 80 字`;
         const pct = Math.min((len / 80) * 100, 100);
         const bar = document.getElementById("energyFill");
@@ -2129,6 +2432,9 @@
         bar.className = len >= 50 ? "energy-bar-fill good" : "energy-bar-fill";
       }
 
+      // ----------------------------------------------------
+      // Step 4: 教師批改與審查
+      // ----------------------------------------------------
       updateTeacherUI(index) {
         const isApproved = state.teacherApprovals[index];
         const stampBadge = document.getElementById("stampBadge");
@@ -2138,7 +2444,7 @@
         if (isApproved) {
           stampBadge.className = "stamp-badge approved";
           stampBadge.textContent = `✓ ${state.teacherStamps[index]}`;
-          fbBox.style.display = "none";
+          if (fbBox) fbBox.style.display = "none";
           nextBtn.textContent = index === 3 ? "前往守門神殿 ➔" : "通往下一座島 ➔";
           nextBtn.disabled = false;
           nextBtn.style.opacity = "1";
@@ -2152,12 +2458,14 @@
           if (state.teacherComments[index]) {
             stampBadge.className = "stamp-badge rejected";
             stampBadge.textContent = "❌ 需修改再送審";
-            fbBox.style.display = "block";
-            fbBox.textContent = `✏️ 老師叮嚀：${state.teacherComments[index]}`;
+            if (fbBox) {
+              fbBox.style.display = "block";
+              fbBox.textContent = `✏️ 老師叮嚀：${state.teacherComments[index]}`;
+            }
           } else {
             stampBadge.className = "stamp-badge unreviewed";
             stampBadge.textContent = "⏳ 待教師蓋章核准";
-            fbBox.style.display = "none";
+            if (fbBox) fbBox.style.display = "none";
           }
         }
       }
@@ -2191,7 +2499,6 @@
         }
       }
 
-      // 教師核准蓋章
       approveParagraph() {
         if (!state.teacherMode) {
           const pwd = document.getElementById("teacherPwdInput").value;
@@ -2222,7 +2529,6 @@
         this.showToast(`🎉 恭喜！${this.currentStamp} 認證成功！已解鎖通往下一座島嶼的航道！`);
       }
 
-      // 教師退件指導
       rejectParagraph() {
         if (!state.teacherMode) {
           const pwd = document.getElementById("teacherPwdInput").value;
@@ -2257,6 +2563,7 @@
           this.flyToIsland(next);
         }
       }
+
 
 
       // ----------------------------------------------------
