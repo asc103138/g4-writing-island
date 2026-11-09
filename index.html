@@ -1430,12 +1430,15 @@
       <div class="modal-body">
         
         <!-- 守門獸對話吐槽/讚賞泡泡 -->
-        <div style="background: #2b2d42; color: #edf2f4; padding: 14px 18px; border-radius: 12px; display: flex; align-items: center; gap: 14px;">
-          <span style="font-size: 38px;">🐲</span>
+        <div style="background: #2b2d42; color: #edf2f4; padding: 14px 18px; border-radius: 12px; display: flex; align-items: center; gap: 16px;">
+          <img src="assets/art/keeper_artisan_dragon.png" alt="小小工匠機關龍" style="width: 62px; height: 62px; object-fit: cover; border-radius: 12px; border: 2px solid #ffd166; background: #fff;" id="guardianAvatarImg">
           <div>
-            <strong style="color: #ffd166; font-size: 15px;" id="guardianSpeaker">守門神獸・文字饕餮</strong>
-            <p style="font-size: 13.5px; line-height: 1.5; margin-top: 2px;" id="guardianDialogue">
-              吼！四段篇章匯聚完畢！待本獸仔細審視前後邏輯與修辭光芒……
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <strong style="color: #ffd166; font-size: 15px;" id="guardianSpeaker">守門神獸・小小工匠機關龍</strong>
+              <span style="font-size: 11px; padding: 2px 8px; border-radius: 999px; background: rgba(255,209,102,0.2); color: #ffd166; font-weight: 700;">四格漫畫印刷機首席技師</span>
+            </div>
+            <p style="font-size: 13.5px; line-height: 1.5; margin-top: 4px;" id="guardianDialogue">
+              唭咔！四段起承轉合已就位！讓我啟動四格漫畫印刷機，為你把文字轉化為精彩漫畫！
             </p>
           </div>
         </div>
@@ -1973,6 +1976,274 @@
       g.add(at(ball(0.42, getMat(skin), 10, 8), 0, 1.5, 0));
       // 頭髮
       g.add(at(sc(ball(0.44, getMat(hair), 10, 6), 1, 0.6, 1), 0, 1.7, -0.05));
+      return g;
+    }
+
+    // ---------- 2D 概念圖對齊專屬微縮地標建造器 ----------
+    // 承之島：巨型金屬滴答大懷錶 (Ticking Pocket Watch Diorama)
+    function createTickingPocketWatch() {
+      const g = new THREE.Group();
+      const goldMat = getMat(0xf59e0b, { metalness: 0.85, roughness: 0.2 });
+      const darkGold = getMat(0xb45309, { metalness: 0.8, roughness: 0.25 });
+      const standMat = getMat(0x78350f, { roughness: 0.75 });
+
+      // 木質展示支架
+      g.add(at(rbox(2.2, 0.25, 1.8, standMat), 0, 0.12, 0));
+      g.add(at(rbox(0.18, 2.6, 0.18, standMat), -0.7, 1.3, -0.2, 0.1));
+      g.add(at(rbox(0.18, 2.6, 0.18, standMat), 0.7, 1.3, -0.2, -0.1));
+      g.add(at(rbox(0.18, 2.4, 0.18, standMat), 0, 1.2, -0.6, 0));
+
+      const watch = new THREE.Group();
+      watch.position.set(0, 3.0, 0.15);
+      watch.rotation.x = -0.15; // 面向鏡頭仰角
+
+      // 1. 金色外圓框與厚外殼
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(1.85, 0.22, 10, 28), goldMat);
+      watch.add(rim);
+
+      const back = cyl(1.9, 1.9, 0.35, 28, darkGold);
+      back.rotation.x = Math.PI / 2;
+      back.position.z = -0.15;
+      watch.add(back);
+
+      // 2. 瓷白鐘面
+      const dialTex = canvasTexture(512, 512, (ctx, w, h) => {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(w / 2, h / 2, w / 2 - 14, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 10;
+        ctx.beginPath();
+        ctx.arc(w / 2, h / 2, w / 2 - 28, 0, Math.PI * 2);
+        ctx.stroke();
+
+        for (let i = 0; i < 12; i++) {
+          const angle = (i * Math.PI) / 6;
+          const x1 = w / 2 + Math.cos(angle) * (w / 2 - 45);
+          const y1 = h / 2 + Math.sin(angle) * (h / 2 - 45);
+          const x2 = w / 2 + Math.cos(angle) * (w / 2 - (i % 3 === 0 ? 75 : 55));
+          const y2 = h / 2 + Math.sin(angle) * (h / 2 - (i % 3 === 0 ? 75 : 55));
+          ctx.strokeStyle = i % 3 === 0 ? '#1e293b' : '#64748b';
+          ctx.lineWidth = i % 3 === 0 ? 12 : 6;
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 44px "Noto Serif TC", serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('XII', w / 2, 80);
+        ctx.fillText('III', w - 80, h / 2);
+        ctx.fillText('VI', w / 2, h - 80);
+        ctx.fillText('IX', 80, h / 2);
+
+        ctx.font = 'bold 26px "Noto Sans TC", sans-serif';
+        ctx.fillStyle = '#dc2626';
+        ctx.fillText('分秒必爭', w / 2, h / 2 + 65);
+      });
+      const dialMat = new THREE.MeshStandardMaterial({ map: dialTex, roughness: 0.35 });
+      const dial = cyl(1.78, 1.78, 0.08, 28, dialMat);
+      dial.rotation.x = Math.PI / 2;
+      dial.position.z = 0.02;
+      watch.add(dial);
+
+      // 3. 黑金屬時針與分針
+      const handMat = getMat(0x0f172a, { roughness: 0.3, metalness: 0.6 });
+      const hourHand = rbox(0.12, 0.9, 0.05, handMat);
+      hourHand.position.set(0.28, 0.28, 0.1);
+      hourHand.rotation.z = -Math.PI / 4;
+      watch.add(hourHand);
+
+      const minuteHand = rbox(0.08, 1.35, 0.05, handMat);
+      minuteHand.position.set(-0.35, 0.58, 0.12);
+      minuteHand.rotation.z = Math.PI / 3;
+      watch.add(minuteHand);
+
+      const centerPin = ball(0.18, goldMat, 8, 6);
+      centerPin.position.set(0, 0, 0.15);
+      watch.add(centerPin);
+
+      // 4. 頂部上鍊發條鈕與圓環
+      const crown = cyl(0.28, 0.36, 0.5, 12, goldMat);
+      crown.position.set(0, 2.05, 0);
+      watch.add(crown);
+
+      const bow = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.1, 8, 20), goldMat);
+      bow.position.set(0, 2.6, 0);
+      watch.add(bow);
+
+      g.add(watch);
+      return g;
+    }
+
+    // 承之島：五感放大鏡觀測台 (Sensory Magnifying Glass Observatory)
+    function createSensoryMagnifyingGlass() {
+      const g = new THREE.Group();
+      const brassMat = getMat(0xf59e0b, { metalness: 0.85, roughness: 0.25 });
+      const handleWood = getMat(0x78350f, { roughness: 0.65 });
+
+      // 鏡框
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.15, 10, 28), brassMat);
+      rim.position.set(0, 2.6, 0);
+      g.add(rim);
+
+      // 凸透鏡玻璃
+      const glassMat = new THREE.MeshStandardMaterial({
+        color: 0x93c5fd,
+        roughness: 0.1,
+        metalness: 0.1,
+        transparent: true,
+        opacity: 0.55
+      });
+      const lens = cyl(1.22, 1.22, 0.08, 24, glassMat);
+      lens.rotation.x = Math.PI / 2;
+      lens.position.set(0, 2.6, 0);
+      g.add(lens);
+
+      // 木質握柄 (附金屬收口與圓頭)
+      const neck = cyl(0.16, 0.2, 0.5, 8, brassMat);
+      neck.position.set(0, 1.15, 0);
+      g.add(neck);
+
+      const handle = cyl(0.22, 0.16, 1.8, 8, handleWood);
+      handle.position.set(0, 0.2, 0);
+      g.add(handle);
+
+      const pommel = ball(0.24, brassMat, 8, 6);
+      pommel.position.set(0, -0.75, 0);
+      g.add(pommel);
+
+      // 底座石碑
+      g.add(at(rbox(1.6, 0.25, 1.6, getMat(0x334155)), 0, -0.85, 0));
+      return g;
+    }
+
+    // 合之島：立體黏土彩虹拱門 (3D Clay Rainbow Arch)
+    function createClayRainbowArch(radius = 7.5, tubeRadius = 0.22) {
+      const g = new THREE.Group();
+      const colors = [0xf87171, 0xfb923c, 0xfde047, 0x4ade80, 0x60a5fa, 0xc084fc];
+      colors.forEach((col, idx) => {
+        const curR = radius - idx * (tubeRadius * 1.85);
+        const arcGeo = new THREE.TorusGeometry(curR, tubeRadius, 8, 36, Math.PI);
+        const arcMat = getMat(col, { roughness: 0.58, metalness: 0.05, flatShading: true });
+        const arcMesh = new THREE.Mesh(arcGeo, arcMat);
+        arcMesh.castShadow = true;
+        g.add(arcMesh);
+      });
+
+      for (const s of [-1, 1]) {
+        const endX = s * (radius - 2.5 * tubeRadius);
+        const endCloud = cloud(0.7);
+        endCloud.position.set(endX, 0.2, 0);
+        g.add(endCloud);
+      }
+      return g;
+    }
+
+    // 終點神殿：古董四格漫畫印刷機 (Vintage 4-Panel Comic Printing Press)
+    function createComicPrintingPress() {
+      const g = new THREE.Group();
+      const ironMat = getMat(0x1e293b, { metalness: 0.6, roughness: 0.4 });
+      const brassMat = getMat(0xf59e0b, { metalness: 0.85, roughness: 0.25 });
+      const copperMat = getMat(0xb45309, { metalness: 0.8, roughness: 0.3 });
+      const woodMat = getMat(0x78350f, { roughness: 0.7 });
+
+      // 1. 鑄鐵底座與支架
+      g.add(at(rbox(4.8, 0.5, 3.2, ironMat), 0, 0.25, 0));
+      g.add(at(rbox(0.38, 3.2, 0.38, ironMat), -2.1, 1.8, -1.2));
+      g.add(at(rbox(0.38, 3.2, 0.38, ironMat), 2.1, 1.8, -1.2));
+      g.add(at(rbox(0.38, 3.2, 0.38, ironMat), -2.1, 1.8, 1.2));
+      g.add(at(rbox(0.38, 3.2, 0.38, ironMat), 2.1, 1.8, 1.2));
+
+      // 2. 印刷滾筒組
+      const roller1 = cyl(0.55, 0.55, 3.8, 16, copperMat);
+      roller1.rotation.z = Math.PI / 2;
+      roller1.position.set(0, 2.2, -0.6);
+      g.add(roller1);
+
+      const roller2 = cyl(0.48, 0.48, 3.8, 16, ironMat);
+      roller2.rotation.z = Math.PI / 2;
+      roller2.position.set(0, 1.3, -0.6);
+      g.add(roller2);
+
+      // 3. 側面大型動力齒輪與手搖飛輪
+      const gearGroup = new THREE.Group();
+      gearGroup.position.set(2.35, 2.2, -0.6);
+      const bigGearRim = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.12, 8, 20), brassMat);
+      gearGroup.add(bigGearRim);
+      for (let t = 0; t < 8; t++) {
+        const spoke = rbox(0.12, 2.1, 0.08, brassMat);
+        spoke.rotation.z = (t * Math.PI) / 8;
+        gearGroup.add(spoke);
+        const tooth = rbox(0.18, 0.32, 0.16, brassMat);
+        const ang = (t * Math.PI * 2) / 8;
+        tooth.position.set(Math.cos(ang) * 1.15, Math.sin(ang) * 1.15, 0);
+        tooth.rotation.z = ang;
+        gearGroup.add(tooth);
+      }
+      gearGroup.add(at(cyl(0.08, 0.08, 0.6, 6, brassMat), 0.75, 0, 0.35, 0));
+      gearGroup.add(at(rbox(0.14, 0.14, 0.4, woodMat), 0.75, 0, 0.65));
+      g.add(gearGroup);
+
+      // 次級小齒輪
+      const smallGear = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.1, 8, 16), brassMat);
+      smallGear.position.set(2.35, 1.1, -0.6);
+      g.add(smallGear);
+
+      // 4. 進紙捲軸
+      const paperRoll = cyl(0.65, 0.65, 3.6, 16, getMat(0xfffbeb, { roughness: 0.9 }));
+      paperRoll.rotation.z = Math.PI / 2;
+      paperRoll.position.set(0, 3.1, -1.2);
+      g.add(paperRoll);
+
+      // 5. 四格漫畫輸出傳送台板 (Conveyor Table with 4 Panels!)
+      const tray = rbox(4.6, 0.18, 2.2, woodMat);
+      tray.position.set(0, 1.05, 0.9);
+      tray.rotation.x = 0.12;
+      g.add(tray);
+
+      const stripMat = getMat(0xffffff, { roughness: 0.8 });
+      const paperStrip = rbox(4.2, 0.04, 1.6, stripMat);
+      paperStrip.position.set(0, 1.18, 0.9);
+      paperStrip.rotation.x = 0.12;
+      g.add(paperStrip);
+
+      const panelColors = [0x5fa8d3, 0xf4a261, 0xef4444, 0x2a9d8f];
+      for (let p = 0; p < 4; p++) {
+        const px = -1.5 + p * 1.0;
+        const frame = rbox(0.85, 0.02, 1.3, getMat(panelColors[p], { roughness: 0.5 }));
+        frame.position.set(px, 1.21, 0.9);
+        frame.rotation.x = 0.12;
+        g.add(frame);
+      }
+
+      g.add(at(signBoard("四格漫畫印刷機", 2.4, 0.55, '#047857', '#ffffff'), 0, 3.9, -0.6));
+      return { group: g, gear: gearGroup };
+    }
+
+    // 靈感羽毛筆 / 水晶毛筆 (Quill Pen / Crystal Stylus)
+    function createQuillPen(color = 0x38bdf8) {
+      const g = new THREE.Group();
+      const shaft = cyl(0.04, 0.06, 1.4, 6, getMat(0xf59e0b, { metalness: 0.8 }));
+      shaft.position.y = 0.7;
+      g.add(shaft);
+
+      const crystalTip = cone(0.12, 0.45, 6, getMat(color, { emissive: color, emissiveIntensity: 0.85 }));
+      crystalTip.position.y = -0.15;
+      crystalTip.rotation.x = Math.PI;
+      g.add(crystalTip);
+
+      // 羽毛片
+      const featherMat = getMat(0xffffff, { roughness: 0.6 });
+      const feather = rbox(0.28, 1.2, 0.04, featherMat);
+      feather.position.set(0.1, 1.3, 0);
+      feather.rotation.z = 0.15;
+      g.add(feather);
       return g;
     }
 
@@ -3315,8 +3586,8 @@ puzzleSentences: [
         shortName: "🐲 守門試煉",
         position: [ 62, 0, 10 ],
         color: 0xe74c3c,
-        prompt: "四座島嶼段落齊備！守門巨獸將審查你的四段情節是否連貫、有無非書面口語，並生成四格漫畫與謄寫稿紙！",
-        spriteName: "文字饕餮",
+        prompt: "四座島嶼段落齊備！守門神獸小小工匠機關龍將啟動四格漫畫印刷機，審查你的四段情節是否連貫、有無非書面口語，並生成四格漫畫與謄寫稿紙！",
+        spriteName: "小小工匠機關龍",
         words: [],
         syntax: [],
         peer: ""
@@ -3974,7 +4245,7 @@ puzzleSentences: [
 
         g.add(house);
 
-        // 屋外苦讀大書桌區 (厚實橡木桌、散落考卷、彩色精裝書本山、綠罩檯燈)
+        // 屋外苦讀大書桌區 (厚實橡木桌、散落考卷、彩色精裝書本山、綠罩檯燈、攤開的筆記與墨水瓶)
         const deskGroup = new THREE.Group();
         deskGroup.position.set(2.8, 3.2, 3.0);
 
@@ -3984,19 +4255,41 @@ puzzleSentences: [
           deskGroup.add(at(cyl(0.14, 0.1, 1.4, 6, getMat(0x5c3a21)), dx, 0.7, dz));
         }
 
-        // 散落翻開的試卷
-        const testPaper = rbox(1.0, 0.04, 0.8, getMat(0xffffff, { roughness: 0.9 }));
-        testPaper.position.set(0.3, 1.56, 0.1);
-        testPaper.rotation.y = 0.2;
-        deskGroup.add(testPaper);
+        // 散落翻開的試卷與大筆記本 (Open Planner)
+        const openBook = new THREE.Group();
+        openBook.position.set(0.3, 1.56, 0.1);
+        openBook.rotation.y = 0.15;
+        // 左右兩頁白紙
+        openBook.add(at(rbox(0.65, 0.05, 0.85, getMat(0xffffff, { roughness: 0.9 })), -0.32, 0, 0, 0));
+        openBook.add(at(rbox(0.65, 0.05, 0.85, getMat(0xffffff, { roughness: 0.9 })), 0.32, 0, 0, 0));
+        // 皮革書脊書底
+        openBook.add(at(rbox(1.36, 0.04, 0.9, getMat(0x854d0e)), 0, -0.03, 0));
+        deskGroup.add(openBook);
 
-        // 堆積如山的彩色精裝書本 (放大誇飾)
-        const colors = [0xe63946, 0x457b9d, 0x2a9d8f, 0xe9c46a, 0x8b5cf6, 0xffffff];
-        for (let b = 0; b < 6; b++) {
-          const book = rbox(1.1, 0.2, 0.8, getMat(colors[b % colors.length], { roughness: 0.6 }));
-          book.position.set(-0.9, 1.62 + b * 0.21, -0.3 + (b % 2) * 0.06);
-          book.rotation.y = (b * 0.18);
+        // 墨水瓶與鵝毛筆 (Inkwell & Quill)
+        const inkwell = cyl(0.16, 0.2, 0.28, 8, getMat(0x1e293b, { roughness: 0.3, metalness: 0.6 }));
+        inkwell.position.set(1.2, 1.68, 0.3);
+        deskGroup.add(inkwell);
+        const deskQuill = cyl(0.03, 0.05, 0.9, 6, getMat(0xf59e0b));
+        deskQuill.position.set(1.22, 2.05, 0.3);
+        deskQuill.rotation.z = -0.35;
+        deskGroup.add(deskQuill);
+
+        // 堆積如山的彩色精裝書本 (放大誇飾書本山)
+        const colors = [0xe63946, 0x457b9d, 0x2a9d8f, 0xe9c46a, 0x8b5cf6, 0xffffff, 0xd97706, 0x06b6d4];
+        for (let b = 0; b < 7; b++) {
+          const book = rbox(1.15, 0.22, 0.85, getMat(colors[b % colors.length], { roughness: 0.6 }));
+          book.position.set(-0.9, 1.62 + b * 0.23, -0.3 + (b % 2) * 0.08);
+          book.rotation.y = (b * 0.22);
           deskGroup.add(book);
+        }
+
+        // 第二疊小書本山
+        for (let b = 0; b < 4; b++) {
+          const b2 = rbox(0.95, 0.18, 0.7, getMat(colors[(b + 3) % colors.length], { roughness: 0.6 }));
+          b2.position.set(-0.7, 1.62 + b * 0.19, 0.6 + (b % 2) * 0.04);
+          b2.rotation.y = (-b * 0.18);
+          deskGroup.add(b2);
         }
 
         // 復古發光綠罩檯燈
@@ -4154,6 +4447,25 @@ puzzleSentences: [
         flagPole.add(at(cyl(0.08, 0.1, 7.5, 6, getMat(0xd1d5db, { metalness: 0.8 })), 0, 4.0, 0));
         flagPole.add(at(rbox(1.4, 0.8, 0.04, getMat(0xef4444)), 0.7, 7.2, 0));
         g.add(flagPole);
+
+        // 【2D概念圖核心地標 1】：滴答作響的巨型懷錶 (分秒必爭)
+        const pocketWatch = createTickingPocketWatch();
+        pocketWatch.position.set(-5.8, 3.2, 4.2);
+        pocketWatch.rotation.y = 0.45;
+        g.add(pocketWatch);
+
+        // 【2D概念圖核心地標 2】：五感放大鏡觀測台 (細節摹寫)
+        const magnifier = createSensoryMagnifyingGlass();
+        magnifier.position.set(4.8, 3.2, 0.9);
+        magnifier.rotation.y = -0.65;
+        g.add(magnifier);
+
+        // 【2D概念圖核心地標 3】：懸浮半空的金色靈感羽毛筆
+        const floatingQuill = createQuillPen(0xf59e0b);
+        floatingQuill.position.set(0, 5.8, 3.8);
+        floatingQuill.rotation.z = 0.35;
+        g.add(floatingQuill);
+        this.animatedObjects.push({ obj: floatingQuill, type: 'bob', speed: 2.2 });
       }
 
       // 轉之島：家庭風暴與成績揭曉微縮模型 (L型雙向美式洋房、震歪百葉窗、3D動漫怒氣符號、旋轉雷雲閃電、滿江紅59分考卷碑)
@@ -4266,34 +4578,49 @@ puzzleSentences: [
         g.add(house);
         this.animatedObjects.push({ obj: stormCloud, type: 'shake' });
 
-        // 刺眼的滿江紅巨型考卷雕像 (石基座 + 大叉叉與 59 分)
+        // 刺眼的滿江紅巨型考卷雕像 (2D概念圖：裂痕石碑、散落碎石、地面積水倒影)
         const paperMonument = new THREE.Group();
         paperMonument.position.set(3.8, 3.2, 2.0);
         paperMonument.rotation.y = -0.3;
 
-        // 石基座
-        paperMonument.add(at(rbox(3.2, 0.6, 1.4, getMat(0x374151)), 0, 0.3, 0));
+        // 石基座與基座周圍碎石
+        paperMonument.add(at(rbox(3.4, 0.65, 1.6, getMat(0x374151, { roughness: 0.9 })), 0, 0.32, 0));
+        paperMonument.add(at(rock(0.55, 0x475569), 1.6, 0.2, 0.8));
+        paperMonument.add(at(rock(0.42, 0x334155), -1.5, 0.15, -0.7));
 
-        // 巨型試卷板面
+        // 巨型試卷板面 (帶厚度石板質感與鮮紅 59 分)
         const tex = canvasTexture(512, 512, (ctx, w, h) => {
           ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h);
+          // 試卷格線
           ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 4;
           for (let y = 60; y < h; y += 45) {
             ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(w - 40, y); ctx.stroke();
           }
-          ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 14;
+          // 鮮紅大叉叉
+          ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 18;
           ctx.beginPath(); ctx.moveTo(w * 0.15, h * 0.15); ctx.lineTo(w * 0.85, h * 0.85); ctx.stroke();
           ctx.beginPath(); ctx.moveTo(w * 0.85, h * 0.15); ctx.lineTo(w * 0.15, h * 0.85); ctx.stroke();
-          ctx.fillStyle = '#dc2626'; ctx.font = `900 130px "Noto Sans TC"`; ctx.textAlign = 'right';
+          // 發光 59 分
+          ctx.fillStyle = '#dc2626'; ctx.font = `900 135px "Noto Sans TC"`; ctx.textAlign = 'right';
           ctx.fillText("59", w * 0.9, h * 0.35);
+          // 墨水批改淚痕
+          ctx.fillStyle = '#dc2626'; ctx.font = `bold 32px "Noto Sans TC"`;
+          ctx.fillText("重寫！", w * 0.88, h * 0.55);
         });
-        const paperMesh = new THREE.Mesh(new THREE.BoxGeometry(2.6, 3.4, 0.1), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.8 }));
-        paperMesh.position.y = 2.2;
+        const paperMesh = new THREE.Mesh(new THREE.BoxGeometry(2.7, 3.5, 0.14), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.75 }));
+        paperMesh.position.y = 2.25;
         paperMonument.add(paperMesh);
 
         // 火冒三丈標籤
-        paperMonument.add(at(signBoard("火冒三丈！", 1.8, 0.5, '#991b1b', '#ffffff'), 0, 4.3, 0));
+        paperMonument.add(at(signBoard("火冒三丈！", 1.8, 0.5, '#991b1b', '#ffffff'), 0, 4.4, 0));
         g.add(paperMonument);
+
+        // 【2D概念圖細節】：地面積水倒影池塘 (Puddle Reflection)
+        const puddleGeo = new THREE.CylinderGeometry(1.6, 1.8, 0.05, 12);
+        const puddleMat = getMat(0x1e293b, { roughness: 0.12, metalness: 0.3, transparent: true, opacity: 0.9 });
+        const puddle = new THREE.Mesh(puddleGeo, puddleMat);
+        puddle.position.set(1.5, 3.22, 3.8);
+        g.add(puddle);
 
         // 媽媽生氣人偶與主角抱頭人偶
         const mom = figure(0xd97706, 0xffd166, 0x111111);
@@ -4408,6 +4735,13 @@ puzzleSentences: [
         mill.add(blades);
         g.add(mill);
         this.animatedObjects.push({ obj: blades, type: 'spinZ', speed: 1.8 });
+
+        // 【2D概念圖核心地標】：壯麗跨島立體黏土彩虹 (Clay Rainbow Arch)
+        const rainbow = createClayRainbowArch(8.8, 0.28);
+        rainbow.position.set(-1.0, 3.6, -1.8);
+        rainbow.rotation.y = -0.4;
+        rainbow.rotation.x = 0.15;
+        g.add(rainbow);
       }
 
       // 終點守門神殿與漂浮海上的漫畫風守門巨獸 (四格漫畫神壇)
@@ -4563,10 +4897,18 @@ puzzleSentences: [
         portal.add(star2);
 
         sanctuaryIsland.add(portal);
+
+        // 【2D概念圖核心地標】：古董四格漫畫印刷機 (Vintage 4-Panel Comic Printing Press)
+        const pressObj = createComicPrintingPress();
+        pressObj.group.position.set(2.6, 4.6, 2.5);
+        pressObj.group.rotation.y = -0.45;
+        sanctuaryIsland.add(pressObj.group);
+        this.animatedObjects.push({ obj: pressObj.gear, type: 'spinZ', speed: 1.5 });
+
         this.scene.add(sanctuaryIsland);
         this.islands.push(sanctuaryIsland);
 
-        // ② 【新技能規範 Pass 6】：Action-Ready 守門巨獸神龍 (Pivots, Sockets & Emotion Morphs)
+        // ② 【2D概念圖對齊】：Action-Ready 守門神獸・小小工匠機關龍 (Goggles, Apron, Crystal Quill & Wings)
         const dragon = new THREE.Group();
         dragon.position.set(sx - 9.5, 0.2, sz + 4.5);
         dragon.rotation.y = -Math.PI / 4 + 0.2;
@@ -4600,6 +4942,29 @@ puzzleSentences: [
         const bellyMesh = rbox(2.2, 1.9, 0.35, bellyMat);
         bellyMesh.position.set(0, 1.0, 1.3);
         dragon.add(bellyMesh);
+
+        // 【2D概念圖特徵 1】：工匠皮革小圍裙 (Artisan Leather Apron & Front Pocket)
+        const apronMat = getMat(0x78350f, { roughness: 0.75 });
+        const apron = rbox(2.3, 1.85, 0.14, apronMat);
+        apron.position.set(0, 1.0, 1.5);
+        dragon.add(apron);
+        const apronPocket = rbox(1.1, 0.75, 0.08, getMat(0x5c3a21, { roughness: 0.8 }));
+        apronPocket.position.set(0, 0.78, 1.6);
+        dragon.add(apronPocket);
+
+        // 【2D概念圖特徵 2】：背部 Q 版小龍翼 (Cute Dragon Wings)
+        for (const s of [-1, 1]) {
+          const wing = new THREE.Group();
+          wing.position.set(s * 1.65, 1.8, -1.1);
+          wing.rotation.y = s * 0.4;
+          const wingBone = cyl(0.08, 0.12, 1.7, 6, getMat(0xf59e0b, { metalness: 0.8 }));
+          wingBone.rotation.z = s * 0.7;
+          wing.add(wingBone);
+          const wingMembrane = rbox(1.1, 0.8, 0.05, getMat(0xfb7185, { roughness: 0.55 }));
+          wingMembrane.position.set(s * 0.55, 0.28, 0);
+          wing.add(wingMembrane);
+          dragon.add(wing);
+        }
 
         // 身軀後方出水起伏駝峰
         const humpMesh = ball(1.4, bodyMat, 8, 8);
@@ -4637,6 +5002,14 @@ puzzleSentences: [
         addComicOutline(flipperR, 0.045, 0x0f172a);
         flipperR.position.set(0.6, 0, 0);
         armRightPivot.add(flipperR);
+
+        // 【2D概念圖特徵 3】：右前爪手握魔法水晶毛筆 (Magic Crystal Stylus)
+        const quillInHand = createQuillPen(0x38bdf8);
+        quillInHand.position.set(1.1, 0.2, 0.8);
+        quillInHand.rotation.x = Math.PI / 3;
+        quillInHand.rotation.z = -0.4;
+        armRightPivot.add(quillInHand);
+
         dragon.add(armRightPivot);
 
         // 關節 4：Action-Ready 頭部關節 (Head Pivot)
@@ -4648,6 +5021,25 @@ puzzleSentences: [
         addComicOutline(headMesh, 0.05, 0x0f172a);
         headMesh.position.set(0, 0.6, 0.4);
         headPivot.add(headMesh);
+
+        // 【2D概念圖特徵 4】：頭戴黃銅蒸氣護目鏡 (Steampunk Brass Goggles)
+        const gogglesGroup = new THREE.Group();
+        gogglesGroup.position.set(0, 1.7, 1.1);
+        const brassRimMat = getMat(0xf59e0b, { metalness: 0.85, roughness: 0.2 });
+        const gLensMat = getMat(0x38bdf8, { transparent: true, opacity: 0.75, emissive: 0x0284c7, emissiveIntensity: 0.5 });
+        for (const gx of [-0.85, 0.85]) {
+          const gRim = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.1, 8, 20), brassRimMat);
+          gRim.position.set(gx, 0, 0.85);
+          gogglesGroup.add(gRim);
+          const gLens = cyl(0.44, 0.44, 0.06, 16, gLensMat);
+          gLens.rotation.x = Math.PI / 2;
+          gLens.position.set(gx, 0, 0.85);
+          gogglesGroup.add(gLens);
+        }
+        // 護目鏡皮革扣帶
+        const gStrap = rbox(3.4, 0.24, 3.1, getMat(0x78350f, { roughness: 0.8 }));
+        gogglesGroup.add(gStrap);
+        headPivot.add(gogglesGroup);
 
         // 鼓起的大吻部 (Chubby Snout)
         const snoutMesh = rbox(2.4, 1.3, 1.8, getMat(0xfb7185));
@@ -4764,7 +5156,7 @@ puzzleSentences: [
         this.animatedObjects.push({ obj: pearl, type: 'bob', speed: 2.2 });
 
         // 漫畫對話框標示牌
-        dragon.add(at(signBoard("🐲 守門神獸・文字饕餮", 3.2, 0.7, '#e11d48', '#ffffff'), 0, 5.8, 0.8));
+        dragon.add(at(signBoard("🐲 守門神獸・小小工匠機關龍", 3.8, 0.7, '#e11d48', '#ffffff'), 0, 5.8, 0.8));
 
         this.scene.add(dragon);
         this.guardianMesh = dragon;
