@@ -1468,6 +1468,38 @@
       return g;
     }
 
+    // 晴空萬里專屬：大型立體低多邊形棉花糖晴空雲朵 (蓬鬆圓潤多球堆疊)
+    function createFluffySkyCloud(scale = 1.0) {
+      const g = new THREE.Group();
+      const cloudMat = getMat(0xffffff, { 
+        roughness: 0.65, 
+        metalness: 0.05,
+        flatShading: true
+      });
+
+      // 核心飽滿球體群 (底部微平，頂部隆起，富有層次)
+      const spheres = [
+        [0, 0, 0, 2.6],
+        [2.2, -0.4, 0.2, 2.0],
+        [-2.2, -0.3, -0.1, 2.1],
+        [1.0, 1.2, -0.3, 2.2],
+        [-1.1, 1.1, 0.4, 1.9],
+        [3.6, -0.8, 0, 1.4],
+        [-3.6, -0.7, 0.2, 1.3],
+        [0.4, -0.6, 1.5, 1.7],
+        [-0.5, -0.5, -1.4, 1.6]
+      ];
+
+      spheres.forEach(([x, y, z, r]) => {
+        const b = ball(r, cloudMat, 8, 6);
+        b.position.set(x, y, z);
+        g.add(b);
+      });
+
+      g.scale.setScalar(scale);
+      return g;
+    }
+
     function figure(coatColor, skin = 0xffe0bd, hair = 0x333333) {
       const g = new THREE.Group();
       // 身體
@@ -2151,8 +2183,11 @@ puzzleSentences: [
         this.canvas = document.getElementById("webgl-canvas");
         this.labelsContainer = document.getElementById("labels-layer");
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0x9bd0eb);
-        this.scene.fog = new THREE.FogExp2(0x9bd0eb, 0.009);
+        // 晴空萬里天頂漸層色 (由濃郁蔚藍過渡到海平面透亮天青)
+        this.clearSkyColor = new THREE.Color(0xbfe6fb);
+        this.scene.background = this.clearSkyColor;
+        // 清透遠霧：只在海天交界 150~380 產生水天一色的輕柔融合感，遠景通透無阻
+        this.scene.fog = new THREE.Fog(0xdaf0fc, 130, 360);
 
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
         this.camera.position.set(0, 52, 64);
@@ -2177,6 +2212,8 @@ puzzleSentences: [
 
         this.initLights();
         this.initSea();
+        this.initSkyDome();
+        this.initSkyClouds();
         this.buildAllIslands();
         this.buildGuardianSanctuary();
         this.buildSteppingStoneBridges();
@@ -2217,6 +2254,82 @@ puzzleSentences: [
         sun.shadow.camera.bottom = -d;
         sun.shadow.bias = -0.0005;
         this.scene.add(sun);
+      }
+
+      // 晴空萬里：大型天空漸層天穹 (Sky Dome)
+      initSkyDome() {
+        const skyGeo = new THREE.SphereGeometry(420, 32, 16);
+        
+        // 透過 Canvas 繪製平滑晴空天頂漸層貼圖 (深藍天頂 ➔ 晴空蔚藍 ➔ 清透天青 ➔ 地平線泛白晨曦)
+        const canvas = document.createElement("canvas");
+        canvas.width = 32;
+        canvas.height = 512;
+        const ctx = canvas.getContext("2d");
+        const grad = ctx.createLinearGradient(0, 0, 0, 512);
+        grad.addColorStop(0.0, "#0284c7"); // 天頂湛藍
+        grad.addColorStop(0.3, "#38bdf8"); // 晴空高陽
+        grad.addColorStop(0.65, "#bae6fd"); // 清透天青
+        grad.addColorStop(1.0, "#f0f9ff"); // 地平線水天晨白
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 32, 512);
+
+        const skyTexture = new THREE.CanvasTexture(canvas);
+        skyTexture.colorSpace = THREE.SRGBColorSpace;
+
+        const skyMat = new THREE.MeshBasicMaterial({
+          map: skyTexture,
+          side: THREE.BackSide,
+          depthWrite: false
+        });
+        const skyDome = new THREE.Mesh(skyGeo, skyMat);
+        this.scene.add(skyDome);
+        this.skyDome = skyDome;
+      }
+
+      // 晴空萬里：天空中悠揚漂浮的立體棉花糖卡通白雲群
+      initSkyClouds() {
+        this.skyClouds = [];
+        const cloudGroup = new THREE.Group();
+
+        // 佈置 16 朵不同大小、高度與方位的晴空白雲
+        const cloudConfigs = [
+          { r: 70, theta: 0.3, y: 38, scale: 2.4, speed: 0.08 },
+          { r: 85, theta: 1.1, y: 44, scale: 3.0, speed: 0.06 },
+          { r: 65, theta: 2.2, y: 36, scale: 2.2, speed: 0.09 },
+          { r: 95, theta: 2.9, y: 52, scale: 3.4, speed: 0.05 },
+          { r: 75, theta: 3.8, y: 40, scale: 2.6, speed: 0.07 },
+          { r: 90, theta: 4.6, y: 48, scale: 3.2, speed: 0.06 },
+          { r: 80, theta: 5.4, y: 42, scale: 2.5, speed: 0.08 },
+          { r: 105, theta: 0.8, y: 56, scale: 3.8, speed: 0.04 },
+          { r: 120, theta: 2.0, y: 62, scale: 4.2, speed: 0.035 },
+          { r: 110, theta: 3.5, y: 58, scale: 3.6, speed: 0.045 },
+          { r: 125, theta: 4.9, y: 65, scale: 4.5, speed: 0.03 },
+          { r: 55, theta: 1.7, y: 34, scale: 1.8, speed: 0.1 },
+          { r: 60, theta: 3.2, y: 35, scale: 2.0, speed: 0.09 },
+          { r: 50, theta: 5.0, y: 33, scale: 1.6, speed: 0.11 },
+          { r: 100, theta: 6.0, y: 50, scale: 3.5, speed: 0.05 },
+          { r: 115, theta: 0.0, y: 60, scale: 4.0, speed: 0.04 }
+        ];
+
+        cloudConfigs.forEach(cfg => {
+          const c = createFluffySkyCloud(cfg.scale);
+          const x = Math.cos(cfg.theta) * cfg.r;
+          const z = Math.sin(cfg.theta) * cfg.r;
+          c.position.set(x, cfg.y, z);
+          // 微幅隨機偏轉
+          c.rotation.y = cfg.theta + 0.3;
+          cloudGroup.add(c);
+
+          this.skyClouds.push({
+            obj: c,
+            r: cfg.r,
+            theta: cfg.theta,
+            y: cfg.y,
+            speed: cfg.speed
+          });
+        });
+
+        this.scene.add(cloudGroup);
       }
 
       initSea() {
@@ -2929,6 +3042,18 @@ puzzleSentences: [
           this.guardianMesh.rotation.y = Math.sin(now * 0.6) * 0.18;
         }
 
+        // 晴空萬里：驅動天空中白雲群悠揚慢速公轉漂移
+        if (this.skyClouds) {
+          const deltaSec = 0.016;
+          this.skyClouds.forEach(item => {
+            item.theta += item.speed * 0.03 * deltaSec;
+            item.obj.position.x = Math.cos(item.theta) * item.r;
+            item.obj.position.z = Math.sin(item.theta) * item.r;
+            // 雲朵自轉微動效
+            item.obj.rotation.y += item.speed * 0.01 * deltaSec;
+          });
+        }
+
         // 乃誠島同款：程序化動態微波浪
         if (this.sea && this.seaOriginalZ) {
           const pos = this.sea.geometry.attributes.position;
@@ -3100,6 +3225,8 @@ puzzleSentences: [
           const sd = this.sceneDirector;
           if (isNight) {
             sd.scene.background = new THREE.Color(0x0c1222);
+            if (sd.skyDome) sd.skyDome.visible = false;
+            if (sd.scene.fog) sd.scene.fog.color.setHex(0x0a101d);
             if (sd.sea) sd.sea.material.color.setHex(0x1e293b);
             if (sd.ambientLight) {
               sd.ambientLight.color.setHex(0x38bdf8);
@@ -3112,7 +3239,9 @@ puzzleSentences: [
             }
             if (sd.sun) sd.sun.intensity = 0.55;
           } else {
-            sd.scene.background = null;
+            sd.scene.background = sd.clearSkyColor || new THREE.Color(0xbfe6fb);
+            if (sd.skyDome) sd.skyDome.visible = true;
+            if (sd.scene.fog) sd.scene.fog.color.setHex(0xdaf0fc);
             if (sd.sea) sd.sea.material.color.setHex(0x38bdf8);
             if (sd.ambientLight) {
               sd.ambientLight.color.setHex(0xfff8ee);
