@@ -2248,85 +2248,143 @@
       return g;
     }
 
-    // 終點神殿：古董四格漫畫印刷機 (Vintage 4-Panel Comic Printing Press)
+    // 終點神殿：古董四格漫畫印刷機 (Vintage 4-Panel Comic Printing Press - 依據 keeper_artisan_dragon.png 1:1 精密立體雕刻)
     function createComicPrintingPress() {
       const g = new THREE.Group();
-      const ironMat = getMat(0x1e293b, { metalness: 0.6, roughness: 0.4 });
       const brassMat = getMat(0xf59e0b, { metalness: 0.85, roughness: 0.25 });
-      const copperMat = getMat(0xb45309, { metalness: 0.8, roughness: 0.3 });
-      const woodMat = getMat(0x78350f, { roughness: 0.7 });
+      const goldFrameMat = getMat(0xfacc15, { metalness: 0.88, roughness: 0.2 });
+      const woodMat = getMat(0x6c3d18, { roughness: 0.72 });
+      const darkWoodMat = getMat(0x451a03, { roughness: 0.8 });
+      const paperMat = getMat(0xfef9c3, { roughness: 0.75 }); // 金黃色羊皮稿紙卷軸
 
-      // 1. 鑄鐵底座與支架
-      g.add(at(rbox(4.8, 0.5, 3.2, ironMat), 0, 0.25, 0));
-      g.add(at(rbox(0.38, 3.2, 0.38, ironMat), -2.1, 1.8, -1.2));
-      g.add(at(rbox(0.38, 3.2, 0.38, ironMat), 2.1, 1.8, -1.2));
-      g.add(at(rbox(0.38, 3.2, 0.38, ironMat), -2.1, 1.8, 1.2));
-      g.add(at(rbox(0.38, 3.2, 0.38, ironMat), 2.1, 1.8, 1.2));
+      // 1. 厚實木質機身框架 (四根主木柱與頂橫樑)
+      const postL1 = rbox(0.5, 4.8, 0.5, woodMat); postL1.position.set(-1.8, 2.4, -0.6); g.add(postL1);
+      const postL2 = rbox(0.5, 4.8, 0.5, woodMat); postL2.position.set(-1.8, 2.4, 0.6); g.add(postL2);
+      const postR1 = rbox(0.5, 4.8, 0.5, woodMat); postR1.position.set(1.8, 2.4, -0.6); g.add(postR1);
+      const postR2 = rbox(0.5, 4.8, 0.5, woodMat); postR2.position.set(1.8, 2.4, 0.6); g.add(postR2);
 
-      // 2. 印刷滾筒組
-      const roller1 = cyl(0.55, 0.55, 3.8, 16, copperMat);
-      roller1.rotation.z = Math.PI / 2;
-      roller1.position.set(0, 2.2, -0.6);
-      g.add(roller1);
+      // 上橫樑與頂冠板
+      const topBeam = rbox(4.4, 0.65, 1.8, darkWoodMat);
+      topBeam.position.set(0, 4.5, 0);
+      g.add(topBeam);
 
-      const roller2 = cyl(0.48, 0.48, 3.8, 16, ironMat);
-      roller2.rotation.z = Math.PI / 2;
-      roller2.position.set(0, 1.3, -0.6);
-      g.add(roller2);
+      // 頂部金屬牌匾：DRAGON'S PRESS
+      const signPlatter = rbox(2.8, 0.55, 0.08, brassMat);
+      signPlatter.position.set(0, 4.5, 0.94);
+      g.add(signPlatter);
+      const signText = signBoard("DRAGON'S PRESS", 2.6, 0.42, '#78350f', '#fef08a');
+      signText.position.set(0, 4.5, 0.99);
+      g.add(signText);
 
-      // 3. 側面大型動力齒輪與手搖飛輪
-      const gearGroup = new THREE.Group();
-      gearGroup.position.set(2.35, 2.2, -0.6);
-      const bigGearRim = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.12, 8, 20), brassMat);
-      gearGroup.add(bigGearRim);
+      // 頂部四座精緻金色小相框 (代表起承轉合四格漫畫靈魂)
+      for (let f = 0; f < 4; f++) {
+        const fx = -1.35 + f * 0.9;
+        const frameBox = rbox(0.68, 0.85, 0.1, goldFrameMat);
+        frameBox.position.set(fx, 5.3, 0);
+        g.add(frameBox);
+        // 相框內心
+        const innerMat = getMat([0x4ade80, 0x38bdf8, 0xf87171, 0xfbbf24][f]);
+        const inner = rbox(0.48, 0.65, 0.04, innerMat);
+        inner.position.set(fx, 5.3, 0.06);
+        g.add(inner);
+      }
+
+      // 2. 中央黃銅螺旋垂直壓桿 (Screw Press Shaft)
+      const screwShaft = cyl(0.18, 0.18, 2.6, 12, brassMat);
+      screwShaft.position.set(0, 3.2, 0);
+      g.add(screwShaft);
+
+      // 壓桿下方的黃銅齒輪與橫向轉輪
+      const pressWheel = new THREE.Mesh(new THREE.TorusGeometry(0.85, 0.1, 8, 20), brassMat);
+      pressWheel.rotation.x = Math.PI / 2;
+      pressWheel.position.set(0, 3.2, 0);
+      g.add(pressWheel);
+
+      // 3. 雙層金屬印壓滾筒
+      const rollerTop = cyl(0.42, 0.42, 3.2, 16, brassMat);
+      rollerTop.rotation.z = Math.PI / 2;
+      rollerTop.position.set(0, 1.8, 0.3);
+      g.add(rollerTop);
+
+      const rollerBot = cyl(0.38, 0.38, 3.2, 16, darkWoodMat);
+      rollerBot.rotation.z = Math.PI / 2;
+      rollerBot.position.set(0, 1.1, 0.3);
+      g.add(rollerBot);
+
+      // 4. 側邊大型齒輪動力系統與手搖把手 (咬合大齒輪組)
+      const gearSystem = new THREE.Group();
+      gearSystem.position.set(2.1, 2.2, 0);
+
+      const bigGearMat = brassMat;
+      const bigGear = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.12, 8, 24), bigGearMat);
+      gearSystem.add(bigGear);
       for (let t = 0; t < 8; t++) {
-        const spoke = rbox(0.12, 2.1, 0.08, brassMat);
+        const spoke = rbox(0.1, 1.9, 0.08, bigGearMat);
         spoke.rotation.z = (t * Math.PI) / 8;
-        gearGroup.add(spoke);
-        const tooth = rbox(0.18, 0.32, 0.16, brassMat);
+        gearSystem.add(spoke);
+        const tooth = rbox(0.16, 0.28, 0.14, bigGearMat);
         const ang = (t * Math.PI * 2) / 8;
-        tooth.position.set(Math.cos(ang) * 1.15, Math.sin(ang) * 1.15, 0);
+        tooth.position.set(Math.cos(ang) * 1.05, Math.sin(ang) * 1.05, 0);
         tooth.rotation.z = ang;
-        gearGroup.add(tooth);
+        gearSystem.add(tooth);
       }
-      gearGroup.add(at(cyl(0.08, 0.08, 0.6, 6, brassMat), 0.75, 0, 0.35, 0));
-      gearGroup.add(at(rbox(0.14, 0.14, 0.4, woodMat), 0.75, 0, 0.65));
-      g.add(gearGroup);
+      // 手搖曲柄長桿與木質握柄
+      const crankArm = rbox(0.14, 1.3, 0.12, brassMat);
+      crankArm.position.set(0, 0.65, 0.45);
+      gearSystem.add(crankArm);
+      const crankKnob = ball(0.24, darkWoodMat, 8, 8);
+      crankKnob.position.set(0, 1.25, 0.58);
+      gearSystem.add(crankKnob);
+      g.add(gearSystem);
 
-      // 次級小齒輪
-      const smallGear = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.1, 8, 16), brassMat);
-      smallGear.position.set(2.35, 1.1, -0.6);
-      g.add(smallGear);
+      // 5. 【核心視覺】：長長吐出垂落於地的金色四格漫畫卷軸 (Falling Scroll with Comic Panels)
+      const scrollGroup = new THREE.Group();
+      scrollGroup.position.set(0, 1.5, 0.5);
 
-      // 4. 進紙捲軸
-      const paperRoll = cyl(0.65, 0.65, 3.6, 16, getMat(0xfffbeb, { roughness: 0.9 }));
-      paperRoll.rotation.z = Math.PI / 2;
-      paperRoll.position.set(0, 3.1, -1.2);
-      g.add(paperRoll);
+      // 出紙斜道板
+      const ramp = rbox(2.8, 0.08, 1.6, darkWoodMat);
+      ramp.position.set(0, -0.2, 0.7);
+      ramp.rotation.x = 0.4;
+      scrollGroup.add(ramp);
 
-      // 5. 四格漫畫輸出傳送台板 (Conveyor Table with 4 Panels!)
-      const tray = rbox(4.6, 0.18, 2.2, woodMat);
-      tray.position.set(0, 1.05, 0.9);
-      tray.rotation.x = 0.12;
-      g.add(tray);
+      // 金色卷軸本體 (斜出 ➔ 垂直下垂 ➔ 底部向前鋪開)
+      const p1 = rbox(2.4, 0.04, 1.8, paperMat);
+      p1.position.set(0, -0.15, 0.75);
+      p1.rotation.x = 0.4;
+      scrollGroup.add(p1);
 
-      const stripMat = getMat(0xffffff, { roughness: 0.8 });
-      const paperStrip = rbox(4.2, 0.04, 1.6, stripMat);
-      paperStrip.position.set(0, 1.18, 0.9);
-      paperStrip.rotation.x = 0.12;
-      g.add(paperStrip);
+      const p2 = rbox(2.4, 1.5, 0.04, paperMat);
+      p2.position.set(0, -1.2, 1.5);
+      scrollGroup.add(p2);
 
-      const panelColors = [0x5fa8d3, 0xf4a261, 0xef4444, 0x2a9d8f];
+      const p3 = rbox(2.4, 0.04, 2.8, paperMat);
+      p3.position.set(0, -1.95, 2.7);
+      scrollGroup.add(p3);
+
+      // 卷軸末端圓筒捲曲
+      const scrollRoll = cyl(0.25, 0.25, 2.5, 12, paperMat);
+      scrollRoll.rotation.z = Math.PI / 2;
+      scrollRoll.position.set(0, -1.8, 4.1);
+      scrollGroup.add(scrollRoll);
+
+      // 卷軸上的立體四格漫畫分鏡框 (起承轉合 4 個精緻漫畫格)
+      const panelMat = getMat(0xffffff, { roughness: 0.6 });
+      const borderMat = getMat(0x0f172a);
       for (let p = 0; p < 4; p++) {
-        const px = -1.5 + p * 1.0;
-        const frame = rbox(0.85, 0.02, 1.3, getMat(panelColors[p], { roughness: 0.5 }));
-        frame.position.set(px, 1.21, 0.9);
-        frame.rotation.x = 0.12;
-        g.add(frame);
+        const frame = new THREE.Group();
+        const fBorder = rbox(0.9, 0.02, 1.05, borderMat);
+        const fInner = rbox(0.82, 0.025, 0.95, panelMat);
+        frame.add(fBorder);
+        frame.add(fInner);
+        
+        // 依照卷軸走勢分佈在 p3 地面段
+        const fz = 1.65 + p * 0.75;
+        frame.position.set(p % 2 === 0 ? -0.55 : 0.55, -1.92, 1.9 + Math.floor(p / 2) * 1.15);
+        scrollGroup.add(frame);
       }
+      g.add(scrollGroup);
 
-      g.add(at(signBoard("四格漫畫印刷機", 2.4, 0.55, '#047857', '#ffffff'), 0, 3.9, -0.6));
-      return { group: g, gear: gearGroup };
+      return { group: g, gear: gearSystem };
     }
 
     // 靈感羽毛筆 / 水晶毛筆 (Quill Pen / Crystal Stylus)
@@ -2350,57 +2408,9 @@
       return g;
     }
 
-    // 2D 概念圖立體手作畫架 (Artisan Easel with 2D Concept Art Canvas)
+    // 2D 概念圖立體手作畫架（已依最新造島規範全面升級：拔除假貼圖畫架，全面以 3D 實體模型 1:1 雕刻取代）
     function createStorybookEasel(imagePath, titleText = "2D 概念設計圖") {
-      const g = new THREE.Group();
-      const woodMat = getMat(0x78350f, { roughness: 0.75 });
-      
-      // 畫架三腳支架
-      const leg1 = rbox(0.12, 3.4, 0.12, woodMat);
-      leg1.position.set(-0.75, 1.6, 0);
-      leg1.rotation.z = -0.12;
-      g.add(leg1);
-
-      const leg2 = rbox(0.12, 3.4, 0.12, woodMat);
-      leg2.position.set(0.75, 1.6, 0);
-      leg2.rotation.z = 0.12;
-      g.add(leg2);
-
-      const backLeg = rbox(0.12, 3.2, 0.12, woodMat);
-      backLeg.position.set(0, 1.5, -0.75);
-      backLeg.rotation.x = 0.26;
-      g.add(backLeg);
-
-      // 橫托木板
-      const ledge = rbox(2.8, 0.14, 0.28, woodMat);
-      ledge.position.set(0, 1.35, 0.12);
-      g.add(ledge);
-
-      // 畫框與畫布
-      const frameMat = getMat(0xf59e0b, { metalness: 0.65, roughness: 0.35 });
-      const frame = rbox(2.6, 1.95, 0.08, frameMat);
-      frame.position.set(0, 2.35, 0.15);
-      frame.rotation.x = -0.12;
-      g.add(frame);
-
-      // 畫布貼圖
-      const texLoader = new THREE.TextureLoader();
-      const tex = texLoader.load(imagePath);
-      tex.colorSpace = THREE.SRGBColorSpace;
-      const canvasMat = new THREE.MeshStandardMaterial({
-        map: tex,
-        roughness: 0.5,
-        metalness: 0.05
-      });
-      const canvasMesh = new THREE.Mesh(new THREE.PlaneGeometry(2.45, 1.8), canvasMat);
-      canvasMesh.position.set(0, 2.35, 0.2);
-      canvasMesh.rotation.x = -0.12;
-      g.add(canvasMesh);
-
-      // 說明名牌
-      g.add(at(signBoard(titleText, 1.8, 0.45, '#1e3a8a', '#ffffff'), 0, 0.65, 0.25));
-
-      return g;
+      return new THREE.Group(); // 回傳空組件，杜絕偷懶貼圖
     }
 
     // ----------------------------------------------------
@@ -3856,7 +3866,8 @@ puzzleSentences: [
         this.scene.fog = new THREE.FogExp2(0xddeeff, 0.007);
 
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-        this.camera.position.set(8, 56, 75);
+        // 【全新微縮黃金視角】：拉近至微距等角透視，清晰展現微縮島嶼、草簇與守門龍
+        this.camera.position.set(5, 36, 52);
 
         this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -3873,9 +3884,9 @@ puzzleSentences: [
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.05;
         this.controls.maxPolarAngle = Math.PI / 2 - 0.06;
-        this.controls.minDistance = 15;
-        this.controls.maxDistance = 180;
-        this.controls.target.set(8, 0, 0);
+        this.controls.minDistance = 10;
+        this.controls.maxDistance = 150;
+        this.controls.target.set(0, 2, 0);
 
         this.islands = [];
         this.markers = [];
@@ -4399,12 +4410,27 @@ puzzleSentences: [
         winR.position.set(1.8, 2.0, 2.53);
         house.add(winR);
 
-        // 【2D概念圖實體畫架】：微縮手作展架 (Artisan Storybook Easel)
-        house.add(at(createStorybookEasel('assets/art/island_0_origin.png', '🎨 起之島設計圖'), -4.6, 0.3, 2.2, 0.35));
+        // 【設計圖核心地標】：童話紅白條紋微型燈塔 (Mini Striped Lighthouse - 依照 island_0_origin.png 1:1 雕刻)
+        const lighthouse = new THREE.Group();
+        lighthouse.position.set(4.3, 0.2, 1.6);
+        lighthouse.add(at(cyl(1.15, 1.3, 0.6, 14, getMat(0x475569)), 0, 0.3, 0));
+        const lhColors = [0xef4444, 0xffffff, 0xef4444, 0xffffff];
+        for (let l = 0; l < 4; l++) {
+          const seg = cyl(0.95 - l * 0.08, 1.05 - l * 0.08, 0.72, 14, getMat(lhColors[l], { roughness: 0.6 }));
+          seg.position.y = 0.95 + l * 0.72;
+          lighthouse.add(seg);
+        }
+        lighthouse.add(at(cyl(0.85, 0.85, 0.12, 14, getMat(0x1e293b)), 0, 3.85, 0));
+        const lampRoom = cyl(0.55, 0.55, 0.72, 12, getMat(0xfef08a, { emissive: 0xfbbf24, emissiveIntensity: 0.85, transparent: true, opacity: 0.85 }));
+        lampRoom.position.y = 4.3;
+        lighthouse.add(lampRoom);
+        lighthouse.add(at(cone(0.85, 0.85, 12, getMat(0xef4444)), 0, 5.05, 0));
+        lighthouse.add(at(cyl(0.04, 0.04, 0.5, 4, getMat(0xf59e0b, { metalness: 0.8 })), 0, 5.65, 0));
+        house.add(lighthouse);
 
         g.add(house);
 
-        // 屋外苦讀大書桌區 (厚實橡木桌、散落考卷、彩色精裝書本山、綠罩檯燈、攤開的筆記與墨水瓶)
+        // 屋外苦讀大書桌區 (厚實橡木桌、散落考卷、彩色精裝書本山、綠罩檯燈、木椅與小書包)
         const deskGroup = new THREE.Group();
         deskGroup.position.set(2.8, 3.2, 3.0);
 
@@ -4413,6 +4439,23 @@ puzzleSentences: [
         for (const [dx, dz] of [[-1.4, -0.9], [1.4, -0.9], [-1.4, 0.9], [1.4, 0.9]]) {
           deskGroup.add(at(cyl(0.14, 0.1, 1.4, 6, getMat(0x5c3a21)), dx, 0.7, dz));
         }
+
+        // 靠背木椅子 (依照設計圖)
+        const chair = new THREE.Group();
+        chair.position.set(0.6, 0, 1.6);
+        chair.rotation.y = -0.3;
+        chair.add(at(rbox(1.0, 0.12, 1.0, getMat(0x854d0e)), 0, 0.7, 0));
+        for (const [cx, cz] of [[-0.4, -0.4], [0.4, -0.4], [-0.4, 0.4], [0.4, 0.4]]) {
+          chair.add(at(cyl(0.06, 0.06, 0.7, 6, getMat(0x5c3a21)), cx, 0.35, cz));
+        }
+        chair.add(at(rbox(0.9, 0.85, 0.1, getMat(0x854d0e)), 0, 1.2, 0.45));
+        deskGroup.add(chair);
+
+        // 小學生皮質書包 (靠在桌腳旁)
+        const backpack = rbox(0.7, 0.8, 0.45, getMat(0xb45309, { roughness: 0.7 }));
+        backpack.position.set(-1.6, 0.4, 0.8);
+        backpack.rotation.z = 0.15;
+        deskGroup.add(backpack);
 
         // 散落翻開的試卷與大筆記本 (Open Planner)
         const openBook = new THREE.Group();
@@ -4626,8 +4669,19 @@ puzzleSentences: [
         g.add(floatingQuill);
         this.animatedObjects.push({ obj: floatingQuill, type: 'bob', speed: 2.2 });
 
-        // 【2D概念圖實體畫架】：微縮手作展架 (Artisan Storybook Easel)
-        g.add(at(createStorybookEasel('assets/art/island_1_progress.png', '🎨 承之島設計圖'), 5.4, 3.2, 4.2, -0.45));
+        // 【2D概念圖細節】：考場前方小水塘與睡蓮 (Pond & Waterlilies - 依照 island_1_progress.png)
+        const pondGeo = new THREE.CylinderGeometry(1.6, 1.8, 0.06, 16);
+        const pondMat = getMat(0x38bdf8, { roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.85 });
+        const pond = new THREE.Mesh(pondGeo, pondMat);
+        pond.position.set(0, 3.22, 5.0);
+        g.add(pond);
+        // 池塘睡蓮
+        for (let l = 0; l < 3; l++) {
+          const lily = ball(0.25, getMat(0x22c55e), 6, 4);
+          lily.scale.set(1.4, 0.15, 1.4);
+          lily.position.set(Math.sin(l * 2) * 0.8, 3.26, 5.0 + Math.cos(l * 2) * 0.7);
+          g.add(lily);
+        }
       }
 
       // 轉之島：家庭風暴與成績揭曉微縮模型 (L型雙向美式洋房、震歪百葉窗、3D動漫怒氣符號、旋轉雷雲閃電、滿江紅59分考卷碑)
@@ -4795,8 +4849,26 @@ puzzleSentences: [
         kid.scale.setScalar(0.9);
         g.add(kid);
 
-        // 【2D概念圖實體畫架】：微縮手作展架 (Artisan Storybook Easel)
-        g.add(at(createStorybookEasel('assets/art/island_2_twist.png', '🎨 轉之島設計圖'), -5.0, 3.2, 2.5, 0.45));
+        // 【2D概念圖細節】：散落的長板凳與多處雨水積水倒影水窪 (Puddles & Bench - 依照 island_2_twist.png)
+        const bench = new THREE.Group();
+        bench.position.set(0.6, 3.22, 5.2);
+        bench.add(at(rbox(1.8, 0.1, 0.6, getMat(0x78350f)), 0, 0.35, 0));
+        bench.add(at(rbox(1.8, 0.5, 0.08, getMat(0x78350f)), 0, 0.65, -0.26));
+        for (const bx of [-0.7, 0.7]) {
+          bench.add(at(rbox(0.1, 0.35, 0.5, getMat(0x1e293b)), bx, 0.17, 0));
+        }
+        g.add(bench);
+
+        // 多處反光水窪 (Puddles)
+        const puddleCoords = [[-2.5, 4.2, 0.9], [1.5, 3.8, 1.4], [-3.8, 2.0, 1.1], [3.2, 2.8, 0.8]];
+        puddleCoords.forEach(([px, pz, pr]) => {
+          const pudMesh = new THREE.Mesh(
+            new THREE.CylinderGeometry(pr, pr + 0.15, 0.04, 10),
+            getMat(0x1e293b, { roughness: 0.1, metalness: 0.4, transparent: true, opacity: 0.9 })
+          );
+          pudMesh.position.set(px, 3.21, pz);
+          g.add(pudMesh);
+        });
       }
 
       // 合之島：超越自我微縮模型 (三級大理石圓台階座、六根典雅石柱、圓形金邊穹頂、第一名金獎盃、金色風車、百科全書螺旋天梯)
@@ -4908,8 +4980,14 @@ puzzleSentences: [
         rainbow.rotation.x = 0.15;
         g.add(rainbow);
 
-        // 【2D概念圖實體畫架】：微縮手作展架 (Artisan Storybook Easel)
-        g.add(at(createStorybookEasel('assets/art/island_3_harmony.png', '🎨 合之島設計圖'), 5.4, 3.2, -1.4, -0.45));
+        // 【2D概念圖細節】：微縮拱木小橋與七彩花叢 (Little Wooden Bridge - 依照 island_3_harmony.png)
+        const archBridge = new THREE.Group();
+        archBridge.position.set(3.6, 3.22, 4.2);
+        archBridge.rotation.y = 0.55;
+        archBridge.add(at(rbox(1.8, 0.12, 1.1, getMat(0xf8fafc)), 0, 0.25, 0));
+        archBridge.add(at(rbox(1.8, 0.45, 0.08, getMat(0xe2e8f0)), 0, 0.5, -0.5));
+        archBridge.add(at(rbox(1.8, 0.45, 0.08, getMat(0xe2e8f0)), 0, 0.5, 0.5));
+        g.add(archBridge);
       }
 
       // 終點守門神殿與漂浮海上的漫畫風守門巨獸 (四格漫畫神壇)
@@ -5068,251 +5146,220 @@ puzzleSentences: [
 
         // 【2D概念圖核心地標】：古董四格漫畫印刷機 (Vintage 4-Panel Comic Printing Press)
         const pressObj = createComicPrintingPress();
-        pressObj.group.position.set(2.6, 4.6, 2.5);
-        pressObj.group.rotation.y = -0.45;
+        pressObj.group.position.set(1.9, 4.6, 0.8);
+        pressObj.group.rotation.y = -0.15;
         sanctuaryIsland.add(pressObj.group);
         this.animatedObjects.push({ obj: pressObj.gear, type: 'spinZ', speed: 1.5 });
-
-        // 【2D概念圖實體畫架】：微縮手作展架 (Artisan Storybook Easel)
-        sanctuaryIsland.add(at(createStorybookEasel('assets/art/keeper_artisan_dragon.png', '🎨 工匠機關龍設計圖'), -5.6, 3.6, 2.4, 0.45));
 
         this.scene.add(sanctuaryIsland);
         this.islands.push(sanctuaryIsland);
 
-        // ② 【2D概念圖對齊】：Action-Ready 守門神獸・小小工匠機關龍 (Goggles, Apron, Crystal Quill & Wings)
+        // ② 【2D概念圖 1:1 雕刻】：Action-Ready 守門神獸・小小工匠機關龍 (翠綠小萌龍、護目鏡、棕皮革圍裙、站立小爪)
         const dragon = new THREE.Group();
-        dragon.position.set(sx - 9.5, 0.2, sz + 4.5);
-        dragon.rotation.y = -Math.PI / 4 + 0.2;
+        dragon.position.set(sx - 1.8, sy + 4.6, sz + 1.4); // 穩坐於聖殿中央平台，與印刷機並肩！
+        dragon.rotation.y = 0.22;
+        dragon.userData.baseY = sy + 4.6;
 
-        // 海面漫畫漣漪光環
-        const rippleGroup = new THREE.Group();
-        rippleGroup.position.set(0, 0.05, 0);
-        const rippleMat1 = getMat(0xe0f2fe, { transparent: true, opacity: 0.85 });
-        const ripple1 = new THREE.Mesh(new THREE.TorusGeometry(3.8, 0.14, 6, 24), rippleMat1);
-        ripple1.rotation.x = Math.PI / 2;
-        rippleGroup.add(ripple1);
+        // 巨獸身軀材質 (依照設計圖：鮮豔翠綠黏土色、暖黃米白軟肚皮)
+        const bodyMat = getMat(0x22c55e, { roughness: 0.62, metalness: 0.05 });
+        const bellyMat = getMat(0xfef08a, { roughness: 0.72, metalness: 0.02 });
 
-        const rippleMat2 = getMat(0xffffff, { transparent: true, opacity: 0.9 });
-        const ripple2 = new THREE.Mesh(new THREE.TorusGeometry(2.5, 0.12, 6, 20), rippleMat2);
-        ripple2.rotation.x = Math.PI / 2;
-        rippleGroup.add(ripple2);
-        dragon.add(rippleGroup);
-        this.guardianRipples = rippleGroup;
-
-        // 巨獸身軀材質 (漫畫鮮豔寶石紅、暖粉白肚皮)
-        const bodyMat = getMat(0xf43f5e, { roughness: 0.55, metalness: 0.08 });
-        const bellyMat = getMat(0xfef3c7, { roughness: 0.7, metalness: 0.05 });
-
-        // 軀幹
-        const torsoMesh = rbox(3.2, 2.5, 2.8, bodyMat);
-        addComicOutline(torsoMesh, 0.05, 0x0f172a);
-        torsoMesh.position.set(0, 1.1, 0);
-        dragon.add(torsoMesh);
-
-        // 白嫩肚皮
-        const bellyMesh = rbox(2.2, 1.9, 0.35, bellyMat);
-        bellyMesh.position.set(0, 1.0, 1.3);
-        dragon.add(bellyMesh);
-
-        // 【2D概念圖特徵 1】：工匠皮革小圍裙 (Artisan Leather Apron & Front Pocket)
-        const apronMat = getMat(0x78350f, { roughness: 0.75 });
-        const apron = rbox(2.3, 1.85, 0.14, apronMat);
-        apron.position.set(0, 1.0, 1.5);
-        dragon.add(apron);
-        const apronPocket = rbox(1.1, 0.75, 0.08, getMat(0x5c3a21, { roughness: 0.8 }));
-        apronPocket.position.set(0, 0.78, 1.6);
-        dragon.add(apronPocket);
-
-        // 【2D概念圖特徵 2】：背部 Q 版小龍翼 (Cute Dragon Wings)
-        for (const s of [-1, 1]) {
-          const wing = new THREE.Group();
-          wing.position.set(s * 1.65, 1.8, -1.1);
-          wing.rotation.y = s * 0.4;
-          const wingBone = cyl(0.08, 0.12, 1.7, 6, getMat(0xf59e0b, { metalness: 0.8 }));
-          wingBone.rotation.z = s * 0.7;
-          wing.add(wingBone);
-          const wingMembrane = rbox(1.1, 0.8, 0.05, getMat(0xfb7185, { roughness: 0.55 }));
-          wingMembrane.position.set(s * 0.55, 0.28, 0);
-          wing.add(wingMembrane);
-          dragon.add(wing);
+        // 圓滾滾站立小粗腿與爪子 (Cute Dragon Feet)
+        for (const fx of [-0.9, 0.9]) {
+          const leg = cyl(0.38, 0.45, 0.85, 10, bodyMat);
+          leg.position.set(fx, 0.42, 0);
+          dragon.add(leg);
+          // 圓潤三爪小腳掌
+          const foot = rbox(0.9, 0.35, 1.25, bodyMat);
+          foot.position.set(fx, 0.18, 0.25);
+          dragon.add(foot);
+          // 米黃色腳趾甲
+          for (let c = -1; c <= 1; c++) {
+            const claw = cone(0.1, 0.22, 6, bellyMat);
+            claw.position.set(fx + c * 0.25, 0.14, 0.85);
+            claw.rotation.x = Math.PI / 2;
+            dragon.add(claw);
+          }
         }
 
-        // 身軀後方出水起伏駝峰
-        const humpMesh = ball(1.4, bodyMat, 8, 8);
-        addComicOutline(humpMesh, 0.05, 0x0f172a);
-        humpMesh.position.set(0, 0.75, -2.4);
-        dragon.add(humpMesh);
+        // 圓滾滾身軀 (Round Chubby Torso)
+        const torsoMesh = rbox(2.7, 2.4, 2.4, bodyMat);
+        addComicOutline(torsoMesh, 0.05, 0x0f172a);
+        torsoMesh.position.set(0, 1.6, 0);
+        dragon.add(torsoMesh);
+
+        // 柔軟暖米黃肚皮
+        const bellyMesh = rbox(1.9, 1.8, 0.35, bellyMat);
+        bellyMesh.position.set(0, 1.5, 1.15);
+        dragon.add(bellyMesh);
+
+        // 【設計圖特徵 1】：工匠深棕皮革小圍裙 (Artisan Leather Apron & Front Pocket)
+        const apronMat = getMat(0x78350f, { roughness: 0.75 });
+        const apron = rbox(2.0, 1.7, 0.12, apronMat);
+        apron.position.set(0, 1.5, 1.32);
+        dragon.add(apron);
+        // 圍裙胸前口袋
+        const apronPocket = rbox(0.95, 0.65, 0.08, getMat(0x5c3a21, { roughness: 0.8 }));
+        apronPocket.position.set(0, 1.3, 1.42);
+        dragon.add(apronPocket);
+        // 圍裙雙肩皮帶
+        for (const sp of [-0.65, 0.65]) {
+          const strap = rbox(0.2, 0.9, 0.08, apronMat);
+          strap.position.set(sp, 2.2, 1.2);
+          dragon.add(strap);
+        }
+
+        // 【設計圖特徵 2】：背部嫩綠與金黃羽翼小龍翅 (Cute Flying Dragon Wings)
+        const wingLeft = new THREE.Group();
+        wingLeft.position.set(-1.4, 2.2, -0.9);
+        const wingBoneL = cyl(0.08, 0.12, 1.6, 6, getMat(0xf59e0b, { metalness: 0.8 }));
+        wingBoneL.rotation.z = -0.7;
+        wingLeft.add(wingBoneL);
+        const wingMemL = rbox(1.2, 0.9, 0.05, getMat(0x86efac, { roughness: 0.55 }));
+        wingMemL.position.set(-0.6, 0.3, 0);
+        wingLeft.add(wingMemL);
+        dragon.add(wingLeft);
+
+        const wingRight = new THREE.Group();
+        wingRight.position.set(1.4, 2.2, -0.9);
+        const wingBoneR = cyl(0.08, 0.12, 1.6, 6, getMat(0xf59e0b, { metalness: 0.8 }));
+        wingBoneR.rotation.z = 0.7;
+        wingRight.add(wingBoneR);
+        const wingMemR = rbox(1.2, 0.9, 0.05, getMat(0x86efac, { roughness: 0.55 }));
+        wingMemR.position.set(0.6, 0.3, 0);
+        wingRight.add(wingMemR);
+        dragon.add(wingRight);
 
         // 關節 1：尾部擺動關節 (Tail Pivot)
         const tailPivot = new THREE.Group();
-        tailPivot.position.set(0, 1.0, -3.2);
-
-        const tailMesh = ball(1.0, bodyMat, 8, 8);
-        tailMesh.position.set(0, 0.1, -0.8);
+        tailPivot.position.set(0, 1.1, -1.2);
+        const tailMesh = cyl(0.4, 0.15, 1.8, 8, bodyMat);
+        tailMesh.position.set(0, 0.2, -0.8);
+        tailMesh.rotation.x = -Math.PI / 4;
         tailPivot.add(tailMesh);
-
-        const tailFin = cone(0.85, 1.8, 6, getMat(0xfbbf24, { roughness: 0.4 }));
-        addComicOutline(tailFin, 0.055, 0x0f172a);
-        tailFin.position.set(0, 1.1, -1.8);
-        tailFin.rotation.x = -0.65;
+        const tailFin = cone(0.6, 1.2, 5, getMat(0xfbbf24, { roughness: 0.4 }));
+        tailFin.position.set(0, 0.8, -1.6);
+        tailFin.rotation.x = -Math.PI / 3;
         tailPivot.add(tailFin);
         dragon.add(tailPivot);
 
-        // 關節 2 & 3：Action-Ready 雙前爪關節 (Left & Right Arm Pivots)
+        // 關節 2 & 3：雙前臂與手爪關節 (Left & Right Arms)
         const armLeftPivot = new THREE.Group();
-        armLeftPivot.position.set(-2.0, 1.1, 0.5);
-        const flipperL = rbox(1.5, 0.24, 1.7, bodyMat);
-        addComicOutline(flipperL, 0.045, 0x0f172a);
-        flipperL.position.set(-0.6, 0, 0);
-        armLeftPivot.add(flipperL);
+        armLeftPivot.position.set(-1.45, 1.8, 0.4);
+        const armL = cyl(0.24, 0.22, 1.3, 8, bodyMat);
+        armL.position.set(-0.35, -0.4, 0.2);
+        armL.rotation.z = 0.4;
+        armLeftPivot.add(armL);
         dragon.add(armLeftPivot);
 
         const armRightPivot = new THREE.Group();
-        armRightPivot.position.set(2.0, 1.1, 0.5);
-        const flipperR = rbox(1.5, 0.24, 1.7, bodyMat);
-        addComicOutline(flipperR, 0.045, 0x0f172a);
-        flipperR.position.set(0.6, 0, 0);
-        armRightPivot.add(flipperR);
+        armRightPivot.position.set(1.45, 1.8, 0.4);
+        const armR = cyl(0.24, 0.22, 1.3, 8, bodyMat);
+        armR.position.set(0.35, -0.4, 0.2);
+        armR.rotation.z = -0.4;
+        armRightPivot.add(armR);
 
-        // 【2D概念圖特徵 3】：右前爪手握魔法水晶毛筆 (Magic Crystal Stylus)
+        // 【設計圖特徵 3】：右手手握發光水晶魔法羽毛筆 (Magic Crystal Stylus)
         const quillInHand = createQuillPen(0x38bdf8);
-        quillInHand.position.set(1.1, 0.2, 0.8);
+        quillInHand.position.set(0.7, -0.4, 0.7);
         quillInHand.rotation.x = Math.PI / 3;
-        quillInHand.rotation.z = -0.4;
+        quillInHand.rotation.z = -0.3;
         armRightPivot.add(quillInHand);
-
         dragon.add(armRightPivot);
 
-        // 關節 4：Action-Ready 頭部關節 (Head Pivot)
+        // 關節 4：Action-Ready 萌萌大頭關節 (Head Pivot)
         const headPivot = new THREE.Group();
-        headPivot.position.set(0, 2.5, 0.4);
+        headPivot.position.set(0, 2.9, 0.2);
 
-        // 頭部大方圓臉 (漫畫 Q 版比例)
-        const headMesh = rbox(3.2, 2.7, 3.0, bodyMat);
+        // 圓滾滾大頭 (Big Chubby Head)
+        const headMesh = rbox(3.0, 2.6, 2.8, bodyMat);
         addComicOutline(headMesh, 0.05, 0x0f172a);
-        headMesh.position.set(0, 0.6, 0.4);
+        headMesh.position.set(0, 0.6, 0.2);
         headPivot.add(headMesh);
 
-        // 【2D概念圖特徵 4】：頭戴黃銅蒸氣護目鏡 (Steampunk Brass Goggles)
+        // 【設計圖核心特徵 4】：頭戴古董黃銅雙筒蒸氣護目鏡 (Steampunk Brass Goggles)
         const gogglesGroup = new THREE.Group();
-        gogglesGroup.position.set(0, 1.7, 1.1);
-        const brassRimMat = getMat(0xf59e0b, { metalness: 0.85, roughness: 0.2 });
-        const gLensMat = getMat(0x38bdf8, { transparent: true, opacity: 0.75, emissive: 0x0284c7, emissiveIntensity: 0.5 });
-        for (const gx of [-0.85, 0.85]) {
-          const gRim = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.1, 8, 20), brassRimMat);
+        gogglesGroup.position.set(0, 1.5, 0.8);
+        const brassRimMat = getMat(0xf59e0b, { metalness: 0.88, roughness: 0.2 });
+        const gLensMat = getMat(0x38bdf8, { transparent: true, opacity: 0.8, emissive: 0x0284c7, emissiveIntensity: 0.5 });
+        for (const gx of [-0.75, 0.75]) {
+          const gRim = new THREE.Mesh(new THREE.TorusGeometry(0.48, 0.1, 8, 20), brassRimMat);
           gRim.position.set(gx, 0, 0.85);
           gogglesGroup.add(gRim);
-          const gLens = cyl(0.44, 0.44, 0.06, 16, gLensMat);
+          const gLens = cyl(0.42, 0.42, 0.06, 16, gLensMat);
           gLens.rotation.x = Math.PI / 2;
           gLens.position.set(gx, 0, 0.85);
           gogglesGroup.add(gLens);
         }
-        // 護目鏡皮革扣帶
-        const gStrap = rbox(3.4, 0.24, 3.1, getMat(0x78350f, { roughness: 0.8 }));
+        // 護目鏡皮革繫帶
+        const gStrap = rbox(3.2, 0.25, 2.9, getMat(0x78350f, { roughness: 0.8 }));
         gogglesGroup.add(gStrap);
         headPivot.add(gogglesGroup);
 
-        // 鼓起的大吻部 (Chubby Snout)
-        const snoutMesh = rbox(2.4, 1.3, 1.8, getMat(0xfb7185));
-        addComicOutline(snoutMesh, 0.05, 0x0f172a);
-        snoutMesh.position.set(0, 0.15, 2.3);
+        // 圓滾滾可愛吻部 (Cute Chubby Snout)
+        const snoutMesh = rbox(2.2, 1.1, 1.4, bellyMat);
+        snoutMesh.position.set(0, 0.25, 1.7);
         headPivot.add(snoutMesh);
 
-        // 兩顆雪白漫畫小虎牙
-        for (const tx of [-0.75, 0.75]) {
-          const fang = cone(0.18, 0.48, 4, getMat(0xffffff));
-          fang.position.set(tx, -0.45, 2.8);
+        // 微笑嘴型與兩顆小白牙
+        for (const tx of [-0.55, 0.55]) {
+          const fang = cone(0.12, 0.32, 4, getMat(0xffffff));
+          fang.position.set(tx, -0.15, 2.2);
           fang.rotation.x = Math.PI;
           headPivot.add(fang);
         }
 
-        // 開心粉紅小舌頭
-        const tongue = rbox(0.9, 0.15, 0.8, getMat(0xf472b6));
-        tongue.position.set(0, -0.32, 2.3);
-        headPivot.add(tongue);
-
-        // 水汪汪漫畫大眼睛
-        for (const ex of [-0.98, 0.98]) {
-          const eyeWhite = cyl(0.56, 0.56, 0.14, 16, getMat(0xffffff));
+        // 水汪汪黑色大眼睛 (帶雙層高光反光點)
+        for (const ex of [-0.85, 0.85]) {
+          const eyeWhite = cyl(0.52, 0.52, 0.12, 16, getMat(0xffffff));
           eyeWhite.rotation.x = Math.PI / 2;
-          eyeWhite.position.set(ex, 1.05, 1.95);
+          eyeWhite.position.set(ex, 0.95, 1.55);
           headPivot.add(eyeWhite);
 
-          const pupil = cyl(0.38, 0.38, 0.16, 16, getMat(0x0f172a));
+          const pupil = cyl(0.35, 0.35, 0.14, 16, getMat(0x0f172a));
           pupil.rotation.x = Math.PI / 2;
-          pupil.position.set(ex + (ex > 0 ? -0.06 : 0.06), 1.05, 1.97);
+          pupil.position.set(ex + (ex > 0 ? -0.05 : 0.05), 0.95, 1.57);
           headPivot.add(pupil);
 
-          const hl1 = cyl(0.16, 0.16, 0.18, 12, getMat(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.9 }));
+          const hl1 = cyl(0.14, 0.14, 0.16, 10, getMat(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.9 }));
           hl1.rotation.x = Math.PI / 2;
-          hl1.position.set(ex + 0.1, 1.2, 2.0);
+          hl1.position.set(ex + 0.08, 1.1, 1.6);
           headPivot.add(hl1);
 
-          const hl2 = cyl(0.08, 0.08, 0.18, 8, getMat(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.9 }));
-          hl2.rotation.x = Math.PI / 2;
-          hl2.position.set(ex - 0.12, 0.92, 2.0);
-          headPivot.add(hl2);
-
-          const blush = cyl(0.38, 0.38, 0.12, 12, getMat(0xf472b6, { roughness: 0.6 }));
+          const blush = cyl(0.35, 0.35, 0.1, 12, getMat(0xf472b6, { roughness: 0.6 }));
           blush.rotation.x = Math.PI / 2;
-          blush.position.set(ex * 1.38, 0.45, 1.9);
+          blush.position.set(ex * 1.35, 0.45, 1.5);
           headPivot.add(blush);
-
-          const brow = rbox(0.75, 0.15, 0.1, getMat(0x0f172a));
-          brow.position.set(ex, 1.78, 1.98);
-          brow.rotation.z = (ex > 0 ? 0.22 : -0.22);
-          headPivot.add(brow);
         }
 
-        // 金色長龍角
-        const hornMat = getMat(0xf59e0b, { metalness: 0.8, roughness: 0.2 });
+        // 頭頂兩隻淺米黃小鹿角 (Cute Antler Horns)
+        const hornMat = getMat(0xfef08a, { roughness: 0.4 });
         for (const s of [-1, 1]) {
-          const horn = cone(0.42, 2.5, 6, hornMat);
-          addComicOutline(horn, 0.05, 0x0f172a);
-          horn.position.set(s * 1.18, 2.55, 0.1);
-          horn.rotation.z = s * 0.42;
-          horn.rotation.x = -0.32;
+          const horn = cone(0.32, 1.6, 6, hornMat);
+          horn.position.set(s * 0.95, 2.1, -0.1);
+          horn.rotation.z = s * 0.35;
+          horn.rotation.x = -0.25;
           headPivot.add(horn);
         }
 
-        // 蓬鬆棉花糖白色龍鬃毛
-        const maneMat = getMat(0xffffff, { roughness: 0.5 });
-        for (const [mx, my, mz, mr] of [[0, 2.4, -0.9, 0.85], [-1.2, 1.4, -0.8, 0.75], [1.2, 1.4, -0.8, 0.75], [-1.5, 0.4, 0.6, 0.65], [1.5, 0.4, 0.6, 0.65]]) {
-          const maneBall = ball(mr, maneMat, 7, 6);
-          addComicOutline(maneBall, 0.045, 0x0f172a);
-          maneBall.position.set(mx, my, mz);
-          headPivot.add(maneBall);
-        }
-
-        // 飄逸長龍鬚
-        for (const s of [-1, 1]) {
-          const whisker = cyl(0.07, 0.03, 3.0, 4, hornMat);
-          whisker.position.set(s * 1.5, 0.0, 2.7);
-          whisker.rotation.z = s * 0.65;
-          whisker.rotation.x = 0.25;
-          headPivot.add(whisker);
-        }
-
-        // 【新技能規範 Pass 6】：四格情緒插槽與動態特效 (Emotion Sweat & Star Crown)
-        // ① 冒冷汗水珠 (Sweat Drops - stage 2/3 緊張驚訝時浮現)
+        // 【四格差分表情系統】：冒汗水珠與頭頂金星
         const sweatGroup = new THREE.Group();
         const sweatMat = getMat(0x38bdf8, { transparent: true, opacity: 0.85, emissive: 0x0284c7, emissiveIntensity: 0.6 });
-        for (const sxPos of [-1.5, 1.5]) {
-          const sweatDrop = ball(0.28, sweatMat, 6, 6);
+        for (const sxPos of [-1.3, 1.3]) {
+          const sweatDrop = ball(0.24, sweatMat, 6, 6);
           sweatDrop.scale.set(0.7, 1.3, 0.7);
-          sweatDrop.position.set(sxPos, 1.5, 1.8);
+          sweatDrop.position.set(sxPos, 1.4, 1.5);
           sweatGroup.add(sweatDrop);
         }
         sweatGroup.visible = false;
         headPivot.add(sweatGroup);
 
-        // ② 頭頂旋轉小金星光環 (Crown Star Orbit - stage 4 合之島勝利時旋轉)
         const crownGroup = new THREE.Group();
-        crownGroup.position.set(0, 3.2, 0.4);
+        crownGroup.position.set(0, 2.7, 0);
         for (let sIdx = 0; sIdx < 3; sIdx++) {
           const sAngle = (sIdx * Math.PI * 2) / 3;
-          const star = cone(0.3, 0.55, 5, getMat(0xfef08a, { emissive: 0xfbbf24, emissiveIntensity: 0.9 }));
-          star.position.set(Math.cos(sAngle) * 1.6, 0, Math.sin(sAngle) * 1.6);
+          const star = cone(0.25, 0.5, 5, getMat(0xfef08a, { emissive: 0xfbbf24, emissiveIntensity: 0.9 }));
+          star.position.set(Math.cos(sAngle) * 1.3, 0, Math.sin(sAngle) * 1.3);
           crownGroup.add(star);
         }
         crownGroup.visible = false;
@@ -5320,14 +5367,8 @@ puzzleSentences: [
 
         dragon.add(headPivot);
 
-        // 漂浮蔚藍墨寶神珠 (胸前懸浮海浪上)
-        const pearl = ball(1.05, getMat(0x38bdf8, { emissive: 0x0ea5e9, emissiveIntensity: 0.9 }));
-        pearl.position.set(0, 1.8, 2.2);
-        dragon.add(pearl);
-        this.animatedObjects.push({ obj: pearl, type: 'bob', speed: 2.2 });
-
-        // 漫畫對話框標示牌
-        dragon.add(at(signBoard("🐲 守門神獸・小小工匠機關龍", 3.8, 0.7, '#e11d48', '#ffffff'), 0, 5.8, 0.8));
+        // 標示牌
+        dragon.add(at(signBoard("🐲 小小工匠機關龍・小墨", 3.2, 0.65, '#047857', '#ffffff'), 0, 4.8, 0.8));
 
         this.scene.add(dragon);
         this.guardianMesh = dragon;
@@ -5340,7 +5381,7 @@ puzzleSentences: [
           tail: tailPivot,
           sweat: sweatGroup,
           crown: crownGroup,
-          pearl: pearl
+          quill: quillInHand
         };
       }
 
@@ -5697,44 +5738,39 @@ puzzleSentences: [
           }
         }
 
-        // ④ 【新技能規範 Pass 6】：Action-Ready 守門巨獸自然呼吸與關節擺動
+        // ④ 【新技能規範 Pass 6】：Action-Ready 小小工匠機關龍呼吸與關節擺動 (溫潤微縮公仔動態)
         if (this.guardianMesh) {
-          this.guardianMesh.position.y = 0.25 + Math.sin(now * 1.5) * 0.22;
-          this.guardianMesh.rotation.y = -Math.PI / 4 + 0.2 + Math.sin(now * 0.7) * 0.12;
-          this.guardianMesh.rotation.z = Math.sin(now * 1.2) * 0.04;
+          const baseY = this.guardianMesh.userData.baseY || 4.6;
+          this.guardianMesh.position.y = baseY + Math.sin(now * 2.2) * 0.06; // 輕柔呼吸正弦波
+          this.guardianMesh.rotation.y = 0.22 + Math.sin(now * 0.8) * 0.06;
 
           const p = this.guardianParts;
           if (p) {
             if (p.head) {
-              p.head.rotation.x += Math.sin(now * 1.5) * 0.003;
-              p.head.rotation.y = Math.sin(now * 0.8) * 0.06;
+              p.head.rotation.x = Math.sin(now * 1.6) * 0.04;
+              p.head.rotation.y = Math.sin(now * 0.9) * 0.08;
             }
             if (p.tail) {
-              p.tail.rotation.y = Math.sin(now * 2.2) * 0.22;
+              p.tail.rotation.y = Math.sin(now * 2.5) * 0.18;
             }
             if (p.armLeft && p.armRight) {
               if (this.guardianStage === 4) {
-                // 歡呼模式：雙爪歡快揮舞
-                p.armLeft.rotation.z = 0.6 + Math.sin(now * 4.0) * 0.2;
-                p.armRight.rotation.z = -0.6 - Math.sin(now * 4.0) * 0.2;
+                // 歡呼模式：雙爪歡快高舉揮舞
+                p.armLeft.rotation.z = 0.8 + Math.sin(now * 4.0) * 0.25;
+                p.armRight.rotation.z = -0.8 - Math.sin(now * 4.0) * 0.25;
               } else if (this.guardianStage === 2) {
                 // 握拳專注模式
-                p.armLeft.rotation.x = 0.4 + Math.sin(now * 2.0) * 0.08;
-                p.armRight.rotation.x = 0.4 + Math.sin(now * 2.0) * 0.08;
+                p.armLeft.rotation.x = 0.5 + Math.sin(now * 2.5) * 0.08;
+                p.armRight.rotation.x = 0.5 + Math.sin(now * 2.5) * 0.08;
               } else {
-                // 祥和划水模式
-                p.armLeft.rotation.z = -0.28 + Math.sin(now * 1.8) * 0.12;
-                p.armRight.rotation.z = 0.28 - Math.sin(now * 1.8) * 0.12;
+                // 工匠自然手部擺動
+                p.armLeft.rotation.z = 0.35 + Math.sin(now * 1.8) * 0.1;
+                p.armRight.rotation.z = -0.35 - Math.sin(now * 1.8) * 0.1;
               }
             }
             if (p.crown && p.crown.visible) {
               p.crown.rotation.y += 0.04;
             }
-          }
-
-          if (this.guardianRipples) {
-            const sc = 1.0 + Math.sin(now * 2.0) * 0.12;
-            this.guardianRipples.scale.set(sc, 1, sc);
           }
         }
 
@@ -6085,7 +6121,8 @@ puzzleSentences: [
         if (this.sceneDirector) {
           this.sceneDirector.setWeather('sunny');
           this.sceneDirector.setKeeperExpression(1);
-          this.sceneDirector.flyTo(new THREE.Vector3(8, 56, 75), new THREE.Vector3(8, 0, 0));
+          // 【全新微縮黃金視角】：拉近至微距等角透視，不再遙不可及
+          this.sceneDirector.flyTo(new THREE.Vector3(5, 36, 52), new THREE.Vector3(0, 2, 0));
         }
         this.closeDrawer();
       }
@@ -6155,8 +6192,8 @@ puzzleSentences: [
         const [x, y, z] = targetData.position;
 
         if (index === 4) {
-          // 神殿近景特寫鏡頭：聚焦於小小工匠機關龍與古董四格漫畫印刷機
-          this.sceneDirector.flyTo(new THREE.Vector3(x - 2, y + 10, z + 18), new THREE.Vector3(x - 3, y + 3.0, z + 2), () => {
+          // 神殿近景特寫鏡頭：聚焦於小小工匠機關龍與古董四格漫畫印刷機 (正面微距英雄特寫)
+          this.sceneDirector.flyTo(new THREE.Vector3(x + 0.8, y + 7.8, z + 7.8), new THREE.Vector3(x, y + 5.2, z + 1.2), () => {
             this.openGuardianModal();
           });
         } else {
