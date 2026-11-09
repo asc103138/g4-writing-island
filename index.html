@@ -834,6 +834,147 @@
       color: #f1f5f9;
     }
 
+    /* 五要素承接與連貫閉環系統專屬樣式 */
+    .element-inventory-banner {
+      background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+      border: 1.5px solid #7dd3fc;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.06);
+    }
+    .element-inventory-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .element-inventory-title {
+      font-size: 13px;
+      font-weight: 900;
+      color: #0369a1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .element-inventory-btn {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #0284c7;
+      background: white;
+      border: 1px solid #bae6fd;
+      padding: 3px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .element-inventory-btn:hover {
+      background: #0284c7;
+      color: white;
+    }
+    .element-inventory-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .inventory-chip {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 6px;
+      background: white;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #334155;
+    }
+    .inventory-chip-time { border-color: #fca5a5; background: #fff1f2; color: #be123c; }
+    .inventory-chip-place { border-color: #fcd34d; background: #fefce8; color: #b45309; }
+    .inventory-chip-person { border-color: #a5b4fc; background: #eef2ff; color: #4338ca; }
+    .inventory-chip-object { border-color: #d8b4fe; background: #faf5ff; color: #7e22ce; }
+    .inventory-chip-event { border-color: #5eead4; background: #f0fdfa; color: #0f766e; }
+
+    .inherited-element-tag {
+      display: inline-block;
+      font-weight: 900;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 12px;
+      margin: 0 2px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    .linkage-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #0284c7;
+      border: 1px solid #bae6fd;
+      margin-left: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    /* Step 3 五要素連貫閉環檢驗儀樣式 */
+    .continuity-checker-card {
+      background: #f8fafc;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+    }
+    .continuity-checker-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      font-weight: 900;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+    .continuity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 6px;
+    }
+    .continuity-item {
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 5px 8px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: white;
+      border: 1.2px solid #e2e8f0;
+      color: #64748b;
+      transition: all 0.2s;
+    }
+    .continuity-item.checked {
+      border-color: #86efac;
+      background: #f0fdf4;
+      color: #166534;
+      font-weight: 800;
+    }
+    .continuity-icon {
+      font-size: 12px;
+      width: 16px;
+      height: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: #94a3b8;
+    }
+    .continuity-item.checked .continuity-icon {
+      background: #22c55e;
+      color: white;
+    }
+
   </style>
 </head>
 <body>
@@ -1014,56 +1155,25 @@
       <div class="wizard-panel" id="wizardPanel2">
         <div class="step-header-card" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-left-color: #2563eb;">
           <div class="step-header-title" style="color: #1e40af;">
-            <span>💡 第 2 步：組裝段落句子（開頭 ➔ 發展 ➔ 結尾）</span>
+            <span>💡 第 2 步：組裝段落句子（開頭 ➔ 發展 ➔ 轉折 ➔ 結尾）</span>
           </div>
           <div class="step-header-desc" style="color: #1e3a8a;">
-            系統已根據你選的要素串好三句骨架！你可以點選好詞與誇飾積木來強化語氣：
+            系統已將你剛剛在 Step 1 決定的【時、地、人、物、事】五要素完整融入四句骨架！請點選修辭與誇飾好詞來強化氣氛：
           </div>
         </div>
 
-        <!-- 初探者拼圖專區 (若為 beginner 模式顯現) -->
-        <div id="puzzleClozeSection" style="display: none; flex-direction: column; gap: 10px;">
-          <div class="tool-title" style="color: #0284c7;">
-            <span>🧩 初探者・句型拼圖切換</span>
-            <span style="font-size: 11px; color: #64748b;">點選詞彙即時切換</span>
-          </div>
-          <div id="puzzleSentencesList" style="display: flex; flex-direction: column; gap: 8px;"></div>
-        </div>
+        <!-- 頂端：【Step 1 決定的五要素靈感盤點】導覽條 -->
+        <div id="step2ElementInventory"></div>
 
-        <!-- 挑戰者 / 大師 三步句子積木專區 -->
-        <div id="standardSentenceSection" style="display: flex; flex-direction: column; gap: 10px;">
-          <div class="sentence-block-card" id="sentenceCard1">
-            <div class="sentence-block-title">
-              <span>① 開頭句（時間＋情節）</span>
-              <span style="font-size: 11px; color: #6366f1;">自然引出背景</span>
-            </div>
-            <div class="sentence-block-text" id="sentenceText1"></div>
-            <div class="chips-group" id="sentenceStartersGroup1"></div>
-          </div>
-
-          <div class="sentence-block-card" id="sentenceCard2">
-            <div class="sentence-block-title">
-              <span>② 發展句（地點＋景物＋誇飾）</span>
-              <span style="font-size: 11px; color: #f59e0b;">突顯緊張張力</span>
-            </div>
-            <div class="sentence-block-text" id="sentenceText2"></div>
-            <div style="font-size: 11.5px; font-weight: 700; color: #555; margin-top: 4px;">點選加入誇飾好詞：</div>
-            <div class="chips-group" id="step2SyntaxChips"></div>
-          </div>
-
-          <div class="sentence-block-card" id="sentenceCard3">
-            <div class="sentence-block-title">
-              <span>③ 結尾句（人物＋情感）</span>
-              <span style="font-size: 11px; color: #e11d48;">生動收尾</span>
-            </div>
-            <div class="sentence-block-text" id="sentenceText3"></div>
-            <div class="chips-group" id="sentenceStartersGroup3"></div>
-          </div>
-        </div>
+        <!-- 四大段落句組裝專區（100% 承接 Step 1 要素） -->
+        <div id="step2SentenceList" style="display: flex; flex-direction: column; gap: 10px;"></div>
 
         <!-- 即時組合預覽 -->
         <div class="preview-box">
-          <div class="preview-title">👁️ 目前段落組裝預覽：</div>
+          <div class="preview-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>👁️ 目前段落組裝即時預覽：</span>
+            <span style="font-size: 11px; color: #0284c7; font-weight: 700;">（彩色標籤表示承接自 Step 1 的要素）</span>
+          </div>
           <div class="preview-text" id="step2CombinedPreview"></div>
         </div>
 
@@ -1086,19 +1196,22 @@
             <span>📝 第 3 步：段落檢查與字數靈力充能</span>
           </div>
           <div class="step-header-desc" style="color: #78350f;">
-            恭喜！以下是你組裝好的完整段落，請通讀一遍微調字句，讓靈力條充滿能量（50~80字）！
+            恭喜！以下是你組裝好的完整段落，請對照「五要素連貫檢驗儀」通讀一遍微調字句，讓靈力條充滿能量（50~80字）！
           </div>
         </div>
+
+        <!-- 五要素連貫閉環檢驗儀 -->
+        <div id="step3ContinuityChecker"></div>
 
         <!-- 寫作輸入區 -->
         <div class="writing-area">
           <!-- 讓學生主動匯入 Step 2 填空成果按鈕 -->
           <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 4px;">
             <div style="font-size: 12.5px; color: #1e40af; font-weight: 700;">
-              📥 已完成 Step 2 填空？點擊右側將你組好的句子帶入文字框開始潤飾：
+              📥 已同步 Step 2 組裝成果！點擊右側可隨時重新帶入最新句子：
             </div>
             <button type="button" style="padding: 6px 14px; background: #2563eb; color: white; border-radius: 8px; font-size: 12.5px; font-weight: 800; border: none; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 4px rgba(37,99,235,0.2);" onclick="window.islandApp.importStep2ToEditor()">
-              📋 匯入我的填空句子
+              📋 重新匯入 Step 2 句子
             </button>
           </div>
 
@@ -5965,396 +6078,461 @@ puzzleSentences: [
         this.showToast(`已記錄自訂${key}！`, 1500);
       }
 
+      // ====================================================
+      // 【五要素血脈承接與連貫閉環系統】
+      // 100% 串接 Step 1 (選五要素) ➔ Step 2 (組段落句) ➔ Step 3 (潤飾檢驗)
+      // ====================================================
       getSelectedElements(data) {
         const islandIdx = this.currentIsland;
         const sel = state.elementSelections[islandIdx] || { time: 0, place: 0, person: 0, object: 0, event: 0 };
-        const eo = data.elementOptions;
-
-        // 🌟 挑戰者模式優先採用句型鷹架親手組裝的句子
+        const eo = data.elementOptions || {};
         const gSel = (state.guidedSelections && state.guidedSelections[islandIdx]) || {};
-        const getGuidedVal = (key) => {
-          if (state.tier === "intermediate" && data.guidedFrames && data.guidedFrames[key] && gSel[key]) {
-            const frameInfo = data.guidedFrames[key];
-            const pIdx = gSel[key].patternIdx || 0;
-            const pattern = frameInfo.patterns[pIdx] || frameInfo.patterns[0];
-            return this.getAssembledGuidedText(pattern, gSel[key].blanks);
+
+        const getVal = (key) => {
+          // ① 優先檢查挑戰者在 Step 1 親手組裝填寫的句型鷹架
+          if (gSel[key]) {
+            const frameInfo = data.guidedFrames && data.guidedFrames[key];
+            if (frameInfo) {
+              const pIdx = gSel[key].patternIdx || 0;
+              const pattern = frameInfo.patterns[pIdx] || frameInfo.patterns[0];
+              if (pattern) {
+                const assembled = this.getAssembledGuidedText(pattern, gSel[key].blanks);
+                if (assembled && assembled.trim() && !assembled.includes("【______】")) {
+                  return assembled.trim();
+                }
+              }
+            }
           }
-          return sel[`${key}_custom`] || (eo && eo[key] && eo[key].options[sel[key] || 0]);
+          // ② 檢查大師模式填寫的自訂文字
+          if (sel[`${key}_custom`] && sel[`${key}_custom`].trim()) {
+            return sel[`${key}_custom`].trim();
+          }
+          // ③ 初探者二選一或預設選項
+          if (eo[key] && eo[key].options) {
+            const optIdx = sel[key] || 0;
+            return eo[key].options[optIdx] || eo[key].options[0];
+          }
+          // ④ 備份友善預設值
+          const defaults = [
+            { time: "期末月考倒數的日子裡", place: "在凌亂不堪的書桌前", person: "苦讀的我與嚴厲的媽媽", object: "重點比芝麻還多的課本和堆積如山的測驗卷", event: "悠閒的卡通時光全被暫停，只能硬著頭皮挑燈夜讀" },
+            { time: "考前最後一分鐘", place: "在鴉雀無聲的教室裡", person: "表情嚴肅的監考老師", object: "散發著油墨味的白紙黑字考卷", event: "「噹！噹！噹！」鐘聲敲響，深吸一口氣提筆迎戰" },
+            { time: "幾天後發考卷的早晨", place: "在驚天動地的教室裡", person: "眼神像暴風雨一樣可怕的媽媽", object: "被紅筆畫滿大叉叉、令人心碎的五十九分考卷", event: "雙腿發軟，流下了悔不當初的滾燙淚水" },
+            { time: "擦乾眼淚後的這一天", place: "在收拾得整整齊齊的書桌前", person: "露出欣慰笑容的家人", object: "寫滿訂正筆記的各科習作與課本", event: "下定決心改掉臨渴掘井的壞毛病，每天按部就班複習功課" }
+          ];
+          const curDef = defaults[islandIdx] || defaults[0];
+          return curDef[key] || "";
         };
 
         return {
-          time: getGuidedVal("time"),
-          place: getGuidedVal("place"),
-          person: getGuidedVal("person"),
-          object: getGuidedVal("object"),
-          event: getGuidedVal("event")
+          time: getVal("time"),
+          place: getVal("place"),
+          person: getVal("person"),
+          object: getVal("object"),
+          event: getVal("event")
         };
       }
 
-      // ----------------------------------------------------
-      // Step 2: 渲染三步句子與積木 (依三層成就全面分流)
-      // ----------------------------------------------------
-      renderStep2Sentences(data) {
-        const puzzleSec = document.getElementById("puzzleClozeSection");
-        const stdSec = document.getElementById("standardSentenceSection");
-
-        if (state.tier === "beginner") {
-          // 🌟 初探者 (低成就)：卡槽拼圖換裝
-          if (puzzleSec) puzzleSec.style.display = "flex";
-          if (stdSec) stdSec.style.display = "none";
-          this.renderBeginnerPuzzle(data);
-        } else if (state.tier === "intermediate") {
-          // 🌟🌟 挑戰者 (中成就)：五大教材句型積木組裝
-          if (puzzleSec) puzzleSec.style.display = "none";
-          if (stdSec) stdSec.style.display = "flex";
-          this.renderIntermediateSentences(data);
+      // 取得各島嶼專屬的四步連貫句子規格 (100% 依據 Step 1 五要素組裝)
+      getIslandSentenceSpecs(islandIdx, e) {
+        if (islandIdx === 0) {
+          // 起之島・考前準備
+          return [
+            {
+              index: 1,
+              title: "① 開頭句（時空定錨）",
+              elementTag: "時",
+              elementText: e.time,
+              template: (tail) => `${e.time}，我的生活就${tail}。`,
+              options: [
+                "風雲變色，鬧得人仰馬翻",
+                "變得緊張萬分，草木皆兵",
+                "像被龍捲風席捲一樣手忙腳亂"
+              ]
+            },
+            {
+              index: 2,
+              title: "② 發展句（環境與景物誇飾）",
+              elementTag: "地＋物",
+              elementText: `${e.place} ＋ ${e.object}`,
+              template: (tail) => `${e.place}，桌上擺滿了${e.object}，${tail}。`,
+              options: [
+                "堆得像一座隨時會倒塌的小山",
+                "厚重得像一塊塊沉重的磚頭",
+                "多得讓人快要窒息"
+              ]
+            },
+            {
+              index: 3,
+              title: "③ 轉折句（人物神態交鋒）",
+              elementTag: "人",
+              elementText: e.person,
+              template: (tail) => `看著平時笑咪咪的${e.person}，此時臉色${tail}。`,
+              options: [
+                "比鐵面無私的包青天還要黑",
+                "氣得像隨時會爆發的活火山",
+                "陰沉得像暴風雨前的烏雲"
+              ]
+            },
+            {
+              index: 4,
+              title: "④ 結尾句（事件抉擇與內心懊惱）",
+              elementTag: "事",
+              elementText: e.event,
+              template: (tail) => `面對令人窒息的考試壓力，我只能${e.event}，${tail}！`,
+              options: [
+                "誰叫我平時不燒香，臨時抱佛腳呢",
+                "恨不得一天有四十八個小時可以苦讀",
+                "為平日的貪玩散漫付出慘痛代價"
+              ]
+            }
+          ];
+        } else if (islandIdx === 1) {
+          // 承之島・考場鐘聲與神態
+          return [
+            {
+              index: 1,
+              title: "① 開頭句（時空定錨）",
+              elementTag: "時",
+              elementText: e.time,
+              template: (tail) => `${e.time}，原本喧鬧的教室頓時${tail}。`,
+              options: [
+                "變得草木皆兵，人人自危",
+                "安靜得連一根針掉在地上都聽得見",
+                "籠罩在一片肅殺的戰鬥氣息中"
+              ]
+            },
+            {
+              index: 2,
+              title: "② 發展句（考卷景物誇飾）",
+              elementTag: "地＋物",
+              elementText: `${e.place} ＋ ${e.object}`,
+              template: (tail) => `${e.place}，監考老師發下${e.object}，${tail}。`,
+              options: [
+                "雪白的試卷如漫天雪花飄落在桌上",
+                "密密麻麻的題目看得我眼花撩亂",
+                "黑白分明的試題像張牙舞爪的怪獸"
+              ]
+            },
+            {
+              index: 3,
+              title: "③ 轉折句（人物神態交鋒）",
+              elementTag: "人",
+              elementText: e.person,
+              template: (tail) => `身邊的${e.person}，個個${tail}。`,
+              options: [
+                "眉頭深鎖、冷汗直流，握筆的手微微發抖",
+                "神情肅穆得像在面對生死決戰",
+                "雙眼緊盯著試卷，連大氣都不敢喘一口"
+              ]
+            },
+            {
+              index: 4,
+              title: "④ 結尾句（事件細節刻劃）",
+              elementTag: "事",
+              elementText: e.event,
+              template: (tail) => `「噹！噹！噹！」鐘聲敲響，我${e.event}，${tail}！`,
+              options: [
+                "大腦頓時像斷電一樣刷的一聲變成空白",
+                "深吸一口氣，硬著頭皮提筆迎戰",
+                "心跳比奔馳的駿馬還要劇烈"
+              ]
+            }
+          ];
+        } else if (islandIdx === 2) {
+          // 轉之島・驚天動地發考卷
+          return [
+            {
+              index: 1,
+              title: "① 開頭句（時空定錨）",
+              elementTag: "時",
+              elementText: e.time,
+              template: (tail) => `${e.time}，迎接我們的是${tail}！`,
+              options: [
+                "驚天地、泣鬼神的「發考卷」時刻",
+                "令人坐立難安、心驚肉跳的成績揭曉",
+                "一場決定命運的狂風暴雨"
+              ]
+            },
+            {
+              index: 2,
+              title: "② 發展句（景物考卷震撼）",
+              elementTag: "地＋物",
+              elementText: `${e.place} ＋ ${e.object}`,
+              template: (tail) => `在${e.place}，我雙手顫抖接過${e.object}，${tail}。`,
+              options: [
+                "那鮮紅刺眼的數字像一道閃電劈進胸口",
+                "慘不忍睹的分數讓我雙腿直發軟",
+                "鮮紅的墨水像一把尖刀刺痛雙眼"
+              ]
+            },
+            {
+              index: 3,
+              title: "③ 轉折句（人物神態交鋒）",
+              elementTag: "人",
+              elementText: e.person,
+              template: (tail) => `回到家交出成績單，${e.person}頓時${tail}。`,
+              options: [
+                "氣得火冒三丈，使出「降龍十八掌」把我打得眼冒金星",
+                "臉色比烏雲還陰沉，展開一場狂風暴雨般的訓斥",
+                "失望的眼神像冬天的寒風一樣刺骨"
+              ]
+            },
+            {
+              index: 4,
+              title: "④ 結尾句（事件悔恨與代價）",
+              elementTag: "事",
+              elementText: e.event,
+              template: (tail) => `看著滿是紅筆批改的考卷，我${e.event}，${tail}！`,
+              options: [
+                "流下了悔不當初的滾燙淚水",
+                "恨不得地上有一條縫可以鑽進去",
+                "深深嚐到了平日貪玩放縱的苦果"
+              ]
+            }
+          ];
         } else {
-          // 🌟🌟🌟 大師級 (高成就)：雙重誇飾挑戰台 (放大法 vs 縮小法)
-          if (puzzleSec) puzzleSec.style.display = "none";
-          if (stdSec) stdSec.style.display = "flex";
-          this.renderMasterRhetoricSentences(data);
-        }
-
-        const previewEl = document.getElementById("step2CombinedPreview");
-        if (previewEl) {
-          previewEl.textContent = this.getCombinedStep2Text(data);
+          // 合之島・反思超越自我
+          return [
+            {
+              index: 1,
+              title: "① 開頭句（時空定錨與頓悟）",
+              elementTag: "時",
+              elementText: e.time,
+              template: (tail) => `${e.time}，我深深明白${tail}。`,
+              options: [
+                "天下絕不可能不勞而獲，唯有努力不懈方能成功",
+                "凡事臨渴掘井必定會嚐到失敗的苦果",
+                "「一分耕耘，一分收穫」是不變的真理"
+              ]
+            },
+            {
+              index: 2,
+              title: "② 發展句（環境與行動改變）",
+              elementTag: "地＋物",
+              elementText: `${e.place} ＋ ${e.object}`,
+              template: (tail) => `我下定決心改掉壞毛病，每天在${e.place}捧起${e.object}，${tail}。`,
+              options: [
+                "按部就班複習功課，腳踏實地完成習作練習",
+                "妥善安排每一分鐘，絕不再讓作業堆積如山",
+                "認真訂正每一道錯題，不再臨渴掘井"
+              ]
+            },
+            {
+              index: 3,
+              title: "③ 轉折句（人際承諾與信任）",
+              elementTag: "人",
+              elementText: e.person,
+              template: (tail) => `我希望未來的自己能讓${e.person}${tail}。`,
+              options: [
+                "笑逐顏開，看見我不斷進步的身影",
+                "放心微笑，看見我為自己學業負責任的態度",
+                "對我刮目相看，不再為我的成績提心吊膽"
+              ]
+            },
+            {
+              index: 4,
+              title: "④ 結尾句（積極超越願景）",
+              elementTag: "事",
+              elementText: e.event,
+              template: (tail) => `經過這次慘痛的教訓，我${e.event}，${tail}！`,
+              options: [
+                "不再成為月考大魔王的俘虜，我要征服考試、超越自己",
+                "擦乾眼淚抬起頭，下一次我一定能笑著迎接勝利",
+                "腳踏實地勇敢前行，下一次月考我絕不再留遺憾"
+              ]
+            }
+          ];
         }
       }
 
-      renderBeginnerPuzzle(data) {
-        const list = document.getElementById("puzzleSentencesList");
-        if (!list || !data.puzzleSentences) return;
-        list.innerHTML = "";
-
+      // ----------------------------------------------------
+      // Step 2: 渲染段落句子（100% 承接 Step 1 的五要素）
+      // ----------------------------------------------------
+      renderStep2Sentences(data) {
         const islandIdx = this.currentIsland;
-        const curSelections = state.puzzleSelections[islandIdx] || [0, 0, 0, 0];
+        const e = this.getSelectedElements(data);
 
-        data.puzzleSentences.forEach((ps, sentIdx) => {
-          const row = document.createElement("div");
-          row.className = "puzzle-sentence";
+        // ① 渲染頂部【五要素靈感盤點導覽條】
+        const invContainer = document.getElementById("step2ElementInventory");
+        if (invContainer) {
+          invContainer.innerHTML = `
+            <div class="element-inventory-banner">
+              <div class="element-inventory-header">
+                <span class="element-inventory-title">
+                  <span>📌 你的五要素寫作盤點（100% 承接自 Step 1）</span>
+                </span>
+                <button type="button" class="element-inventory-btn" onclick="window.islandApp.goToStep(1)">
+                  ↩️ 回 Step 1 修改要素
+                </button>
+              </div>
+              <div class="element-inventory-chips">
+                <span class="inventory-chip inventory-chip-time" title="時間情境">⏰ 時：${e.time}</span>
+                <span class="inventory-chip inventory-chip-place" title="空間環境">🏠 地：${e.place}</span>
+                <span class="inventory-chip inventory-chip-person" title="人物神態">👤 人：${e.person}</span>
+                <span class="inventory-chip inventory-chip-object" title="景物考卷">📚 物：${e.object}</span>
+                <span class="inventory-chip inventory-chip-event" title="核心事件">⚡ 事：${e.event}</span>
+              </div>
+            </div>
+          `;
+        }
 
-          const chosenOpt = ps.options[curSelections[sentIdx]] || ps.options[0];
+        // ② 初始化 Step 2 句子替換狀態
+        if (!state.puzzleSelections[islandIdx]) {
+          state.puzzleSelections[islandIdx] = [0, 0, 0, 0];
+        }
+        const curSelections = state.puzzleSelections[islandIdx];
 
-          let optBtnsHtml = ps.options.map((opt, oIdx) => {
-            const isActive = curSelections[sentIdx] === oIdx;
-            return `<button class="puzzle-opt-btn ${isActive ? 'active' : ''}" onclick="window.islandApp.selectPuzzleOption(${sentIdx}, ${oIdx})">${opt}</button>`;
+        // ③ 渲染四大段落句卡片
+        const listContainer = document.getElementById("step2SentenceList");
+        if (!listContainer) return;
+        listContainer.innerHTML = "";
+
+        const specs = this.getIslandSentenceSpecs(islandIdx, e);
+
+        specs.forEach((spec, sIdx) => {
+          const card = document.createElement("div");
+          card.className = "sentence-block-card";
+
+          const chosenOptIdx = curSelections[sIdx] || 0;
+          const chosenTail = spec.options[chosenOptIdx] || spec.options[0];
+          const fullSentence = spec.template(chosenTail);
+
+          // 可替換誇飾修辭按鈕
+          const optBtnsHtml = spec.options.map((opt, oIdx) => {
+            const isActive = chosenOptIdx === oIdx;
+            return `<button type="button" class="puzzle-opt-btn ${isActive ? 'active' : ''}" onclick="window.islandApp.selectStep2SentenceOption(${sIdx}, ${oIdx})">${opt}</button>`;
           }).join("");
 
-          row.innerHTML = `
-            <div><strong>句 ${sentIdx + 1}：</strong>${ps.prefix} <span style="color: #0284c7; font-weight: 900; text-decoration: underline;">${chosenOpt}</span>${ps.suffix}</div>
-            <div class="puzzle-options-group">
-              <span style="font-size: 11px; color: #64748b; line-height: 22px;">可替換詞彙：</span>
+          card.innerHTML = `
+            <div class="sentence-block-title" style="display: flex; justify-content: space-between; align-items: center;">
+              <span>${spec.title}</span>
+              <span class="linkage-badge">🔗 承接 Step 1【${spec.elementTag}】</span>
+            </div>
+            <div class="sentence-block-text" style="margin: 6px 0; font-size: 13.5px; line-height: 1.6; color: #1e293b;">
+              ${fullSentence}
+            </div>
+            <div class="puzzle-options-group" style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(0,0,0,0.08);">
+              <span style="font-size: 11px; font-weight: 700; color: #64748b; line-height: 24px;">可微調誇飾修辭：</span>
               ${optBtnsHtml}
             </div>
           `;
-          list.appendChild(row);
-        });
-      }
-
-      renderIntermediateSentences(data) {
-        const stdSec = document.getElementById("standardSentenceSection");
-        if (!stdSec) return;
-
-        const islandIdx = this.currentIsland;
-        if (!state.step2ClozeData[islandIdx]) {
-          state.step2ClozeData[islandIdx] = {};
-        }
-        const clozeData = state.step2ClozeData[islandIdx];
-
-        stdSec.innerHTML = "";
-
-        // 任務指引卡片
-        const tipCard = document.createElement("div");
-        tipCard.style.cssText = "background: #eff6ff; border-left: 3.5px solid #2563eb; padding: 10px 14px; border-radius: 8px; margin-bottom: 6px;";
-        tipCard.innerHTML = `
-          <div style="font-size: 13px; font-weight: 800; color: #1e40af;">✍️ 挑戰者任務：請依序完成以下三句「引導填空」實作</div>
-          <div style="font-size: 12px; color: #3b82f6; margin-top: 3px; line-height: 1.4;">
-            請閱讀引導提問，在空格中<strong>親手打字輸入</strong>或<strong>點選下方推薦好詞積木</strong>！未填的空格會以【______】提示，完成後即可組裝出專屬段落。
-          </div>
-        `;
-        stdSec.appendChild(tipCard);
-
-        const clozeList = data.clozeSentences || [];
-        clozeList.forEach((cloze, sIdx) => {
-          const card = document.createElement("div");
-          card.className = "cloze-card";
-
-          // 構建填空輸入列 HTML
-          let blanksHtml = "";
-          cloze.blanks.forEach((b, bIdx) => {
-            const blankKey = `s${sIdx}_${b.key}`;
-            const currentVal = clozeData[blankKey] || "";
-            const chipsHtml = b.chips.map(chip => {
-              const safeChip = chip.replace(/'/g, "\\'");
-              return `<button type="button" class="cloze-chip-btn" onclick="window.islandApp.fillClozeChip(${sIdx}, '${b.key}', '${safeChip}')">+ ${chip}</button>`;
-            }).join("");
-
-            blanksHtml += `
-              <div class="cloze-blank-item">
-                <div class="cloze-blank-meta">
-                  <span class="cloze-blank-label">${b.label}</span>
-                  ${currentVal ? '<span style="font-size: 11px; color: #16a34a; font-weight: 700;">✓ 已填寫</span>' : '<span style="font-size: 11px; color: #94a3b8;">待填寫</span>'}
-                </div>
-                <input class="cloze-blank-input" 
-                       id="clozeInput_${sIdx}_${b.key}"
-                       value="${currentVal.replace(/"/g, '&quot;')}" 
-                       placeholder="${b.placeholder}" 
-                       oninput="window.islandApp.setClozeBlank(${sIdx}, '${b.key}', this.value)">
-                <div class="cloze-chips-row">
-                  <span style="font-size: 11px; color: #64748b; font-weight: 700;">🧩 點選積木填入：</span>
-                  ${chipsHtml}
-                </div>
-              </div>
-            `;
-          });
-
-          // 即時組裝該句預覽
-          const sentencePreview = this.getAssembledSentence(cloze, sIdx, clozeData);
-
-          card.innerHTML = `
-            <div class="cloze-header">
-              <span class="cloze-title">
-                <span>📝 ${cloze.title}</span>
-              </span>
-            </div>
-            <div class="cloze-guide-box">
-              ${cloze.guide}
-            </div>
-            <div class="cloze-blanks-container">
-              ${blanksHtml}
-            </div>
-            <div class="cloze-sentence-preview" id="clozeSentPreview_${sIdx}">
-              <strong>句 ${sIdx + 1} 組裝成果：</strong>${sentencePreview}
-            </div>
-          `;
-          stdSec.appendChild(card);
+          listContainer.appendChild(card);
         });
 
-        // 渲染誇飾法加分積木
-        const syntaxCard = document.createElement("div");
-        syntaxCard.style.cssText = "background: #fffdf5; border: 1.5px solid #fef08a; border-radius: 10px; padding: 10px 14px;";
-        syntaxCard.innerHTML = `
-          <div style="font-size: 12px; font-weight: 800; color: #854d0e; margin-bottom: 6px;">
-            ✨ 本島推薦誇飾修辭加分詞（可點擊複製或打入上方空格中）：
-          </div>
-          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-            ${(data.syntax || []).map(s => `<span class="chip highlight" style="font-size: 11.5px; cursor: pointer;" onclick="navigator.clipboard.writeText('${s}'); window.islandApp.showToast('已複製【${s}】！可貼入空格中～', 1200);">${s}</span>`).join("")}
-          </div>
-        `;
-        stdSec.appendChild(syntaxCard);
-
+        // ④ 更新即時段落組合預覽
         const previewEl = document.getElementById("step2CombinedPreview");
         if (previewEl) {
           previewEl.textContent = this.getCombinedStep2Text(data);
         }
       }
 
-      getAssembledSentence(cloze, sIdx, clozeData) {
-        let text = cloze.template;
-        cloze.blanks.forEach(b => {
-          const key = `s${sIdx}_${b.key}`;
-          const val = clozeData[key];
-          if (val && val.trim() !== "") {
-            text = text.replace(`{${b.key}}`, `<span class="cloze-blank-highlight">${val.trim()}</span>`);
-          } else {
-            text = text.replace(`{${b.key}}`, `<span class="cloze-blank-empty">【______】</span>`);
-          }
-        });
-        return text;
-      }
-
-      setClozeBlank(sIdx, blankKey, val) {
-        const islandIdx = this.currentIsland;
-        if (!state.step2ClozeData[islandIdx]) state.step2ClozeData[islandIdx] = {};
-        state.step2ClozeData[islandIdx][`s${sIdx}_${blankKey}`] = val;
-        state.saveState();
-
-        const data = CURRICULUM_DATA[islandIdx];
-        const cloze = data.clozeSentences ? data.clozeSentences[sIdx] : null;
-        if (cloze) {
-          const pEl = document.getElementById(`clozeSentPreview_${sIdx}`);
-          if (pEl) {
-            pEl.innerHTML = `<strong>句 ${sIdx + 1} 組裝成果：</strong>` + this.getAssembledSentence(cloze, sIdx, state.step2ClozeData[islandIdx]);
-          }
-        }
-        const previewEl = document.getElementById("step2CombinedPreview");
-        if (previewEl) {
-          previewEl.textContent = this.getCombinedStep2Text(data);
-        }
-      }
-
-      fillClozeChip(sIdx, blankKey, text) {
-        const input = document.getElementById(`clozeInput_${sIdx}_${blankKey}`);
-        if (input) {
-          input.value = text;
-        }
-        this.setClozeBlank(sIdx, blankKey, text);
-        this.showToast(`已填入【${text}】！`, 1200);
-      }
-
-      renderMasterRhetoricSentences(data) {
-        const stdSec = document.getElementById("standardSentenceSection");
-        if (!stdSec) return;
-        const e = this.getSelectedElements(data);
-        const t = data.sentenceTemplates;
-
-        const s1 = t[0].getSentence(e);
-        const s2 = t[1].getSentence(e);
-        const s3 = t[2].getSentence(e);
-
-        stdSec.innerHTML = `
-          <div class="master-challenge-card">
-            <span class="master-badge-tag">⚔️ 雙重誇飾法修辭挑戰台</span>
-            <div style="font-size: 12.5px; color: #78350f;">
-              四年級教材大師標準：段落中必須同時兼備「放大法」與「縮小法」形成極致張力！
-            </div>
-            <div class="master-rhetoric-box">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <strong style="font-size: 12.5px; color: #b45309;">① 誇飾放大法挑戰：</strong>
-                <span class="rhetoric-status-light achieved">✓ 已融入（重點比芝麻還多）</span>
-              </div>
-              <div style="font-size: 12px; color: #555;">把實際事物誇大敘述，營造震撼力（例：比玉山還高、火冒三丈）。</div>
-            </div>
-            <div class="master-rhetoric-box">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <strong style="font-size: 12.5px; color: #b45309;">② 誇飾縮小法挑戰：</strong>
-                <span class="rhetoric-status-light achieved">✓ 已融入（連一根針掉下都聽得見）</span>
-              </div>
-              <div style="font-size: 12px; color: #555;">把實際事物縮小敘述，突顯極致特徵（例：比老鼠膽子小、比螞蟻聲音小）。</div>
-            </div>
-          </div>
-
-          <div class="sentence-block-card">
-            <div class="sentence-block-title">
-              <span>① 開頭句（時空定錨）</span>
-            </div>
-            <div class="sentence-block-text">${s1}</div>
-          </div>
-          <div class="sentence-block-card">
-            <div class="sentence-block-title">
-              <span>② 發展句（誇飾修辭聚焦）</span>
-            </div>
-            <div class="sentence-block-text">${s2}</div>
-          </div>
-          <div class="sentence-block-card">
-            <div class="sentence-block-title">
-              <span>③ 結尾句（情感轉折）</span>
-            </div>
-            <div class="sentence-block-text">${s3}</div>
-          </div>
-        `;
-      }
-
-      selectPuzzleOption(sentIdx, optIdx) {
+      selectStep2SentenceOption(sIdx, oIdx) {
         const islandIdx = this.currentIsland;
         if (!state.puzzleSelections[islandIdx]) state.puzzleSelections[islandIdx] = [0, 0, 0, 0];
-        state.puzzleSelections[islandIdx][sentIdx] = optIdx;
+        state.puzzleSelections[islandIdx][sIdx] = oIdx;
         state.saveState();
 
         const data = CURRICULUM_DATA[islandIdx];
-        this.renderBeginnerPuzzle(data);
-
-        const previewEl = document.getElementById("step2CombinedPreview");
-        if (previewEl) {
-          previewEl.textContent = this.getCombinedStep2Text(data);
-        }
+        this.renderStep2Sentences(data);
       }
 
+      // 取得 Step 2 組裝好的乾淨純文字段落 (自動縮排空兩格)
       getCombinedStep2Text(data) {
         const islandIdx = this.currentIsland;
-        if (state.tier === "beginner" && data.puzzleSentences) {
-          const selections = state.puzzleSelections[islandIdx] || [0, 0, 0, 0];
-          return "　　" + data.puzzleSentences.map((ps, idx) => {
-            const chosen = ps.options[selections[idx]] || ps.options[0];
-            return `${ps.prefix}${chosen}${ps.suffix}`;
-          }).join("");
-        } else if (data.clozeSentences) {
-          const clozeData = state.step2ClozeData[islandIdx] || {};
-          const sentences = data.clozeSentences.map((cloze, sIdx) => {
-            let sText = cloze.template;
-            cloze.blanks.forEach(b => {
-              const key = `s${sIdx}_${b.key}`;
-              const val = clozeData[key];
-              sText = sText.replace(`{${b.key}}`, (val && val.trim()) ? val.trim() : "【______】");
-            });
-            return sText;
-          });
-          return "　　" + sentences.join("");
-        } else {
-          const e = this.getSelectedElements(data);
-          const t = data.sentenceTemplates;
-          return "　　" + t.map(item => item.getSentence(e)).join("");
-        }
+        const e = this.getSelectedElements(data);
+        const specs = this.getIslandSentenceSpecs(islandIdx, e);
+        const curSelections = state.puzzleSelections[islandIdx] || [0, 0, 0, 0];
+
+        const sentences = specs.map((spec, sIdx) => {
+          const chosenOptIdx = curSelections[sIdx] || 0;
+          const chosenTail = spec.options[chosenOptIdx] || spec.options[0];
+          return spec.template(chosenTail);
+        });
+
+        return "　　" + sentences.join("");
       }
 
       // ----------------------------------------------------
-      // Step 3: 渲染編輯器與檢驗 (三層成就專屬任務)
+      // Step 3: 渲染編輯器與【五要素連貫閉環檢驗儀】
       // ----------------------------------------------------
       renderStep3Editor(data) {
         const textarea = document.getElementById("paragraphInput");
-        // 開始時絕不幫學生填寫進去！文字框由學生手寫或點擊按鈕主動匯入
+
+        // 若文字框尚無文字，自動無損帶入 Step 2 的連貫成果
+        if (!state.paragraphs[this.currentIsland] || state.paragraphs[this.currentIsland].trim() === "") {
+          const combined = this.getCombinedStep2Text(data);
+          state.paragraphs[this.currentIsland] = combined;
+          state.saveState();
+        }
+
         textarea.value = state.paragraphs[this.currentIsland] || "";
         this.onTextChange();
+      }
 
-        // 依據成就模式，在輸入框上方或下方加入專屬檢驗工具
-        let customBox = document.getElementById("step3TierExtraBox");
-        if (!customBox) {
-          customBox = document.createElement("div");
-          customBox.id = "step3TierExtraBox";
-          const area = document.querySelector(".writing-area");
-          if (area) area.parentNode.insertBefore(customBox, area.nextSibling);
-        }
+      // 【Step 3 五要素連貫閉環檢驗儀動態比對】
+      updateContinuityChecker(data) {
+        const checkerContainer = document.getElementById("step3ContinuityChecker");
+        if (!checkerContainer) return;
 
-        if (state.tier === "beginner") {
-          // 🌟 初探者：小朗讀家檢核清單（零文字壓力，給予 100% 成功信心）
-          customBox.innerHTML = `
-            <div class="beginner-checklist">
-              <strong style="font-size: 13px; color: #166534;">🌟 小朗讀家自我檢核清單（請小聲朗讀並打勾）：</strong>
-              <div class="check-item checked" onclick="this.classList.toggle('checked')">
-                <span class="check-box-icon">✓</span>
-                <span>段落開頭已經為你自動空了兩格</span>
+        const currentText = (state.paragraphs[this.currentIsland] || "").trim();
+        const e = this.getSelectedElements(data);
+
+        // 提取關鍵詞比對 (長度大於 2 的核心詞)
+        const checkMatch = (val) => {
+          if (!val) return false;
+          if (currentText.includes(val)) return true;
+          // 模糊比對前 4 個字或後 4 個字
+          const clean = val.replace(/[，。！「」『』、]/g, '');
+          if (clean.length <= 4) return currentText.includes(clean);
+          const sub1 = clean.substring(0, 4);
+          const sub2 = clean.substring(clean.length - 4);
+          return currentText.includes(sub1) || currentText.includes(sub2);
+        };
+
+        const timeMatched = checkMatch(e.time);
+        const placeMatched = checkMatch(e.place);
+        const personMatched = checkMatch(e.person);
+        const objectMatched = checkMatch(e.object);
+        const eventMatched = checkMatch(e.event);
+        const rhetoricMatched = currentText.includes("比") || currentText.includes("像") || currentText.includes("如") || currentText.includes("堆積如山") || currentText.includes("風雲變色") || currentText.includes("草木皆兵") || currentText.includes("包青天") || currentText.includes("火山");
+
+        checkerContainer.innerHTML = `
+          <div class="continuity-checker-card">
+            <div class="continuity-checker-header">
+              <span>🔍 五要素連貫與修辭即時診斷儀</span>
+              <span style="font-size: 11px; color: #0284c7; font-weight: 700;">（依據 Step 1 決定的要素動態比對）</span>
+            </div>
+            <div class="continuity-grid">
+              <div class="continuity-item ${timeMatched ? 'checked' : ''}" title="時間情境：${e.time}">
+                <span class="continuity-icon">${timeMatched ? '✓' : '⏰'}</span>
+                <span>時：${timeMatched ? '已連貫' : '待確認'}</span>
               </div>
-              <div class="check-item checked" onclick="this.classList.toggle('checked')">
-                <span class="check-box-icon">✓</span>
-                <span>句子通順，有寫出月考前的緊張氣氛</span>
+              <div class="continuity-item ${placeMatched ? 'checked' : ''}" title="空間環境：${e.place}">
+                <span class="continuity-icon">${placeMatched ? '✓' : '🏠'}</span>
+                <span>地：${placeMatched ? '已連貫' : '待確認'}</span>
               </div>
-              <div class="check-item checked" onclick="this.classList.toggle('checked')">
-                <span class="check-box-icon">✓</span>
-                <span>字數靈力能量條達到 50 字以上合格標準</span>
+              <div class="continuity-item ${personMatched ? 'checked' : ''}" title="人物神態：${e.person}">
+                <span class="continuity-icon">${personMatched ? '✓' : '👤'}</span>
+                <span>人：${personMatched ? '已連貫' : '待確認'}</span>
+              </div>
+              <div class="continuity-item ${objectMatched ? 'checked' : ''}" title="景物考卷：${e.object}">
+                <span class="continuity-icon">${objectMatched ? '✓' : '📚'}</span>
+                <span>物：${objectMatched ? '已連貫' : '待確認'}</span>
+              </div>
+              <div class="continuity-item ${eventMatched ? 'checked' : ''}" title="核心事件：${e.event}">
+                <span class="continuity-icon">${eventMatched ? '✓' : '⚡'}</span>
+                <span>事：${eventMatched ? '已連貫' : '待確認'}</span>
+              </div>
+              <div class="continuity-item ${rhetoricMatched ? 'checked' : ''}" title="四年級教材誇飾修辭">
+                <span class="continuity-icon">${rhetoricMatched ? '✓' : '✨'}</span>
+                <span>修辭：${rhetoricMatched ? '誇飾到位' : '待加強'}</span>
               </div>
             </div>
-          `;
-        } else if (state.tier === "intermediate") {
-          // 🌟🌟 挑戰者：擴寫與連接詞提醒
-          customBox.innerHTML = `
-            <div style="background: #eef2ff; border: 1.5px solid #c7d2fe; border-radius: 10px; padding: 10px; font-size: 12.5px; color: #3730a3;">
-              <strong>⚔️ 挑戰者修潤秘訣：</strong>試著在段落中加入轉折語（如：然而、取而代之的是、誰叫我……呢），讓文氣更連貫！
-            </div>
-          `;
-        } else {
-          // 🌟🌟🌟 大師級：深度修辭檢驗燈
-          const currentText = state.paragraphs[this.currentIsland] || "";
-          const hasHyperbole = currentText.includes("比") || currentText.includes("堆積如山") || currentText.includes("包青天") || currentText.includes("針");
-          const wordCount = currentText.replace(/\s/g, '').length;
-
-          customBox.innerHTML = `
-            <div class="master-challenge-card" style="padding: 10px 14px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <strong style="color: #92400e; font-size: 13px;">👑 大師段落審查指標：</strong>
-                <span style="font-size: 11px; font-weight: 700; color: ${wordCount >= 70 ? '#15803d' : '#b45309'};">${wordCount >= 70 ? '✓ 字數達標 (≥70字)' : '⏳ 尚需充實 (需≥70字)'}</span>
-              </div>
-              <div style="font-size: 12px; color: #78350f; line-height: 1.5;">
-                ${hasHyperbole ? '✓ 已偵測到誇飾修辭法！通關將獲得金色守門獸勳章！' : '⚠️ 請加入誇飾法（如：重點比芝麻多、臉色比包青天黑）以解鎖大師殊榮！'}
-              </div>
-            </div>
-          `;
-        }
+          </div>
+        `;
       }
 
 
-      // ----------------------------------------------------
-      // Step 3: 輸入框文字修改與靈力回饋
-      // ----------------------------------------------------
       insertText(txt) {
         const area = document.getElementById("paragraphInput");
         if (!area) return;
@@ -6400,6 +6578,10 @@ puzzleSentences: [
         const bar = document.getElementById("energyFill");
         bar.style.width = `${pct}%`;
         bar.className = len >= 50 ? "energy-bar-fill good" : "energy-bar-fill";
+
+        // 即時動態連動五要素連貫閉環檢驗儀
+        const data = CURRICULUM_DATA[this.currentIsland];
+        this.updateContinuityChecker(data);
       }
 
       // ----------------------------------------------------
