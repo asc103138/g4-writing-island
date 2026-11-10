@@ -1099,8 +1099,8 @@
         <span id="teacherModeIcon">🔒</span>
         <span id="teacherModeText">教師模式 (密碼 888)</span>
       </button>
-      <button class="btn-top" onclick="window.islandApp.resetCamera()">
-        <span>🧭 全景視角</span>
+      <button class="btn-top" onclick="window.islandApp.focusCurrentIsland()" title="鏡頭重新聚焦回目前正在進行的島嶼">
+        <span id="topFocusBtnText">🎯 對焦當前島</span>
       </button>
     </div>
   </header>
@@ -1140,9 +1140,9 @@
 
     <!-- 下層：常駐懸浮毛玻璃 HUD 工具列 -->
     <div class="hud-dock-bar">
-      <button class="hud-dock-btn" onclick="window.islandApp.resetCamera()" title="一鍵還原俯瞰全島視野">
-        <span class="hud-dock-icon">🌐</span>
-        <span>全景俯瞰</span>
+      <button class="hud-dock-btn" onclick="window.islandApp.focusCurrentIsland()" title="鏡頭重新聚焦回目前正在進行的島嶼">
+        <span class="hud-dock-icon">🎯</span>
+        <span id="hudFocusBtnText">對焦當前島</span>
       </button>
       <button class="hud-dock-btn" onclick="window.islandApp.openQuickNavModal()" title="快速查看全島任務與進度">
         <span class="hud-dock-icon">🗺️</span>
@@ -7417,14 +7417,14 @@ puzzleSentences: [
         this.showToast(state.teacherMode ? "🔓 已切換為【巡堂免密碼快速蓋章】模式！" : "🔒 已切換為【密碼保護】模式 (預設 888)！");
       }
 
+      // 聚焦在目前正在進行的島嶼 (取代原有的全景俯瞰功能)
+      focusCurrentIsland() {
+        const cur = (typeof this.currentIsland === 'number' && this.currentIsland >= 0 && this.currentIsland <= 4) ? this.currentIsland : 0;
+        this.flyToIsland(cur);
+      }
+
       resetCamera() {
-        if (this.sceneDirector) {
-          this.sceneDirector.setWeather('sunny');
-          this.sceneDirector.setKeeperExpression(1);
-          // 【規格任務 3：微縮長焦俯瞰視角】：長焦微距攝影棚透視 (10, 55, 80)
-          this.sceneDirector.flyTo(new THREE.Vector3(10, 55, 80), new THREE.Vector3(5, 0, 0));
-        }
-        this.closeDrawer();
+        this.focusCurrentIsland();
       }
 
       updateNavStepDots() {
@@ -7458,6 +7458,13 @@ puzzleSentences: [
             dot.title = "可進入探索寫作";
           }
         }
+
+        // 動態更新對焦按鈕標籤為當前島嶼名稱
+        const curName = (typeof CURRICULUM_DATA !== 'undefined' && CURRICULUM_DATA[this.currentIsland]) ? CURRICULUM_DATA[this.currentIsland].shortName : "當前島";
+        const topFocus = document.getElementById("topFocusBtnText");
+        if (topFocus) topFocus.textContent = `🎯 對焦：${curName}`;
+        const hudFocus = document.getElementById("hudFocusBtnText");
+        if (hudFocus) hudFocus.textContent = `對焦：${curName}`;
       }
 
       // 【全面重構：電影級物理跑道平穩起降飛行動畫】
@@ -7825,8 +7832,8 @@ puzzleSentences: [
         const tourSteps = [0, 1, 2, 3, 4];
         const runTourStep = () => {
           if (step >= tourSteps.length) {
-            this.showToast("🎉 全島巡航完畢！歡迎點選各島開始探索寫作！", 3500);
-            this.resetCamera();
+            this.showToast("🎉 全島巡航完畢！正在重新對焦回您當前進行的島嶼！", 3500);
+            this.focusCurrentIsland();
             return;
           }
           const islandIdx = tourSteps[step];
