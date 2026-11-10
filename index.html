@@ -3090,10 +3090,9 @@
       return g;
     }
 
-    // 自然鵝卵石步道 (打破平面幾何感，引導視線通向房屋大門)
-    function createSteppingPath(points) {
+    // 自然鵝卵石步道 (動森暖陽踏石配色，引導視線通向房屋大門)
+    function createSteppingPath(points, stoneColors = [0xd4a373, 0xe9c46a, 0xdeb887, 0xf5deb3]) {
       const g = new THREE.Group();
-      const stoneColors = [0x94a3b8, 0xcbd5e1, 0x64748b, 0xe2e8f0];
       points.forEach(([x, y, z], idx) => {
         const rad = 0.5 + (idx % 3) * 0.12;
         const sMat = getMat(stoneColors[idx % stoneColors.length], { roughness: 0.85 });
@@ -3575,7 +3574,7 @@
         name: "起之島・考前準備",
         shortName: "起・月考倒數",
         position: [ -80, 0, 18 ],
-        color: 0x5fa8d3,
+        color: 0x58b368, // 動森晨曦青蘋果綠 (告別沉重冷藍)
         prompt: "月考即將來臨！你是認真苦讀還是貪玩抱佛腳？請運用誇飾法寫出考前堆積如山的作業與緊張氣氛。",
         spriteName: "書精靈・小墨",
         // 五要素選項庫 (Step 1 點選用)
@@ -3963,7 +3962,7 @@ puzzleSentences: [
         name: "承之島・考場神態",
         shortName: "承・考場鐘聲",
         position: [ -40, 0, -32 ],
-        color: 0x70c1b3,
+        color: 0x48ba7f, // 動森盛夏薄荷翡翠綠
         prompt: "考卷發下那一刻！教室氣氛如何？看著密密麻麻的題目，你的心跳與腦海產生了什麼誇張的變化？",
         spriteName: "鐘聲精靈・噹噹",
         masterPrompts: {
@@ -4314,7 +4313,7 @@ puzzleSentences: [
         name: "轉之島・驚天動地",
         shortName: "轉・驚天動地",
         position: [ 8, 0, 24 ],
-        color: 0xf39c12,
+        color: 0xd99238, // 動森秋日暖陽琥珀金 (晚霞草甸，明亮富有戲劇張力)
         prompt: "發考卷時是驚天動地還是心驚膽戰？看到刺眼的分數，你內心有何震撼？回家後遭遇了什麼樣的家庭風暴？",
         spriteName: "考卷精靈・白白",
         masterPrompts: {
@@ -4683,7 +4682,7 @@ puzzleSentences: [
         name: "合之島・超越自我",
         shortName: "合・超越自我",
         position: [ 58, 0, -30 ],
-        color: 0x9b59b6,
+        color: 0x5ebb38, // 動森幸運草盛夏翡翠綠 (告別沉重暗紫，呈現超越自我的活力喜悅)
         prompt: "經歷了這次月考的洗禮，你學到了什麼啟示？如何改掉平時不燒香的壞習慣，期許自己按部就班超越自我？",
         spriteName: "智慧石像・智者",
         masterPrompts: {
@@ -5020,7 +5019,7 @@ puzzleSentences: [
         name: "守門神殿・四格審查",
         shortName: "🐲 守門試煉",
         position: [ 108, 0, 18 ],
-        color: 0xe74c3c,
+        color: 0x5eead4, // 動森神殿碧玉仙境草坪 (清雅明亮五星廣場)
         prompt: "四座島嶼段落齊備！守門神獸小小工匠機關龍將啟動四格漫畫印刷機，審查你的四段情節是否連貫、有無非書面口語，並生成四格漫畫與謄寫稿紙！",
         spriteName: "小小工匠機關龍",
         words: [],
@@ -6527,12 +6526,86 @@ puzzleSentences: [
         this.rainParticles = rain;
       }
 
+      // ----------------------------------------------------
+      // 【動物森友會風格島嶼配色系統 (ACNH Stylized Island Ground Palettes)】
+      // 徹底告別沉重深咖啡色，採用暖陽黏土懸崖、焦糖薑餅土壤、香草奶油沙灘與各島專屬活潑Ｑ版草坪！
+      // ----------------------------------------------------
+      static ISLAND_PALETTES = [
+        // 0: 起之島・考前準備 (春日晨曦清晨・青蘋草甸＋暖蜜餅乾懸崖)
+        {
+          grass: 0x58b368,          // 動森標誌性晨曦青蘋果綠 (清新、活潑、生機盎然)
+          grassAccent: 0x66c274,    // 亮面微漸層草地
+          cliff: 0xd49658,          // 動森標誌性溫暖蜂蜜餅乾黏土懸崖 (暖黃褐、如現烤餅乾般溫潤)
+          soil: 0xb5743e,           // 溫暖焦糖薑餅肥沃土壤層 (絕非死黑或深咖啡，溫潤可愛)
+          sand: 0xfae58c,           // 動森奶油金黃海灘細砂
+          keel: 0x7397ab,           // 蔚藍海岸海風岩基
+          bushColor: 0x38a169,
+          grassClumpColor: 0x68d391,
+          stoneColors: [0xd4a373, 0xe2c499, 0xc9a072, 0xf5deb3],
+          flowerColors: [0x38bdf8, 0xfde047, 0xffffff]
+        },
+        // 1: 承之島・考場神態 (盛夏翠竹涼風・薄荷翡翠草地＋暖沙黏土懸崖)
+        {
+          grass: 0x48ba7f,          // 動森盛夏薄荷翡翠綠 (清爽、沉靜專注、微風拂面)
+          grassAccent: 0x56c68d,
+          cliff: 0xd6995e,          // 暖金砂岩懸崖
+          soil: 0xb87944,           // 暖焦糖泥土
+          sand: 0xfce792,           // 柔和香草奶油沙灘
+          keel: 0x6b94a8,           // 海洋青瓷浮島底座
+          bushColor: 0x2f855a,
+          grassClumpColor: 0x48bb78,
+          stoneColors: [0xd6b488, 0xe2c69c, 0xc9a174, 0xfae1b8],
+          flowerColors: [0x22c55e, 0x38bdf8, 0xfef08a]
+        },
+        // 2: 轉之島・驚天動地 (秋日晚霞金芒・暖金琥珀草地＋焦糖赤土懸崖)
+        {
+          grass: 0xd99238,          // 動森秋日暖陽琥珀金草甸 (夕陽晚霞映照的金黃草地，活潑而富戲劇張力)
+          grassAccent: 0xe6a144,
+          cliff: 0xcc7d46,          // 溫暖焦糖赤陶土懸崖 (暖橘褐，呼應驚天動地情境卻明亮活潑)
+          soil: 0xad6a36,           // 溫暖琥珀泥土層
+          sand: 0xf9dc80,           // 暮色暖金沙灘
+          keel: 0x7a8a99,           // 紫暮海岩底錐
+          mudRing: 0xc48652,        // 湖畔溫暖濕潤紅陶灘 (徹底取代暗黑爛泥)
+          bushColor: 0x975a16,
+          grassClumpColor: 0xdd6b20,
+          stoneColors: [0xcca174, 0xdfb488, 0xbd9062, 0xebd0aa],
+          flowerColors: [0xf97316, 0xef4444, 0xfacc15]
+        },
+        // 3: 合之島・超越自我 (五星榮耀盛夏・陽光幸運草綠＋向日葵金懸崖)
+        {
+          grass: 0x5ebb38,          // 動森盛夏幸運草翡翠綠 (充滿勝利喜悅與超越自我的燦爛綠)
+          grassAccent: 0x6ec946,
+          cliff: 0xdba05a,          // 暖陽金橘向日葵黏土懸崖
+          soil: 0xb87a42,           // 暖栗色甜美泥土
+          sand: 0xfae58c,           // 陽光奶油金沙灘
+          keel: 0x769eb3,           // 晴空海蝕石底錐
+          bushColor: 0x2f855a,
+          grassClumpColor: 0x68d391,
+          stoneColors: [0xdeb887, 0xe8cca4, 0xd2a679, 0xf5deb3],
+          flowerColors: [0xa855f7, 0xfacc15, 0x3b82f6]
+        },
+        // 4: 守門神殿・四格審查 (動森五星雲端神殿・翡翠仙境草坪＋暖象牙白砂岩懸崖)
+        {
+          grass: 0x5eead4,          // 動森五星神殿薄荷碧玉仙境草坪 (清雅神聖、童趣透亮)
+          grassAccent: 0x6ee7b7,
+          cliff: 0xe8cca4,          // 暖象牙白砂岩神殿基石 (徹底取代死黑板岩！)
+          soil: 0xc4935f,           // 暖杏仁黃土壤
+          sand: 0xfff1b0,           // 珍珠白奶油沙灘
+          keel: 0x82b4c9,           // 碧玉琉璃海岩底座 (徹底取代 0x1e293b 灰黑！)
+          bushColor: 0x14b8a6,
+          grassClumpColor: 0x2dd4bf,
+          stoneColors: [0xf1e4cf, 0xe5d0b1, 0xdac09d, 0xfff3db],
+          flowerColors: [0xec4899, 0x8b5cf6, 0x06b6d4]
+        }
+      ];
+
       // 建造四座豐富的微縮主題島嶼
       // 【全新開闊升級】：島嶼面積大幅擴展 (baseR=18.5，面積3.1倍！)，徹底告別擁擠擠壓感！
       // 樹木、岩石採用自然寫真繪本工廠，不再是生硬幾何圖形拼湊
       buildAllIslands() {
         for (let i = 0; i < 4; i++) {
           const data = CURRICULUM_DATA[i];
+          const palette = IslandScene.ISLAND_PALETTES[i];
           const islandGroup = new THREE.Group();
           islandGroup.position.set(...data.position);
 
@@ -6656,7 +6729,7 @@ puzzleSentences: [
             }
             keelGeo.computeVertexNormals();
           }
-          const keelMesh = new THREE.Mesh(keelGeo, getMat(0x334155, { roughness: 0.95, metalness: 0.05, flatShading: true }));
+          const keelMesh = new THREE.Mesh(keelGeo, getMat(palette.keel, { roughness: 0.90, metalness: 0.05, flatShading: true }));
           keelMesh.position.y = -1.6;
           keelMesh.receiveShadow = true;
           islandGroup.add(keelMesh);
@@ -6680,7 +6753,7 @@ puzzleSentences: [
           islandGroup.add(foamMesh);
           this.shorelineFoams.push({ mesh: foamMesh, seed: seed });
 
-          // ③ 有機金黃海岸沙灘緩坡 (Organic Sandy Beach)
+          // ③ 有機金黃海岸沙灘緩坡 (Organic Sandy Beach - 動森奶油金砂)
           const sandGeo = new THREE.CylinderGeometry(baseR * 1.12, baseR * 1.34, 1.4, 44, 3);
           {
             const pos = sandGeo.attributes.position;
@@ -6694,16 +6767,19 @@ puzzleSentences: [
             }
             sandGeo.computeVertexNormals();
           }
-          const sandMesh = new THREE.Mesh(sandGeo, getMat(0xf4d35e, { roughness: 0.88, metalness: 0.04 }));
+          const sandMesh = new THREE.Mesh(sandGeo, getMat(palette.sand, { roughness: 0.85, metalness: 0.04 }));
           sandMesh.position.y = 0.65;
           sandMesh.castShadow = true;
           sandMesh.receiveShadow = true;
           islandGroup.add(sandMesh);
 
-          // ④ 粗獷層疊岩壁沈積層 (Rocky Cliff & Sedimentary Bedrock)
+          // ④ 暖陽層疊岩壁黏土層 (ACNH Honey-Biscuit Clay Cliff - 徹底取代深咖啡色，呈現動森溫暖餅乾黏土)
           const cliffGeo = new THREE.CylinderGeometry(baseR * 0.98, baseR * 1.15, 2.3, 48, 4);
           {
             const pos = cliffGeo.attributes.position;
+            const cliffColors = [];
+            const cCliff1 = new THREE.Color(palette.cliff);
+            const cCliff2 = cCliff1.clone().offsetHSL(0, 0.04, -0.05); // 微微深一層的餅乾紋理
             for (let v = 0; v < pos.count; v++) {
               const x = pos.getX(v), y = pos.getY(v), z = pos.getZ(v);
               const theta = Math.atan2(z, x);
@@ -6711,16 +6787,27 @@ puzzleSentences: [
               const rockStrata = 1.0 + 0.07 * Math.sin(y * 4.0 + theta * 2.0);
               pos.setX(v, x * noise * rockStrata);
               pos.setZ(v, z * noise * rockStrata);
+
+              const strata = Math.sin(y * 6.0) * 0.5 + 0.5;
+              const c = cCliff1.clone().lerp(cCliff2, strata * 0.35);
+              cliffColors.push(c.r, c.g, c.b);
             }
+            cliffGeo.setAttribute('color', new THREE.Float32BufferAttribute(cliffColors, 3));
             cliffGeo.computeVertexNormals();
           }
-          const cliffMesh = new THREE.Mesh(cliffGeo, getMat(0x8d5b4c, { roughness: 0.88, metalness: 0.06, flatShading: true }));
+          const cliffMat = new THREE.MeshStandardMaterial({
+            vertexColors: true,
+            roughness: 0.78,
+            metalness: 0.05,
+            flatShading: true
+          });
+          const cliffMesh = new THREE.Mesh(cliffGeo, cliffMat);
           cliffMesh.position.y = 1.85;
           cliffMesh.castShadow = true;
           cliffMesh.receiveShadow = true;
           islandGroup.add(cliffMesh);
 
-          // ⑤ 深層肥沃土壤層 (Rich Soil & Loam Strata)
+          // ⑤ 溫暖焦糖薑餅土壤層 (ACNH Warm Caramel Soil - 徹底取代深咖啡色，呈現可愛甜潤黏土玩具感)
           const soilGeo = new THREE.CylinderGeometry(baseR * 0.95, baseR * 1.02, 1.45, 52, 4);
           {
             const pos = soilGeo.attributes.position;
@@ -6738,16 +6825,19 @@ puzzleSentences: [
             }
             soilGeo.computeVertexNormals();
           }
-          const soilMesh = new THREE.Mesh(soilGeo, getMat(0x603813, { roughness: 0.95, metalness: 0.02, flatShading: true }));
+          const soilMesh = new THREE.Mesh(soilGeo, getMat(palette.soil, { roughness: 0.85, metalness: 0.03, flatShading: true }));
           soilMesh.position.y = 2.65;
           soilMesh.castShadow = true;
           soilMesh.receiveShadow = true;
           islandGroup.add(soilMesh);
 
-          // ⑥ 立體有機青草毯 (Lush Organic Grass Mantle)
+          // ⑥ 動森標誌活潑青草毯 (ACNH Stylized Textured Grass Mantle - 具備動森經典幾何草斑)
           const grassGeo = new THREE.CylinderGeometry(baseR * 0.93, baseR * 0.97, 0.75, 56, 10);
           {
             const pos = grassGeo.attributes.position;
+            const grassColors = [];
+            const col1 = new THREE.Color(palette.grass);
+            const col2 = new THREE.Color(palette.grassAccent);
             for (let v = 0; v < pos.count; v++) {
               const x = pos.getX(v), y = pos.getY(v), z = pos.getZ(v);
               const theta = Math.atan2(z, x);
@@ -6761,10 +6851,22 @@ puzzleSentences: [
               } else {
                 pos.setY(v, currentH - 3.1 - 0.45);
               }
+
+              // 動森經典微縮三角/方塊草地斑紋微調
+              const pat = Math.sin(x * 1.6) * Math.cos(z * 1.6) + Math.sin((x + z) * 2.0) * 0.4;
+              const f = pat > 0.1 ? 0.85 : (pat < -0.1 ? 0.0 : 0.4);
+              const c = col1.clone().lerp(col2, f * 0.4);
+              grassColors.push(c.r, c.g, c.b);
             }
+            grassGeo.setAttribute('color', new THREE.Float32BufferAttribute(grassColors, 3));
             grassGeo.computeVertexNormals();
           }
-          const grassMat = getMat(data.color, { roughness: 0.78, metalness: 0.05, flatShading: true });
+          const grassMat = new THREE.MeshStandardMaterial({
+            vertexColors: true,
+            roughness: 0.75,
+            metalness: 0.05,
+            flatShading: true
+          });
           const grassMesh = new THREE.Mesh(grassGeo, grassMat);
           grassMesh.position.y = 3.1;
           grassMesh.castShadow = true;
@@ -6783,17 +6885,17 @@ puzzleSentences: [
             lake.position.set(2.5, 2.35, 3.5);
             islandGroup.add(lake);
 
-            // 湖畔潮濕深色泥土灘
+            // 湖畔潮濕溫暖紅陶灘 (動森湖畔風格，徹底取代暗黑爛泥)
             const mudRingGeo = new THREE.RingGeometry(2.8, 4.4, 24);
-            const mudRing = new THREE.Mesh(mudRingGeo, getMat(0x3b1e08, { roughness: 0.95 }));
+            const mudRing = new THREE.Mesh(mudRingGeo, getMat(palette.mudRing || 0xc48652, { roughness: 0.78 }));
             mudRing.rotation.x = -Math.PI / 2;
             mudRing.position.set(2.5, 2.36, 3.5);
             islandGroup.add(mudRing);
           }
 
-          // 連接主草地與台地/建築的天然石階 (遵循高度契約)
+          // 連接主草地與台地/建築的天然石階 (動森暖色石階)
           for (let st = 0; st < 4; st++) {
-            const step = rbox(2.2 - st * 0.2, 0.22, 0.8, getMat(0x94a3b8, { roughness: 0.85 }));
+            const step = rbox(2.2 - st * 0.2, 0.22, 0.8, getMat(palette.stoneColors[st % palette.stoneColors.length], { roughness: 0.85 }));
             const sx = -1.8;
             const sz = 1.8 - st * 0.65;
             const sy = getTerrainHeight(sx, sz) + 0.08;
@@ -6813,7 +6915,7 @@ puzzleSentences: [
             [-2.0, 3.8, -2.0]
           ];
           const pathPoints = rawPath.map(([px, py, pz]) => [px, getTerrainHeight(px, pz) + 0.02, pz]);
-          islandGroup.add(createSteppingPath(pathPoints));
+          islandGroup.add(createSteppingPath(pathPoints, palette.stoneColors));
 
           // ⑧ 邊緣鄉村手作木柵欄 (分佈於海岬與觀景台，寬敞自然)
           const fence = createWoodenFence(5, 1.1);
@@ -6841,36 +6943,36 @@ puzzleSentences: [
             islandGroup.add(rMesh);
           });
 
-          // ⑩ 自然灌木叢與繁花花圃 (大氣錯落分佈)
+          // ⑩ 自然灌木叢與繁花花圃 (動森繽紛花圃)
           const bushCoords = [
             [-6.5, 8.5], [8.0, -8.0], [-12.0, 2.5], [6.5, 12.0], [11.0, 3.5], [-9.5, -8.5]
           ];
           bushCoords.forEach(([bx, bz], bIdx) => {
-            const bush = createBushPatch(1.0 + (bIdx % 3) * 0.25, 0x2d6a4f);
+            const bush = createBushPatch(1.0 + (bIdx % 3) * 0.25, palette.bushColor);
             bush.position.set(bx, getTerrainHeight(bx, bz), bz);
             islandGroup.add(bush);
           });
 
-          const fl1 = createFlowerPatch([0xf43f5e, 0xfacc15, 0xffffff]);
+          const fl1 = createFlowerPatch(palette.flowerColors);
           fl1.position.set(-7.5, getTerrainHeight(-7.5, 4.5) + 0.05, 4.5);
           islandGroup.add(fl1);
 
-          const fl2 = createFlowerPatch([0x38bdf8, 0xf472b6, 0xfef08a]);
+          const fl2 = createFlowerPatch(palette.flowerColors);
           fl2.position.set(6.5, getTerrainHeight(6.5, -4.5) + 0.05, -4.5);
           islandGroup.add(fl2);
 
-          const fl3 = createFlowerPatch([0xa855f7, 0xfde047, 0x4ade80]);
+          const fl3 = createFlowerPatch(palette.flowerColors);
           fl3.position.set(2.5, getTerrainHeight(2.5, 8.5) + 0.05, 8.5);
           islandGroup.add(fl3);
 
-          // 微風草簇
+          // 微風草簇 (動森清爽草簇)
           const grassPositions = [
             [-5.5, 6.2], [5.2, 5.8], [-4.0, 8.2], [8.5, -3.8],
             [-8.8, -3.5], [3.8, -8.0], [-3.5, -8.5], [1.5, 6.8],
             [10.0, -6.5], [-11.0, 5.0]
           ];
           grassPositions.forEach(([gx, gz], gIdx) => {
-            const clump = createWindyGrassClump(1.0 + (gIdx % 3) * 0.25, 0x52b788);
+            const clump = createWindyGrassClump(1.0 + (gIdx % 3) * 0.25, palette.grassClumpColor);
             const gy = getTerrainHeight(gx, gz);
             clump.position.set(gx, gy, gz);
             islandGroup.add(clump);
@@ -7640,7 +7742,9 @@ puzzleSentences: [
             0.05 * Math.sin(theta * 5 + seed * 2.0);
         };
 
-        // ① 浮空倒錐岩底 (Floating Keel)
+        const palette = IslandScene.ISLAND_PALETTES[4];
+
+        // ① 浮空倒錐岩底 (Floating Keel - 碧玉琉璃海岩底座)
         const keelGeo = new THREE.CylinderGeometry(baseR * 1.06, baseR * 0.28, 4.5, 36, 4);
         {
           const pos = keelGeo.attributes.position;
@@ -7654,7 +7758,7 @@ puzzleSentences: [
           }
           keelGeo.computeVertexNormals();
         }
-        const keelMesh = new THREE.Mesh(keelGeo, getMat(0x1e293b, { roughness: 0.95, metalness: 0.05, flatShading: true }));
+        const keelMesh = new THREE.Mesh(keelGeo, getMat(palette.keel, { roughness: 0.88, metalness: 0.05, flatShading: true }));
         keelMesh.position.y = -1.6;
         keelMesh.receiveShadow = true;
         sanctuaryIsland.add(keelMesh);
@@ -7677,7 +7781,7 @@ puzzleSentences: [
         sanctuaryIsland.add(foamMesh);
         this.shorelineFoams.push({ mesh: foamMesh, seed: seed });
 
-        // ③ 金黃沙灘環 (Sandy Beach)
+        // ③ 珍珠奶油沙灘環 (Sandy Beach)
         const sandGeo = new THREE.CylinderGeometry(baseR * 1.12, baseR * 1.34, 1.4, 44, 3);
         {
           const pos = sandGeo.attributes.position;
@@ -7691,14 +7795,17 @@ puzzleSentences: [
           }
           sandGeo.computeVertexNormals();
         }
-        const sandMesh = new THREE.Mesh(sandGeo, getMat(0xf4d35e, { roughness: 0.85, metalness: 0.05 }));
+        const sandMesh = new THREE.Mesh(sandGeo, getMat(palette.sand, { roughness: 0.85, metalness: 0.04 }));
         sandMesh.position.y = 0.55;
         sanctuaryIsland.add(sandMesh);
 
-        // ④ 墨玉神殿岩石基座 (Black Jade Cliff Strata)
+        // ④ 暖象牙白砂岩神殿岩石基座 (ACNH Ivory Sandstone Cliff - 徹底取代暗灰黑板岩)
         const cliffGeo = new THREE.CylinderGeometry(baseR * 0.98, baseR * 1.15, 2.3, 48, 4);
         {
           const pos = cliffGeo.attributes.position;
+          const cliffColors = [];
+          const cCliff1 = new THREE.Color(palette.cliff);
+          const cCliff2 = cCliff1.clone().offsetHSL(0, 0.02, -0.04);
           for (let v = 0; v < pos.count; v++) {
             const x = pos.getX(v), y = pos.getY(v), z = pos.getZ(v);
             const theta = Math.atan2(z, x);
@@ -7706,14 +7813,20 @@ puzzleSentences: [
             const rockStrata = 1.0 + 0.06 * Math.sin(y * 4.0 + theta * 2.0);
             pos.setX(v, x * noise * rockStrata);
             pos.setZ(v, z * noise * rockStrata);
+
+            const strata = Math.sin(y * 6.0) * 0.5 + 0.5;
+            const c = cCliff1.clone().lerp(cCliff2, strata * 0.25);
+            cliffColors.push(c.r, c.g, c.b);
           }
+          cliffGeo.setAttribute('color', new THREE.Float32BufferAttribute(cliffColors, 3));
           cliffGeo.computeVertexNormals();
         }
-        const cliffMesh = new THREE.Mesh(cliffGeo, getMat(0x1e293b, { roughness: 0.75, metalness: 0.15, flatShading: true }));
+        const cliffMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.72, metalness: 0.06, flatShading: true });
+        const cliffMesh = new THREE.Mesh(cliffGeo, cliffMat);
         cliffMesh.position.y = 1.85;
         sanctuaryIsland.add(cliffMesh);
 
-        // ⑤ 深層肥沃聖島土壤層 (Sacred Loam & Soil Layer)
+        // ⑤ 暖杏仁黃神聖土壤層 (Sacred Honey Loam Layer - 徹底取代深咖啡色)
         const soilGeo = new THREE.CylinderGeometry(baseR * 0.95, baseR * 1.02, 1.45, 52, 4);
         {
           const pos = soilGeo.attributes.position;
@@ -7727,26 +7840,36 @@ puzzleSentences: [
           }
           soilGeo.computeVertexNormals();
         }
-        const soilMesh = new THREE.Mesh(soilGeo, getMat(0x451a03, { roughness: 0.95, metalness: 0.02, flatShading: true }));
+        const soilMesh = new THREE.Mesh(soilGeo, getMat(palette.soil, { roughness: 0.85, metalness: 0.03, flatShading: true }));
         soilMesh.position.y = 2.65;
         soilMesh.castShadow = true;
         soilMesh.receiveShadow = true;
         sanctuaryIsland.add(soilMesh);
 
-        // ⑥ 頂部白玉神聖廣場草坪 (Sacred Jade Grass Mantle)
+        // ⑥ 頂部動森碧玉仙境草坪 (Sacred Jade Grass Mantle)
         const grassGeo = new THREE.CylinderGeometry(baseR * 0.93, baseR * 0.97, 0.75, 56, 8);
         {
           const pos = grassGeo.attributes.position;
+          const grassColors = [];
+          const col1 = new THREE.Color(palette.grass);
+          const col2 = new THREE.Color(palette.grassAccent);
           for (let v = 0; v < pos.count; v++) {
             const x = pos.getX(v), y = pos.getY(v), z = pos.getZ(v);
             const theta = Math.atan2(z, x);
             const noise = getCoastFactor(theta);
             pos.setX(v, x * noise);
             pos.setZ(v, z * noise);
+
+            const pat = Math.sin(x * 1.6) * Math.cos(z * 1.6);
+            const f = pat > 0.0 ? 0.8 : 0.2;
+            const c = col1.clone().lerp(col2, f * 0.35);
+            grassColors.push(c.r, c.g, c.b);
           }
+          grassGeo.setAttribute('color', new THREE.Float32BufferAttribute(grassColors, 3));
           grassGeo.computeVertexNormals();
         }
-        const grassMesh = new THREE.Mesh(grassGeo, getMat(0xf8fafc, { roughness: 0.6, metalness: 0.08, flatShading: true }));
+        const grassMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.68, metalness: 0.06, flatShading: true });
+        const grassMesh = new THREE.Mesh(grassGeo, grassMat);
         grassMesh.position.y = 3.3;
         sanctuaryIsland.add(grassMesh);
 
@@ -7760,9 +7883,9 @@ puzzleSentences: [
           sanctuaryIsland.add(sTree);
         });
 
-        // 自然神聖露岩群
-        sanctuaryIsland.add(at(rock(1.5, 0x334155, true), -12.0, 3.4, -4.5));
-        sanctuaryIsland.add(at(rock(1.3, 0x475569, true), 12.0, 3.4, 4.5));
+        // 自然神聖露岩群 (動森溫和鵝卵石)
+        sanctuaryIsland.add(at(rock(1.5, 0xa0b2c6, true), -12.0, 3.4, -4.5));
+        sanctuaryIsland.add(at(rock(1.3, 0xb0c4de, true), 12.0, 3.4, 4.5));
 
         // 白玉八角神聖祭壇台階
         sanctuaryIsland.add(at(cyl(9.2, 10.5, 0.8, 8, getMat(0xffffff, { roughness: 0.4 })), 0, 4.0, 0));
