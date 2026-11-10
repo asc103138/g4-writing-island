@@ -9,7 +9,7 @@
   3. **實機雙向無損驗證**：
      - 模擬寫入「期末考的腳步悄悄近了，教室裡的氣氛也變得凝重起來。」➔ 成功送達試算表。
      - 清空本地 state 模擬換電腦 ➔ 成功從試算表 100% 抓回文字與進度！
-- **Commit 雜湊**：待提交
+- **Commit 雜湊**：`bfe542d` (feat: default teacher GAS API configured and verified)
 
 ## 2026-11-10 實裝學生 Google 帳號登入與 Google 試算表（GAS Web App）雙向自動同步系統
 - **執行人**：Antigravity Agent
