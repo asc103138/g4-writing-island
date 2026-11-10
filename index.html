@@ -5372,80 +5372,37 @@ puzzleSentences: [
           };
 
           if (i === 0) {
-            // 起之島：田園海灣平原與果園草丘 (真實蘋果樹、闊葉橡樹、白樺木)
-            addTreeAt(createAppleTree(1.2, 0x52b788, 0xef4444), -6.5, 6.5);
-            addTreeAt(createAppleTree(1.1, 0x52b788, 0xef4444), 8.5, 5.5);
-            addTreeAt(createAppleTree(1.05, 0x52b788, 0xfacc15), 10.5, 0.5);
-            addTreeAt(createAppleTree(1.15, 0x52b788, 0xef4444), -4.5, 9.5);
-            addTreeAt(createAppleTree(1.0, 0x52b788, 0xef4444), 5.5, 8.5);
-
-            addTreeAt(createCuteTree(1.35, 0x2d6a4f), -10.5, -6.5);
-            addTreeAt(createCuteTree(1.2, 0x40916c), -12.0, 3.5);
-            addTreeAt(createCuteTree(1.15, 0x52b788), 7.5, -7.5);
-            addTreeAt(createCuteTree(1.1, 0x74c69d), 11.5, -5.0);
-            addTreeAt(createCuteTree(1.25, 0x2d6a4f), -8.5, 2.0);
-
-            addTreeAt(createBirchTree(1.25, 0x95d5b2), -7.5, -2.5);
-            addTreeAt(createBirchTree(1.1, 0xb7e4c7), 4.5, -9.0);
-            addTreeAt(createBirchTree(1.05, 0x95d5b2), -1.5, 8.5);
-            addTreeAt(createBirchTree(1.15, 0x74c69d), 9.0, -1.5);
+            // 起之島：田園海灣平原與果園草丘 (精簡樹木，徹底避開跑道起降走廊)
+            addTreeAt(createAppleTree(1.15, 0x52b788, 0xef4444), -7.5, -4.5);
+            addTreeAt(createAppleTree(1.1, 0x52b788, 0xfacc15), 8.5, -4.5);
+            addTreeAt(createCuteTree(1.3, 0x2d6a4f), -11.0, -6.5);
+            addTreeAt(createCuteTree(1.2, 0x40916c), 11.5, -4.0);
+            addTreeAt(createBirchTree(1.2, 0x95d5b2), -8.5, 0.5);
+            addTreeAt(createBirchTree(1.1, 0xb7e4c7), 9.0, -1.0);
           } else if (i === 1) {
-            // 承之島：考場台地學院林蔭林道 (自然高山松樹、校園大橡樹、金果樹)
-            addTreeAt(createPineTree(1.35, 0x1b4332), -7.5, -8.5);
-            addTreeAt(createPineTree(1.25, 0x2d6a4f), 7.0, -8.5);
-            addTreeAt(createPineTree(1.2, 0x40916c), -9.5, -3.5);
-            addTreeAt(createPineTree(1.3, 0x1b4332), 9.5, 2.5);
-            addTreeAt(createPineTree(1.15, 0x2d6a4f), -5.5, 8.5);
-            addTreeAt(createPineTree(1.25, 0x1b4332), 6.5, 7.5);
-
-            addTreeAt(createCuteTree(1.3, 0x48cae4), -11.5, 7.0);
-            addTreeAt(createCuteTree(1.2, 0x0077b6), 8.0, 8.0);
-            addTreeAt(createCuteTree(1.1, 0x90e0ef), 11.0, -3.0);
-            addTreeAt(createCuteTree(1.15, 0x48cae4), -12.0, -6.0);
-            addTreeAt(createCuteTree(1.05, 0x0077b6), -9.0, 1.5);
-
-            addTreeAt(createAppleTree(1.15, 0x52b788, 0xfbbf24), 3.0, 6.5);
-            addTreeAt(createAppleTree(1.05, 0x40916c, 0xfbbf24), -6.5, 4.5);
-            addTreeAt(createAppleTree(1.0, 0x52b788, 0xfbbf24), 8.5, -1.0);
+            // 承之島：考場台地學院林蔭 (精簡樹木，全部配置於後方山陵與兩側台地，淨空跑道航道)
+            addTreeAt(createPineTree(1.35, 0x1b4332), -8.5, -8.0);
+            addTreeAt(createPineTree(1.3, 0x2d6a4f), 8.0, -8.0);
+            addTreeAt(createPineTree(1.2, 0x40916c), -10.5, -3.0);
+            addTreeAt(createCuteTree(1.25, 0x48cae4), -11.5, 0.5);
+            addTreeAt(createCuteTree(1.2, 0x0077b6), 10.5, -2.5);
+            addTreeAt(createAppleTree(1.1, 0x52b788, 0xfbbf24), 8.5, 0.5);
           } else if (i === 2) {
-            // 轉之島：險峰高山針葉林 ＋ 大湖盆地濕地 (自然高山松、風暴樹、水畔露岩)
-            addTreeAt(createPineTree(1.5, 0x081c15), -8.5, -9.5);
-            addTreeAt(createPineTree(1.4, 0x1b4332), -5.0, -10.5);
-            addTreeAt(createPineTree(1.45, 0x081c15), 8.5, -8.0);
-            addTreeAt(createPineTree(1.3, 0x2d6a4f), 10.5, -5.0);
-            addTreeAt(createPineTree(1.2, 0x1b4332), -11.0, -4.5);
-            addTreeAt(createPineTree(1.35, 0x081c15), 7.0, -10.0);
-            addTreeAt(createPineTree(1.25, 0x1b4332), -10.0, 4.5);
-
-            addTreeAt(createCuteTree(1.2, 0xf4a261), -11.5, 5.5);
-            addTreeAt(createCuteTree(1.1, 0xe76f51), -8.5, 9.0);
-            addTreeAt(createCuteTree(1.15, 0xd97706), 9.5, 6.5);
-            addTreeAt(createCuteTree(1.05, 0xf4a261), 11.0, 1.5);
-
-            addTreeAt(createBushPatch(1.3, 0x1b4332), -3.5, 7.0);
-            addTreeAt(createBushPatch(1.2, 0x2d6a4f), 6.5, 2.0);
-            addTreeAt(createBushPatch(1.1, 0x081c15), 5.0, 7.5);
-
+            // 轉之島：險峰高山針葉林 (跑道在北側 z=-12，樹木全數移至南側遠端高嶺，跑道零遮擋)
+            addTreeAt(createPineTree(1.45, 0x081c15), -8.5, 8.5);
+            addTreeAt(createPineTree(1.4, 0x1b4332), 8.5, 8.0);
+            addTreeAt(createPineTree(1.3, 0x2d6a4f), 0.0, 9.5);
+            addTreeAt(createCuteTree(1.15, 0xf4a261), -10.5, 4.0);
+            addTreeAt(createCuteTree(1.15, 0xd97706), 10.5, 3.5);
             addTreeAt(createRockCluster(1.4, 0x475569), -1.0, 5.5);
-            addTreeAt(createRockCluster(1.2, 0x334155), 4.5, 4.5);
           } else if (i === 3) {
-            // 合之島：彩虹天梯巔峰花林 (彩虹色調闊葉大樹、豐收金果樹、神殿高聳雪松)
-            addTreeAt(createAppleTree(1.3, 0x52b788, 0xf59e0b), -7.0, -8.0);
-            addTreeAt(createAppleTree(1.2, 0x40916c, 0xf59e0b), 7.5, -7.0);
-            addTreeAt(createAppleTree(1.15, 0x52b788, 0xef4444), -9.0, 4.5);
-            addTreeAt(createAppleTree(1.1, 0x74c69d, 0xf59e0b), 8.5, 5.5);
-            addTreeAt(createAppleTree(1.05, 0x52b788, 0xf59e0b), 5.5, 9.0);
-
-            addTreeAt(createCuteTree(1.35, 0xa78bfa), -12.0, -3.0);
-            addTreeAt(createCuteTree(1.25, 0xf472b6), 11.0, -2.5);
-            addTreeAt(createCuteTree(1.2, 0x38bdf8), -10.5, 8.5);
-            addTreeAt(createCuteTree(1.15, 0xfacc15), 7.0, 9.0);
-            addTreeAt(createCuteTree(1.1, 0x4ade80), -4.0, 11.0);
-            addTreeAt(createCuteTree(1.05, 0xa78bfa), 11.5, 3.0);
-
-            addTreeAt(createPineTree(1.45, 0x15803d), -3.0, -10.0);
-            addTreeAt(createPineTree(1.35, 0x166534), 4.5, -9.5);
-            addTreeAt(createPineTree(1.25, 0x15803d), 10.0, 1.5);
+            // 合之島：彩虹天梯巔峰花林 (精簡樹木，點綴於後方雲巔山丘，淨空起降視野)
+            addTreeAt(createAppleTree(1.25, 0x52b788, 0xf59e0b), -8.5, -7.5);
+            addTreeAt(createAppleTree(1.2, 0x40916c), 8.5, -7.0);
+            addTreeAt(createCuteTree(1.3, 0xa78bfa), -11.5, -2.5);
+            addTreeAt(createCuteTree(1.2, 0x38bdf8), 10.5, -2.0);
+            addTreeAt(createCuteTree(1.15, 0xfacc15), -7.5, 0.5);
+            addTreeAt(createPineTree(1.35, 0x15803d), 0.0, -9.5);
           }
 
           // ⑬ 專屬島嶼微縮建築群 (精緻立體繪本微縮模型，坐落於中央後方寬闊主台地)
@@ -6245,10 +6202,9 @@ puzzleSentences: [
         grassMesh.position.y = 3.3;
         sanctuaryIsland.add(grassMesh);
 
-        // 仙島神聖古樹與白玉松樹 (神話冒險繪本感，寬敞開闊分佈)
+        // 仙島神聖古樹與白玉松樹 (神話冒險繪本感，精簡配置於後方山巔，淨空降落航道)
         const sanctuaryTrees = [
-          [-10.5, -6.5], [10.5, -6.5], [-11.0, 5.5], [11.0, 5.5],
-          [-6.5, 9.5], [6.5, 9.5], [-12.5, -1.0], [12.5, -1.0]
+          [-10.5, -6.5], [10.5, -6.5], [-12.0, -1.0], [12.0, -1.0]
         ];
         sanctuaryTrees.forEach(([tx, tz], tIdx) => {
           const sTree = (tIdx % 2 === 0) ? createPineTree(1.35, 0x0284c7) : createCuteTree(1.25, 0x38bdf8);
@@ -7693,25 +7649,37 @@ puzzleSentences: [
             }
           }
 
-          // 5. 電影級長焦跟拍鏡頭平滑跟隨
-          let camDistance = 14.0;
-          let camHeight = 5.8;
-          if (t < 0.15) {
-            // 助跑時：鏡頭在起點跑道斜後側目送起飛
-            camDistance = 11.0;
-            camHeight = 4.2;
-          } else if (t > 0.86) {
-            // 著陸時：鏡頭拉至跑道側前方迎接小飛機平穩停妥
-            camDistance = 12.0;
-            camHeight = 4.5;
+          // 5. 電影級開闊長焦跟拍鏡頭（抬高俯角與側翼偏移，徹底避開島嶼任何植被遮蔽）
+          const lateralVec = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize();
+          let camDistance = 14.5;
+          let camHeight = 7.8;
+          let sideOffset = 3.6;
+
+          if (t < 0.18) {
+            // 跑道助跑起飛：拉高俯視高度至 7.5，側翼斜後方 3.8 單位，開闊清晰目送起飛升空
+            camDistance = 12.5;
+            camHeight = 7.4;
+            sideOffset = 3.8;
+          } else if (t > 0.82) {
+            // 跑道著陸進場：拉高俯視高度至 7.5，側翼斜後方 3.8 單位，清晰迎接跑道著陸與平穩減速
+            camDistance = 12.5;
+            camHeight = 7.4;
+            sideOffset = 3.8;
+          } else {
+            // 跨海巡航段：微距長焦伴飛
+            camDistance = 15.5;
+            camHeight = 8.5;
+            sideOffset = 2.8;
           }
+
           const camOffset = tangent.clone().multiplyScalar(-camDistance);
+          camOffset.addScaledVector(lateralVec, sideOffset);
           camOffset.y += camHeight;
           const targetCamPos = currentPos.clone().add(camOffset);
-          const targetLookAt = currentPos.clone().addScaledVector(tangent, 3.5);
+          const targetLookAt = currentPos.clone().addScaledVector(tangent, 2.5);
 
-          sd.camera.position.lerp(targetCamPos, 0.075);
-          sd.controls.target.lerp(targetLookAt, 0.075);
+          sd.camera.position.lerp(targetCamPos, 0.085);
+          sd.controls.target.lerp(targetLookAt, 0.085);
 
           if (u < 1.0) {
             requestAnimationFrame(animateFlight);
