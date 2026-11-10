@@ -7164,6 +7164,61 @@ puzzleSentences: [
         requestAnimationFrame(animateCamera);
       }
 
+      // 【全新震撼行前過場】：從天而降至第一個島嶼，從天旋轉視角緩緩而下
+      descendFromSkyToIsland(islandIdx = 0, onComplete) {
+        const targetData = CURRICULUM_DATA[islandIdx];
+        const [x0, y0, z0] = targetData.position;
+
+        const finalPos = new THREE.Vector3(x0 + 15, y0 + 15, z0 + 18);
+        const lookTarget = new THREE.Vector3(x0 - 1.0, y0 + 3.2, z0);
+
+        const finalDiffX = finalPos.x - lookTarget.x;
+        const finalDiffZ = finalPos.z - lookTarget.z;
+        const finalRadius = Math.hypot(finalDiffX, finalDiffZ);
+        const finalAngle = Math.atan2(finalDiffZ, finalDiffX);
+
+        // 高空起始參數：由高空雲霄 (海拔 115) 往外擴大 (半徑 78) 旋轉 300 度盤旋而下
+        const startY = y0 + 115;
+        const startRadius = 78.0;
+        const totalRotation = Math.PI * 1.68; // 約 302 度旋轉盤旋俯衝
+
+        const duration = 3800; // 3.8 秒優雅平緩旋轉降落
+        const startTime = performance.now();
+
+        if (this.controls) this.controls.enabled = false;
+
+        const animateDescend = (time) => {
+          const elapsed = time - startTime;
+          const u = Math.min(elapsed / duration, 1.0);
+
+          // 經典五次方平滑 EaseInOut (緩起步 ➔ 勻速盤旋 ➔ 溫和接地緩衝)
+          const ease = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+
+          const curAngle = finalAngle + totalRotation * (1.0 - ease);
+          const curRadius = startRadius + (finalRadius - startRadius) * ease;
+          const curY = startY + (finalPos.y - startY) * ease;
+
+          const curX = lookTarget.x + Math.cos(curAngle) * curRadius;
+          const curZ = lookTarget.z + Math.sin(curAngle) * curRadius;
+
+          this.camera.position.set(curX, curY, curZ);
+          this.controls.target.copy(lookTarget);
+          this.camera.lookAt(lookTarget);
+
+          if (u < 1.0) {
+            requestAnimationFrame(animateDescend);
+          } else {
+            this.camera.position.copy(finalPos);
+            this.controls.target.copy(lookTarget);
+            this.camera.lookAt(lookTarget);
+            if (this.controls) this.controls.enabled = true;
+            if (onComplete) onComplete();
+          }
+        };
+
+        requestAnimationFrame(animateDescend);
+      }
+
       onResize() {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
@@ -7366,10 +7421,12 @@ puzzleSentences: [
           const loader = document.getElementById("islandLoader");
           if (loader) loader.classList.add("is-done");
 
-          // 鏡頭先平滑推近起之島，作為大綱說帖背後的生動微縮景深
+          // 鏡頭維持在高空雲端俯瞰視角，等待老師講解完畢觸發「從天而降旋轉而下」震撼啟航動畫！
           if (this.sceneDirector) {
             const [x, y, z] = CURRICULUM_DATA[0].position;
-            this.sceneDirector.flyTo(new THREE.Vector3(x + 15, y + 15, z + 18), new THREE.Vector3(x - 1.0, y + 3.2, z));
+            this.sceneDirector.camera.position.set(x - 48, y + 115, z + 62);
+            this.sceneDirector.controls.target.set(x - 1.0, y + 3.2, z);
+            this.sceneDirector.camera.lookAt(this.sceneDirector.controls.target);
           }
 
           // 彈出大綱說帖讓老師先進行行前教學解說
@@ -7602,8 +7659,23 @@ puzzleSentences: [
 
       startAdventureAfterOutline() {
         this.closeOutlineModal();
-        this.flyToIsland(0);
-        this.showToast("🚀 大綱講解完成！展開第一篇章【起之島・月考倒數】寫作！", 3200);
+        this.currentIsland = 0;
+        this.updateNavStepDots();
+
+        if (this.sceneDirector) {
+          this.sceneDirector.setWeather('sunny');
+          this.sceneDirector.setKeeperExpression(1);
+
+          this.showToast("☁️ 穿越雲霄・旋轉盤旋降落起之島！展開寫作冒險旅程～", 3600);
+
+          // 執行：從天而降、從天旋轉視角緩緩落至第 1 島的震撼過場動畫！
+          this.sceneDirector.descendFromSkyToIsland(0, () => {
+            this.showToast("🏝️ 順利抵達【起之島・月考倒數】！請選擇五要素開啟第一段寫作！", 3200);
+            this.openDrawer(0);
+          });
+        } else {
+          this.flyToIsland(0);
+        }
       }
 
       showToast(message, duration = 3000) {
