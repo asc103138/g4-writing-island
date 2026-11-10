@@ -1662,161 +1662,350 @@
       return mesh;
     }
 
-    // 【風格生成規範 5】：低多邊形 Q 版卡通樹木 (像《動物森友會》般的可愛手作感)
-    function createCuteTree(scale = 1.0, leafColor = 0x52b788) {
+    // ====================================================
+    // 【全新自然景觀工廠】：符合現實物品的真實自然樹木與風化岩石
+    // 徹底告別生硬的圓柱、圓球、圓錐與正十二面體幾何拼湊！
+    // ====================================================
+
+    // ① 自然風化露岩與天然巨石群 (Natural Geological Rocks & Talus)
+    // 具有真實風化斷面、水平節理層理、頂部天然青苔蓋與腳下散落碎石
+    function rock(scale = 1.0, rockColor = 0x64748b, hasMoss = true) {
+      const rockGroup = new THREE.Group();
+
+      // 主岩體：以有機變形網格雕刻天然切面與鈍角 (非正多面體)
+      const geo = new THREE.IcosahedronGeometry(scale, 1);
+      const pos = geo.attributes.position;
+      for (let v = 0; v < pos.count; v++) {
+        let x = pos.getX(v);
+        let y = pos.getY(v);
+        let z = pos.getZ(v);
+        // 水平沉積風化節理與側向劈裂
+        const strata = 1.0 + 0.18 * Math.sin(y * 4.2 + x * 2.5) + 0.12 * Math.cos(z * 3.8);
+        x *= strata * 1.15;
+        z *= strata * 0.88;
+        // 頂部風化平緩，底部切平貼地
+        if (y < -0.2 * scale) {
+          y = -0.2 * scale + (y + 0.2 * scale) * 0.4;
+        } else if (y > 0.4 * scale) {
+          y *= 0.85; // 頂部受風化磨蝕較平潤
+        }
+        pos.setXYZ(v, x, y, z);
+      }
+      geo.computeVertexNormals();
+
+      const rockMat = getMat(rockColor, { roughness: 0.92, metalness: 0.04, flatShading: true });
+      const mainRock = new THREE.Mesh(geo, rockMat);
+      mainRock.castShadow = true;
+      mainRock.receiveShadow = true;
+      rockGroup.add(mainRock);
+
+      // 頂部覆蓋的天然青苔蓋 (Moss Cap)
+      if (hasMoss) {
+        const mossGeo = new THREE.IcosahedronGeometry(scale * 0.75, 1);
+        const mPos = mossGeo.attributes.position;
+        for (let v = 0; v < mPos.count; v++) {
+          let mx = mPos.getX(v), my = mPos.getY(v), mz = mPos.getZ(v);
+          if (my < 0) my = 0.02; // 只保留頂部受光面
+          else my *= 0.55;
+          mPos.setXYZ(v, mx * 1.05, my, mz * 0.95);
+        }
+        mossGeo.computeVertexNormals();
+        const mossMat = getMat(0x3a5a40, { roughness: 0.95, flatShading: true });
+        const mossMesh = new THREE.Mesh(mossGeo, mossMat);
+        mossMesh.position.y = scale * 0.42;
+        mossMesh.castShadow = true;
+        mossMesh.receiveShadow = true;
+        rockGroup.add(mossMesh);
+      }
+
+      // 腳下伴生自然風化碎石帶 (Talus / Scree)
+      const screeOffsets = [
+        [scale * 0.85, scale * 0.1, scale * 0.4, scale * 0.32],
+        [-scale * 0.75, scale * 0.08, -scale * 0.35, scale * 0.26],
+        [scale * 0.3, scale * 0.06, -scale * 0.8, scale * 0.22]
+      ];
+      screeOffsets.forEach(([sx, sy, sz, sScale]) => {
+        const sGeo = new THREE.DodecahedronGeometry(sScale, 0);
+        const sMesh = new THREE.Mesh(sGeo, rockMat);
+        sMesh.position.set(sx, sy, sz);
+        sMesh.rotation.set(sx * 2, sy * 3, sz * 4);
+        sMesh.castShadow = true;
+        sMesh.receiveShadow = true;
+        rockGroup.add(sMesh);
+      });
+
+      return rockGroup;
+    }
+
+    // ② 自然真實闊葉大樹 (Natural Broadleaf Tree / 橡樹與果樹)
+    // 包含抓地裸露板根、自然微彎漸細原木樹幹、分叉主枝幹與有機立體層疊葉冠
+    function createCuteTree(scale = 1.0, leafColor = 0x52b788, hasFruits = false, fruitColor = 0xef4444) {
       const tree = new THREE.Group();
-      // 樹幹 (溫潤木質)
-      const trunkMat = getMat(0x8d5b4c, { roughness: 0.85, metalness: 0.05 });
-      const trunk = cyl(0.28 * scale, 0.42 * scale, 1.8 * scale, 6, trunkMat);
-      trunk.position.y = 0.9 * scale;
-      tree.add(trunk);
+      const trunkMat = getMat(0x5c3a21, { roughness: 0.9, metalness: 0.04 });
 
-      // 樹冠 (由 3 顆不同大小與偏置的低多邊形球體堆疊出立體繪本蓬鬆感)
-      const foliageMat = getMat(leafColor, { roughness: 0.65, metalness: 0.05 });
-      const crown1 = ball(1.15 * scale, foliageMat, 7, 6);
-      crown1.position.y = 2.1 * scale;
-      tree.add(crown1);
+      // 1. 抓地裸露板根 (Buttress Roots - 扎根於土壤中)
+      for (let r = 0; r < 4; r++) {
+        const rootAng = (r * Math.PI) / 2 + 0.3;
+        const rootGeo = new THREE.ConeGeometry(0.18 * scale, 0.9 * scale, 4);
+        rootGeo.translate(0, 0.4 * scale, 0);
+        const root = new THREE.Mesh(rootGeo, trunkMat);
+        root.rotation.set(0.35 * Math.sin(rootAng), rootAng, 0.35 * Math.cos(rootAng));
+        root.position.set(Math.cos(rootAng) * 0.25 * scale, 0, Math.sin(rootAng) * 0.25 * scale);
+        root.castShadow = true;
+        root.receiveShadow = true;
+        tree.add(root);
+      }
 
-      const crown2 = ball(0.85 * scale, foliageMat, 6, 5);
-      crown2.position.set(0.32 * scale, 2.7 * scale, 0.18 * scale);
-      tree.add(crown2);
+      // 2. 天然微彎向頂漸細主幹
+      const mainTrunk = cyl(0.32 * scale, 0.48 * scale, 2.2 * scale, 7, trunkMat);
+      mainTrunk.position.set(0.05 * scale, 1.1 * scale, -0.04 * scale);
+      mainTrunk.rotation.z = -0.06;
+      tree.add(mainTrunk);
 
-      const crown3 = ball(0.78 * scale, foliageMat, 6, 5);
-      crown3.position.set(-0.35 * scale, 2.55 * scale, -0.22 * scale);
-      tree.add(crown3);
+      // 3. 分叉主枝幹 (Major Branches - 托起樹冠)
+      const b1 = cyl(0.18 * scale, 0.26 * scale, 1.2 * scale, 5, trunkMat);
+      b1.position.set(0.35 * scale, 2.1 * scale, 0.2 * scale);
+      b1.rotation.set(0.3, 0.2, -0.55);
+      tree.add(b1);
+
+      const b2 = cyl(0.16 * scale, 0.24 * scale, 1.1 * scale, 5, trunkMat);
+      b2.position.set(-0.32 * scale, 2.15 * scale, -0.18 * scale);
+      b2.rotation.set(-0.25, -0.3, 0.5);
+      tree.add(b2);
+
+      const b3 = cyl(0.15 * scale, 0.22 * scale, 0.9 * scale, 5, trunkMat);
+      b3.position.set(0.08 * scale, 2.3 * scale, -0.35 * scale);
+      b3.rotation.set(-0.45, 0.4, 0.1);
+      tree.add(b3);
+
+      // 4. 自然有機層疊葉冠簇 (Organic Foliage Pillows - 打破球體幾何感)
+      const leafMat = getMat(leafColor, { roughness: 0.78, metalness: 0.05, flatShading: true });
+      const makeFoliagePillow = (w, h, d, rx, ry, rz) => {
+        const geo = new THREE.IcosahedronGeometry(1.0, 1);
+        const p = geo.attributes.position;
+        for (let i = 0; i < p.count; i++) {
+          const vx = p.getX(i), vy = p.getY(i), vz = p.getZ(i);
+          // 葉片簇邊緣自然微噪聲
+          const jitter = 1.0 + 0.12 * Math.sin(vx * 5 + vy * 4) + 0.08 * Math.cos(vz * 6);
+          p.setXYZ(i, vx * w * jitter, vy * h * jitter, vz * d * jitter);
+        }
+        geo.computeVertexNormals();
+        const m = new THREE.Mesh(geo, leafMat);
+        m.position.set(rx, ry, rz);
+        m.castShadow = true;
+        m.receiveShadow = true;
+        return m;
+      };
+
+      // 主葉冠 (多層次交疊)
+      tree.add(makeFoliagePillow(1.3 * scale, 1.05 * scale, 1.25 * scale, 0, 2.85 * scale, 0));
+      tree.add(makeFoliagePillow(1.05 * scale, 0.85 * scale, 0.95 * scale, 0.65 * scale, 2.65 * scale, 0.45 * scale));
+      tree.add(makeFoliagePillow(0.95 * scale, 0.8 * scale, 0.9 * scale, -0.6 * scale, 2.7 * scale, -0.35 * scale));
+      tree.add(makeFoliagePillow(0.85 * scale, 0.75 * scale, 0.85 * scale, 0.15 * scale, 3.45 * scale, -0.2 * scale));
+      tree.add(makeFoliagePillow(0.8 * scale, 0.7 * scale, 0.8 * scale, -0.2 * scale, 3.3 * scale, 0.5 * scale));
+
+      // 若為果樹，果實自然垂掛於枝葉末梢下方
+      if (hasFruits) {
+        const fruitMat = getMat(fruitColor, { roughness: 0.35, metalness: 0.15 });
+        const stemMat = getMat(0x3e2723, { roughness: 0.9 });
+        const fruitSpots = [
+          [0.85 * scale, 2.3 * scale, 0.6 * scale],
+          [-0.75 * scale, 2.4 * scale, 0.45 * scale],
+          [0.4 * scale, 3.1 * scale, 0.8 * scale],
+          [-0.5 * scale, 2.9 * scale, -0.65 * scale],
+          [0.75 * scale, 2.7 * scale, -0.55 * scale],
+          [-0.2 * scale, 3.4 * scale, -0.6 * scale]
+        ];
+        fruitSpots.forEach(([fx, fy, fz]) => {
+          const fg = new THREE.Group();
+          // 果實
+          const apple = new THREE.Mesh(new THREE.DodecahedronGeometry(0.15 * scale, 1), fruitMat);
+          apple.castShadow = true;
+          fg.add(apple);
+          // 小果蒂
+          const stem = cyl(0.015 * scale, 0.02 * scale, 0.08 * scale, 4, stemMat);
+          stem.position.y = 0.14 * scale;
+          fg.add(stem);
+          fg.position.set(fx, fy, fz);
+          tree.add(fg);
+        });
+      }
 
       return tree;
     }
 
-    // 【新增植被工廠】：低多邊形童話多層松樹 (適用於山地、陡峭岩壁與高台)
-    function createPineTree(scale = 1.0, leafColor = 0x2d6a4f) {
+    // ③ 自然高山針葉松樹 (Natural Cascading Conifer / Pine Tree)
+    // 挺拔主幹、自然抓地根、4~5 層自然下垂向外伸展的傘狀松針枝層 (告別光滑圓錐)
+    function createPineTree(scale = 1.0, pineColor = 0x1b4332) {
       const pine = new THREE.Group();
-      const trunkMat = getMat(0x6b4226, { roughness: 0.9, metalness: 0.05 });
-      const trunk = cyl(0.22 * scale, 0.32 * scale, 1.4 * scale, 5, trunkMat);
-      trunk.position.y = 0.7 * scale;
+      const trunkMat = getMat(0x4a2e18, { roughness: 0.92, metalness: 0.04 });
+
+      // 板根
+      for (let r = 0; r < 3; r++) {
+        const rootAng = (r * Math.PI * 2) / 3;
+        const rootGeo = new THREE.ConeGeometry(0.16 * scale, 0.7 * scale, 4);
+        rootGeo.translate(0, 0.32 * scale, 0);
+        const root = new THREE.Mesh(rootGeo, trunkMat);
+        root.rotation.set(0.3 * Math.sin(rootAng), rootAng, 0.3 * Math.cos(rootAng));
+        root.position.set(Math.cos(rootAng) * 0.2 * scale, 0, Math.sin(rootAng) * 0.2 * scale);
+        pine.add(root);
+      }
+
+      // 挺拔漸細主幹
+      const trunk = cyl(0.18 * scale, 0.38 * scale, 4.2 * scale, 6, trunkMat);
+      trunk.position.y = 2.1 * scale;
       pine.add(trunk);
 
-      const leafMat = getMat(leafColor, { roughness: 0.7, metalness: 0.05, flatShading: true });
-      // 3 層逐漸收攏的童話松針圓錐傘蓋
-      const layer1 = cone(1.25 * scale, 1.4 * scale, 6, leafMat);
-      layer1.position.y = 1.6 * scale;
-      pine.add(layer1);
+      const needleMat = getMat(pineColor, { roughness: 0.82, metalness: 0.04, flatShading: true });
 
-      const layer2 = cone(0.95 * scale, 1.25 * scale, 6, leafMat);
-      layer2.position.y = 2.45 * scale;
-      pine.add(layer2);
+      // 4 層傘狀多邊形自然下垂松針層
+      const tiers = [
+        { y: 1.8 * scale, r: 1.45 * scale, h: 0.85 * scale, seg: 8 },
+        { y: 2.6 * scale, r: 1.2 * scale, h: 0.8 * scale, seg: 7 },
+        { y: 3.35 * scale, r: 0.95 * scale, h: 0.75 * scale, seg: 7 },
+        { y: 4.05 * scale, r: 0.65 * scale, h: 0.7 * scale, seg: 6 },
+        { y: 4.6 * scale, r: 0.35 * scale, h: 0.55 * scale, seg: 5 }
+      ];
 
-      const layer3 = cone(0.65 * scale, 1.05 * scale, 5, leafMat);
-      layer3.position.y = 3.25 * scale;
-      pine.add(layer3);
+      tiers.forEach((t) => {
+        // 下垂傘面幾何體 (頂點自然凹凸)
+        const boughGeo = new THREE.ConeGeometry(t.r, t.h, t.seg, 2, true);
+        const pos = boughGeo.attributes.position;
+        for (let i = 0; i < pos.count; i++) {
+          const vx = pos.getX(i), vy = pos.getY(i), vz = pos.getZ(i);
+          const dist = Math.sqrt(vx * vx + vz * vz);
+          if (dist > t.r * 0.4) {
+            // 末梢微向下垂與自然多邊形鋸齒
+            pos.setY(i, vy - 0.12 * scale);
+          }
+        }
+        boughGeo.computeVertexNormals();
+
+        const bough = new THREE.Mesh(boughGeo, needleMat);
+        bough.position.y = t.y;
+        bough.castShadow = true;
+        bough.receiveShadow = true;
+        pine.add(bough);
+
+        // 枝層底部稍深色的遮光微層
+        const underGeo = new THREE.ConeGeometry(t.r * 0.85, t.h * 0.3, t.seg);
+        const underMesh = new THREE.Mesh(underGeo, getMat(0x0f291e, { roughness: 0.9, flatShading: true }));
+        underMesh.position.y = t.y - 0.12 * scale;
+        pine.add(underMesh);
+      });
 
       return pine;
     }
 
-    // 【新增植被工廠】：低多邊形可愛果實蘋果樹 (田園平原與山丘風貌)
+    // ④ 自然果實蘋果樹 (田園平原與山丘風貌)
     function createAppleTree(scale = 1.0, leafColor = 0x52b788, fruitColor = 0xef4444) {
-      const tree = createCuteTree(scale, leafColor);
-      const fruitMat = getMat(fruitColor, { roughness: 0.45, metalness: 0.1 });
-      // 在樹冠表面自然點綴幾顆可愛的小果實
-      const fruitOffsets = [
-        [0.75 * scale, 2.1 * scale, 0.65 * scale],
-        [-0.7 * scale, 2.3 * scale, 0.5 * scale],
-        [0.2 * scale, 2.8 * scale, 0.8 * scale],
-        [-0.4 * scale, 2.6 * scale, -0.7 * scale],
-        [0.6 * scale, 2.4 * scale, -0.6 * scale],
-        [0.0 * scale, 3.2 * scale, 0.3 * scale]
-      ];
-      fruitOffsets.forEach(([fx, fy, fz]) => {
-        const apple = ball(0.14 * scale, fruitMat, 6, 5);
-        apple.position.set(fx, fy, fz);
-        tree.add(apple);
-      });
-      return tree;
+      return createCuteTree(scale, leafColor, true, fruitColor);
     }
 
-    // 【新增植被工廠】：白樺木 (優雅細長米白原木樹幹，點綴台地與林道)
+    // ⑤ 自然白樺木 (優雅微曲米白斑紋原木樹幹 ＋ 輕盈葉簇)
     function createBirchTree(scale = 1.0, leafColor = 0x80b918) {
       const birch = new THREE.Group();
-      // 米白斑駁樹幹
-      const barkMat = getMat(0xe2e8f0, { roughness: 0.85, metalness: 0.05 });
-      const trunk = cyl(0.16 * scale, 0.22 * scale, 2.8 * scale, 6, barkMat);
-      trunk.position.y = 1.4 * scale;
+      const barkMat = getMat(0xede8df, { roughness: 0.88, metalness: 0.04 });
+
+      // 天然微曲樹幹
+      const trunk = cyl(0.15 * scale, 0.25 * scale, 3.4 * scale, 7, barkMat);
+      trunk.position.set(0.04 * scale, 1.7 * scale, -0.03 * scale);
+      trunk.rotation.z = -0.05;
       birch.add(trunk);
 
-      // 樹幹上的黑色斑紋
-      const markMat = getMat(0x334155, { roughness: 0.9 });
-      for (let m = 0; m < 4; m++) {
-        const ring = cyl(0.17 * scale, 0.17 * scale, 0.08 * scale, 6, markMat);
-        ring.position.set(0, (0.5 + m * 0.55) * scale, 0);
+      // 樹幹深灰黑色天然斑紋
+      const markMat = getMat(0x27272a, { roughness: 0.95 });
+      for (let m = 0; m < 5; m++) {
+        const ring = cyl(0.16 * scale, 0.16 * scale, 0.07 * scale, 6, markMat);
+        ring.position.set(0.04 * scale, (0.6 + m * 0.6) * scale, -0.03 * scale);
+        ring.rotation.y = m * 1.2;
         birch.add(ring);
       }
 
-      // 樹冠 (2 團扁圓清新嫩綠葉冠)
-      const leafMat = getMat(leafColor, { roughness: 0.72, metalness: 0.05 });
-      const c1 = ball(0.95 * scale, leafMat, 7, 5);
-      c1.scale.set(1.1, 0.85, 1.1);
-      c1.position.y = 2.8 * scale;
-      birch.add(c1);
+      // 側枝
+      const b1 = cyl(0.08 * scale, 0.12 * scale, 1.1 * scale, 5, barkMat);
+      b1.position.set(0.28 * scale, 2.4 * scale, 0.15 * scale);
+      b1.rotation.set(0.3, 0.1, -0.6);
+      birch.add(b1);
 
-      const c2 = ball(0.72 * scale, leafMat, 6, 5);
-      c2.scale.set(1.0, 0.8, 1.0);
-      c2.position.set(0.2 * scale, 3.4 * scale, -0.1 * scale);
-      birch.add(c2);
+      const b2 = cyl(0.07 * scale, 0.11 * scale, 0.95 * scale, 5, barkMat);
+      b2.position.set(-0.25 * scale, 2.7 * scale, -0.15 * scale);
+      b2.rotation.set(-0.2, -0.2, 0.55);
+      birch.add(b2);
+
+      // 輕盈扁圓葉簇
+      const leafMat = getMat(leafColor, { roughness: 0.75, metalness: 0.05, flatShading: true });
+      const makeBirchClump = (r, sx, sy, sz) => {
+        const geo = new THREE.IcosahedronGeometry(r, 1);
+        const p = geo.attributes.position;
+        for (let i = 0; i < p.count; i++) {
+          p.setY(i, p.getY(i) * 0.7); // 扁圓葉簇
+        }
+        geo.computeVertexNormals();
+        const mesh = new THREE.Mesh(geo, leafMat);
+        mesh.position.set(sx, sy, sz);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        return mesh;
+      };
+
+      birch.add(makeBirchClump(0.95 * scale, 0.1 * scale, 3.5 * scale, 0));
+      birch.add(makeBirchClump(0.75 * scale, 0.55 * scale, 2.9 * scale, 0.25 * scale));
+      birch.add(makeBirchClump(0.7 * scale, -0.45 * scale, 3.1 * scale, -0.2 * scale));
 
       return birch;
     }
 
-    // 【新增植被工廠】：聚落自然小灌木叢 (低矮青苔圓灌木與碎石)
+    // ⑥ 自然小灌木叢 (風化岩石與立體葉團)
     function createBushPatch(scale = 1.0, bushColor = 0x386641) {
       const bushGroup = new THREE.Group();
-      const bMat = getMat(bushColor, { roughness: 0.85, metalness: 0.05 });
-      const b1 = ball(0.55 * scale, bMat, 6, 5);
-      b1.position.set(0, 0.35 * scale, 0);
-      bushGroup.add(b1);
+      const bMat = getMat(bushColor, { roughness: 0.85, metalness: 0.04, flatShading: true });
 
-      const b2 = ball(0.42 * scale, getMat(bushColor, { roughness: 0.82 }), 6, 5);
-      b2.position.set(0.38 * scale, 0.26 * scale, 0.18 * scale);
-      bushGroup.add(b2);
+      const makeBushPuff = (r, px, py, pz) => {
+        const geo = new THREE.IcosahedronGeometry(r, 1);
+        const p = geo.attributes.position;
+        for (let i = 0; i < p.count; i++) {
+          p.setY(i, p.getY(i) * 0.75);
+        }
+        geo.computeVertexNormals();
+        const m = new THREE.Mesh(geo, bMat);
+        m.position.set(px, py, pz);
+        m.castShadow = true;
+        m.receiveShadow = true;
+        return m;
+      };
 
-      const b3 = ball(0.36 * scale, bMat, 5, 4);
-      b3.position.set(-0.32 * scale, 0.22 * scale, -0.22 * scale);
-      bushGroup.add(b3);
+      bushGroup.add(makeBushPuff(0.6 * scale, 0, 0.35 * scale, 0));
+      bushGroup.add(makeBushPuff(0.48 * scale, 0.42 * scale, 0.28 * scale, 0.15 * scale));
+      bushGroup.add(makeBushPuff(0.42 * scale, -0.38 * scale, 0.24 * scale, -0.2 * scale));
 
-      // 小碎石
-      const rMat = getMat(0x64748b, { roughness: 0.9 });
-      const s1 = rbox(0.22 * scale, 0.14 * scale, 0.18 * scale, rMat, 0.04);
-      s1.position.set(0.35 * scale, 0.07 * scale, -0.32 * scale);
-      bushGroup.add(s1);
+      // 伴生微型風化碎石
+      const stoneGeo = new THREE.DodecahedronGeometry(0.18 * scale, 0);
+      const stone = new THREE.Mesh(stoneGeo, getMat(0x64748b, { roughness: 0.92, flatShading: true }));
+      stone.position.set(0.45 * scale, 0.1 * scale, -0.32 * scale);
+      stone.castShadow = true;
+      bushGroup.add(stone);
 
       return bushGroup;
     }
 
-    // 【新增地貌工廠】：自然露岩群 (青苔石堆)
+    // ⑦ 自然天然露岩群 (大巨石 ＋ 伴生風化石堆)
     function createRockCluster(scale = 1.0, rockColor = 0x64748b) {
       const g = new THREE.Group();
-      const rMat = getMat(rockColor, { roughness: 0.9, flatShading: true });
-      const r1 = rock(0.85 * scale, rockColor);
-      r1.position.set(0, 0.45 * scale, 0);
-      r1.rotation.set(0.3, 0.5, 0.2);
-      g.add(r1);
-
-      const r2 = rock(0.55 * scale, rockColor);
-      r2.position.set(0.65 * scale, 0.28 * scale, 0.3 * scale);
-      r2.rotation.set(-0.2, 0.8, 0.4);
+      g.add(rock(0.95 * scale, rockColor, true));
+      const r2 = rock(0.6 * scale, rockColor, true);
+      r2.position.set(0.85 * scale, 0, 0.4 * scale);
+      r2.rotation.y = 1.2;
       g.add(r2);
-
       return g;
     }
 
-    // 【新技能規範 Pass 4】：微風搖曳低多邊形植被 (Rooted Wind Clumped Grass)
-    // 根部牢牢錨定在地面 (y=0)，葉尖隨微風進行平滑三角幾何擺動
+    // 微風草簇
     function createWindyGrassClump(scale = 1.0, grassColor = 0x52b788) {
       const clump = new THREE.Group();
-      const bladeMat = getMat(grassColor, { roughness: 0.75, metalness: 0.05, side: THREE.DoubleSide });
-      // 3 組不同旋轉角度交叉的低多邊形草葉卡片
+      const bladeMat = getMat(grassColor, { roughness: 0.78, metalness: 0.05, side: THREE.DoubleSide });
       for (let i = 0; i < 3; i++) {
-        const bladeGeo = new THREE.ConeGeometry(0.26 * scale, 1.15 * scale, 3);
-        // 將幾何體向上平移，讓錐體底部位於 y=0 (根部牢固錨定)
+        const bladeGeo = new THREE.ConeGeometry(0.24 * scale, 1.15 * scale, 3);
         bladeGeo.translate(0, 0.575 * scale, 0);
         const blade = new THREE.Mesh(bladeGeo, bladeMat);
         blade.rotation.y = (i * Math.PI) / 3;
@@ -1824,10 +2013,6 @@
         blade.castShadow = true;
         clump.add(blade);
       }
-      // 草簇中心一顆極小綠色黏土小基座
-      const rootPuff = ball(0.24 * scale, bladeMat, 5, 4);
-      rootPuff.position.y = 0.1 * scale;
-      clump.add(rootPuff);
       return clump;
     }
 
@@ -1859,15 +2044,6 @@
     function ball(r, mat, ws = 12, hs = 8) {
       const geo = new THREE.SphereGeometry(r, ws, hs);
       const mesh = new THREE.Mesh(geo, mat);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      return mesh;
-    }
-
-    // 天然低多邊形礁石 (岩塊切面)
-    function rock(scale = 1.0, color = 0x64748b) {
-      const geo = new THREE.DodecahedronGeometry(scale, 0);
-      const mesh = new THREE.Mesh(geo, getMat(color, { roughness: 0.9, metalness: 0.05 }));
       mesh.castShadow = true;
       mesh.receiveShadow = true;
       return mesh;
@@ -2590,7 +2766,7 @@
         id: 0,
         name: "起之島・考前準備",
         shortName: "起・月考倒數",
-        position: [ -46, 0, 8 ],
+        position: [ -80, 0, 18 ],
         color: 0x5fa8d3,
         prompt: "月考即將來臨！你是認真苦讀還是貪玩抱佛腳？請運用誇飾法寫出考前堆積如山的作業與緊張氣氛。",
         spriteName: "書精靈・小墨",
@@ -2978,7 +3154,7 @@ puzzleSentences: [
         id: 1,
         name: "承之島・考場神態",
         shortName: "承・考場鐘聲",
-        position: [ -22, 0, -16 ],
+        position: [ -40, 0, -32 ],
         color: 0x70c1b3,
         prompt: "考卷發下那一刻！教室氣氛如何？看著密密麻麻的題目，你的心跳與腦海產生了什麼誇張的變化？",
         spriteName: "鐘聲精靈・噹噹",
@@ -3290,7 +3466,7 @@ puzzleSentences: [
         id: 2,
         name: "轉之島・驚天動地",
         shortName: "轉・驚天動地",
-        position: [ 6, 0, 12 ],
+        position: [ 8, 0, 24 ],
         color: 0xf39c12,
         prompt: "發考卷時是驚天動地還是心驚膽戰？看到刺眼的分數，你內心有何震撼？回家後遭遇了什麼樣的家庭風暴？",
         spriteName: "考卷精靈・白白",
@@ -3614,7 +3790,7 @@ puzzleSentences: [
         id: 3,
         name: "合之島・超越自我",
         shortName: "合・超越自我",
-        position: [ 34, 0, -14 ],
+        position: [ 58, 0, -30 ],
         color: 0x9b59b6,
         prompt: "經歷了這次月考的洗禮，你學到了什麼啟示？如何改掉平時不燒香的壞習慣，期許自己按部就班超越自我？",
         spriteName: "智慧石像・智者",
@@ -3918,7 +4094,7 @@ puzzleSentences: [
         id: 4,
         name: "守門神殿・四格審查",
         shortName: "🐲 守門試煉",
-        position: [ 62, 0, 10 ],
+        position: [ 108, 0, 18 ],
         color: 0xe74c3c,
         prompt: "四座島嶼段落齊備！守門神獸小小工匠機關龍將啟動四格漫畫印刷機，審查你的四段情節是否連貫、有無非書面口語，並生成四格漫畫與謄寫稿紙！",
         spriteName: "小小工匠機關龍",
@@ -3928,13 +4104,13 @@ puzzleSentences: [
       }
     ];
 
-    // 各島嶼童趣微縮機場座標與航向配置 (Airport Configurations)
+    // 各島嶼童趣微縮機場座標與航向配置 (Airport Configurations - 面積擴大後開闊海灣配置)
     const AIRPORT_CONFIGS = [
-      { code: "01", name: "起之島機場", localPos: [1.8, 3.2, 5.2], angle: -0.25 },
-      { code: "02", name: "承之島機場", localPos: [-0.5, 3.2, 6.0], angle: 0.28 },
-      { code: "03", name: "轉之島機場", localPos: [-1.8, 3.2, -5.2], angle: 0.15 },
-      { code: "04", name: "合之島機場", localPos: [-1.0, 3.2, 5.2], angle: 0.22 },
-      { code: "05", name: "守門神殿空港", localPos: [1.5, 3.4, 5.5], angle: -0.35 }
+      { code: "01", name: "起之島機場", localPos: [4.5, 3.2, 11.5], angle: -0.22 },
+      { code: "02", name: "承之島機場", localPos: [-2.5, 3.2, 12.2], angle: 0.25 },
+      { code: "03", name: "轉之島機場", localPos: [-3.8, 3.2, -12.0], angle: 0.15 },
+      { code: "04", name: "合之島機場", localPos: [-2.8, 3.2, 12.0], angle: 0.22 },
+      { code: "05", name: "守門神殿空港", localPos: [4.2, 3.4, 12.5], angle: -0.32 }
     ];
 
     const SLANG_FILTER = ["超廢", "完蛋了", "超狂", "GG", "芭比Q", "傻眼貓咪", "廢到笑", "很瞎", "很扯", "狂按猛按"];
@@ -4412,8 +4588,8 @@ puzzleSentences: [
         sun.shadow.mapSize.width = 1024;
         sun.shadow.mapSize.height = 1024;
         sun.shadow.camera.near = 1;
-        sun.shadow.camera.far = 200;
-        const d = 55;
+        sun.shadow.camera.far = 320;
+        const d = 110;
         sun.shadow.camera.left = -d;
         sun.shadow.camera.right = d;
         sun.shadow.camera.top = d;
@@ -4431,7 +4607,7 @@ puzzleSentences: [
 
       // 晴空萬里：大型天空漸層天穹 (Sky Dome)
       initSkyDome() {
-        const skyGeo = new THREE.SphereGeometry(420, 32, 16);
+        const skyGeo = new THREE.SphereGeometry(620, 32, 16);
         
         const canvas = document.createElement("canvas");
         canvas.width = 32;
@@ -4464,20 +4640,18 @@ puzzleSentences: [
         const cloudGroup = new THREE.Group();
 
         const cloudConfigs = [
-          { r: 105, theta: 0.3, y: 52, scale: 1.4, speed: 0.06 },
-          { r: 120, theta: 0.8, y: 58, scale: 1.7, speed: 0.05 },
-          { r: 135, theta: 1.4, y: 62, scale: 1.9, speed: 0.04 },
-          { r: 110, theta: 2.0, y: 54, scale: 1.3, speed: 0.06 },
-          { r: 125, theta: 2.6, y: 60, scale: 1.6, speed: 0.045 },
-          { r: 140, theta: 3.2, y: 65, scale: 1.8, speed: 0.035 },
-          { r: 115, theta: 3.8, y: 56, scale: 1.5, speed: 0.055 },
-          { r: 130, theta: 4.4, y: 60, scale: 1.7, speed: 0.04 },
-          { r: 145, theta: 4.9, y: 64, scale: 1.9, speed: 0.035 },
-          { r: 110, theta: 5.3, y: 50, scale: 1.2, speed: 0.065 },
-          { r: 125, theta: 5.7, y: 57, scale: 1.6, speed: 0.05 },
-          { r: 135, theta: 6.1, y: 61, scale: 1.5, speed: 0.045 },
-          { r: 150, theta: 1.9, y: 68, scale: 2.0, speed: 0.03 },
-          { r: 145, theta: 3.5, y: 66, scale: 1.8, speed: 0.035 }
+          { r: 160, theta: 0.3, y: 65, scale: 1.8, speed: 0.05 },
+          { r: 185, theta: 0.8, y: 72, scale: 2.2, speed: 0.04 },
+          { r: 210, theta: 1.4, y: 78, scale: 2.5, speed: 0.035 },
+          { r: 170, theta: 2.0, y: 68, scale: 1.7, speed: 0.05 },
+          { r: 195, theta: 2.6, y: 75, scale: 2.1, speed: 0.04 },
+          { r: 220, theta: 3.2, y: 80, scale: 2.4, speed: 0.03 },
+          { r: 180, theta: 3.8, y: 70, scale: 2.0, speed: 0.045 },
+          { r: 205, theta: 4.4, y: 74, scale: 2.3, speed: 0.035 },
+          { r: 230, theta: 4.9, y: 79, scale: 2.6, speed: 0.03 },
+          { r: 175, theta: 5.3, y: 64, scale: 1.6, speed: 0.055 },
+          { r: 190, theta: 5.7, y: 72, scale: 2.1, speed: 0.04 },
+          { r: 215, theta: 6.1, y: 76, scale: 2.0, speed: 0.038 }
         ];
 
         cloudConfigs.forEach(cfg => {
@@ -4502,7 +4676,7 @@ puzzleSentences: [
 
       // 【新技能規範 Pass 3】：透光黏土水體材質 (Water Optics)
       initSea() {
-        const seaGeo = new THREE.PlaneGeometry(350, 350, 48, 48);
+        const seaGeo = new THREE.PlaneGeometry(550, 550, 64, 64);
         const seaMat = new THREE.MeshStandardMaterial({
           color: 0x4fc3f7,
           roughness: 0.15,
@@ -4576,7 +4750,8 @@ puzzleSentences: [
       }
 
       // 建造四座豐富的微縮主題島嶼
-      // 【全新升級】：告別幾何直筒圓柱，落實真實有機地形 (土壤層、青草毯、露岩、沙灘) 與五大地形變化 (山地、平原、丘陵、盆地、台地)
+      // 【全新開闊升級】：島嶼面積大幅擴展 (baseR=18.5，面積3.1倍！)，徹底告別擁擠擠壓感！
+      // 樹木、岩石採用自然寫真繪本工廠，不再是生硬幾何圖形拼湊
       buildAllIslands() {
         for (let i = 0; i < 4; i++) {
           const data = CURRICULUM_DATA[i];
@@ -4584,94 +4759,95 @@ puzzleSentences: [
           islandGroup.position.set(...data.position);
 
           const seed = i * 2.3 + 1.1;
-          const baseR = 10.5;
+          const baseR = 18.5; // 大幅擴展島嶼半徑，提供寬闊的大自然地貌空間
 
-          // 海岸線有機侵蝕形狀函數
+          // 海岸線自然有機侵蝕形狀函數
           const getCoastFactor = (theta) => {
             return 1 + 
-              0.16 * Math.sin(theta * 2 + seed) + 
-              0.11 * Math.cos(theta * 3 - seed * 1.3) + 
-              0.06 * Math.sin(theta * 5 + seed * 2.2);
+              0.15 * Math.sin(theta * 2 + seed) + 
+              0.10 * Math.cos(theta * 3 - seed * 1.3) + 
+              0.05 * Math.sin(theta * 5 + seed * 2.2);
           };
 
-          // 【地形核心系統】：五大專屬地貌高度場 (山地、平原、丘陵、盆地、台地)
+          // 【地形核心系統】：五大專屬開闊地貌高度場 (山地、平原、丘陵、盆地、台地)
           const getTerrainHeight = (lx, lz) => {
             const r = Math.sqrt(lx * lx + lz * lz);
             const theta = Math.atan2(lz, lx);
             const coastR = baseR * getCoastFactor(theta);
 
-            // ① 建築物基底平整台地錨定 (確保建築平穩貼地)
-            const distToHouse = Math.hypot(lx - (-1.5), lz - (-1.2));
-            const houseWeight = Math.max(0, Math.min(1, 1 - distToHouse / 3.6));
+            // ① 建築物村落地基平整錨定 (中央後方寬闊主台地，半徑 5.2)
+            const distToHouse = Math.hypot(lx - (-2.0), lz - (-2.8));
+            const houseWeight = Math.max(0, Math.min(1, 1 - distToHouse / 5.2));
 
-            // ② 機場跑道平整錨定 (確保飛機與跑道平整)
+            // ② 機場跑道海灣平整錨定 (海濱開闊平原，半徑 5.0)
             const airportCfg = AIRPORT_CONFIGS[i];
             const distToAirport = Math.hypot(lx - airportCfg.localPos[0], lz - airportCfg.localPos[2]);
-            const airportWeight = Math.max(0, Math.min(1, 1 - distToAirport / 3.4));
+            const airportWeight = Math.max(0, Math.min(1, 1 - distToAirport / 5.0));
 
-            // 各島專屬地形要素
-            let terrainH = 3.15; // 基礎地表基準面
+            // 各島專屬地形要素 (在 18.5 廣闊空間中大氣舒展)
+            let terrainH = 3.15;
 
             if (i === 0) {
               // ----------------------------------------------------
-              // 01 起之島：【廣闊海灣平原 (Plains) ＋ 柔和連綿草丘 (Rolling Hills)】
+              // 01 起之島：【遼闊海灣平原 (Plains) ＋ 連綿圓潤草丘 (Rolling Hills)】
               // ----------------------------------------------------
-              // 東南平原開闊溫柔
-              const plainArea = Math.sin(lx * 0.25) * Math.cos(lz * 0.25) * 0.12;
-              // 西北草丘 (Rolling Hill 1)
-              const hill1Dist = Math.hypot(lx - (-4.5), lz - (-2.8));
-              const hill1 = Math.max(0, 1 - hill1Dist / 4.2) * 1.15;
-              // 東北草丘 (Rolling Hill 2)
-              const hill2Dist = Math.hypot(lx - 4.2, lz - 1.8);
-              const hill2 = Math.max(0, 1 - hill2Dist / 3.8) * 0.85;
+              // 東北側廣袤海灣大平原 (Plains)
+              const plainArea = Math.sin(lx * 0.16) * Math.cos(lz * 0.16) * 0.15;
+              // 西北後方連綿大草丘 (Hill 1)
+              const hill1Dist = Math.hypot(lx - (-8.5), lz - (-5.5));
+              const hill1 = Math.max(0, 1 - hill1Dist / 7.5) * 1.45;
+              // 東方海灣小草丘 (Hill 2)
+              const hill2Dist = Math.hypot(lx - 8.5, lz - 2.5);
+              const hill2 = Math.max(0, 1 - hill2Dist / 6.5) * 1.1;
               terrainH = 3.18 + plainArea + hill1 + hill2;
             } else if (i === 1) {
               // ----------------------------------------------------
-              // 02 承之島：【雙層階梯台地 (Tiered Plateaus) ＋ 環狀丘陵 (Hills)】
+              // 02 承之島：【宏偉雙層階梯台地 (Mesa) ＋ 環島丘陵 (Hills)】
               // ----------------------------------------------------
-              // 主台地 (Mesa)
-              const mesaDist = Math.hypot(lx - (-1.0), lz - (-2.5));
-              const mesa = Math.max(0, 1 - mesaDist / 4.2) * 0.85;
-              // 延伸次級台地階梯 (Lower Terrace)
-              const terraceDist = Math.hypot(lx - (-0.8), lz - 0.5);
-              const terrace = Math.max(0, 1 - terraceDist / 3.2) * 0.45;
+              // 考場主台地
+              const mesaDist = Math.hypot(lx - (-1.5), lz - (-4.0));
+              const mesa = Math.max(0, 1 - mesaDist / 6.8) * 1.1;
+              // 前方次級延伸台地
+              const terraceDist = Math.hypot(lx - (-1.2), lz - 1.5);
+              const terrace = Math.max(0, 1 - terraceDist / 5.5) * 0.55;
               // 兩側環狀丘陵
-              const hLeft = Math.max(0, 1 - Math.hypot(lx - (-4.8), lz - 1.5) / 3.6) * 1.05;
-              const hRight = Math.max(0, 1 - Math.hypot(lx - 4.5, lz - (-2.5)) / 3.8) * 1.25;
+              const hLeft = Math.max(0, 1 - Math.hypot(lx - (-9.5), lz - 3.5) / 6.5) * 1.35;
+              const hRight = Math.max(0, 1 - Math.hypot(lx - 9.0, lz - (-4.5)) / 7.0) * 1.5;
               terrainH = 3.15 + mesa + terrace + hLeft + hRight;
             } else if (i === 2) {
               // ----------------------------------------------------
-              // 03 轉之島：【險峻峭拔山地 (Craggy Mountains) ＋ 凹陷積水盆地 (Rain Basin)】
+              // 03 轉之島：【高聳入雲險峰 (Craggy Mountains) ＋ 巨大暴雨大湖盆地 (Sunken Basin)】
               // ----------------------------------------------------
-              // 後方西北高聳山峰 (Peak 1)
-              const peak1Dist = Math.hypot(lx - (-4.2), lz - (-4.0));
-              const peak1 = Math.max(0, 1 - peak1Dist / 4.5) * 2.2;
+              // 西北險峻主峰 (Peak 1 - 高聳達 3.2 米！)
+              const peak1Dist = Math.hypot(lx - (-8.5), lz - (-7.0));
+              const peak1 = Math.max(0, 1 - peak1Dist / 7.8) * 3.2;
               // 東北嶙峋尖峰 (Peak 2)
-              const peak2Dist = Math.hypot(lx - 4.5, lz - (-3.2));
-              const peak2 = Math.max(0, 1 - peak2Dist / 4.0) * 1.75;
-              // 中央偏南凹陷暴雨盆地 (Sunken Basin)
-              const basinDist = Math.hypot(lx - 0.8, lz - 1.8);
-              const basin = Math.max(0, 1 - basinDist / 3.5) * 0.85; // 凹陷近 0.9 米！
+              const peak2Dist = Math.hypot(lx - 8.5, lz - (-5.5));
+              const peak2 = Math.max(0, 1 - peak2Dist / 7.0) * 2.5;
+              // 中央偏南巨大陷落暴雨盆地 (Sunken Grand Basin - 直徑達 8 單位，下沉 1.1 米！)
+              const basinDist = Math.hypot(lx - 2.5, lz - 3.5);
+              const basin = Math.max(0, 1 - basinDist / 5.8) * 1.1;
               terrainH = 3.25 + peak1 + peak2 - basin;
             } else if (i === 3) {
               // ----------------------------------------------------
-              // 04 合之島：【步步高升天梯山地 (Mountain Ridge) ＋ 榮譽山巔台地 (Pinnacle Plateau)】
+              // 04 合之島：【天梯高聳山脈 (Mountain Ridge) ＋ 榮譽山巔台地 (Pinnacle Plateau)】
               // ----------------------------------------------------
-              // 榮譽高山台地 (Summit Plateau)
-              const summitDist = Math.hypot(lx - (-1.2), lz - (-1.2));
-              const summit = Math.max(0, 1 - summitDist / 4.0) * 1.15;
-              // 沿著對角線昂揚隆起的天梯山脊 (Ridge)
-              const ridgeDist = Math.abs(lx - lz * 0.8) / Math.sqrt(1 + 0.64);
-              const ridgeProg = Math.max(0, Math.min(1, (-lx - lz + 8) / 16));
-              const ridge = Math.max(0, 1 - ridgeDist / 2.8) * ridgeProg * 0.9;
+              // 最高點榮譽巔峰台地
+              const summitDist = Math.hypot(lx - (-2.0), lz - (-2.5));
+              const summit = Math.max(0, 1 - summitDist / 6.5) * 1.45;
+              // 昂揚隆起的天梯山脊
+              const ridgeDist = Math.abs(lx - lz * 0.75) / Math.sqrt(1 + 0.56);
+              const ridgeProg = Math.max(0, Math.min(1, (-lx - lz + 14) / 28));
+              const ridge = Math.max(0, 1 - ridgeDist / 4.5) * ridgeProg * 1.25;
               // 花海草丘
-              const flowerHill = Math.max(0, 1 - Math.hypot(lx - 4.5, lz - 2.8) / 3.8) * 0.75;
+              const flowerHill = Math.max(0, 1 - Math.hypot(lx - 9.0, lz - 4.5) / 6.8) * 1.1;
               terrainH = 3.2 + summit + ridge + flowerHill;
             }
 
-            // 建築平坦台地混合 (高度契約 3.85)
+            // 建築平坦台地混合 (高度契約 3.85，合之島為 4.2)
+            const targetHouseH = (i === 3) ? 4.2 : 3.85;
             if (houseWeight > 0) {
-              terrainH = terrainH * (1 - houseWeight) + 3.85 * houseWeight;
+              terrainH = terrainH * (1 - houseWeight) + targetHouseH * houseWeight;
             }
             // 機場跑道平坦混合 (高度契約 3.2)
             if (airportWeight > 0) {
@@ -4679,35 +4855,35 @@ puzzleSentences: [
             }
 
             // 邊緣沙灘斜坡自然緩降過渡
-            if (r > coastR * 0.82) {
-              const t = Math.min(1, (r - coastR * 0.82) / (coastR * 0.38));
-              const easeT = t * t * (3 - 2 * t); // smoothstep
+            if (r > coastR * 0.85) {
+              const t = Math.min(1, (r - coastR * 0.85) / (coastR * 0.32));
+              const easeT = t * t * (3 - 2 * t);
               return terrainH * (1 - easeT) + 0.65 * easeT;
             }
             return terrainH;
           };
 
           // ① 浮空島倒錐天然基底岩錐 (Floating Bedrock Keel)
-          const keelGeo = new THREE.CylinderGeometry(baseR * 1.08, baseR * 0.3, 3.2, 28, 4);
+          const keelGeo = new THREE.CylinderGeometry(baseR * 1.06, baseR * 0.28, 4.5, 36, 4);
           {
             const pos = keelGeo.attributes.position;
             for (let v = 0; v < pos.count; v++) {
               const x = pos.getX(v), y = pos.getY(v), z = pos.getZ(v);
               const theta = Math.atan2(z, x);
               const noise = getCoastFactor(theta);
-              const taper = Math.max(0.2, (y + 1.6) / 3.2);
-              pos.setX(v, x * noise * (0.85 + taper * 0.15));
-              pos.setZ(v, z * noise * (0.85 + taper * 0.15));
+              const taper = Math.max(0.18, (y + 2.25) / 4.5);
+              pos.setX(v, x * noise * (0.86 + taper * 0.14));
+              pos.setZ(v, z * noise * (0.86 + taper * 0.14));
             }
             keelGeo.computeVertexNormals();
           }
           const keelMesh = new THREE.Mesh(keelGeo, getMat(0x334155, { roughness: 0.95, metalness: 0.05, flatShading: true }));
-          keelMesh.position.y = -1.1;
+          keelMesh.position.y = -1.6;
           keelMesh.receiveShadow = true;
           islandGroup.add(keelMesh);
 
           // ② 岸邊動態呼吸接觸浪花帶 (Shoreline Contact Foam)
-          const foamGeo = new THREE.CylinderGeometry(baseR * 1.35, baseR * 1.5, 0.16, 32);
+          const foamGeo = new THREE.CylinderGeometry(baseR * 1.32, baseR * 1.48, 0.16, 44);
           {
             const pos = foamGeo.attributes.position;
             for (let v = 0; v < pos.count; v++) {
@@ -4726,7 +4902,7 @@ puzzleSentences: [
           this.shorelineFoams.push({ mesh: foamMesh, seed: seed });
 
           // ③ 有機金黃海岸沙灘緩坡 (Organic Sandy Beach)
-          const sandGeo = new THREE.CylinderGeometry(baseR * 1.15, baseR * 1.36, 1.4, 32, 3);
+          const sandGeo = new THREE.CylinderGeometry(baseR * 1.12, baseR * 1.34, 1.4, 44, 3);
           {
             const pos = sandGeo.attributes.position;
             for (let v = 0; v < pos.count; v++) {
@@ -4746,15 +4922,14 @@ puzzleSentences: [
           islandGroup.add(sandMesh);
 
           // ④ 粗獷層疊岩壁沈積層 (Rocky Cliff & Sedimentary Bedrock)
-          const cliffGeo = new THREE.CylinderGeometry(baseR * 0.98, baseR * 1.18, 2.2, 36, 4);
+          const cliffGeo = new THREE.CylinderGeometry(baseR * 0.98, baseR * 1.15, 2.3, 48, 4);
           {
             const pos = cliffGeo.attributes.position;
             for (let v = 0; v < pos.count; v++) {
               const x = pos.getX(v), y = pos.getY(v), z = pos.getZ(v);
               const theta = Math.atan2(z, x);
               const noise = getCoastFactor(theta);
-              // 加入岩石斷層的水平褶皺 (Horizontal Rock Strata)
-              const rockStrata = 1.0 + 0.08 * Math.sin(y * 4.0 + theta * 2.0);
+              const rockStrata = 1.0 + 0.07 * Math.sin(y * 4.0 + theta * 2.0);
               pos.setX(v, x * noise * rockStrata);
               pos.setZ(v, z * noise * rockStrata);
             }
@@ -4766,21 +4941,18 @@ puzzleSentences: [
           cliffMesh.receiveShadow = true;
           islandGroup.add(cliffMesh);
 
-          // ⑤ 【核心亮點】：深層肥沃土壤層 (Rich Soil & Loam Strata)
-          // 緊貼在草皮正下方，呈現出大自然經過侵蝕後露出的肥沃泥土切面，徹底告別幾何感！
-          const soilGeo = new THREE.CylinderGeometry(baseR * 0.94, baseR * 1.02, 1.35, 40, 4);
+          // ⑤ 深層肥沃土壤層 (Rich Soil & Loam Strata)
+          const soilGeo = new THREE.CylinderGeometry(baseR * 0.95, baseR * 1.02, 1.45, 52, 4);
           {
             const pos = soilGeo.attributes.position;
             for (let v = 0; v < pos.count; v++) {
               const x = pos.getX(v), y = pos.getY(v), z = pos.getZ(v);
               const theta = Math.atan2(z, x);
               const noise = getCoastFactor(theta);
-              // 泥土自然凹凸微顆粒起伏
-              const soilNoise = 1.0 + 0.05 * Math.sin(theta * 6 + y * 5);
+              const soilNoise = 1.0 + 0.04 * Math.sin(theta * 6 + y * 5);
               pos.setX(v, x * noise * soilNoise);
               pos.setZ(v, z * noise * soilNoise);
               if (y > 0.2) {
-                // 上緣緊密咬合頂部高度變化
                 const targetH = getTerrainHeight(x, z);
                 pos.setY(v, Math.min(y, targetH - 2.45));
               }
@@ -4793,14 +4965,12 @@ puzzleSentences: [
           soilMesh.receiveShadow = true;
           islandGroup.add(soilMesh);
 
-          // ⑥ 【核心亮點】：立體有機青草毯 (Lush Organic Grass Mantle)
-          // 採用高密度幾何體，頂面頂點完全依照高度場精雕，邊緣自然垂掛包裹土壤層！
-          const grassGeo = new THREE.CylinderGeometry(baseR * 0.92, baseR * 0.96, 0.75, 48, 8);
+          // ⑥ 立體有機青草毯 (Lush Organic Grass Mantle)
+          const grassGeo = new THREE.CylinderGeometry(baseR * 0.93, baseR * 0.97, 0.75, 56, 10);
           {
             const pos = grassGeo.attributes.position;
             for (let v = 0; v < pos.count; v++) {
               const x = pos.getX(v), y = pos.getY(v), z = pos.getZ(v);
-              const r = Math.sqrt(x * x + z * z);
               const theta = Math.atan2(z, x);
               const noise = getCoastFactor(theta);
               pos.setX(v, x * noise);
@@ -4808,10 +4978,8 @@ puzzleSentences: [
 
               const currentH = getTerrainHeight(pos.getX(v), pos.getZ(v));
               if (y > 0.1) {
-                // 頂面頂點精準定高至真實地形曲面
                 pos.setY(v, currentH - 3.1);
               } else {
-                // 側面與底面自然向下延展包裹土壤層
                 pos.setY(v, currentH - 3.1 - 0.45);
               }
             }
@@ -4824,131 +4992,135 @@ puzzleSentences: [
           grassMesh.receiveShadow = true;
           islandGroup.add(grassMesh);
 
-          // 若為第三島（轉之島），在凹陷暴雨盆地最低點安放專屬雨水積水池 (Rainwater Pond)
+          // 若為第三島（轉之島），在開闊凹陷暴雨盆地安放巨大積水大湖 (Grand Rainwater Lake)
           if (i === 2) {
             this.stormIslandMaterials.push(grassMat);
             this.createRainSystem(islandGroup);
 
-            // 轉之島暴雨積水池 (凹陷盆地積水倒影)
-            const pondGeo = new THREE.CylinderGeometry(2.2, 1.8, 0.15, 20);
-            const pondMat = getMat(0x38bdf8, { roughness: 0.1, metalness: 0.3, transparent: true, opacity: 0.85 });
-            const pond = new THREE.Mesh(pondGeo, pondMat);
-            pond.position.set(0.8, 2.45, 1.8);
-            islandGroup.add(pond);
+            // 轉之島大湖 (直徑達 5.5 單位！)
+            const lakeGeo = new THREE.CylinderGeometry(3.6, 2.8, 0.18, 24);
+            const lakeMat = getMat(0x38bdf8, { roughness: 0.1, metalness: 0.35, transparent: true, opacity: 0.88 });
+            const lake = new THREE.Mesh(lakeGeo, lakeMat);
+            lake.position.set(2.5, 2.35, 3.5);
+            islandGroup.add(lake);
 
-            // 水池周圍潮濕深色泥土環
-            const mudRingGeo = new THREE.RingGeometry(1.8, 2.6, 20);
-            const mudRing = new THREE.Mesh(mudRingGeo, getMat(0x422006, { roughness: 0.95 }));
+            // 湖畔潮濕深色泥土灘
+            const mudRingGeo = new THREE.RingGeometry(2.8, 4.4, 24);
+            const mudRing = new THREE.Mesh(mudRingGeo, getMat(0x3b1e08, { roughness: 0.95 }));
             mudRing.rotation.x = -Math.PI / 2;
-            mudRing.position.set(0.8, 2.46, 1.8);
+            mudRing.position.set(2.5, 2.36, 3.5);
             islandGroup.add(mudRing);
           }
 
           // 連接主草地與台地/建築的天然石階 (遵循高度契約)
-          for (let st = 0; st < 3; st++) {
-            const step = rbox(1.8 - st * 0.2, 0.22, 0.7, getMat(0x94a3b8, { roughness: 0.85 }));
-            const sx = -1.2;
-            const sz = 1.9 - st * 0.55;
+          for (let st = 0; st < 4; st++) {
+            const step = rbox(2.2 - st * 0.2, 0.22, 0.8, getMat(0x94a3b8, { roughness: 0.85 }));
+            const sx = -1.8;
+            const sz = 1.8 - st * 0.65;
             const sy = getTerrainHeight(sx, sz) + 0.08;
             step.position.set(sx, sy, sz);
             islandGroup.add(step);
           }
 
-          // ⑦ 蜿蜒鵝卵石探險步道 (Stepping Stone Path - 緊密貼合真實地形高度契約)
-          const bridgeAngle = (i * Math.PI) / 2 + Math.PI / 4;
-          const pStart = [Math.cos(bridgeAngle) * 8.5, 3.1, Math.sin(bridgeAngle) * 8.5];
+          // ⑦ 蜿蜒鵝卵石探險步道 (開闊大步道：連接機場與村落主建築)
+          const apPos = AIRPORT_CONFIGS[i].localPos;
           const rawPath = [
-            pStart,
-            [pStart[0] * 0.75, 3.1, pStart[1] * 0.75],
-            [pStart[0] * 0.5, 3.1, pStart[1] * 0.5],
-            [0.2, 3.1, 2.8],
-            [-0.5, 3.1, 2.2],
-            [-1.2, 3.3, 1.6]
+            [apPos[0], 3.2, apPos[2] - 1.5],
+            [apPos[0] * 0.7, 3.2, apPos[2] * 0.6],
+            [1.5, 3.2, 4.5],
+            [-0.5, 3.2, 2.8],
+            [-1.8, 3.3, 1.2],
+            [-2.0, 3.5, -0.5],
+            [-2.0, 3.8, -2.0]
           ];
           const pathPoints = rawPath.map(([px, py, pz]) => [px, getTerrainHeight(px, pz) + 0.02, pz]);
           islandGroup.add(createSteppingPath(pathPoints));
 
-          // ⑧ 邊緣鄉村手作木柵欄 (Wooden Picket Fences - 緊密貼合真實地形高度契約)
-          const fence = createWoodenFence(4, 0.95);
-          fence.position.set(4.2, getTerrainHeight(4.2, 3.5), 3.5);
-          fence.rotation.y = -0.55;
+          // ⑧ 邊緣鄉村手作木柵欄 (分佈於海岬與觀景台，寬敞自然)
+          const fence = createWoodenFence(5, 1.1);
+          fence.position.set(7.5, getTerrainHeight(7.5, 6.5), 6.5);
+          fence.rotation.y = -0.45;
           islandGroup.add(fence);
 
-          const fence2 = createWoodenFence(3, 0.9);
-          fence2.position.set(-5.5, getTerrainHeight(-5.5, -3.2), -3.2);
-          fence2.rotation.y = 0.85;
+          const fence2 = createWoodenFence(4, 1.0);
+          fence2.position.set(-10.5, getTerrainHeight(-10.5, -5.5), -5.5);
+          fence2.rotation.y = 0.75;
           islandGroup.add(fence2);
 
-          // ⑨ 天然低多邊形礁石與露岩堆 (Coastal Rocks & Bedrock Clusters)
-          const rockAngles = [0.6 + seed, 2.2 - seed, 4.0 + seed];
-          rockAngles.forEach((ang, rIdx) => {
-            const dist = baseR * 1.25 + (rIdx % 2) * 0.8;
-            const rx = Math.cos(ang) * dist;
-            const rz = Math.sin(ang) * dist;
-            const rMesh = rock(0.85 + (rIdx % 3) * 0.4, rIdx % 2 === 0 ? 0x64748b : 0x475569);
-            rMesh.position.set(rx, 0.4 + (rIdx % 2) * 0.25, rz);
-            rMesh.rotation.set(rIdx * 0.4, ang, rIdx * 0.3);
+          // ⑨ 天然自然風化露岩與巨石群 (Natural Realistic Rocks & Boulders)
+          const rockConfigs = [
+            { x: 12.0, z: -4.5, s: 1.4, c: 0x64748b },
+            { x: -11.5, z: 6.5, s: 1.2, c: 0x475569 },
+            { x: -8.0, z: -10.5, s: 1.5, c: 0x64748b },
+            { x: 10.5, z: 8.5, s: 1.1, c: 0x475569 },
+            { x: -13.0, z: -2.0, s: 1.3, c: 0x64748b }
+          ];
+          rockConfigs.forEach(rc => {
+            const rMesh = rock(rc.s, rc.c, true);
+            rMesh.position.set(rc.x, getTerrainHeight(rc.x, rc.z), rc.z);
+            rMesh.rotation.y = rc.x * 0.5;
             islandGroup.add(rMesh);
           });
 
-          // ⑩ 低多邊形灌木叢與自然花簇 (遵循高度契約)
-          for (let b = 0; b < 4; b++) {
-            const bushAng = seed + b * 1.6;
-            const bDist = baseR * (0.55 + (b % 3) * 0.15);
-            const bx = Math.cos(bushAng) * bDist;
-            const bz = Math.sin(bushAng) * bDist;
-            const bush = createBushPatch(0.85 + (b % 2) * 0.25, 0x2d6a4f);
+          // ⑩ 自然灌木叢與繁花花圃 (大氣錯落分佈)
+          const bushCoords = [
+            [-6.5, 8.5], [8.0, -8.0], [-12.0, 2.5], [6.5, 12.0], [11.0, 3.5], [-9.5, -8.5]
+          ];
+          bushCoords.forEach(([bx, bz], bIdx) => {
+            const bush = createBushPatch(1.0 + (bIdx % 3) * 0.25, 0x2d6a4f);
             bush.position.set(bx, getTerrainHeight(bx, bz), bz);
             islandGroup.add(bush);
-          }
+          });
+
           const fl1 = createFlowerPatch([0xf43f5e, 0xfacc15, 0xffffff]);
-          fl1.position.set(-4.2, getTerrainHeight(-4.2, 2.6) + 0.05, 2.6);
+          fl1.position.set(-7.5, getTerrainHeight(-7.5, 4.5) + 0.05, 4.5);
           islandGroup.add(fl1);
 
           const fl2 = createFlowerPatch([0x38bdf8, 0xf472b6, 0xfef08a]);
-          fl2.position.set(3.5, getTerrainHeight(3.5, -2.4) + 0.05, -2.4);
+          fl2.position.set(6.5, getTerrainHeight(6.5, -4.5) + 0.05, -4.5);
           islandGroup.add(fl2);
 
           const fl3 = createFlowerPatch([0xa855f7, 0xfde047, 0x4ade80]);
-          fl3.position.set(1.5, getTerrainHeight(1.5, 4.2) + 0.05, 4.2);
+          fl3.position.set(2.5, getTerrainHeight(2.5, 8.5) + 0.05, 8.5);
           islandGroup.add(fl3);
 
-          // 【新技能規範 Pass 4】：微風搖曳低多邊形植被 (Rooted Wind Clumped Grass)
+          // 微風草簇
           const grassPositions = [
-            [-3.5, 3.2], [3.2, 2.8], [-2.0, 4.2], [4.5, -1.8],
-            [-4.8, -1.5], [1.8, -4.0], [-1.5, -4.5], [0.5, 3.8]
+            [-5.5, 6.2], [5.2, 5.8], [-4.0, 8.2], [8.5, -3.8],
+            [-8.8, -3.5], [3.8, -8.0], [-3.5, -8.5], [1.5, 6.8],
+            [10.0, -6.5], [-11.0, 5.0]
           ];
           grassPositions.forEach(([gx, gz], gIdx) => {
-            const clump = createWindyGrassClump(0.85 + (gIdx % 3) * 0.2, 0x52b788);
+            const clump = createWindyGrassClump(1.0 + (gIdx % 3) * 0.25, 0x52b788);
             const gy = getTerrainHeight(gx, gz);
             clump.position.set(gx, gy, gz);
             islandGroup.add(clump);
             this.windyGrassList.push(clump);
           });
 
-          // ⑪ 指引海岬燈塔 (信標光球) - 坐落在延伸岬角端點 (遵循高度契約)
-          const tx = 6.2;
-          const tz = -4.2;
+          // ⑪ 指引海岬燈塔 (坐落在延伸海岬獨立峭壁端點，空間開闊舒暢)
+          const tx = 13.5;
+          const tz = -9.0;
           const ty = getTerrainHeight(tx, tz);
-          const towerBase = rbox(1.6, 0.6, 1.6, getMat(0x334155));
-          towerBase.position.set(tx, ty + 0.3, tz);
+          const towerBase = rbox(2.2, 0.7, 2.2, getMat(0x334155));
+          towerBase.position.set(tx, ty + 0.35, tz);
           islandGroup.add(towerBase);
 
-          const tower = cyl(0.55, 0.85, 4.8, 8, getMat(0xffffff));
-          tower.position.set(tx, ty + 3.0, tz);
+          const tower = cyl(0.65, 1.05, 5.8, 8, getMat(0xffffff));
+          tower.position.set(tx, ty + 3.6, tz);
           islandGroup.add(tower);
 
-          const towerRoof = cone(0.9, 0.8, 8, getMat(0xd97706));
-          towerRoof.position.set(tx, ty + 5.7, tz);
+          const towerRoof = cone(1.1, 1.0, 8, getMat(0xd97706));
+          towerRoof.position.set(tx, ty + 6.9, tz);
           islandGroup.add(towerRoof);
 
-          const beacon = ball(0.75, getMat(state.teacherApprovals[i] ? 0x2ec4b6 : 0xfbbf24, { emissive: state.teacherApprovals[i] ? 0x2ec4b6 : 0xfbbf24, emissiveIntensity: 0.6 }));
-          beacon.position.set(tx, ty + 5.4, tz);
+          const beacon = ball(0.9, getMat(state.teacherApprovals[i] ? 0x2ec4b6 : 0xfbbf24, { emissive: state.teacherApprovals[i] ? 0x2ec4b6 : 0xfbbf24, emissiveIntensity: 0.65 }));
+          beacon.position.set(tx, ty + 6.5, tz);
           beacon.name = `beacon_${i}`;
           islandGroup.add(beacon);
 
-          // ⑫ 【核心升級】：茂密自然多樣綠樹林群 (Lush Low-Poly Forestation)
-          // 徹底告別孤單的 2 棵樹！每座島依地形量身配置 10~12 棵多層松樹、可愛蘋果樹、白樺木與圓橡樹
+          // ⑫ 【全新自然綠樹森林群】：採用自然真實樹幹分叉、板根與立體葉冠
+          // 疏密有致分佈在廣袤島嶼各處 (平原、山腳、丘陵、林道、海灣)，絕不密集擠壓！
           const addTreeAt = (treeObj, px, pz) => {
             const py = getTerrainHeight(px, pz);
             treeObj.position.set(px, py, pz);
@@ -4956,62 +5128,83 @@ puzzleSentences: [
           };
 
           if (i === 0) {
-            // 起之島：平原草丘田園風光 (蘋果樹、大圓橡樹、白樺木)
-            addTreeAt(createAppleTree(1.05, 0x52b788, 0xef4444), -3.5, 4.0);
-            addTreeAt(createAppleTree(0.9, 0x52b788, 0xef4444), 4.5, 3.2);
-            addTreeAt(createAppleTree(0.85, 0x52b788, 0xfacc15), 5.2, 0.5);
-            addTreeAt(createAppleTree(0.95, 0x52b788, 0xef4444), -2.2, 5.5);
-            addTreeAt(createCuteTree(1.15, 0x2d6a4f), -5.5, -3.2);
-            addTreeAt(createCuteTree(1.0, 0x40916c), -6.2, 1.8);
-            addTreeAt(createCuteTree(0.95, 0x52b788), 3.8, -3.8);
-            addTreeAt(createCuteTree(0.85, 0x74c69d), 5.8, -2.5);
-            addTreeAt(createBirchTree(1.0, 0x95d5b2), -4.0, -1.0);
-            addTreeAt(createBirchTree(0.85, 0xb7e4c7), 2.5, -4.5);
+            // 起之島：田園海灣平原與果園草丘 (真實蘋果樹、闊葉橡樹、白樺木)
+            addTreeAt(createAppleTree(1.2, 0x52b788, 0xef4444), -6.5, 6.5);
+            addTreeAt(createAppleTree(1.1, 0x52b788, 0xef4444), 8.5, 5.5);
+            addTreeAt(createAppleTree(1.05, 0x52b788, 0xfacc15), 10.5, 0.5);
+            addTreeAt(createAppleTree(1.15, 0x52b788, 0xef4444), -4.5, 9.5);
+            addTreeAt(createAppleTree(1.0, 0x52b788, 0xef4444), 5.5, 8.5);
+
+            addTreeAt(createCuteTree(1.35, 0x2d6a4f), -10.5, -6.5);
+            addTreeAt(createCuteTree(1.2, 0x40916c), -12.0, 3.5);
+            addTreeAt(createCuteTree(1.15, 0x52b788), 7.5, -7.5);
+            addTreeAt(createCuteTree(1.1, 0x74c69d), 11.5, -5.0);
+            addTreeAt(createCuteTree(1.25, 0x2d6a4f), -8.5, 2.0);
+
+            addTreeAt(createBirchTree(1.25, 0x95d5b2), -7.5, -2.5);
+            addTreeAt(createBirchTree(1.1, 0xb7e4c7), 4.5, -9.0);
+            addTreeAt(createBirchTree(1.05, 0x95d5b2), -1.5, 8.5);
+            addTreeAt(createBirchTree(1.15, 0x74c69d), 9.0, -1.5);
           } else if (i === 1) {
-            // 承之島：考場台地林蔭步道 (挺拔多層松樹、校園大橡樹、金果樹)
-            addTreeAt(createPineTree(1.1, 0x1b4332), -3.8, -4.5);
-            addTreeAt(createPineTree(1.0, 0x2d6a4f), 3.5, -4.2);
-            addTreeAt(createPineTree(0.95, 0x40916c), -4.8, -1.8);
-            addTreeAt(createPineTree(1.05, 0x1b4332), 4.8, 1.2);
-            addTreeAt(createPineTree(0.9, 0x2d6a4f), -2.5, 4.5);
-            addTreeAt(createCuteTree(1.1, 0x48cae4), -5.8, 3.5);
-            addTreeAt(createCuteTree(1.0, 0x0077b6), 4.0, 4.0);
-            addTreeAt(createCuteTree(0.9, 0x90e0ef), 5.5, -1.5);
-            addTreeAt(createCuteTree(0.85, 0x48cae4), -6.0, -3.0);
-            addTreeAt(createAppleTree(0.95, 0x52b788, 0xfbbf24), 1.5, 3.5);
-            addTreeAt(createAppleTree(0.85, 0x40916c, 0xfbbf24), -3.2, 2.5);
+            // 承之島：考場台地學院林蔭林道 (自然高山松樹、校園大橡樹、金果樹)
+            addTreeAt(createPineTree(1.35, 0x1b4332), -7.5, -8.5);
+            addTreeAt(createPineTree(1.25, 0x2d6a4f), 7.0, -8.5);
+            addTreeAt(createPineTree(1.2, 0x40916c), -9.5, -3.5);
+            addTreeAt(createPineTree(1.3, 0x1b4332), 9.5, 2.5);
+            addTreeAt(createPineTree(1.15, 0x2d6a4f), -5.5, 8.5);
+            addTreeAt(createPineTree(1.25, 0x1b4332), 6.5, 7.5);
+
+            addTreeAt(createCuteTree(1.3, 0x48cae4), -11.5, 7.0);
+            addTreeAt(createCuteTree(1.2, 0x0077b6), 8.0, 8.0);
+            addTreeAt(createCuteTree(1.1, 0x90e0ef), 11.0, -3.0);
+            addTreeAt(createCuteTree(1.15, 0x48cae4), -12.0, -6.0);
+            addTreeAt(createCuteTree(1.05, 0x0077b6), -9.0, 1.5);
+
+            addTreeAt(createAppleTree(1.15, 0x52b788, 0xfbbf24), 3.0, 6.5);
+            addTreeAt(createAppleTree(1.05, 0x40916c, 0xfbbf24), -6.5, 4.5);
+            addTreeAt(createAppleTree(1.0, 0x52b788, 0xfbbf24), 8.5, -1.0);
           } else if (i === 2) {
-            // 轉之島：險峰陡坡高山松樹林 ＋ 暴雨水窪青苔岩石
-            addTreeAt(createPineTree(1.25, 0x081c15), -4.2, -4.8);
-            addTreeAt(createPineTree(1.15, 0x1b4332), -2.5, -5.2);
-            addTreeAt(createPineTree(1.2, 0x081c15), 4.2, -4.0);
-            addTreeAt(createPineTree(1.05, 0x2d6a4f), 5.2, -2.5);
-            addTreeAt(createPineTree(0.95, 0x1b4332), -5.5, -2.2);
-            addTreeAt(createPineTree(1.0, 0x081c15), 3.5, -5.0);
-            addTreeAt(createCuteTree(0.95, 0xf4a261), -5.8, 2.8);
-            addTreeAt(createCuteTree(0.85, 0xe76f51), -4.2, 4.5);
-            addTreeAt(createCuteTree(0.9, 0xd97706), 4.8, 3.2);
-            addTreeAt(createBushPatch(1.1, 0x1b4332), -1.8, 3.5);
-            addTreeAt(createBushPatch(0.95, 0x2d6a4f), 3.2, 1.0);
-            addTreeAt(createRockCluster(1.0, 0x475569), -0.5, 2.8);
-            addTreeAt(createRockCluster(0.8, 0x334155), 2.2, 2.2);
+            // 轉之島：險峰高山針葉林 ＋ 大湖盆地濕地 (自然高山松、風暴樹、水畔露岩)
+            addTreeAt(createPineTree(1.5, 0x081c15), -8.5, -9.5);
+            addTreeAt(createPineTree(1.4, 0x1b4332), -5.0, -10.5);
+            addTreeAt(createPineTree(1.45, 0x081c15), 8.5, -8.0);
+            addTreeAt(createPineTree(1.3, 0x2d6a4f), 10.5, -5.0);
+            addTreeAt(createPineTree(1.2, 0x1b4332), -11.0, -4.5);
+            addTreeAt(createPineTree(1.35, 0x081c15), 7.0, -10.0);
+            addTreeAt(createPineTree(1.25, 0x1b4332), -10.0, 4.5);
+
+            addTreeAt(createCuteTree(1.2, 0xf4a261), -11.5, 5.5);
+            addTreeAt(createCuteTree(1.1, 0xe76f51), -8.5, 9.0);
+            addTreeAt(createCuteTree(1.15, 0xd97706), 9.5, 6.5);
+            addTreeAt(createCuteTree(1.05, 0xf4a261), 11.0, 1.5);
+
+            addTreeAt(createBushPatch(1.3, 0x1b4332), -3.5, 7.0);
+            addTreeAt(createBushPatch(1.2, 0x2d6a4f), 6.5, 2.0);
+            addTreeAt(createBushPatch(1.1, 0x081c15), 5.0, 7.5);
+
+            addTreeAt(createRockCluster(1.4, 0x475569), -1.0, 5.5);
+            addTreeAt(createRockCluster(1.2, 0x334155), 4.5, 4.5);
           } else if (i === 3) {
-            // 合之島：彩虹天梯巔峰花林 (彩虹色調橡樹、金果蘋果樹、神殿高聳雪松)
-            addTreeAt(createAppleTree(1.1, 0x52b788, 0xf59e0b), -3.5, -4.0);
-            addTreeAt(createAppleTree(1.0, 0x40916c, 0xf59e0b), 3.8, -3.5);
-            addTreeAt(createAppleTree(0.95, 0x52b788, 0xef4444), -4.5, 2.2);
-            addTreeAt(createAppleTree(0.9, 0x74c69d, 0xf59e0b), 4.2, 2.8);
-            addTreeAt(createCuteTree(1.15, 0xa78bfa), -6.0, -1.5);
-            addTreeAt(createCuteTree(1.05, 0xf472b6), 5.5, -1.2);
-            addTreeAt(createCuteTree(0.95, 0x38bdf8), -5.2, 4.2);
-            addTreeAt(createCuteTree(0.9, 0xfacc15), 3.5, 4.5);
-            addTreeAt(createCuteTree(0.85, 0x4ade80), -2.0, 5.5);
-            addTreeAt(createPineTree(1.2, 0x15803d), -1.5, -5.0);
-            addTreeAt(createPineTree(1.1, 0x166534), 2.2, -4.8);
-            addTreeAt(createPineTree(1.0, 0x15803d), 5.0, 0.8);
+            // 合之島：彩虹天梯巔峰花林 (彩虹色調闊葉大樹、豐收金果樹、神殿高聳雪松)
+            addTreeAt(createAppleTree(1.3, 0x52b788, 0xf59e0b), -7.0, -8.0);
+            addTreeAt(createAppleTree(1.2, 0x40916c, 0xf59e0b), 7.5, -7.0);
+            addTreeAt(createAppleTree(1.15, 0x52b788, 0xef4444), -9.0, 4.5);
+            addTreeAt(createAppleTree(1.1, 0x74c69d, 0xf59e0b), 8.5, 5.5);
+            addTreeAt(createAppleTree(1.05, 0x52b788, 0xf59e0b), 5.5, 9.0);
+
+            addTreeAt(createCuteTree(1.35, 0xa78bfa), -12.0, -3.0);
+            addTreeAt(createCuteTree(1.25, 0xf472b6), 11.0, -2.5);
+            addTreeAt(createCuteTree(1.2, 0x38bdf8), -10.5, 8.5);
+            addTreeAt(createCuteTree(1.15, 0xfacc15), 7.0, 9.0);
+            addTreeAt(createCuteTree(1.1, 0x4ade80), -4.0, 11.0);
+            addTreeAt(createCuteTree(1.05, 0xa78bfa), 11.5, 3.0);
+
+            addTreeAt(createPineTree(1.45, 0x15803d), -3.0, -10.0);
+            addTreeAt(createPineTree(1.35, 0x166534), 4.5, -9.5);
+            addTreeAt(createPineTree(1.25, 0x15803d), 10.0, 1.5);
           }
 
-          // ⑬ 專屬島嶼微縮建築群 (精緻立體繪本微縮模型，拒絕死板生硬積木)
+          // ⑬ 專屬島嶼微縮建築群 (精緻立體繪本微縮模型，坐落於中央後方寬闊主台地)
           if (i === 0) this.buildStudyHouseDiorama(islandGroup);
           else if (i === 1) this.buildSchoolExamDiorama(islandGroup);
           else if (i === 2) this.buildStormHouseDiorama(islandGroup);
@@ -5687,7 +5880,7 @@ puzzleSentences: [
         const sanctuaryIsland = new THREE.Group();
         sanctuaryIsland.position.set(sx, sy, sz);
 
-        const baseR = 10.2;
+        const baseR = 18.0;
         const seed = 9.9;
 
         // 海岸線有機侵蝕形狀函數
@@ -5699,26 +5892,26 @@ puzzleSentences: [
         };
 
         // ① 浮空倒錐岩底 (Floating Keel)
-        const keelGeo = new THREE.CylinderGeometry(baseR * 1.08, baseR * 0.32, 3.2, 28, 4);
+        const keelGeo = new THREE.CylinderGeometry(baseR * 1.06, baseR * 0.28, 4.5, 36, 4);
         {
           const pos = keelGeo.attributes.position;
           for (let v = 0; v < pos.count; v++) {
             const x = pos.getX(v), y = pos.getY(v), z = pos.getZ(v);
             const theta = Math.atan2(z, x);
             const noise = getCoastFactor(theta);
-            const taper = Math.max(0.2, (y + 1.6) / 3.2);
-            pos.setX(v, x * noise * (0.85 + taper * 0.15));
-            pos.setZ(v, z * noise * (0.85 + taper * 0.15));
+            const taper = Math.max(0.18, (y + 2.25) / 4.5);
+            pos.setX(v, x * noise * (0.86 + taper * 0.14));
+            pos.setZ(v, z * noise * (0.86 + taper * 0.14));
           }
           keelGeo.computeVertexNormals();
         }
         const keelMesh = new THREE.Mesh(keelGeo, getMat(0x1e293b, { roughness: 0.95, metalness: 0.05, flatShading: true }));
-        keelMesh.position.y = -1.1;
+        keelMesh.position.y = -1.6;
         keelMesh.receiveShadow = true;
         sanctuaryIsland.add(keelMesh);
 
         // ② 動態岸邊浪花圈 (Shoreline Contact Foam)
-        const foamGeo = new THREE.CylinderGeometry(baseR * 1.35, baseR * 1.5, 0.16, 32);
+        const foamGeo = new THREE.CylinderGeometry(baseR * 1.32, baseR * 1.48, 0.16, 44);
         {
           const pos = foamGeo.attributes.position;
           for (let v = 0; v < pos.count; v++) {
@@ -5736,7 +5929,7 @@ puzzleSentences: [
         this.shorelineFoams.push({ mesh: foamMesh, seed: seed });
 
         // ③ 金黃沙灘環 (Sandy Beach)
-        const sandGeo = new THREE.CylinderGeometry(baseR * 1.15, baseR * 1.36, 1.4, 32, 3);
+        const sandGeo = new THREE.CylinderGeometry(baseR * 1.12, baseR * 1.34, 1.4, 44, 3);
         {
           const pos = sandGeo.attributes.position;
           for (let v = 0; v < pos.count; v++) {
@@ -5754,7 +5947,7 @@ puzzleSentences: [
         sanctuaryIsland.add(sandMesh);
 
         // ④ 墨玉神殿岩石基座 (Black Jade Cliff Strata)
-        const cliffGeo = new THREE.CylinderGeometry(baseR * 0.98, baseR * 1.16, 2.2, 36, 4);
+        const cliffGeo = new THREE.CylinderGeometry(baseR * 0.98, baseR * 1.15, 2.3, 48, 4);
         {
           const pos = cliffGeo.attributes.position;
           for (let v = 0; v < pos.count; v++) {
@@ -5772,7 +5965,7 @@ puzzleSentences: [
         sanctuaryIsland.add(cliffMesh);
 
         // ⑤ 深層肥沃聖島土壤層 (Sacred Loam & Soil Layer)
-        const soilGeo = new THREE.CylinderGeometry(baseR * 0.94, baseR * 1.02, 1.35, 36, 4);
+        const soilGeo = new THREE.CylinderGeometry(baseR * 0.95, baseR * 1.02, 1.45, 52, 4);
         {
           const pos = soilGeo.attributes.position;
           for (let v = 0; v < pos.count; v++) {
@@ -5792,7 +5985,7 @@ puzzleSentences: [
         sanctuaryIsland.add(soilMesh);
 
         // ⑥ 頂部白玉神聖廣場草坪 (Sacred Jade Grass Mantle)
-        const grassGeo = new THREE.CylinderGeometry(baseR * 0.92, baseR * 0.96, 0.75, 44, 6);
+        const grassGeo = new THREE.CylinderGeometry(baseR * 0.93, baseR * 0.97, 0.75, 56, 8);
         {
           const pos = grassGeo.attributes.position;
           for (let v = 0; v < pos.count; v++) {
@@ -5808,19 +6001,24 @@ puzzleSentences: [
         grassMesh.position.y = 3.3;
         sanctuaryIsland.add(grassMesh);
 
-        // 仙島神聖古樹與白玉松樹 (神話冒險繪本感)
+        // 仙島神聖古樹與白玉松樹 (神話冒險繪本感，寬敞開闊分佈)
         const sanctuaryTrees = [
-          [-6.5, -3.5], [6.5, -3.5], [-6.5, 3.5], [6.5, 3.5]
+          [-10.5, -6.5], [10.5, -6.5], [-11.0, 5.5], [11.0, 5.5],
+          [-6.5, 9.5], [6.5, 9.5], [-12.5, -1.0], [12.5, -1.0]
         ];
         sanctuaryTrees.forEach(([tx, tz], tIdx) => {
-          const sTree = createPineTree(1.15, 0x0284c7);
+          const sTree = (tIdx % 2 === 0) ? createPineTree(1.35, 0x0284c7) : createCuteTree(1.25, 0x38bdf8);
           sTree.position.set(tx, 3.4, tz);
           sanctuaryIsland.add(sTree);
         });
 
+        // 自然神聖露岩群
+        sanctuaryIsland.add(at(rock(1.5, 0x334155, true), -12.0, 3.4, -4.5));
+        sanctuaryIsland.add(at(rock(1.3, 0x475569, true), 12.0, 3.4, 4.5));
+
         // 白玉八角神聖祭壇台階
-        sanctuaryIsland.add(at(cyl(7.2, 8.2, 0.8, 8, getMat(0xffffff, { roughness: 0.4 })), 0, 4.0, 0));
-        sanctuaryIsland.add(at(cyl(5.8, 6.6, 0.8, 8, getMat(0x38bdf8, { metalness: 0.3, roughness: 0.4 })), 0, 4.6, 0));
+        sanctuaryIsland.add(at(cyl(9.2, 10.5, 0.8, 8, getMat(0xffffff, { roughness: 0.4 })), 0, 4.0, 0));
+        sanctuaryIsland.add(at(cyl(7.2, 8.4, 0.8, 8, getMat(0x38bdf8, { metalness: 0.3, roughness: 0.4 })), 0, 4.6, 0));
 
         // 【新技能規範 Pass 6】：成就印章插槽 (Achievement Badge Pillars)
         // 四方四根墨玉毛筆圖騰柱 (起承轉合四筆)，配備實體印章成就托盤與徽章
@@ -6872,8 +7070,8 @@ puzzleSentences: [
         if (this.sceneDirector) {
           this.sceneDirector.setWeather('sunny');
           this.sceneDirector.setKeeperExpression(1);
-          // 【全新微縮黃金視角】：拉近至微距等角透視，不再遙不可及
-          this.sceneDirector.flyTo(new THREE.Vector3(5, 36, 52), new THREE.Vector3(0, 2, 0));
+          // 【全新開闊全景視野】：廣角微縮黃金透視，俯瞰五座壯麗大島嶼
+          this.sceneDirector.flyTo(new THREE.Vector3(15, 68, 120), new THREE.Vector3(15, 0, 0));
         }
         this.closeDrawer();
       }
@@ -7083,13 +7281,13 @@ puzzleSentences: [
 
         if (index === 4) {
           // 神殿近景特寫鏡頭：聚焦於小小工匠機關龍與古董四格漫畫印刷機 (正面微距英雄特寫)
-          this.sceneDirector.flyTo(new THREE.Vector3(x + 0.8, y + 7.8, z + 7.8), new THREE.Vector3(x, y + 5.2, z + 1.2), () => {
+          this.sceneDirector.flyTo(new THREE.Vector3(x + 1.2, y + 9.5, z + 11.5), new THREE.Vector3(x, y + 5.0, z + 1.5), () => {
             this.openGuardianModal();
           });
         } else {
-          // 生動近景特寫角度：更貼近清晰呈現懷錶、彩虹、59石碑與大書桌！
-          const camTarget = new THREE.Vector3(x + 10, y + 11, z + 13);
-          const lookTarget = new THREE.Vector3(x - 0.5, y + 3.0, z);
+          // 生動近景特寫角度：完美容納擴大後的大自然地形與微縮建築
+          const camTarget = new THREE.Vector3(x + 15, y + 15, z + 18);
+          const lookTarget = new THREE.Vector3(x - 1.0, y + 3.2, z);
           this.sceneDirector.flyTo(camTarget, lookTarget, () => {
             this.openDrawer(index);
           });
