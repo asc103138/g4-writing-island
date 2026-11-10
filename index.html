@@ -1148,9 +1148,6 @@
       <button class="btn-top" onclick="window.islandApp.openTierSelect()">
         <span>🎯 切換難度</span>
       </button>
-      <button class="btn-top" style="background: var(--accent); color: white; border-color: var(--accent); font-weight: 900;" onclick="window.islandApp.startGuidedTour()" title="啟動相機自動巡航欣賞四座島嶼與守門獸特寫">
-        <span>🚁 導覽巡航</span>
-      </button>
       <button class="btn-top" onclick="window.islandApp.toggleTeacherMode()">
         <span id="teacherModeIcon">🔒</span>
         <span id="teacherModeText">教師模式 (密碼 888)</span>
@@ -8590,32 +8587,7 @@ puzzleSentences: [
         document.getElementById("conceptArtModalBackdrop")?.classList.remove("open");
       }
 
-      // 🚁 自動巡航導覽：平滑依序帶領教師與學童近距離欣賞所有島嶼
-      startGuidedTour() {
-        this.closeDrawer();
-        this.closeConceptArtModal();
-        this.showToast("🚁 啟動全島近景巡航導覽！正帶您近距離參觀四座島嶼與守門神殿特寫...", 3500);
-        let step = 0;
-        const tourSteps = [0, 1, 2, 3, 4];
-        const runTourStep = () => {
-          if (step >= tourSteps.length) {
-            this.showToast("🎉 全島巡航完畢！正在重新對焦回您當前進行的島嶼！", 3500);
-            this.focusCurrentIsland();
-            return;
-          }
-          const islandIdx = tourSteps[step];
-          step++;
-          this.flyToIsland(islandIdx);
-          // 在每座島嶼特寫停留 4 秒欣賞地標細節
-          this.tourTimer = setTimeout(runTourStep, 4200);
-        };
-        runTourStep();
-      }
-
       // ====================================================
-      // 階梯向導切換 (Step 1 ➔ Step 2 ➔ Step 3 ➔ Step 4)
-      // ====================================================
-            // ====================================================
       // 階梯向導切換 (依據 low / mid / high 成就全面分流)
       // ====================================================
       goToStep(step) {
