@@ -1,5 +1,31 @@
 # handoff.md - 多 Agent 交接紀錄
 
+## 2026-11-10 靈感提點全面轉為「僅供閱讀思考」：徹底拔除點擊自動帶入，全面封鎖剪貼簿複製
+- **執行人**：Antigravity Agent
+- **使用者核心要求**：「靈感提點僅供學生參考不可以點下去直接複製上去（嚴禁用複製功能複製）」
+- **診斷問題**：
+  1. 原先挑戰者模式的靈感錦囊內提供帶 `+` 號的 `cloze-chip-btn`，點擊會透過 `fillGuidedChip` 直接將詞語自動填入底線輸入框，導致學生缺乏大腦輸入的歷程。
+  2. 大師級的推薦成語區亦有「點擊直接填入」功能。
+  3. 學生可能透過選取文字與複製貼上（`Cmd+C` / `Ctrl+C`）繞過親自打字思考。
+- **重構落實事項**：
+  1. **拔除點擊自動帶入功能（100% 親自打字）**：
+     - 將所有好詞標籤全面改為非點擊按鈕的閱讀徽章（`.reference-word-badge`），樣式為 `📖 詞語`。
+     - 點擊標籤不會代入文字，而是彈出溫馨 Toast 提示：`💡【詞語】是供閱讀思考的靈感參考，不可點擊直接貼上，請親手在輸入框打字喔！`
+     - 停用 `fillGuidedChip` 與 `insertToActiveElement` 之自動填入邏輯。
+  2. **全面嚴格封鎖複製與剪貼簿功能（Anti-Copy Protection）**：
+     - **CSS 級別禁用文字選取**：
+       在 `.guided-hint-box`、`.master-challenge-card`、`.reference-word-badge` 全面配置 `user-select: none !important; -webkit-user-select: none !important; -webkit-touch-callout: none !important;`，學生完全無法拉藍反白選取文字。
+     - **HTML 事件阻擋**：
+       靈感錦囊容器配置 `oncopy="window.islandApp.blockCopy(event)" oncut="return false;" oncontextmenu="return false;" ondragstart="return false;"`，直接封鎖右鍵選單、拖曳與快捷鍵複製。
+     - **全域剪貼簿監聽防護**：
+       在 `document` 層級註冊 `copy` 事件監聽，若選取範圍涵蓋靈感錦囊或成語區，一律呼叫 `e.preventDefault()` 攔截，並跳出警告提示：`🔒 靈感提點僅供閱讀思考，已停用複製功能，請自己動腦親手打字喔！`
+  3. **介面提示語學生化**：
+     - 錦囊內部增設專屬鎖定提示條：`🔒 提示：好詞僅供閱讀思考，不可點擊貼上或複製，請親自動腦打字輸入！`
+  4. **Playwright 實機驗證**：
+     - 點選標籤驗證：輸入框維持空白（`inputRemainedEmpty: true`），Toast 正確觸發。
+     - 複製事件驗證：`userSelect: "none"`，複製攔截阻擋成功（Console 0 報錯）。
+- **Commit 雜湊**：待提交
+
 ## 2026-11-10 跨島航線全面升級：跑道起飛 ➔ 跨海巡航 ➔ 新島 360 度高空盤旋環視 ➔ 跑道平穩減速降落
 - **執行人**：Antigravity Agent
 - **使用者核心要求**：「完成島嶼起飛到下一個島的飛機動畫消失了。我要飛機飛到下一個島時的動畫加上盤旋觀察一下新的島，環視完後再緩緩在新機場的跑道上減速降落」

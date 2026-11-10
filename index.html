@@ -519,12 +519,39 @@
     }
     .guided-hint-toggle:hover { background: #fde68a; color: #78350f; }
     .guided-hint-box {
-      margin-top: 8px; padding: 10px 12px; background: #fffdf5; border: 1px solid #fef08a;
-      border-radius: 8px; display: none;
+      margin-top: 8px; padding: 12px 14px; background: #fffdf5; border: 1.5px solid #fef08a;
+      border-radius: 10px; display: none;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      -moz-user-select: none !important;
+      -ms-user-select: none !important;
+      -webkit-touch-callout: none !important;
+      cursor: default !important;
     }
     .guided-hint-box.is-open { display: block; animation: fadeIn .2s ease; }
     .guided-idea-text {
-      font-size: 13.5px; color: #92400e; line-height: 1.55; font-weight: 600; margin-bottom: 6px;
+      font-size: 14.5px; color: #92400e; line-height: 1.65; font-weight: 700; margin-bottom: 8px;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+    .reference-word-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 5px 12px; border-radius: 8px; font-size: 14px; font-weight: 800;
+      background: #fef3c7; color: #92400e; border: 1.5px solid #fde68a;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      cursor: default !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      transition: all 0.15s ease;
+    }
+    .reference-word-badge:hover {
+      background: #fef08a; border-color: #facc15; transform: translateY(-1px);
+    }
+    .no-copy-notice {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12.5px; font-weight: 800; color: #b45309; background: #fffbeb;
+      padding: 6px 12px; border-radius: 6px; border: 1px dashed #fcd34d; margin-top: 8px;
+      user-select: none !important; -webkit-user-select: none !important;
     }
 
     /* 導航切換按鈕組 */
@@ -7419,6 +7446,20 @@ puzzleSentences: [
         }
         this.loadIslandData(0);
 
+        // 嚴格停用靈感提點與成語區的剪貼簿複製功能
+        document.addEventListener("copy", (e) => {
+          const sel = window.getSelection();
+          if (sel && sel.toString()) {
+            const anchor = sel.anchorNode;
+            const el = anchor?.nodeType === Node.ELEMENT_NODE ? anchor : anchor?.parentElement;
+            if (el?.closest?.(".guided-hint-box") || el?.closest?.(".master-challenge-card") || el?.closest?.(".reference-word-badge")) {
+              e.preventDefault();
+              this.blockCopy(e);
+              return false;
+            }
+          }
+        });
+
         // 【核心設定】：一進入網頁 Loader 淡出後，先自動彈出學生作文大綱指南，引導學生理解篇章冒險架構，點擊出發後小飛機破浪降落起之島！
         setTimeout(() => {
           const loader = document.getElementById("islandLoader");
@@ -8612,9 +8653,12 @@ puzzleSentences: [
             <div style="font-size: 15px; font-weight: 700; color: #78350f; line-height: 1.7;">
               真正的寫作大師在動筆前必先「沉思審題」！請閉上雙眼回想當時的情境，依據每一欄的「審題啟發問題」填入鮮活生動的詞句，為後續段落注入文學張力：
             </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 10px;">
-              <span style="font-size: 13.5px; color: #b45309; font-weight: 900;">💎 推薦四上高級成語（點擊可直接填入）：</span>
-              ${data.words.map(w => `<span class="chip" style="font-size: 13.5px; padding: 5px 12px; font-weight: 700;" onclick="window.islandApp.insertToActiveElement('${w}')">${w}</span>`).join("")}
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 10px;" oncopy="window.islandApp.blockCopy(event)" oncut="window.islandApp.blockCopy(event)" oncontextmenu="window.islandApp.blockCopy(event)" ondragstart="window.islandApp.blockCopy(event)">
+              <span style="font-size: 13.5px; color: #b45309; font-weight: 900;">💎 推薦四上高級成語（僅供閱讀激發靈感，請自己動腦親手打字）：</span>
+              ${data.words.map(w => `<span class="reference-word-badge" style="font-size: 13.5px; padding: 5px 12px; font-weight: 700;" onclick="window.islandApp.onReferenceChipClick('${w}')">📖 ${w}</span>`).join("")}
+              <div class="no-copy-notice" style="width: 100%;">
+                <span>🔒 提示：高級成語僅供閱讀思考，不可點擊貼上或複製，請親自動腦輸入！</span>
+              </div>
             </div>
           `;
           list.appendChild(tipCard);
@@ -8722,7 +8766,7 @@ puzzleSentences: [
             const currentVal = (curKeyData.blanks && curKeyData.blanks[b.key]) || "";
             const chipsHtml = (b.chips || []).map(chip => {
               const safeChip = chip.replace(/'/g, "\\'");
-              return `<button type="button" class="cloze-chip-btn" onclick="window.islandApp.fillGuidedChip('${key}', '${b.key}', '${safeChip}')">+ ${chip}</button>`;
+              return `<span class="reference-word-badge" title="僅供閱讀思考，不可點擊貼上或複製" onclick="window.islandApp.onReferenceChipClick('${safeChip}')">📖 ${chip}</span>`;
             }).join("");
 
             const posBadge = b.pos ? `<span class="guided-pos-tag">🏷️ 詞性：${b.pos}</span>` : '';
@@ -8759,13 +8803,16 @@ puzzleSentences: [
                   <button type="button" class="guided-hint-toggle" id="guidedHintBtn_${key}_${b.key}" onclick="window.islandApp.toggleGuidedHint('${key}', '${b.key}')">
                     💡 思考不出來嗎？點我看靈感提點
                   </button>
-                  <div class="guided-hint-box" id="guidedHint_${key}_${b.key}">
+                  <div class="guided-hint-box" id="guidedHint_${key}_${b.key}" oncopy="window.islandApp.blockCopy(event)" oncut="window.islandApp.blockCopy(event)" oncontextmenu="window.islandApp.blockCopy(event)" ondragstart="window.islandApp.blockCopy(event)">
                     <div class="guided-idea-text">
                       ${ideaText}
                     </div>
                     <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px;">
-                      <span style="font-size: 13px; color: #92400e; font-weight: 800;">📚 四上教材參考好詞（可參考或點選）：</span>
+                      <span style="font-size: 13.5px; color: #92400e; font-weight: 900;">📚 四上教材參考好詞（僅供眼睛閱讀激發靈感）：</span>
                       ${chipsHtml}
+                    </div>
+                    <div class="no-copy-notice">
+                      <span>🔒 提示：好詞僅供閱讀思考，不可點擊貼上或複製，請親自動腦打字輸入！</span>
                     </div>
                   </div>
                 </div>
@@ -8854,17 +8901,21 @@ puzzleSentences: [
         }
       }
 
-      fillGuidedChip(key, blankKey, chipText) {
-        const input = document.getElementById(`guidedInput_${key}_${blankKey}`);
-        if (input) {
-          input.value = chipText;
-        }
-        this.setGuidedBlankText(key, blankKey, chipText);
-        this.showToast(`已填入【${chipText}】！`, 1200);
+      onReferenceChipClick(word) {
+        this.showToast(`💡【${word}】是供閱讀思考的靈感參考，不可點擊直接貼上，請親手在輸入框打字喔！`, 2800);
+      }
 
-        // 更新該項目卡片上的狀態
-        const data = CURRICULUM_DATA[this.currentIsland];
-        this.renderStep1Pickers(data);
+      blockCopy(e) {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        this.showToast("🔒 靈感提點僅供閱讀思考，已停用複製功能，請自己動腦親手打字喔！", 2800);
+        return false;
+      }
+
+      fillGuidedChip(key, blankKey, chipText) {
+        this.showToast("💡 靈感提點僅供閱讀思考，不可點擊直接貼上，請自己動腦打字喔！", 2800);
       }
 
       getAssembledGuidedText(pattern, blanks = {}) {
@@ -8892,15 +8943,7 @@ puzzleSentences: [
       }
 
       insertToActiveElement(txt) {
-        const key = this.lastFocusedElement || 'time';
-        const input = document.getElementById(`masterInput_${key}`);
-        if (input) {
-          input.value = (input.value ? input.value + '、' : '') + txt;
-          this.setElementCustomText(key, input.value);
-          this.showToast(`已將【${txt}】加入${key}欄位！`, 1500);
-        } else {
-          this.insertText(txt);
-        }
+        this.showToast(`💡 高級成語【${txt}】僅供閱讀思考，不可點擊貼上，請自己動腦親手打字喔！`, 2800);
       }
 
       setElementCustomText(key, text) {
