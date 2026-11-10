@@ -332,7 +332,7 @@
     }
     .toast-notification.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* 作文大綱行前說帖專屬樣式 (專為國小四年級與教室投影機大字體排版優化) */
+    /* 作文大綱行前指南專屬樣式 (專為國小四年級與教室投影機大字體排版優化) */
     .outline-card-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -1115,8 +1115,8 @@
       <div class="tier-badge" id="tierDisplay">
         <span>🌟 挑戰者模式</span>
       </div>
-      <button class="btn-top" style="background: #f59e0b; color: white; border-color: #d97706; font-weight: 900;" onclick="window.islandApp.openOutlineModal()" title="老師行前解說：查看《考試前後》作文大綱設計理念與起承轉合說明">
-        <span>📖 大綱說帖</span>
+      <button class="btn-top" style="background: #f59e0b; color: white; border-color: #d97706; font-weight: 900;" onclick="window.islandApp.openOutlineModal()" title="學生冒險指南：查看《考試前後》作文大綱設計秘密與起承轉合說明">
+        <span>📖 作文大綱</span>
       </button>
       <button class="btn-top" onclick="window.islandApp.openTierSelect()">
         <span>🎯 切換難度</span>
@@ -1169,9 +1169,9 @@
 
     <!-- 下層：常駐懸浮毛玻璃 HUD 工具列 -->
     <div class="hud-dock-bar">
-      <button class="hud-dock-btn" onclick="window.islandApp.openOutlineModal()" title="老師行前解說：查看《考試前後》作文大綱設計理念與起承轉合說明">
+      <button class="hud-dock-btn" onclick="window.islandApp.openOutlineModal()" title="學生冒險指南：查看《考試前後》作文大綱設計秘密與起承轉合說明">
         <span class="hud-dock-icon">📖</span>
-        <span>大綱說帖</span>
+        <span>作文大綱</span>
       </button>
       <button class="hud-dock-btn" onclick="window.islandApp.focusCurrentIsland()" title="鏡頭重新聚焦回目前正在進行的島嶼">
         <span class="hud-dock-icon">🎯</span>
@@ -1307,16 +1307,16 @@
     </div>
   </div>
 
-  <!-- 📖 作文大綱行前說帖彈窗 (Outline Briefing Modal for Teachers & Students - 大字體教室投影專用版) -->
+  <!-- 📖 作文大綱行前冒險指南 (Student Adventure Outline Guide - 專為國小四年級大字體設計) -->
   <div class="modal-backdrop" id="outlineModalBackdrop">
     <div class="modal-panel" style="width: 1260px; max-width: 96vw; max-height: 94vh;">
       <div class="modal-header" style="background: linear-gradient(135deg, #1d3557, #2a4d7a); color: white; padding: 24px 34px;">
         <div>
           <div style="font-size: 16.5px; font-weight: 800; color: #a8dadc; letter-spacing: 1px; text-transform: uppercase;">
-            臺中市梧棲區中正國小四年級・作文沉浸式教學系統・行前導讀專用
+            臺中市梧棲區中正國小四年級・寫作冒險任務行前指南
           </div>
           <h2 class="modal-title" style="color: white; font-size: 28px; font-weight: 900; margin-top: 5px;">
-            <span>📖 《考試前後》作文大綱設計理念與篇章架構說帖</span>
+            <span>📖 《考試前後》為什麼這樣寫？你的寫作升級航海圖</span>
           </h2>
         </div>
         <button class="drawer-close" style="color: white; background: rgba(255,255,255,0.18); font-size: 26px; padding: 8px 16px; border-radius: 12px;" onclick="window.islandApp.closeOutlineModal()">✕</button>
@@ -1324,14 +1324,15 @@
 
       <div class="modal-body" style="padding: 30px; gap: 28px;">
         
-        <!-- 💡 核心教學理念橫幅 -->
+        <!-- 💡 為什麼要這樣設計大綱？告別流水帳 -->
         <div style="background: #fff8e7; border-left: 6px solid #f59e0b; border-radius: 14px; padding: 20px 26px;">
           <h3 style="font-size: 22px; font-weight: 900; color: #92400e; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
             <span style="font-size: 26px;">💡</span>
-            <span>為什麼這樣設計這四座島嶼？（告別流水帳的寫作秘密）</span>
+            <span>各位同學，為什麼要這樣設計大綱？（告別流水帳的寫作超能力）</span>
           </h3>
           <p style="font-size: 18.5px; color: #334155; line-height: 1.85; margin: 0; font-weight: 500;">
-            國小四年級學童寫《考試前後》，最普遍的瓶頸是<strong>「記帳式流水帳」</strong>（例：<em>「今天早上我去考試，考完發考卷我考八十分，回家媽媽請我吃麥當勞」</em>）。這樣的文章缺乏心態轉變與感官細節。本系統將記敘文<strong>「起、承、轉、合」拆解為四座各具特色的小島</strong>，引導學童經歷一場<strong>「情緒鋪陳 ➔ 細部特寫 ➔ 衝突波瀾 ➔ 心靈昇華」</strong>的情感過山車，讓寫作變成引人入勝的冒險故事！
+            大家寫作文時，是不是常常像在「記流水帳」？例如：<em>「今天早上我去考試，考完發考卷我考八十分，回家媽媽請我吃麥當勞」</em>——讀起來平淡無奇，就像把一天的行程照抄一遍，讀者看了很想打哈欠。<br>
+            真正厲害的作家，懂得抓住讀者的心跳！這四座島嶼把記敘文的<strong>「起、承、轉、合」變成一趟像雲霄飛車般的冒險</strong>：從<strong>「考前氣氛的醞釀」➔「考場神態的特寫」➔「驚天動地的危機轉折」➔「超越自我的真誠成長」</strong>。只要跟著這張航海圖一步步探索，你也能寫出讓人忍不住一直看下去的精彩故事！
           </p>
         </div>
 
@@ -1348,19 +1349,19 @@
             <div style="font-size: 17.5px; font-weight: 800; color: #475569;">【醞釀氣氛・時間鋪陳】</div>
             
             <div style="background: #f8fafc; border-radius: 12px; padding: 16px 20px; font-size: 17.5px; color: #1e293b; line-height: 1.8; border: 1.5px solid #e2e8f0;">
-              <strong style="color: #1d4ed8; font-size: 18px;">🎯 為何這樣設計？</strong><br>
-              不要開門見山直接寫發考卷！引導學童回到「考前幾天」的壓迫感，以書桌上的參考書堆、時鐘滴答聲與忐忑不安的心情為故事拉開序幕。
+              <strong style="color: #1d4ed8; font-size: 18px;">🎯 為什麼要這樣開頭？</strong><br>
+              別一開頭就急著寫發考卷！好故事需要鋪陳。回到考試前幾天那種桌上堆滿課本、時鐘滴答作響、手心捏著冷汗的壓迫感，把讀者一秒拉進你的緊張世界裡！
             </div>
 
             <div style="font-size: 17px; color: #334155; line-height: 1.8;">
-              <div style="font-weight: 900; color: #0f172a; font-size: 17.5px; margin-bottom: 6px;">📝 教學重點鷹架：</div>
-              • 時間背景交代（考前倒數日曆、日夜更迭）<br>
-              • 環境氛圍渲染（夜讀挑燈、書包沉甸甸）<br>
-              • 心理活動描寫（忐忑不安的緊張心跳）
+              <div style="font-weight: 900; color: #0f172a; font-size: 17.5px; margin-bottom: 6px;">🎒 你的寫作法寶：</div>
+              • 時間背景交代（考前倒數日曆、白天黑夜的苦讀）<br>
+              • 環境氛圍渲染（夜讀挑燈、書包像石頭一樣重）<br>
+              • 心理活動描寫（忐忑不安的心跳聲、心裡的小劇場）
             </div>
 
             <div style="margin-top: auto; padding: 12px 16px; background: #f0f9ff; border-radius: 10px; font-size: 16.5px; color: #0369a1; font-weight: 800; border: 1px solid #bae6fd;">
-              💥 破解盲點：不再只寫「明天要考試，我很緊張」
+              💥 告別平淡：不再只寫「明天要考試，我很緊張」！
             </div>
           </div>
 
@@ -1374,19 +1375,19 @@
             <div style="font-size: 17.5px; font-weight: 800; color: #475569;">【感官摹寫・微表情特寫】</div>
             
             <div style="background: #f8fafc; border-radius: 12px; padding: 16px 20px; font-size: 17.5px; color: #1e293b; line-height: 1.8; border: 1.5px solid #e2e8f0;">
-              <strong style="color: #0f766e; font-size: 18px;">🎯 為何這樣設計？</strong><br>
-              考場是動靜對比的寶庫！放慢鏡頭速度，引導學童調動視覺、聽覺與觸覺，細膩捕捉手指冒汗、沙沙翻卷聲與同學的微表情。
+              <strong style="color: #0f766e; font-size: 18px;">🎯 為什麼要這樣發展？</strong><br>
+              考場是「安靜卻超激烈」的戰場！放慢你的鏡頭，調動你的眼睛、耳朵和皮膚：聽一聽沙沙的翻卷聲、摸一摸手心冒出的汗水，觀察同學咬筆桿、皺眉頭的神情，文章立刻生動起來！
             </div>
 
             <div style="font-size: 17px; color: #334155; line-height: 1.8;">
-              <div style="font-weight: 900; color: #0f172a; font-size: 17.5px; margin-bottom: 6px;">📝 教學重點鷹架：</div>
-              • 聽覺摹寫（教室只有沙沙翻卷聲與時鐘秒針）<br>
-              • 觸覺摹寫（手心冒冷汗、握筆指節泛白）<br>
-              • 人物微表情（皺眉思索、托腮凝視、咬筆桿）
+              <div style="font-weight: 900; color: #0f172a; font-size: 17.5px; margin-bottom: 6px;">🎒 你的寫作法寶：</div>
+              • 聽覺摹寫（安靜到只剩沙沙翻卷聲與秒針滴答聲）<br>
+              • 觸覺摹寫（手心冒冷汗、握筆握到指節泛白）<br>
+              • 同學與自己的微表情（抓頭苦思、托腮凝視、咬著筆桿）
             </div>
 
             <div style="margin-top: auto; padding: 12px 16px; background: #f0fdf4; border-radius: 10px; font-size: 16.5px; color: #15803d; font-weight: 800; border: 1px solid #bbf7d0;">
-              💥 破解盲點：不再只寫「大家都低頭很認真寫考卷」
+              💥 告別平淡：不再只寫「大家都低頭很認真寫考卷」！
             </div>
           </div>
 
@@ -1400,19 +1401,19 @@
             <div style="font-size: 17.5px; font-weight: 800; color: #475569;">【衝突危機・情節波瀾】</div>
             
             <div style="background: #f8fafc; border-radius: 12px; padding: 16px 20px; font-size: 17.5px; color: #1e293b; line-height: 1.8; border: 1.5px solid #e2e8f0;">
-              <strong style="color: #b91c1c; font-size: 18px;">🎯 為何這樣設計？</strong><br>
-              文似看山不喜平！好文章必須有「轉折波瀾」。設計突發危機（碰上難題魔王、時間倒數、發現粗心算錯），讓心跳提到喉嚨！
+              <strong style="color: #b91c1c; font-size: 18px;">🎯 為什麼一定要有轉折？</strong><br>
+              平平淡淡的故事最容易讓人想睡覺！就像冒險電影一樣，主角一定要遇到「大危機」——突然殺出魔王級難題、倒數鐘聲響起、或是發現自己算錯大題，讓心跳瞬間飆到最高點！
             </div>
 
             <div style="font-size: 17px; color: #334155; line-height: 1.8;">
-              <div style="font-weight: 900; color: #0f172a; font-size: 17.5px; margin-bottom: 6px;">📝 教學重點鷹架：</div>
-              • 危機事件（魔王題攔路、鐘聲倒數三分鐘危機）<br>
-              • 誇飾修辭（心跳像大鼓狂擂、汗水如瀑布湧出）<br>
-              • 動態心理拉扯（放棄還是堅持？爭分奪秒的抉擇）
+              <div style="font-weight: 900; color: #0f172a; font-size: 17.5px; margin-bottom: 6px;">🎒 你的寫作法寶：</div>
+              • 危機事件登場（魔王題目攔路、鐘聲倒數三分鐘）<br>
+              • 誇飾修辭加持（心跳像大鼓狂敲、汗水像瀑布噴出）<br>
+              • 內心交戰時刻（該放棄還是堅持到底？最後一秒的掙扎）
             </div>
 
             <div style="margin-top: auto; padding: 12px 16px; background: #fef2f2; border-radius: 10px; font-size: 16.5px; color: #b91c1c; font-weight: 800; border: 1px solid #fecaca;">
-              💥 破解盲點：創造情節衝突張力，文章有了戲劇靈魂
+              💥 告別平淡：創造扣人心弦的衝突張力，文章有了戲劇靈魂！
             </div>
           </div>
 
@@ -1426,19 +1427,19 @@
             <div style="font-size: 17.5px; font-weight: 800; color: #475569;">【反思體悟・心態昇華】</div>
             
             <div style="background: #f8fafc; border-radius: 12px; padding: 16px 20px; font-size: 17.5px; color: #1e293b; line-height: 1.8; border: 1.5px solid #e2e8f0;">
-              <strong style="color: #6d28d9; font-size: 18px;">🎯 為何這樣設計？</strong><br>
-              結尾絕非「考完去吃麥當勞」！四年級的核心寫作深度在於「成長」——分數是一時的，反省粗心並立志更進一步，達成精神昇華。
+              <strong style="color: #6d28d9; font-size: 18px;">🎯 為什麼結尾不能只寫吃大餐？</strong><br>
+              如果結尾只寫「考完好開心，回家吃大餐」，文章就太可惜了！考試真正的寶物不是分數，而是你在這場考驗中學到了什麼。面對紅筆圈出的粗心，下定決心改進，這才是真正的「超越自我」！
             </div>
 
             <div style="font-size: 17px; color: #334155; line-height: 1.8;">
-              <div style="font-weight: 900; color: #0f172a; font-size: 17.5px; margin-bottom: 6px;">📝 教學重點鷹架：</div>
-              • 揭曉成績與心態平復（學會成熟面對成績與挫折）<br>
-              • 首尾呼應（回扣第一段考前的辛勤準備與期許）<br>
-              • 體悟反思（失敗為成功之母、找到弱點超越自我）
+              <div style="font-weight: 900; color: #0f172a; font-size: 17.5px; margin-bottom: 6px;">🎒 你的寫作法寶：</div>
+              • 揭曉成績與心態轉折（坦然面對成績，不氣餒也不自滿）<br>
+              • 前後呼應（回扣第一段考前的辛勤付出與期望）<br>
+              • 深刻的成長體悟（失敗是成功的墊腳石、戰勝自己的弱點）
             </div>
 
             <div style="margin-top: auto; padding: 12px 16px; background: #faf5ff; border-radius: 10px; font-size: 16.5px; color: #6d28d9; font-weight: 800; border: 1px solid #e9d5ff;">
-              💥 破解盲點：不再只寫「考完發考卷真開心，放學去大吃一頓」
+              💥 告別平淡：不再只寫「考完發考卷真開心，放學去大吃一頓」！
             </div>
           </div>
 
@@ -1449,11 +1450,11 @@
           <div style="display: flex; align-items: center; gap: 20px;">
             <div style="font-size: 46px;">🐲</div>
             <div>
-              <div style="font-weight: 900; font-size: 20px; color: #0f172a;">全篇教學閉環：【守門神殿】四格漫畫審查 ＋ 實體稿紙謄寫</div>
+              <div style="font-weight: 900; font-size: 20px; color: #0f172a;">冒險終點站：【守門神殿】四格漫畫印製 ＋ 稿紙抄寫</div>
               <div style="font-size: 17.5px; color: #475569; line-height: 1.8; margin-top: 6px;">
-                ① <strong>矛盾劇情裂痕警報</strong>：若前後段落邏輯打架（如前面沒複習、後面卻說胸有成竹），神殿會觸發警報引導自省修正。<br>
-                ② <strong>Q版四格漫畫生成</strong>：通關後將整篇作文圖像化，增強學童寫作成就感。<br>
-                ③ <strong>實體稿紙專區</strong>：提供段落縮排、標點佔格直觀導覽，讓孩子親手誊寫回實體稿紙！
+                ① <strong>守門機關龍審查</strong>：小萌龍會幫你檢查文章邏輯，如果前後矛盾（例如前面寫沒讀書，後面卻寫胸有成竹），會提醒你修補破綻喔！<br>
+                ② <strong>古董印刷機印出四格漫畫</strong>：過關後，印刷機會把你的四段作文變成專屬的 Q 版四格漫畫！<br>
+                ③ <strong>稿紙抄寫專區</strong>：教你標準國小稿紙格式（首行空兩格、標點符號不落第一格），讓你信心滿滿抄上正式稿紙！
               </div>
             </div>
           </div>
@@ -1462,12 +1463,12 @@
         <!-- 📊 流水帳 VS 冒險島大綱 快速對照表 -->
         <div style="background: white; border: 2px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
           <div style="background: #e2e8f0; padding: 14px 22px; font-weight: 900; font-size: 18.5px; color: #1e293b;">
-            📋 課堂一分鐘對比教學（請老師帶學生朗讀對照，一眼看懂差距！）
+            📋 讀者想看哪一種？寫作升級對照表（大聲讀讀看，感受差在哪裡！）
           </div>
           <div style="display: grid; grid-template-columns: 120px 1fr 1fr; font-size: 17.5px; border-bottom: 2px solid #cbd5e1;">
-            <div style="padding: 16px 18px; font-weight: 900; background: #f8fafc; border-right: 1.5px solid #e2e8f0;">篇章結構</div>
-            <div style="padding: 16px 20px; font-weight: 900; color: #dc2626; background: #fef2f2; border-right: 1.5px solid #e2e8f0;">❌ 傳統流水帳（避免這樣寫）</div>
-            <div style="padding: 16px 20px; font-weight: 900; color: #16a34a; background: #f0fdf4;">✅ 冒險島大綱（四年級進階寫法）</div>
+            <div style="padding: 16px 18px; font-weight: 900; background: #f8fafc; border-right: 1.5px solid #e2e8f0;">文章段落</div>
+            <div style="padding: 16px 20px; font-weight: 900; color: #dc2626; background: #fef2f2; border-right: 1.5px solid #e2e8f0;">❌ 平淡流水帳（讀者會想睡覺）</div>
+            <div style="padding: 16px 20px; font-weight: 900; color: #16a34a; background: #f0fdf4;">✅ 冒險島大綱（四年級大師寫法）</div>
           </div>
           <div style="display: grid; grid-template-columns: 120px 1fr 1fr; font-size: 17.5px; border-bottom: 1.5px solid #f1f5f9;">
             <div style="padding: 16px 18px; font-weight: 900; background: #f8fafc; border-right: 1.5px solid #e2e8f0;">第一段【起】</div>
@@ -1496,10 +1497,10 @@
       <!-- 彈窗底部行動條 -->
       <div style="padding: 22px 34px; background: white; border-top: 1.5px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 24px;">
         <div style="font-size: 16.5px; color: #475569; font-weight: 700;">
-          💡 <strong>課堂提醒</strong>：老師隨時可點擊上方導航列【📖 大綱說帖】再次開啟本面板進行引導！
+          💡 <strong>冒險小秘訣</strong>：寫作時隨時點擊上方【📖 作文大綱】，就能隨時重溫這張航海圖喔！
         </div>
         <button class="btn-top highlight" style="padding: 18px 44px; font-size: 22px; font-weight: 900; background: #e63946; color: white; border: none; border-radius: 14px; box-shadow: 0 6px 20px rgba(230, 57, 70, 0.45); cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="window.islandApp.startAdventureAfterOutline()">
-          ✈️ 老師講解完畢・搭乘飛機啟航！（破浪降落第 1 島）
+          ✈️ 我看懂大綱了・搭乘飛機出發！（破浪降落第 1 島）
         </button>
       </div>
 
@@ -7418,12 +7419,12 @@ puzzleSentences: [
         }
         this.loadIslandData(0);
 
-        // 【核心設定】：一進入網頁 Loader 淡出後，先自動彈出作文大綱說帖，讓老師先對全班講解篇章架構，講解完點擊按鈕再進入起之島！
+        // 【核心設定】：一進入網頁 Loader 淡出後，先自動彈出學生作文大綱指南，引導學生理解篇章冒險架構，點擊出發後小飛機破浪降落起之島！
         setTimeout(() => {
           const loader = document.getElementById("islandLoader");
           if (loader) loader.classList.add("is-done");
 
-          // 鏡頭維持在高空雲端俯瞰視角，等待老師講解完畢觸發「從天而降旋轉而下」震撼啟航動畫！
+          // 鏡頭維持在高空雲端俯瞰視角，等待學生閱讀大綱後觸發小飛機海面進場著陸起之島！
           if (this.sceneDirector) {
             const [x, y, z] = CURRICULUM_DATA[0].position;
             this.sceneDirector.camera.position.set(x - 48, y + 115, z + 62);
@@ -7431,7 +7432,7 @@ puzzleSentences: [
             this.sceneDirector.camera.lookAt(this.sceneDirector.controls.target);
           }
 
-          // 彈出大綱說帖讓老師先進行行前教學解說
+          // 彈出大綱指南讓學生清楚本次寫作冒險任務
           this.openOutlineModal();
         }, 550);
       }
@@ -7647,7 +7648,7 @@ puzzleSentences: [
       }
 
       // ====================================================
-      // 📖 作文大綱行前說帖彈窗控制 (Teacher Briefing Modal)
+      // 📖 作文大綱行前冒險指南彈窗控制 (Student Outline Modal)
       // ====================================================
       openOutlineModal() {
         const modal = document.getElementById("outlineModalBackdrop");
