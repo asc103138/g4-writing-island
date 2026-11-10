@@ -14,7 +14,7 @@
      - 松樹淘汰生硬圓錐，改為五層自然下垂微翹的八角波浪松針傘裙，層次舒展。
      - 白樺木採用米白斑紋樹幹搭配 3 團圓潤輕盈黃綠雲朵葉球。
 - **實機檢測**：Playwright 實機驗證（0 errors, 0 warnings），截圖特寫確認草葉柔和弧形、樹冠蓬鬆圓潤。
-- **Commit 雜湊**：待提交
+- **Commit 雜湊**：`472d84f` (fix: organic curved grass blades & lush cloud trees)
 
 ## 2026-11-10 重構小飛機跑道物理飛行：跑道平穩助跑加速起飛 ＋ 對正下滑道順順減速降落
 - **執行人**：Antigravity Agent
