@@ -804,6 +804,46 @@
       color: #f1f5f9 !important;
     }
 
+    /* 4.5. 小飛機跨島飛行慶祝橫幅 (Airplane Flight Banner) */
+    .airplane-flight-banner {
+      position: fixed;
+      top: 75px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-24px);
+      z-index: 1200;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .airplane-flight-banner.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .flight-banner-pill {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(12px);
+      color: #ffffff;
+      padding: 10px 24px;
+      border-radius: 999px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), 0 0 0 2px rgba(56, 189, 248, 0.5);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .flight-icon {
+      font-size: 24px;
+      animation: planeBob 0.9s infinite alternate ease-in-out;
+      display: inline-block;
+    }
+    @keyframes planeBob {
+      0% { transform: translateY(-3px) rotate(-8deg); }
+      100% { transform: translateY(3px) rotate(8deg); }
+    }
+
     /* 5. 島嶼快速導覽彈窗 (Quick Nav Modal) */
     .quick-nav-grid {
       display: grid;
@@ -1035,6 +1075,14 @@
       </button>
     </div>
   </header>
+
+  <!-- 小飛機跨島飛行過場橫幅 (Airplane Flight Banner) -->
+  <div id="airplaneFlightBanner" class="airplane-flight-banner">
+    <div class="flight-banner-pill">
+      <span class="flight-icon">✈️</span>
+      <span class="flight-text" id="airplaneFlightText">搭乘寫作小飛機，起飛前往下一座島嶼～</span>
+    </div>
+  </div>
 
   <!-- 乃誠島風格雙層複合 HUD (進度膠囊 ＋ 常駐懸浮工具列) -->
   <div class="hud-dock-wrapper">
@@ -3760,6 +3808,15 @@ puzzleSentences: [
       }
     ];
 
+    // 各島嶼童趣微縮機場座標與航向配置 (Airport Configurations)
+    const AIRPORT_CONFIGS = [
+      { code: "01", name: "起之島機場", localPos: [1.8, 3.2, 5.2], angle: -0.25 },
+      { code: "02", name: "承之島機場", localPos: [-0.5, 3.2, 6.0], angle: 0.28 },
+      { code: "03", name: "轉之島機場", localPos: [-1.8, 3.2, -5.2], angle: 0.15 },
+      { code: "04", name: "合之島機場", localPos: [-1.0, 3.2, 5.2], angle: 0.22 },
+      { code: "05", name: "守門神殿空港", localPos: [1.5, 3.4, 5.5], angle: -0.35 }
+    ];
+
     const SLANG_FILTER = ["超廢", "完蛋了", "超狂", "GG", "芭比Q", "傻眼貓咪", "廢到笑", "很瞎", "很扯", "狂按猛按"];
 
     // ----------------------------------------------------
@@ -3848,6 +3905,302 @@ puzzleSentences: [
     const state = new IslandStateManager();
     window.state = state;
 
+    // ----------------------------------------------------
+    // 【全新升級】：童趣微縮小機場與冒險小飛機幾何模型
+    // ----------------------------------------------------
+    function createCuteAirport(opts = {}) {
+      const airport = new THREE.Group();
+      const {
+        code = "01",
+        name = "起之島機場",
+        runwayL = 7.5,
+        runwayW = 2.4,
+        angle = 0
+      } = opts;
+
+      // 1. 跑道柏油路面 (Asphalt Runway)
+      const runwayMat = getMat(0x334155, { roughness: 0.9, metalness: 0.05 });
+      const runwayMesh = rbox(runwayW, 0.1, runwayL, runwayMat);
+      runwayMesh.receiveShadow = true;
+      runwayMesh.rotation.y = angle;
+      airport.add(runwayMesh);
+
+      // 跑道邊界線與虛線中心線
+      const lineMat = getMat(0xffffff, { roughness: 0.6 });
+
+      // 跑道虛線中心線 (Centerline Dashes)
+      const numDashes = 5;
+      for (let d = 0; d < numDashes; d++) {
+        const dash = rbox(0.18, 0.12, 0.65, lineMat);
+        const zOffset = -runwayL * 0.38 + d * (runwayL * 0.76 / (numDashes - 1));
+        const v = new THREE.Vector3(0, 0.06, zOffset).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+        dash.position.copy(v);
+        dash.rotation.y = angle;
+        airport.add(dash);
+      }
+
+      // 跑道端頭斑馬進場線 (Threshold Stripes)
+      for (const endZ of [-runwayL * 0.44, runwayL * 0.44]) {
+        for (let s = -3; s <= 3; s += 2) {
+          const bar = rbox(0.14, 0.12, 0.55, lineMat);
+          const v = new THREE.Vector3(s * 0.28, 0.06, endZ).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+          bar.position.copy(v);
+          bar.rotation.y = angle;
+          airport.add(bar);
+        }
+      }
+
+      // 跑道編號標牌 (Runway Number Sign)
+      const sign = signBoard(`${code}`, 1.2, 0.5, '#0284c7', '#ffffff');
+      const signV = new THREE.Vector3(runwayW * 0.68, 0.35, -runwayL * 0.38).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+      sign.position.copy(signV);
+      sign.rotation.y = angle - Math.PI / 2;
+      airport.add(sign);
+
+      // 跑道兩側夜航導航燈 (Runway Edge Lights)
+      for (let side of [-1, 1]) {
+        for (let i = 0; i <= 4; i++) {
+          const t = i / 4;
+          const z = -runwayL * 0.45 + t * runwayL * 0.9;
+          const isEnd = (i === 0 || i === 4);
+          const lightCol = isEnd ? 0x22c55e : 0xfacc15;
+          const light = ball(0.08, getMat(lightCol, { emissive: lightCol, emissiveIntensity: 0.9 }), 6, 6);
+          const base = cyl(0.04, 0.05, 0.15, 5, getMat(0x1e293b));
+          const v = new THREE.Vector3(side * (runwayW * 0.55), 0.1, z).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+          light.position.set(v.x, v.y + 0.12, v.z);
+          base.position.set(v.x, v.y, v.z);
+          airport.add(base);
+          airport.add(light);
+        }
+      }
+
+      // 2. 紅白條紋風向袋 (Striped Windsock)
+      const windsockGroup = new THREE.Group();
+      const wsOffset = new THREE.Vector3(runwayW * 0.95, 0, -runwayL * 0.15).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+      windsockGroup.position.copy(wsOffset);
+
+      windsockGroup.add(at(cyl(0.05, 0.06, 2.2, 6, getMat(0xd1d5db, { metalness: 0.8 })), 0, 1.1, 0));
+      windsockGroup.add(at(ball(0.12, getMat(0xf59e0b, { metalness: 0.8 }), 6, 6), 0, 2.2, 0));
+
+      const sockCone = new THREE.Group();
+      sockCone.position.set(0, 2.1, 0);
+      sockCone.rotation.z = -Math.PI / 2 + 0.15;
+      sockCone.rotation.y = angle + 0.4;
+
+      const redMat = getMat(0xef4444);
+      const whiteMat = getMat(0xffffff);
+      for (let seg = 0; seg < 4; seg++) {
+        const r1 = 0.22 - seg * 0.035;
+        const r2 = 0.185 - seg * 0.035;
+        const segMesh = cyl(r1, r2, 0.35, 8, seg % 2 === 0 ? redMat : whiteMat);
+        segMesh.position.y = -seg * 0.32;
+        sockCone.add(segMesh);
+      }
+      windsockGroup.add(sockCone);
+      airport.add(windsockGroup);
+      airport.userData.windsock = sockCone;
+
+      // 3. 迷你航廈與航空指揮塔台 (Mini Terminal & Control Tower)
+      const terminalGroup = new THREE.Group();
+      const termOffset = new THREE.Vector3(-runwayW * 1.1, 0, -runwayL * 0.05).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+      terminalGroup.position.copy(termOffset);
+
+      // 航廈一樓小木屋
+      const wallMat = getMat(0xfef3c7);
+      terminalGroup.add(at(rbox(2.0, 1.4, 1.8, wallMat), 0, 0.7, 0));
+      terminalGroup.add(at(gableRoof(2.4, 0.7, 2.1, getMat(0x0284c7)), 0, 1.4, 0));
+      terminalGroup.add(at(rbox(0.65, 0.9, 0.08, getMat(0x38bdf8)), 0, 0.45, 0.92));
+
+      // 二樓圓柱玻璃航空管制塔台
+      const towerMat = getMat(0xffffff);
+      terminalGroup.add(at(cyl(0.55, 0.65, 1.2, 8, towerMat), 0.5, 1.6, 0));
+      terminalGroup.add(at(cyl(0.62, 0.62, 0.5, 8, getMat(0x7dd3fc, { transparent: true, opacity: 0.85 })), 0.5, 2.0, 0));
+      terminalGroup.add(at(cyl(0.72, 0.72, 0.12, 8, getMat(0x0369a1)), 0.5, 2.3, 0));
+      terminalGroup.add(at(cyl(0.04, 0.04, 0.8, 4, getMat(0xd1d5db, { metalness: 0.8 })), 0.5, 2.7, 0));
+      terminalGroup.add(at(ball(0.12, getMat(0xef4444, { emissive: 0xef4444, emissiveIntensity: 0.9 }), 6, 6), 0.5, 3.1, 0));
+
+      // 機場招牌
+      terminalGroup.add(at(signBoard(name, 1.8, 0.45, '#0369a1', '#ffffff'), 0, 1.8, 1.05));
+      airport.add(terminalGroup);
+
+      // 4. 停機坪小行李手推車
+      const cargoGroup = new THREE.Group();
+      const cargoOffset = new THREE.Vector3(-runwayW * 0.8, 0, runwayL * 0.28).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+      cargoGroup.position.copy(cargoOffset);
+      cargoGroup.add(at(rbox(0.8, 0.12, 1.2, getMat(0x64748b)), 0, 0.15, 0));
+      cargoGroup.add(at(rbox(0.5, 0.22, 0.35, getMat(0xef4444)), -0.1, 0.32, -0.2));
+      cargoGroup.add(at(rbox(0.45, 0.2, 0.32, getMat(0xf59e0b)), 0.15, 0.3, 0.25));
+      airport.add(cargoGroup);
+
+      return airport;
+    }
+
+    function createAdventureAirplane() {
+      const plane = new THREE.Group();
+
+      const yellowMat = getMat(0xfbbf24, { roughness: 0.5, metalness: 0.08 });
+      const whiteMat = getMat(0xffffff, { roughness: 0.6, metalness: 0.05 });
+      const redMat = getMat(0xef4444, { roughness: 0.5, metalness: 0.08 });
+      const glassMat = getMat(0xbae6fd, { transparent: true, opacity: 0.75 });
+      const tireMat = getMat(0x1e293b, { roughness: 0.9 });
+      const woodMat = getMat(0xb45309, { roughness: 0.8 });
+
+      // 1. 流線型 Q 版機身 (Fuselage)
+      const bodyMesh = rbox(1.2, 1.1, 2.6, yellowMat);
+      addComicOutline(bodyMesh, 0.045, 0x0f172a);
+      bodyMesh.position.set(0, 0.75, 0);
+      plane.add(bodyMesh);
+
+      // 奶油白機腹
+      const bellyMesh = rbox(1.0, 0.4, 2.4, whiteMat);
+      bellyMesh.position.set(0, 0.35, 0);
+      plane.add(bellyMesh);
+
+      // 喜慶紅色機鼻罩 (Nose Cone)
+      const nose = cone(0.55, 0.7, 10, redMat);
+      addComicOutline(nose, 0.05, 0x0f172a);
+      nose.position.set(0, 0.75, 1.45);
+      nose.rotation.x = Math.PI / 2;
+      plane.add(nose);
+
+      // 高速旋轉螺旋槳 (Spinning Propeller)
+      const propGroup = new THREE.Group();
+      propGroup.position.set(0, 0.75, 1.82);
+      const propHub = ball(0.2, redMat, 8, 8);
+      propGroup.add(propHub);
+      for (let b = 0; b < 2; b++) {
+        const blade = rbox(0.18, 1.35, 0.05, woodMat);
+        blade.rotation.z = b * (Math.PI / 2);
+        propGroup.add(blade);
+      }
+      plane.add(propGroup);
+      plane.userData.propeller = propGroup;
+
+      // 2. 經典雙翼機翼 (Biplane Wings)
+      const lowerWing = rbox(4.6, 0.12, 1.1, yellowMat);
+      addComicOutline(lowerWing, 0.04, 0x0f172a);
+      lowerWing.position.set(0, 0.5, 0.2);
+      plane.add(lowerWing);
+
+      const upperWing = rbox(5.0, 0.12, 1.15, yellowMat);
+      addComicOutline(upperWing, 0.04, 0x0f172a);
+      upperWing.position.set(0, 1.55, 0.2);
+      plane.add(upperWing);
+
+      // 雙翼木質連接立柱 (Wing Struts)
+      for (const sx of [-1.8, 1.8]) {
+        for (const sz of [-0.25, 0.25]) {
+          const strut = cyl(0.04, 0.04, 1.05, 4, woodMat);
+          strut.position.set(sx, 1.02, 0.2 + sz);
+          plane.add(strut);
+        }
+      }
+
+      // 3. 機尾垂直與水平尾翼 (Tail Wings)
+      const fin = rbox(0.12, 1.1, 0.9, redMat);
+      addComicOutline(fin, 0.045, 0x0f172a);
+      fin.position.set(0, 1.35, -1.2);
+      fin.rotation.x = -0.3;
+      plane.add(fin);
+
+      const hTail = rbox(2.2, 0.1, 0.75, yellowMat);
+      addComicOutline(hTail, 0.045, 0x0f172a);
+      hTail.position.set(0, 0.9, -1.25);
+      plane.add(hTail);
+
+      // 4. 起落架 (Landing Gear)
+      for (const sx of [-0.65, 0.65]) {
+        const strut = cyl(0.05, 0.05, 0.55, 4, getMat(0x64748b));
+        strut.position.set(sx * 0.8, 0.18, 0.5);
+        plane.add(strut);
+
+        const wheel = cyl(0.24, 0.24, 0.16, 12, tireMat);
+        wheel.rotation.z = Math.PI / 2;
+        wheel.position.set(sx * 0.8, 0.08, 0.5);
+        plane.add(wheel);
+      }
+      const rearWheel = ball(0.12, tireMat, 6, 6);
+      rearWheel.position.set(0, 0.1, -1.1);
+      plane.add(rearWheel);
+
+      // 5. 駕駛艙與坐著的小朋友角色 (Kid Pilot)
+      const cockpitHole = rbox(0.7, 0.2, 0.8, getMat(0x1e293b));
+      cockpitHole.position.set(0, 1.25, 0.1);
+      plane.add(cockpitHole);
+
+      const windshield = rbox(0.75, 0.35, 0.08, glassMat);
+      windshield.position.set(0, 1.45, 0.55);
+      windshield.rotation.x = -0.35;
+      plane.add(windshield);
+
+      const pilot = new THREE.Group();
+      pilot.position.set(0, 1.3, 0.05);
+
+      const pBody = rbox(0.55, 0.6, 0.45, getMat(0x0284c7));
+      addComicOutline(pBody, 0.04, 0x0f172a);
+      pBody.position.set(0, 0.1, 0);
+      pilot.add(pBody);
+
+      const pHead = ball(0.38, getMat(0xffd166), 8, 8);
+      addComicOutline(pHead, 0.04, 0x0f172a);
+      pHead.position.set(0, 0.58, 0);
+      pilot.add(pHead);
+
+      // 復古皮質飛行帽 (Aviator Cap)
+      const cap = rbox(0.78, 0.38, 0.8, getMat(0x78350f));
+      addComicOutline(cap, 0.04, 0x0f172a);
+      cap.position.set(0, 0.72, 0);
+      pilot.add(cap);
+
+      for (const side of [-1, 1]) {
+        const earFlap = rbox(0.1, 0.3, 0.3, getMat(0x78350f));
+        earFlap.position.set(side * 0.4, 0.52, 0);
+        pilot.add(earFlap);
+      }
+
+      // 飛行護目鏡
+      const goggleBand = rbox(0.82, 0.1, 0.82, getMat(0x1e293b));
+      goggleBand.position.set(0, 0.72, 0);
+      pilot.add(goggleBand);
+      for (const gx of [-0.2, 0.2]) {
+        const lens = cyl(0.14, 0.14, 0.1, 10, getMat(0x38bdf8, { roughness: 0.2 }));
+        lens.rotation.x = Math.PI / 2;
+        lens.position.set(gx, 0.72, 0.42);
+        pilot.add(lens);
+      }
+
+      // 眼睛與腮紅
+      for (const ex of [-0.15, 0.15]) {
+        const eye = ball(0.06, getMat(0x0f172a), 6, 6);
+        eye.position.set(ex, 0.58, 0.36);
+        pilot.add(eye);
+        const blush = ball(0.08, getMat(0xf472b6), 6, 6);
+        blush.position.set(ex * 1.6, 0.5, 0.34);
+        pilot.add(blush);
+      }
+
+      // 開心揮手的手臂 (Waving Hand)
+      const arm = cyl(0.08, 0.08, 0.42, 6, getMat(0x0284c7));
+      arm.position.set(0.38, 0.42, 0.15);
+      arm.rotation.z = -0.75;
+      arm.rotation.x = 0.3;
+      pilot.add(arm);
+      const hand = ball(0.1, getMat(0xffd166), 6, 6);
+      hand.position.set(0.55, 0.58, 0.22);
+      pilot.add(hand);
+
+      // 白色飄逸圍巾
+      const scarf = rbox(0.18, 0.12, 0.8, whiteMat);
+      scarf.position.set(-0.25, 0.45, -0.45);
+      scarf.rotation.y = 0.45;
+      scarf.rotation.x = -0.2;
+      pilot.add(scarf);
+
+      plane.add(pilot);
+      plane.scale.setScalar(0.92);
+      return plane;
+    }
+
 
 
     // ----------------------------------------------------
@@ -3909,7 +4262,7 @@ puzzleSentences: [
         this.initSkyClouds();
         this.buildAllIslands();
         this.buildGuardianSanctuary();
-        this.buildSequentialBridges();
+        this.buildAllAirports();
         this.createMarkers();
 
         window.addEventListener("resize", () => this.onResize());
@@ -5492,100 +5845,67 @@ puzzleSentences: [
         });
       }
 
-      // 依照順序用童趣精緻的木拱橋連接島嶼 (0 ➔ 1 ➔ 2 ➔ 3 ➔ 4)
-      buildSequentialBridges() {
-        this.bridges = [];
-        const islandPositions = CURRICULUM_DATA.map(d => d.position);
+      // 【全新升級】：全島嶼童趣微縮機場 (Island Airports)
+      buildAllAirports() {
+        this.airports = [];
+        this.windsocks = [];
+        this.smokeParticles = [];
 
-        const woodMat1 = getMat(0xb45309, { roughness: 0.85, metalness: 0.05 });
-        const woodMat2 = getMat(0xd97706, { roughness: 0.85, metalness: 0.05 });
-        const woodMat3 = getMat(0x92400e, { roughness: 0.85, metalness: 0.05 });
-        const woodMats = [woodMat1, woodMat2, woodMat3];
-        const postMat = getMat(0x78350f, { roughness: 0.8 });
-        const capMat = getMat(0xf59e0b, { metalness: 0.8, roughness: 0.2 });
-
+        // 為前四座主題島嶼建造童趣微縮機場
         for (let i = 0; i < 4; i++) {
-          const p1 = new THREE.Vector3(...islandPositions[i]);
-          const p2 = new THREE.Vector3(...islandPositions[i + 1]);
-
-          const dir = new THREE.Vector3().subVectors(p2, p1).normalize();
-          const perp = new THREE.Vector3(-dir.z, 0, dir.x);
-          const bridgeAngle = Math.atan2(dir.x, dir.z);
-
-          // 橋樑起點與終點 (接合在兩島草地邊緣)
-          const start = p1.clone().addScaledVector(dir, 9.6);
-          start.y = 3.3;
-          const end = p2.clone().addScaledVector(dir, -9.6);
-          end.y = 3.3;
-
-          const spanDist = start.distanceTo(end);
-          const numPlanks = Math.max(14, Math.round(spanDist / 1.25));
-
-          const bridgeGroup = new THREE.Group();
-          const bridgeCenter = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
-
-          // 橋面微拱起伏木板
-          for (let p = 0; p < numPlanks; p++) {
-            const t = p / (numPlanks - 1);
-            const pos = new THREE.Vector3().lerpVectors(start, end, t);
-            const arch = Math.sin(t * Math.PI) * 1.5;
-            pos.y += arch;
-
-            const plankW = 2.4;
-            const plankL = 1.05;
-            const plankH = 0.18;
-            const plankMat = woodMats[p % woodMats.length];
-            const plank = rbox(plankW, plankH, plankL, plankMat);
-            plank.position.copy(pos);
-            plank.rotation.y = bridgeAngle;
-            plank.rotation.x = Math.cos(t * Math.PI) * -0.15;
-            bridgeGroup.add(plank);
-
-            // 每隔 2 塊板設置護欄立柱
-            if (p % 2 === 0) {
-              for (const side of [-1, 1]) {
-                const postPos = pos.clone().addScaledVector(perp, side * (plankW * 0.46));
-                const post = cyl(0.09, 0.12, 1.15, 6, postMat);
-                post.position.set(postPos.x, postPos.y + 0.55, postPos.z);
-                bridgeGroup.add(post);
-
-                const cap = ball(0.14, capMat, 6, 5);
-                cap.position.set(postPos.x, postPos.y + 1.15, postPos.z);
-                bridgeGroup.add(cap);
-              }
-            }
+          const cfg = AIRPORT_CONFIGS[i];
+          const airportMesh = createCuteAirport(cfg);
+          airportMesh.position.set(...cfg.localPos);
+          this.islands[i].add(airportMesh);
+          this.airports.push(airportMesh);
+          if (airportMesh.userData.windsock) {
+            this.windsocks.push(airportMesh.userData.windsock);
           }
-
-          // 兩側連貫原木扶手
-          for (const side of [-1, 1]) {
-            const railPoints = [];
-            for (let r = 0; r <= 16; r++) {
-              const t = r / 16;
-              const pos = new THREE.Vector3().lerpVectors(start, end, t);
-              pos.y += Math.sin(t * Math.PI) * 1.5 + 1.05;
-              pos.addScaledVector(perp, side * (2.4 * 0.46));
-              railPoints.push(pos);
-            }
-            const railCurve = new THREE.CatmullRomCurve3(railPoints);
-            const railGeo = new THREE.TubeGeometry(railCurve, 20, 0.08, 6, false);
-            const railMesh = new THREE.Mesh(railGeo, postMat);
-            railMesh.castShadow = true;
-            bridgeGroup.add(railMesh);
-          }
-
-          // 水中粗木橋墩
-          for (const t of [0.33, 0.67]) {
-            const pierPos = new THREE.Vector3().lerpVectors(start, end, t);
-            pierPos.y += Math.sin(t * Math.PI) * 1.5 - 0.2;
-            const pierH = pierPos.y + 1.2;
-            const pier = cyl(0.35, 0.45, pierH, 6, postMat);
-            pier.position.set(pierPos.x, pierPos.y - pierH / 2 + 0.1, pierPos.z);
-            bridgeGroup.add(pier);
-          }
-
-          this.scene.add(bridgeGroup);
-          this.bridges.push(bridgeGroup);
         }
+
+        // 為終點守門神殿聖島建造專屬神聖航空港
+        if (this.islands[4]) {
+          const cfg = AIRPORT_CONFIGS[4];
+          const harborMesh = createCuteAirport(cfg);
+          harborMesh.position.set(...cfg.localPos);
+          this.islands[4].add(harborMesh);
+          this.airports.push(harborMesh);
+          if (harborMesh.userData.windsock) {
+            this.windsocks.push(harborMesh.userData.windsock);
+          }
+        }
+
+        // 建造全域冒險小飛機 (載著小朋友飛行員)
+        this.adventureAirplane = createAdventureAirplane();
+        this.scene.add(this.adventureAirplane);
+        this.updateAirplaneParked(0);
+      }
+
+      updateAirplaneParked(islandIdx) {
+        if (!this.adventureAirplane || !this.islands[islandIdx]) return;
+        const cfg = AIRPORT_CONFIGS[islandIdx];
+        const islandPos = new THREE.Vector3(...CURRICULUM_DATA[islandIdx].position);
+        const worldPos = islandPos.clone().add(new THREE.Vector3(...cfg.localPos));
+        worldPos.y += 0.08;
+        this.adventureAirplane.position.copy(worldPos);
+        this.adventureAirplane.rotation.set(0, cfg.angle, 0);
+        this.adventureAirplane.visible = true;
+      }
+
+      spawnSmokePuff(pos) {
+        if (!this.smokeGroup) {
+          this.smokeGroup = new THREE.Group();
+          this.scene.add(this.smokeGroup);
+        }
+        const puffMat = getMat(0xffffff, { transparent: true, opacity: 0.85, roughness: 0.9 });
+        const puff = ball(0.24 + Math.random() * 0.16, puffMat, 6, 6);
+        puff.position.copy(pos);
+        this.smokeGroup.add(puff);
+        this.smokeParticles.push({
+          mesh: puff,
+          birth: performance.now(),
+          life: 1100
+        });
       }
 
       // 建立地標標示牌懸浮圖標
@@ -5795,6 +6115,34 @@ puzzleSentences: [
             pos.setZ(i, this.seaOriginalZ[i] + wave);
           }
           pos.needsUpdate = true;
+        }
+
+        // ⑦ 飛行煙霧粒子生命週期與機場風向袋擺動
+        if (this.smokeParticles && this.smokeParticles.length > 0) {
+          const nowMs = performance.now();
+          for (let i = this.smokeParticles.length - 1; i >= 0; i--) {
+            const p = this.smokeParticles[i];
+            const age = nowMs - p.birth;
+            if (age > p.life) {
+              if (this.smokeGroup) this.smokeGroup.remove(p.mesh);
+              this.smokeParticles.splice(i, 1);
+            } else {
+              const prog = age / p.life;
+              p.mesh.scale.setScalar(1.0 + prog * 2.4);
+              p.mesh.position.y += 0.014;
+              if (p.mesh.material) {
+                p.mesh.material.opacity = 0.85 * (1.0 - prog);
+              }
+            }
+          }
+        }
+        if (this.windsocks) {
+          this.windsocks.forEach((ws, idx) => {
+            ws.rotation.y = Math.sin(now * 1.6 + idx * 1.3) * 0.22;
+          });
+        }
+        if (this.adventureAirplane && !window.islandApp?.isFlyingAirplane && this.adventureAirplane.userData.propeller) {
+          this.adventureAirplane.userData.propeller.rotation.z += 0.05;
         }
 
         // ⑦ 2D 螢幕浮動標籤投影更新
@@ -6158,6 +6506,145 @@ puzzleSentences: [
             dot.title = "可進入探索寫作";
           }
         }
+      }
+
+      // 【全新升級】：搭乘寫作小飛機載著小朋友跨島飛行過場動畫
+      playAirplaneFlight(fromIdx, toIdx, onComplete) {
+        if (this.isFlyingAirplane) return;
+        this.isFlyingAirplane = true;
+
+        const sd = this.sceneDirector;
+        if (!sd || !sd.adventureAirplane) {
+          this.flyToIsland(toIdx);
+          this.isFlyingAirplane = false;
+          if (onComplete) onComplete();
+          return;
+        }
+
+        // 配合新島嶼切換情境氣候與守門獸情緒
+        if (toIdx === 2) {
+          sd.setWeather('storm');
+        } else {
+          sd.setWeather('sunny');
+        }
+        sd.setKeeperExpression(toIdx + 1);
+
+        const fromData = CURRICULUM_DATA[fromIdx];
+        const toData = CURRICULUM_DATA[toIdx];
+        const fromCfg = AIRPORT_CONFIGS[fromIdx];
+        const toCfg = AIRPORT_CONFIGS[toIdx];
+
+        const pStartIsland = new THREE.Vector3(...fromData.position);
+        const pEndIsland = new THREE.Vector3(...toData.position);
+
+        const wStart = pStartIsland.clone().add(new THREE.Vector3(...fromCfg.localPos));
+        wStart.y += 0.12;
+        const wEnd = pEndIsland.clone().add(new THREE.Vector3(...toCfg.localPos));
+        wEnd.y += 0.12;
+
+        const takeoffDir = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), fromCfg.angle).normalize();
+        const landingDir = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), toCfg.angle).normalize();
+
+        const climbPoint = wStart.clone().addScaledVector(takeoffDir, 6.0);
+        climbPoint.y += 6.5;
+
+        const midPoint = new THREE.Vector3().addVectors(wStart, wEnd).multiplyScalar(0.5);
+        midPoint.y += 18.0;
+
+        const approachPoint = wEnd.clone().addScaledVector(landingDir, -6.5);
+        approachPoint.y += 5.5;
+
+        const flightCurve = new THREE.CatmullRomCurve3([
+          wStart,
+          climbPoint,
+          midPoint,
+          approachPoint,
+          wEnd
+        ]);
+
+        const banner = document.getElementById("airplaneFlightBanner");
+        const bannerText = document.getElementById("airplaneFlightText");
+        if (banner && bannerText) {
+          bannerText.textContent = `✈️ 登機啟航！搭乘寫作小飛機前往【${toData.shortName}】～`;
+          banner.classList.add("active");
+        }
+
+        sd.adventureAirplane.visible = true;
+
+        const duration = 4000;
+        const startTime = performance.now();
+
+        const animateFlight = (now) => {
+          const elapsed = now - startTime;
+          const u = Math.min(1.0, elapsed / duration);
+          const t = u < 0.5 ? 2 * u * u : -1 + (4 - 2 * u) * u;
+
+          const currentPos = flightCurve.getPoint(t);
+          const nextT = Math.min(1.0, t + 0.015);
+          const nextPos = flightCurve.getPoint(nextT);
+          const tangent = new THREE.Vector3().subVectors(nextPos, currentPos).normalize();
+
+          sd.adventureAirplane.position.copy(currentPos);
+          if (tangent.lengthSq() > 0.001) {
+            sd.adventureAirplane.lookAt(currentPos.clone().add(tangent));
+          }
+
+          if (sd.adventureAirplane.userData.propeller) {
+            sd.adventureAirplane.userData.propeller.rotation.z += 0.8;
+          }
+
+          if (t > 0.15 && t < 0.85) {
+            const bankAngle = Math.sin(t * Math.PI * 2) * 0.22;
+            sd.adventureAirplane.rotation.z += bankAngle;
+            sd.adventureAirplane.position.y += Math.sin(elapsed * 0.015) * 0.12;
+
+            if (Math.random() < 0.35 && sd.spawnSmokePuff) {
+              const exhaustPos = currentPos.clone().addScaledVector(tangent, -1.2);
+              sd.spawnSmokePuff(exhaustPos);
+            }
+          }
+
+          const camOffset = tangent.clone().multiplyScalar(-14.5);
+          camOffset.y += 6.5;
+          const targetCamPos = currentPos.clone().add(camOffset);
+          const targetLookAt = currentPos.clone().addScaledVector(tangent, 5.0);
+
+          sd.camera.position.lerp(targetCamPos, 0.08);
+          sd.controls.target.lerp(targetLookAt, 0.08);
+
+          if (u < 1.0) {
+            requestAnimationFrame(animateFlight);
+          } else {
+            if (banner) banner.classList.remove("active");
+            this.isFlyingAirplane = false;
+
+            sd.updateAirplaneParked(toIdx);
+
+            this.currentIsland = toIdx;
+            this.updateNavStepDots();
+            this.updateTierDisplay();
+
+            this.showToast(`🛬 平安抵達【${toData.name}】！開啟全新篇章寫作！`, 2800);
+
+            const targetPos = CURRICULUM_DATA[toIdx].position;
+            const finalCam = new THREE.Vector3(targetPos[0] + 10, targetPos[1] + 11, targetPos[2] + 13);
+            const finalLook = new THREE.Vector3(targetPos[0] - 0.5, targetPos[1] + 3.0, targetPos[2]);
+
+            if (toIdx === 4) {
+              sd.flyTo(new THREE.Vector3(targetPos[0] + 0.8, targetPos[1] + 7.8, targetPos[2] + 7.8), new THREE.Vector3(targetPos[0], targetPos[1] + 5.2, targetPos[2] + 1.2), () => {
+                this.openGuardianModal();
+                if (onComplete) onComplete();
+              });
+            } else {
+              sd.flyTo(finalCam, finalLook, () => {
+                this.openDrawer(toIdx);
+                if (onComplete) onComplete();
+              });
+            }
+          }
+        };
+
+        requestAnimationFrame(animateFlight);
       }
 
       flyToIsland(index) {
@@ -7325,7 +7812,16 @@ puzzleSentences: [
           this.sceneDirector.updateGuardianBadges();
         }
 
-        this.showToast(`🎉 恭喜！${this.currentStamp} 認證成功！已解鎖通往下一座島嶼的航道！`);
+        this.showToast(`🎉 恭喜！${this.currentStamp} 認證成功！小飛機即將載你起飛前往下一站！`, 2600);
+
+        // 每完成一個島嶼評分過關後，關閉抽屜並啟動小飛機載著小朋友飛往下一島
+        const nextIdx = idx + 1;
+        if (nextIdx <= 4) {
+          this.closeDrawer();
+          setTimeout(() => {
+            this.playAirplaneFlight(idx, nextIdx);
+          }, 700);
+        }
       }
 
       rejectParagraph() {
@@ -7359,7 +7855,7 @@ puzzleSentences: [
         const next = this.currentIsland + 1;
         if (next <= 4) {
           this.closeDrawer();
-          this.flyToIsland(next);
+          this.playAirplaneFlight(this.currentIsland, next);
         }
       }
 
