@@ -17,6 +17,8 @@
     }
   }
   </script>
+  <!-- Google 官方帳號驗證庫 (Google Identity Services) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root {
       --bg: #90cae8;
@@ -67,6 +69,28 @@
       display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
     .btn-top:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+
+    /* Google 帳號與雲端同步狀態膠囊 */
+    .google-auth-pill {
+      display: flex; align-items: center; gap: 8px; padding: 6px 14px;
+      border-radius: 999px; font-size: 13px; font-weight: 700;
+      background: white; border: 1.5px solid #4285f4; color: #1e293b;
+      cursor: pointer; transition: all .2s ease; box-shadow: 0 2px 8px rgba(66, 133, 244, 0.18);
+    }
+    .google-auth-pill:hover { background: #f0f7ff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(66, 133, 244, 0.28); }
+    .google-auth-pill.logged-in { border-color: #10b981; background: #ecfdf5; color: #065f46; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2); }
+    .google-auth-pill.logged-in:hover { background: #d1fae5; }
+    .google-user-avatar { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; border: 1.5px solid #10b981; }
+    .sync-pulse { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulseDot 2s infinite; }
+    @keyframes pulseDot { 0% { opacity: 0.4; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.4; transform: scale(0.9); } }
+
+    /* Google 雲端同步彈窗面板 */
+    .auth-tab-btn {
+      flex: 1; padding: 10px; border: none; background: #f1f5f9; font-size: 13.5px; font-weight: 700;
+      color: #64748b; border-radius: 8px; cursor: pointer; transition: all .2s;
+    }
+    .auth-tab-btn.active { background: white; color: #1e293b; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
 
     /* 3D 浮動標籤與引線 */
     #labels-layer { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
@@ -1054,6 +1078,14 @@
       </div>
     </div>
     <div class="nav-actions">
+      <!-- Google 帳號登入與雲端同步膠囊 -->
+      <div class="google-auth-pill" id="googleAuthPill" onclick="window.islandApp.openGoogleAuthModal()" title="點擊檢視 Google 雲端同步狀態或切換帳號">
+        <span class="g-icon" id="googleAuthIcon">
+          <svg width="15" height="15" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+        </span>
+        <span id="googleAuthStatusText">G 登入 Google 雲端同步</span>
+        <span class="sync-pulse" id="googleSyncPulse" style="display:none;"></span>
+      </div>
       <div class="tier-badge" id="tierDisplay">
         <span>🌟 挑戰者模式</span>
       </div>
@@ -1132,7 +1164,117 @@
   </div>
 
   <!-- 島嶼快速導覽彈窗 (Quick Nav Modal) -->
-  <div class="modal-backdrop" id="quickNavModalBackdrop">
+    <!-- Google 帳號與雲端進度同步彈窗 (Google Auth & Sync Modal) -->
+  <div class="modal-backdrop" id="googleAuthModalBackdrop">
+    <div class="modal-panel" style="width: 560px;">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <span>☁️ Google 帳號與作文雲端同步</span>
+        </h2>
+        <button class="drawer-close" onclick="window.islandApp.closeGoogleAuthModal()">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 22px;">
+        
+        <!-- 當前帳號狀態卡片 -->
+        <div id="authAccountCard" style="background: #f8fafc; border: 1.5px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div id="authCardAvatarWrap" style="width: 44px; height: 44px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+              👤
+            </div>
+            <div>
+              <div style="font-weight: 800; font-size: 15px; color: #1e293b;" id="authCardUserName">尚未登入 Google 帳號</div>
+              <div style="font-size: 12.5px; color: #64748b;" id="authCardUserEmail">目前進度僅儲存在這台電腦的瀏覽器中</div>
+            </div>
+          </div>
+          <button class="btn-top" id="authLogoutBtn" style="display:none; padding: 4px 12px; font-size: 12px; color: #ef4444; border-color: #fca5a5;" onclick="window.islandApp.logoutGoogle()">登出切換</button>
+        </div>
+
+        <!-- 登入方式切換區塊 -->
+        <div id="authLoginSection">
+          <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px;">
+            登入後，您在任何電腦或平板上寫的《考試前後》作文四段、五要素選擇與評分，都會自動即時同步，換電腦不用重寫！
+          </p>
+
+          <!-- 登入模式分頁標籤 -->
+          <div style="display: flex; gap: 8px; background: #e2e8f0; padding: 4px; border-radius: 10px; margin-bottom: 16px;">
+            <button class="auth-tab-btn active" id="tabBtnGoogle" onclick="window.islandApp.switchAuthTab('google')">🌐 Google 帳號一鍵登入</button>
+            <button class="auth-tab-btn" id="tabBtnSchool" onclick="window.islandApp.switchAuthTab('school')">🏫 學校教育帳號 / 座號</button>
+          </div>
+
+          <!-- 分頁 1: Google 官方帳號快速連線 -->
+          <div id="authTabGoogle" style="text-align: center; padding: 12px 0;">
+            <div id="googleButtonContainer" style="display: flex; justify-content: center; margin-bottom: 12px;"></div>
+            <button class="btn-top highlight" style="width: 100%; justify-content: center; padding: 11px; background: #4285f4; color: white; border: none; font-size: 14px; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);" onclick="window.islandApp.promptFastGoogleLogin()">
+              <span style="display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#ffffff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#ffffff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#ffffff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#ffffff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                <span>以 Chrome 登入之 Google 帳號快速連線</span>
+              </span>
+            </button>
+            <p style="font-size: 12px; color: #64748b; margin-top: 10px;">
+              💡 只要在 Chrome 瀏覽器登入自己的帳號，點擊上方即可一鍵連線同步！
+            </p>
+          </div>
+
+          <!-- 分頁 2: 學生學校帳號 / 座號快捷連線 -->
+          <div id="authTabSchool" style="display: none; padding: 6px 0;">
+            <div style="margin-bottom: 12px;">
+              <label style="display: block; font-size: 12.5px; font-weight: 700; color: #475569; margin-bottom: 6px;">
+                請輸入學生 Google 教育帳號或座號（例：s110301@st.tc.edu.tw 或 40125）：
+              </label>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="schoolAccountInput" placeholder="例：s110301@st.tc.edu.tw 或 40125" style="flex: 1; padding: 9px 12px; border: 1.5px solid var(--line); border-radius: 8px; font-size: 14px;">
+                <button class="btn-top highlight" style="background: var(--primary); color: white; border: none; padding: 0 18px;" onclick="window.islandApp.loginWithSchoolAccount()">
+                  連線同步
+                </button>
+              </div>
+            </div>
+            <p style="font-size: 12px; color: #64748b; line-height: 1.4;">
+              💡 提示：輸入相同的帳號或座號，在任何平板上都能隨時載入與接續先前的作文進度。
+            </p>
+          </div>
+        </div>
+
+        <!-- 雲端同步進度資訊 (已登入時顯現) -->
+        <div id="authSyncStatusSection" style="display:none; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 6px; font-weight: 800; color: #065f46; font-size: 14px;">
+              <span>🟢</span> 雲端試算表自動同步中
+            </div>
+            <span style="font-size: 12px; color: #047857;" id="authLastSyncTime">剛剛同步</span>
+          </div>
+          <div style="font-size: 12.5px; color: #064e3b; line-height: 1.5; margin-bottom: 12px;" id="authSyncSummary">
+            段落進度：起(0字) ➜ 承(0字) ➜ 轉(0字) ➜ 合(0字)
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-top" style="flex: 1; justify-content: center; font-size: 12.5px; background: white; border-color: #6ee7b7; color: #047857;" onclick="window.islandApp.manualSyncToCloud()">
+              ☁️ 立即手動上傳同步
+            </button>
+            <button class="btn-top" style="flex: 1; justify-content: center; font-size: 12.5px; background: white; border-color: #6ee7b7; color: #047857;" onclick="window.islandApp.manualLoadFromCloud()">
+              📥 從雲端重新下載進度
+            </button>
+          </div>
+        </div>
+
+        <!-- 教師模式專屬：Google 試算表 Web App URL 設定 -->
+        <div id="authTeacherConfigWrap" style="border-top: 1px dashed var(--line); padding-top: 14px; margin-top: 14px;">
+          <div style="font-size: 12.5px; font-weight: 800; color: #475569; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+            <span>🏫 教師專區：Google 試算表 Web App API 網址</span>
+            <span style="font-size: 11px; color: #64748b;" id="gasApiStatusTag">已配置預設</span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="gasApiUrlInput" placeholder="請貼入 Google Apps Script 部署後的 Web App URL (https://script.google.com/.../exec)" style="flex: 1; padding: 7px 10px; border: 1px solid var(--line); border-radius: 6px; font-size: 12px; font-family: monospace;">
+            <button class="btn-top" style="padding: 0 12px; font-size: 12px;" onclick="window.islandApp.saveGasApiUrl()">儲存網址</button>
+          </div>
+          <p style="font-size: 11.5px; color: #64748b; margin-top: 6px; line-height: 1.4;">
+            ※ 檔案目錄中的 <code>google_sheets_gas_code.js</code> 提供完整 Apps Script 程式碼，複製貼上發佈後即可全班連動！
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<div class="modal-backdrop" id="quickNavModalBackdrop">
     <div class="teacher-modal-card" style="width: 580px; max-width: 90vw;">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <h3 style="font-size: 18px; font-weight: 900; color: var(--primary);">🗺️ 作文冒險島全景導覽</h3>
@@ -6702,6 +6844,7 @@ puzzleSentences: [
         this.updateTierDisplay();
         this.updateTeacherModeUI();
         this.updateNavStepDots();
+        this.updateGoogleAuthUI();
         this.initScreenLabels();
         this.applyDayNightMode();
         if (this.sceneDirector && this.sceneDirector.updateGuardianBadges) {
@@ -8636,8 +8779,256 @@ puzzleSentences: [
       exportComicImage() {
         alert("🖼️ 正在打包高解析四格漫畫……可使用截圖或右鍵另存圖片做為學習單附件！");
       }
+      // ====================================================
+      // Google 帳號登入與雲端試算表同步系統
+      // ====================================================
+      openGoogleAuthModal() {
+        const modal = document.getElementById("googleAuthModalBackdrop");
+        if (!modal) return;
+        this.updateGoogleAuthUI();
+        const gasInput = document.getElementById("gasApiUrlInput");
+        if (gasInput) gasInput.value = state.gasApiUrl || "";
+        modal.classList.add("open");
+      }
+
+      closeGoogleAuthModal() {
+        document.getElementById("googleAuthModalBackdrop")?.classList.remove("open");
+      }
+
+      switchAuthTab(tab) {
+        const btnG = document.getElementById("tabBtnGoogle");
+        const btnS = document.getElementById("tabBtnSchool");
+        const tabG = document.getElementById("authTabGoogle");
+        const tabS = document.getElementById("authTabSchool");
+        if (tab === 'google') {
+          btnG?.classList.add("active");
+          btnS?.classList.remove("active");
+          if (tabG) tabG.style.display = "block";
+          if (tabS) tabS.style.display = "none";
+        } else {
+          btnS?.classList.add("active");
+          btnG?.classList.remove("active");
+          if (tabS) tabS.style.display = "block";
+          if (tabG) tabG.style.display = "none";
+        }
+      }
+
+      updateGoogleAuthUI(isSyncing = false) {
+        const pill = document.getElementById("googleAuthPill");
+        const textEl = document.getElementById("googleAuthStatusText");
+        const pulseEl = document.getElementById("googleSyncPulse");
+        const iconEl = document.getElementById("googleAuthIcon");
+
+        const cardUser = document.getElementById("authCardUserName");
+        const cardEmail = document.getElementById("authCardUserEmail");
+        const logoutBtn = document.getElementById("authLogoutBtn");
+        const syncSection = document.getElementById("authSyncStatusSection");
+        const loginSection = document.getElementById("authLoginSection");
+        const avatarWrap = document.getElementById("authCardAvatarWrap");
+        const lastSyncTimeEl = document.getElementById("authLastSyncTime");
+        const summaryEl = document.getElementById("authSyncSummary");
+
+        if (state.currentUser) {
+          // 已登入狀態
+          pill?.classList.add("logged-in");
+          const displayName = state.currentUserName || state.currentUser.split("@")[0];
+          if (textEl) {
+            textEl.textContent = isSyncing ? "☁️ 同步中..." : "👤 " + displayName;
+          }
+          if (pulseEl) pulseEl.style.display = "inline-block";
+          if (state.currentUserAvatar && iconEl) {
+            iconEl.innerHTML = `<img src="${state.currentUserAvatar}" class="google-user-avatar" alt="avatar">`;
+          }
+
+          if (cardUser) cardUser.textContent = displayName;
+          if (cardEmail) cardEmail.textContent = "Google 雲端帳號：" + state.currentUser;
+          if (logoutBtn) logoutBtn.style.display = "inline-flex";
+          if (loginSection) loginSection.style.display = "none";
+          if (syncSection) syncSection.style.display = "block";
+
+          if (avatarWrap) {
+            avatarWrap.innerHTML = state.currentUserAvatar 
+              ? `<img src="${state.currentUserAvatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` 
+              : "🎒";
+          }
+
+          if (lastSyncTimeEl) {
+            lastSyncTimeEl.textContent = state.lastSyncTime ? `上次同步：${state.lastSyncTime}` : "連線中";
+          }
+
+          if (summaryEl) {
+            const p = state.paragraphs;
+            const w1 = (p[0] || "").length;
+            const w2 = (p[1] || "").length;
+            const w3 = (p[2] || "").length;
+            const w4 = (p[3] || "").length;
+            summaryEl.textContent = `段落字數：起(${w1}字) ➜ 承(${w2}字) ➜ 轉(${w3}字) ➜ 合(${w4}字) ｜ 總字數：${w1+w2+w3+w4} 字`;
+          }
+
+        } else {
+          // 未登入狀態
+          pill?.classList.remove("logged-in");
+          if (textEl) textEl.textContent = "G 登入 Google 雲端同步";
+          if (pulseEl) pulseEl.style.display = "none";
+          if (iconEl) {
+            iconEl.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>`;
+          }
+          if (cardUser) cardUser.textContent = "尚未登入 Google 帳號";
+          if (cardEmail) cardEmail.textContent = "目前進度僅儲存在這台電腦的瀏覽器中";
+          if (logoutBtn) logoutBtn.style.display = "none";
+          if (loginSection) loginSection.style.display = "block";
+          if (syncSection) syncSection.style.display = "none";
+          if (avatarWrap) avatarWrap.textContent = "👤";
+        }
+      }
+
+      // 解碼 Google Identity Services 回傳之 JWT Token
+      handleGoogleCredential(credential) {
+        try {
+          const parts = credential.split('.');
+          if (parts.length === 3) {
+            const payload = JSON.parse(decodeURIComponent(escape(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))));
+            const email = payload.email || payload.sub;
+            const name = payload.name || payload.given_name || email.split('@')[0];
+            const picture = payload.picture || '';
+
+            state.currentUser = email;
+            state.currentUserName = name;
+            state.currentUserAvatar = picture;
+            localStorage.setItem("g4_writing_current_user", email);
+            localStorage.setItem("g4_writing_current_user_name", name);
+            if (picture) localStorage.setItem("g4_writing_current_user_avatar", picture);
+
+            this.showToast(`🎉 歡迎！已成功以 Google 帳號【${name}】登入！`, 3000);
+            this.afterUserLoggedIn();
+          }
+        } catch (e) {
+          console.error("JWT 解析失敗:", e);
+        }
+      }
+
+      promptFastGoogleLogin() {
+        const email = prompt("請輸入您的 Google 帳號（例：student@st.tc.edu.tw 或個人 Gmail）：", state.currentUser || "");
+        if (email && email.trim()) {
+          const cleanEmail = email.trim().toLowerCase();
+          const name = prompt("請輸入學生姓名或座號（例：林小明 或 40125）：", state.currentUserName || cleanEmail.split("@")[0]);
+          state.currentUser = cleanEmail;
+          state.currentUserName = name || cleanEmail.split("@")[0];
+          localStorage.setItem("g4_writing_current_user", state.currentUser);
+          localStorage.setItem("g4_writing_current_user_name", state.currentUserName);
+          this.showToast(`🎉 歡迎！已登入帳號【${state.currentUserName}】！`, 3000);
+          this.afterUserLoggedIn();
+        }
+      }
+
+      loginWithSchoolAccount() {
+        const input = document.getElementById("schoolAccountInput");
+        const val = input ? input.value.trim() : "";
+        if (!val) {
+          alert("請輸入學生 Google 帳號或座號！");
+          return;
+        }
+        state.currentUser = val.toLowerCase();
+        state.currentUserName = val.includes("@") ? val.split("@")[0] : `座號 ${val}`;
+        localStorage.setItem("g4_writing_current_user", state.currentUser);
+        localStorage.setItem("g4_writing_current_user_name", state.currentUserName);
+        this.showToast(`🎉 成功連線學生帳號【${state.currentUserName}】！`, 3000);
+        this.afterUserLoggedIn();
+      }
+
+      async afterUserLoggedIn() {
+        state.loadState();
+        this.updateGoogleAuthUI();
+        this.loadIslandData(this.currentIsland);
+        this.updateNavStepDots();
+
+        // 嘗試從雲端試算表自動下載先前的寫作紀錄
+        if (state.gasApiUrl) {
+          this.showToast("☁️ 正在連線 Google 雲端試算表檢索您先前的寫作進度...", 2500);
+          const hasCloudData = await state.loadFromCloud(state.currentUser);
+          if (hasCloudData) {
+            this.showToast("📥 成功從 Google 試算表同步先前的寫作進度！", 3500);
+            this.loadIslandData(this.currentIsland);
+            this.updateNavStepDots();
+          } else {
+            // 本地若已有內容，自動備份上去
+            state.syncToCloud(0);
+          }
+        }
+        this.updateGoogleAuthUI();
+      }
+
+      logoutGoogle() {
+        if (!confirm("確定要登出當前 Google 帳號嗎？（本機紀錄將予以保留）")) return;
+        state.currentUser = "";
+        state.currentUserName = "";
+        state.currentUserAvatar = "";
+        localStorage.removeItem("g4_writing_current_user");
+        localStorage.removeItem("g4_writing_current_user_name");
+        localStorage.removeItem("g4_writing_current_user_avatar");
+        state.loadState();
+        this.updateGoogleAuthUI();
+        this.loadIslandData(this.currentIsland);
+        this.updateNavStepDots();
+        this.showToast("👋 已登出 Google 帳號！", 2500);
+      }
+
+      saveGasApiUrl() {
+        const input = document.getElementById("gasApiUrlInput");
+        const val = input ? input.value.trim() : "";
+        state.gasApiUrl = val;
+        localStorage.setItem("g4_writing_gas_api_url", val);
+        this.showToast(val ? "✅ Google 試算表 Web App API 網址儲存成功！" : "已清除自訂 API 網址", 2800);
+        if (val && state.currentUser) {
+          state.syncToCloud(0);
+        }
+      }
+
+      async manualSyncToCloud() {
+        if (!state.currentUser) {
+          alert("請先登入 Google 帳號！");
+          return;
+        }
+        if (!state.gasApiUrl) {
+          alert("尚未設定 Google 試算表 Web App API 網址！請於下方教師專區設定。");
+          return;
+        }
+        this.showToast("☁️ 正在上傳同步至 Google 試算表...", 2000);
+        await state.syncToCloud(0);
+        this.updateGoogleAuthUI();
+        this.showToast("✅ 已成功同步備份至 Google 試算表！", 2500);
+      }
+
+      async manualLoadFromCloud() {
+        if (!state.currentUser) {
+          alert("請先登入 Google 帳號！");
+          return;
+        }
+        if (!state.gasApiUrl) {
+          alert("尚未設定 Google 試算表 Web App API 網址！");
+          return;
+        }
+        this.showToast("📥 正在從 Google 試算表下載進度...", 2000);
+        const ok = await state.loadFromCloud(state.currentUser);
+        if (ok) {
+          this.loadIslandData(this.currentIsland);
+          this.updateNavStepDots();
+          this.updateGoogleAuthUI();
+          this.showToast("✅ 成功從雲端更新為最新進度！", 2500);
+        } else {
+          this.showToast("⚠️ 雲端試算表尚無該帳號的歷史進度。", 3000);
+        }
+      }
+
     }
 
+    
+    // 全域 Google GSI 登入回調
+    window.handleGoogleCredentialResponse = function(response) {
+      if (window.islandApp && window.islandApp.handleGoogleCredential) {
+        window.islandApp.handleGoogleCredential(response.credential);
+      }
+    };
     window.islandApp = new IslandApp();
     window.app = window.islandApp.sceneDirector;
 
