@@ -132,9 +132,9 @@
     .island-step-dot.active { background: var(--primary); color: white; border-color: var(--primary); }
     .island-step-dot.completed { background: #e8f5e9; color: var(--success); border-color: #a5d6a7; }
 
-    /* 寫作與任務抽屜 (側邊滑出) */
+    /* 寫作與任務抽屜 (側邊滑出・放大版高舒適寬度 620px) */
     .drawer {
-      position: absolute; top: 84px; right: 20px; bottom: 20px; width: 560px; max-width: calc(100vw - 32px);
+      position: absolute; top: 84px; right: 20px; bottom: 20px; width: 620px; max-width: calc(100vw - 32px);
       background: var(--surface); border-radius: var(--radius); border: 1px solid var(--line);
       box-shadow: 0 16px 48px rgba(10, 30, 60, 0.2); z-index: 30; display: flex; flex-direction: column;
       overflow: hidden; transform: translateX(110%); transition: transform .32s cubic-bezier(0.16, 1, 0.3, 1);
@@ -144,8 +144,8 @@
       padding: 18px 24px; background: white; border-bottom: 1px solid var(--line);
       display: flex; align-items: center; justify-content: space-between;
     }
-    .drawer-title { font-size: 22px; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-    .drawer-close { font-size: 24px; color: #64748b; background: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+    .drawer-title { font-size: 24px; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+    .drawer-close { font-size: 26px; color: #64748b; background: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
     .drawer-close:hover { background: #f0f0f0; color: #0f172a; }
     .drawer-body { flex: 1; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; gap: 18px; }
 
@@ -155,9 +155,9 @@
       border-left: 5px solid var(--primary); border-radius: 12px; padding: 16px 20px;
       display: flex; gap: 16px; align-items: flex-start;
     }
-    .sprite-avatar { font-size: 38px; line-height: 1; }
-    .sprite-text { font-size: 16.5px; line-height: 1.75; color: #234; font-weight: 600; }
-    .sprite-speaker { font-weight: 900; color: var(--primary); margin-bottom: 4px; font-size: 17px; }
+    .sprite-avatar { font-size: 40px; line-height: 1; }
+    .sprite-text { font-size: 17.5px; line-height: 1.8; color: #234; font-weight: 600; }
+    .sprite-speaker { font-weight: 900; color: var(--primary); margin-bottom: 4px; font-size: 18px; }
 
     /* 好詞百寶箱與同儕觀摩卡 */
     .tools-accordion { display: flex; flex-direction: column; gap: 10px; }
@@ -165,10 +165,10 @@
       background: white; border: 1.5px solid var(--line); border-radius: 12px; padding: 14px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
-    .tool-title { font-size: 15px; font-weight: 900; color: var(--primary); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .tool-title { font-size: 16.5px; font-weight: 900; color: var(--primary); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
     .chips-group { display: flex; flex-wrap: wrap; gap: 8px; }
     .chip {
-      padding: 6px 12px; border-radius: 8px; font-size: 14px; font-weight: 700;
+      padding: 7px 14px; border-radius: 10px; font-size: 15.5px; font-weight: 700;
       background: #f4f7f9; border: 1.5px solid #dce4ec; color: #2c4a68; cursor: pointer;
     }
     .chip:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
@@ -177,15 +177,15 @@
     /* 寫作輸入區 */
     .writing-area { display: flex; flex-direction: column; gap: 10px; }
     .writing-textarea {
-      width: 100%; height: 165px; padding: 16px 18px; border-radius: 14px; border: 1.5px solid #c9d7e3;
-      font-size: 18.5px; font-family: var(--font-sans); line-height: 1.85; resize: none;
+      width: 100%; height: 175px; padding: 16px 18px; border-radius: 14px; border: 1.5px solid #c9d7e3;
+      font-size: 19.5px; font-family: var(--font-sans); line-height: 1.9; resize: none;
       background: #ffffff; color: #1f2937;
     }
     .writing-textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(29, 95, 138, 0.15); }
     
     /* 靈力能量條 (字數統計) */
     .energy-bar-wrap { display: flex; flex-direction: column; gap: 6px; }
-    .energy-bar-label { display: flex; justify-content: space-between; font-size: 15px; font-weight: 800; color: var(--text-muted); }
+    .energy-bar-label { display: flex; justify-content: space-between; font-size: 16px; font-weight: 800; color: var(--text-muted); }
     .energy-bar-bg { width: 100%; height: 10px; background: #e0e8ef; border-radius: 999px; overflow: hidden; }
     .energy-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #48cae4, #0077b6); transition: width .2s ease; }
     .energy-bar-fill.good { background: linear-gradient(90deg, #2a9d8f, #21867a); }
@@ -198,21 +198,21 @@
     .teacher-stamp-display { display: flex; align-items: center; justify-content: space-between; }
     .stamp-badge {
       display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
-      border-radius: 999px; font-weight: 900; font-size: 14.5px;
+      border-radius: 999px; font-weight: 900; font-size: 16px;
     }
     .stamp-badge.unreviewed { background: #ffe3dc; color: var(--danger); }
     .stamp-badge.approved { background: #d4edda; color: #155724; border: 2px solid #28a745; }
-    .red-pen-feedback { font-size: 14.5px; color: var(--danger); font-weight: 700; line-height: 1.6; padding: 8px 12px; background: #ffebee; border-radius: 8px; }
+    .red-pen-feedback { font-size: 16.5px; color: var(--danger); font-weight: 700; line-height: 1.7; padding: 8px 12px; background: #ffebee; border-radius: 8px; }
 
     /* 操作按鈕群 */
     .drawer-actions { padding: 18px 24px; background: white; border-top: 1px solid var(--line); display: flex; gap: 12px; }
     .btn-main {
-      flex: 1; padding: 13px 20px; border-radius: 12px; font-size: 16px; font-weight: 900;
+      flex: 1; padding: 14px 22px; border-radius: 12px; font-size: 17.5px; font-weight: 900;
       background: var(--primary); color: white; display: flex; justify-content: center; align-items: center; gap: 8px;
     }
     .btn-main:hover { background: #154668; }
     .btn-teacher {
-      padding: 13px 18px; border-radius: 12px; font-size: 15px; font-weight: 900;
+      padding: 14px 20px; border-radius: 12px; font-size: 16px; font-weight: 900;
       background: white; border: 1.5px solid var(--accent); color: var(--accent); display: flex; align-items: center; gap: 8px;
     }
     .btn-teacher:hover { background: #fff5f2; }
@@ -436,11 +436,11 @@
       background: #dcfce7; color: #15803d; border: 1px solid #86efac;
     }
     .step-num {
-      width: 25px; height: 25px; border-radius: 50%; background: rgba(0,0,0,0.12);
-      display: inline-flex; align-items: center; justify-content: center; font-size: 13.5px;
+      width: 28px; height: 28px; border-radius: 50%; background: rgba(0,0,0,0.12);
+      display: inline-flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900;
     }
     .wizard-step.active .step-num { background: #ffffff; color: var(--primary); font-weight: 900; }
-    .wizard-arrow { font-size: 13px; color: #94a3b8; }
+    .wizard-arrow { font-size: 14px; color: #94a3b8; }
 
     /* 階梯面板切換 */
     .wizard-panel {
@@ -452,27 +452,27 @@
       100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* Step 1 五要素點選卡樣式 */
+    /* Step 1 五要素點選卡樣式 (放大版高清晰度) */
     .step-header-card {
       background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-      border-left: 5px solid #16a34a; border-radius: 12px; padding: 14px 18px;
-      display: flex; flex-direction: column; gap: 6px;
+      border-left: 5px solid #16a34a; border-radius: 12px; padding: 16px 20px;
+      display: flex; flex-direction: column; gap: 8px;
     }
-    .step-header-title { font-size: 16.5px; font-weight: 900; color: #166534; display: flex; align-items: center; gap: 8px; }
-    .step-header-desc { font-size: 14.5px; color: #14532d; line-height: 1.6; font-weight: 600; }
+    .step-header-title { font-size: 19px; font-weight: 900; color: #166534; display: flex; align-items: center; gap: 8px; }
+    .step-header-desc { font-size: 16px; color: #14532d; line-height: 1.65; font-weight: 600; }
 
     .element-picker-card {
-      background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px;
-      display: flex; flex-direction: column; gap: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
     .picker-label {
-      font-size: 15px; font-weight: 900; display: flex; align-items: center; gap: 8px;
+      font-size: 17.5px; font-weight: 900; display: flex; align-items: center; gap: 8px;
     }
-    .picker-options { display: flex; flex-wrap: wrap; gap: 8px; }
+    .picker-options { display: flex; flex-wrap: wrap; gap: 10px; }
     .picker-opt-btn {
-      padding: 8px 15px; border-radius: 10px; font-size: 14.5px; font-weight: 800;
+      padding: 10px 18px; border-radius: 12px; font-size: 16.5px; font-weight: 800;
       background: #f8fafc; color: #334155; border: 1.5px solid #cbd5e1; cursor: pointer;
-      transition: all .15s ease; text-align: left;
+      transition: all .15s ease; text-align: left; line-height: 1.6;
     }
     .picker-opt-btn:hover { background: #e2e8f0; color: #0f172a; }
     .picker-opt-btn.selected {
@@ -480,13 +480,13 @@
       box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
     }
 
-    /* 挑戰者句型鷹架卡片專屬樣式 (拒絕直接給整句，透過句型與詞性提示引導學生親自填寫詞語組裝) */
+    /* 挑戰者句型鷹架卡片專屬樣式 (放大版高舒適度) */
     .intermediate-guided-banner {
-      background: #eff6ff; border-left: 4px solid #2563eb; padding: 12px 16px;
-      border-radius: 10px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(37,99,235,0.06);
+      background: #eff6ff; border-left: 5px solid #2563eb; padding: 14px 18px;
+      border-radius: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(37,99,235,0.06);
     }
     .guided-pattern-tab {
-      padding: 6px 14px; border-radius: 8px; font-size: 13.5px; font-weight: 800;
+      padding: 8px 18px; border-radius: 10px; font-size: 16px; font-weight: 800;
       background: #f1f5f9; color: #475569; border: 1.5px solid #cbd5e1; cursor: pointer;
       transition: all .15s ease;
     }
@@ -496,31 +496,31 @@
       box-shadow: 0 2px 6px rgba(37,99,235,0.25);
     }
     .guided-assembled-box {
-      margin-top: 8px; padding: 10px 14px; background: #f0fdf4; border: 1.5px solid #86efac;
-      border-radius: 10px; font-size: 15px; color: #15803d; font-weight: 700; line-height: 1.6;
+      margin-top: 10px; padding: 12px 18px; background: #f0fdf4; border: 1.5px solid #86efac;
+      border-radius: 12px; font-size: 17.5px; color: #15803d; font-weight: 700; line-height: 1.75;
     }
 
-    /* 漸進式思考鷹架樣式 (啟發學生自我動腦思考詞性，卡住時才點開靈感錦囊) */
+    /* 漸進式思考鷹架樣式 (放大版專為小學四年級大螢幕清晰閱讀設計) */
     .guided-pos-tag {
       display: inline-flex; align-items: center; gap: 4px;
-      padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 800;
+      padding: 4px 12px; border-radius: 999px; font-size: 15px; font-weight: 800;
       background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe;
     }
     .guided-thinking-prompt {
-      font-size: 14px; color: #1e293b; font-weight: 700; line-height: 1.55;
-      background: #f8fafc; padding: 8px 12px; border-radius: 8px; margin: 6px 0 8px 0;
-      border-left: 3.5px solid #3b82f6;
+      font-size: 17.5px; color: #1e293b; font-weight: 700; line-height: 1.7;
+      background: #f8fafc; padding: 12px 16px; border-radius: 10px; margin: 8px 0 10px 0;
+      border-left: 4.5px solid #3b82f6;
     }
     .guided-hint-toggle {
-      display: inline-flex; align-items: center; gap: 4px;
-      font-size: 13px; font-weight: 800; color: #b45309; background: #fef3c7;
-      border: 1px solid #fde68a; border-radius: 6px; padding: 4px 10px; cursor: pointer;
-      margin-top: 6px; transition: all .15s ease; width: fit-content;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 15.5px; font-weight: 800; color: #b45309; background: #fef3c7;
+      border: 1px solid #fde68a; border-radius: 8px; padding: 6px 14px; cursor: pointer;
+      margin-top: 8px; transition: all .15s ease; width: fit-content;
     }
     .guided-hint-toggle:hover { background: #fde68a; color: #78350f; }
     .guided-hint-box {
-      margin-top: 8px; padding: 12px 14px; background: #fffdf5; border: 1.5px solid #fef08a;
-      border-radius: 10px; display: none;
+      margin-top: 10px; padding: 14px 18px; background: #fffdf5; border: 1.5px solid #fef08a;
+      border-radius: 12px; display: none;
       user-select: none !important;
       -webkit-user-select: none !important;
       -moz-user-select: none !important;
@@ -530,13 +530,13 @@
     }
     .guided-hint-box.is-open { display: block; animation: fadeIn .2s ease; }
     .guided-idea-text {
-      font-size: 14.5px; color: #92400e; line-height: 1.65; font-weight: 700; margin-bottom: 8px;
+      font-size: 16.5px; color: #92400e; line-height: 1.7; font-weight: 700; margin-bottom: 10px;
       user-select: none !important;
       -webkit-user-select: none !important;
     }
     .reference-word-badge {
       display: inline-flex; align-items: center; gap: 4px;
-      padding: 5px 12px; border-radius: 8px; font-size: 14px; font-weight: 800;
+      padding: 6px 14px; border-radius: 10px; font-size: 16.5px; font-weight: 800;
       background: #fef3c7; color: #92400e; border: 1.5px solid #fde68a;
       box-shadow: 0 1px 3px rgba(0,0,0,0.03);
       cursor: default !important;
@@ -549,22 +549,22 @@
     }
     .no-copy-notice {
       display: flex; align-items: center; gap: 6px;
-      font-size: 12.5px; font-weight: 800; color: #b45309; background: #fffbeb;
-      padding: 6px 12px; border-radius: 6px; border: 1px dashed #fcd34d; margin-top: 8px;
+      font-size: 14.5px; font-weight: 800; color: #b45309; background: #fffbeb;
+      padding: 8px 14px; border-radius: 8px; border: 1px dashed #fcd34d; margin-top: 10px;
       user-select: none !important; -webkit-user-select: none !important;
     }
 
     /* 導航切換按鈕組 */
     .step-actions-bar {
-      display: flex; gap: 12px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);
+      display: flex; gap: 12px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line);
     }
     .btn-step-prev {
-      padding: 12px 18px; border-radius: 12px; font-size: 15px; font-weight: 800;
+      padding: 13px 22px; border-radius: 12px; font-size: 16px; font-weight: 800;
       background: #f1f5f9; color: #475569; border: 1.5px solid #cbd5e1; cursor: pointer;
     }
     .btn-step-prev:hover { background: #e2e8f0; }
     .btn-step-next {
-      flex: 1; padding: 13px 20px; border-radius: 12px; font-size: 16px; font-weight: 900;
+      flex: 1; padding: 14px 24px; border-radius: 12px; font-size: 17.5px; font-weight: 900;
       background: var(--primary); color: white; border: none; cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 8px;
       box-shadow: 0 4px 12px rgba(29, 95, 138, 0.25);
@@ -575,68 +575,68 @@
 
     /* Step 2 句子積木卡樣式 */
     .sentence-block-card {
-      background: #ffffff; border: 1.5px solid #e0e7ff; border-radius: 12px; padding: 14px;
-      display: flex; flex-direction: column; gap: 8px;
+      background: #ffffff; border: 1.5px solid #e0e7ff; border-radius: 14px; padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 10px;
     }
-    .sentence-block-title { font-size: 15px; font-weight: 900; color: #3730a3; display: flex; justify-content: space-between; }
+    .sentence-block-title { font-size: 17.5px; font-weight: 900; color: #3730a3; display: flex; justify-content: space-between; }
     .sentence-block-text {
-      background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px;
-      font-size: 15px; line-height: 1.7; color: #1e293b; font-weight: 600;
+      background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 12px 16px;
+      font-size: 17.5px; line-height: 1.75; color: #1e293b; font-weight: 600;
     }
 
     /* 組合預覽框 */
     .preview-box {
-      background: #fefce8; border: 1.5px dashed #f59e0b; border-radius: 12px; padding: 14px;
-      display: flex; flex-direction: column; gap: 8px;
+      background: #fefce8; border: 1.5px dashed #f59e0b; border-radius: 14px; padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 10px;
     }
-    .preview-title { font-size: 14.5px; font-weight: 900; color: #b45309; }
-    .preview-text { font-size: 15.5px; line-height: 1.75; color: #78350f; font-family: var(--font-sans); }
+    .preview-title { font-size: 17px; font-weight: 900; color: #b45309; }
+    .preview-text { font-size: 17.5px; line-height: 1.8; color: #78350f; font-family: var(--font-sans); }
 
 
     /* 三層成就模式專屬特色樣式 */
     /* 1. 初探者檢核打勾清單 */
     .beginner-checklist {
-      background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 12px; padding: 12px;
-      display: flex; flex-direction: column; gap: 8px;
+      background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 14px; padding: 14px;
+      display: flex; flex-direction: column; gap: 10px;
     }
     .check-item {
-      display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; color: #166534;
-      cursor: pointer; background: #ffffff; padding: 8px 12px; border-radius: 8px; border: 1px solid #bbf7d0;
+      display: flex; align-items: center; gap: 10px; font-size: 15.5px; font-weight: 700; color: #166534;
+      cursor: pointer; background: #ffffff; padding: 10px 14px; border-radius: 10px; border: 1px solid #bbf7d0;
       transition: all .15s ease;
     }
     .check-item.checked { background: #dcfce7; border-color: #22c55e; }
     .check-box-icon {
-      width: 20px; height: 20px; border-radius: 6px; border: 2px solid #22c55e;
-      display: inline-grid; place-items: center; font-size: 13px; font-weight: 900;
+      width: 22px; height: 22px; border-radius: 6px; border: 2px solid #22c55e;
+      display: inline-grid; place-items: center; font-size: 14px; font-weight: 900;
     }
 
     /* 2. 挑戰者自訂填寫框 */
     .element-custom-row {
-      display: flex; gap: 6px; align-items: center; margin-top: 4px;
+      display: flex; gap: 8px; align-items: center; margin-top: 6px;
     }
     .element-custom-input {
-      flex: 1; padding: 6px 10px; border-radius: 6px; border: 1.5px solid #cbd5e1;
-      font-size: 12.5px; font-family: var(--font-sans);
+      flex: 1; padding: 12px 16px; border-radius: 10px; border: 1.5px solid #cbd5e1;
+      font-size: 17.5px; font-family: var(--font-sans); font-weight: 600;
     }
     .element-custom-input:focus { border-color: var(--primary); outline: none; }
 
     /* 3. 大師級金色修辭挑戰 */
     .master-challenge-card {
       background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-      border: 2px solid #f59e0b; border-radius: 14px; padding: 14px;
-      display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.15);
+      border: 2px solid #f59e0b; border-radius: 14px; padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.15);
     }
     .master-badge-tag {
-      background: #b45309; color: #fff; font-size: 11px; font-weight: 900;
-      padding: 3px 8px; border-radius: 999px; width: fit-content;
+      background: #b45309; color: #fff; font-size: 14px; font-weight: 900;
+      padding: 4px 12px; border-radius: 999px; width: fit-content;
     }
     .master-rhetoric-box {
-      background: #ffffff; border: 1.5px solid #fde68a; border-radius: 10px; padding: 10px;
-      display: flex; flex-direction: column; gap: 6px;
+      background: #ffffff; border: 1.5px solid #fde68a; border-radius: 12px; padding: 12px 14px;
+      display: flex; flex-direction: column; gap: 8px;
     }
     .rhetoric-status-light {
-      display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700;
-      color: #92400e; padding: 3px 8px; border-radius: 6px; background: #fef3c7;
+      display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700;
+      color: #92400e; padding: 4px 10px; border-radius: 6px; background: #fef3c7;
     }
     .rhetoric-status-light.achieved { background: #dcfce7; color: #15803d; }
 
@@ -8767,13 +8767,13 @@ puzzleSentences: [
           const tipCard = document.createElement("div");
           tipCard.className = "master-challenge-card";
           tipCard.innerHTML = `
-            <span class="master-badge-tag" style="font-size: 13.5px; padding: 4px 12px;">👑 大師級・深層審題思維定位</span>
-            <div style="font-size: 15px; font-weight: 700; color: #78350f; line-height: 1.7;">
+            <span class="master-badge-tag" style="font-size: 15px; padding: 5px 14px;">👑 大師級・深層審題思維定位</span>
+            <div style="font-size: 17px; font-weight: 700; color: #78350f; line-height: 1.75;">
               真正的寫作大師在動筆前必先「沉思審題」！請閉上雙眼回想當時的情境，依據每一欄的「審題啟發問題」填入鮮活生動的詞句，為後續段落注入文學張力：
             </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 10px;" oncopy="window.islandApp.blockCopy(event)" oncut="window.islandApp.blockCopy(event)" oncontextmenu="window.islandApp.blockCopy(event)" ondragstart="window.islandApp.blockCopy(event)">
-              <span style="font-size: 13.5px; color: #b45309; font-weight: 900;">💎 推薦四上高級成語（僅供閱讀激發靈感，請自己動腦親手打字）：</span>
-              ${data.words.map(w => `<span class="reference-word-badge" style="font-size: 13.5px; padding: 5px 12px; font-weight: 700;" onclick="window.islandApp.onReferenceChipClick('${w}')">📖 ${w}</span>`).join("")}
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; background: rgba(255,255,255,0.7); padding: 12px 16px; border-radius: 12px;" oncopy="window.islandApp.blockCopy(event)" oncut="window.islandApp.blockCopy(event)" oncontextmenu="window.islandApp.blockCopy(event)" ondragstart="window.islandApp.blockCopy(event)">
+              <span style="font-size: 16px; color: #b45309; font-weight: 900;">💎 推薦四上高級成語（僅供閱讀激發靈感，請自己動腦親手打字）：</span>
+              ${data.words.map(w => `<span class="reference-word-badge" style="font-size: 16px; padding: 6px 14px; font-weight: 800;" onclick="window.islandApp.onReferenceChipClick('${w}')">📖 ${w}</span>`).join("")}
               <div class="no-copy-notice" style="width: 100%;">
                 <span>🔒 提示：高級成語僅供閱讀思考，不可點擊貼上或複製，請親自動腦輸入！</span>
               </div>
@@ -8796,25 +8796,25 @@ puzzleSentences: [
 
             card.innerHTML = `
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div class="picker-label" style="background: ${color}; padding: 6px 12px; border-radius: 8px; font-size: 15px;">
+                <div class="picker-label" style="background: ${color}; padding: 8px 14px; border-radius: 10px; font-size: 18px;">
                   <span>${promptInfo.title}</span>
                 </div>
-                <span style="font-size: 13.5px; font-weight: 800; color: #b45309;">💡 審題引導</span>
+                <span style="font-size: 15.5px; font-weight: 800; color: #b45309;">💡 審題引導</span>
               </div>
 
               <!-- 審題引導問題 -->
-              <div style="font-size: 15px; line-height: 1.6; color: #334155; font-weight: 700; padding: 6px 2px;">
+              <div style="font-size: 17.5px; line-height: 1.7; color: #334155; font-weight: 700; padding: 6px 2px;">
                 ${promptInfo.question}
               </div>
 
               <!-- 聚焦提示 -->
-              <div style="font-size: 13.5px; color: #64748b; line-height: 1.5;">
+              <div style="font-size: 15.5px; color: #64748b; line-height: 1.6;">
                 ${promptInfo.hint}
               </div>
 
               <!-- 大師輸入框 -->
-              <div style="margin-top: 6px;">
-                <input class="element-custom-input" id="masterInput_${key}" style="padding: 11px 14px; font-weight: 600; font-size: 15px; width: 100%; border: 1.5px solid #e2e8f0; border-radius: 10px;" placeholder="${promptInfo.placeholder}" value="${curVal}" onfocus="window.islandApp.lastFocusedElement='${key}'" oninput="window.islandApp.setElementCustomText('${key}', this.value)">
+              <div style="margin-top: 8px;">
+                <input class="element-custom-input" id="masterInput_${key}" style="padding: 12px 16px; font-weight: 700; font-size: 18px; width: 100%; border: 1.5px solid #e2e8f0; border-radius: 10px;" placeholder="${promptInfo.placeholder}" value="${curVal}" onfocus="window.islandApp.lastFocusedElement='${key}'" oninput="window.islandApp.setElementCustomText('${key}', this.value)">
               </div>
             `;
             list.appendChild(card);
@@ -8837,11 +8837,11 @@ puzzleSentences: [
         const tipCard = document.createElement("div");
         tipCard.className = "intermediate-guided-banner";
         tipCard.innerHTML = `
-          <div style="font-size: 16px; font-weight: 900; color: #1e40af; display: flex; align-items: center; gap: 8px;">
+          <div style="font-size: 18px; font-weight: 900; color: #1e40af; display: flex; align-items: center; gap: 8px;">
             <span>⚔️ 挑戰者句型鷹架：為各要素選句型，依詞性填入好詞！</span>
           </div>
-          <div style="font-size: 14.5px; color: #1e3a8a; margin-top: 6px; line-height: 1.6; font-weight: 600;">
-            💡 <strong>拒絕偷懶挑現成句子！</strong>請為每個要素選擇句型，依據<strong>【詞性提示】</strong>親手打字或點選推薦的<strong>好詞積木</strong>填入底線，親手組裝出鮮活生動的作文要素！
+          <div style="font-size: 16px; color: #1e3a8a; margin-top: 6px; line-height: 1.7; font-weight: 600;">
+            💡 <strong>拒絕偷懶挑現成句子！</strong>請為每個要素選擇句型，依據<strong>【詞性提示】</strong>親手打字或閱讀推薦的<strong>好詞積木</strong>填入底線，親手組裝出鮮活生動的作文要素！
           </div>
         `;
         list.appendChild(tipCard);
@@ -8892,13 +8892,13 @@ puzzleSentences: [
             const ideaText = b.ideaAngles || '思考方向：試著回想生活情境，用貼切生動的詞語來描述。';
 
             blanksHtml += `
-              <div class="guided-blank-row" style="margin-top: 10px; background: #f8fafc; padding: 12px 14px; border-radius: 12px; border: 1.5px solid #e2e8f0;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 15px; font-weight: 900; color: #1e293b;">【${b.label}】</span>
+              <div class="guided-blank-row" style="margin-top: 12px; background: #f8fafc; padding: 14px 16px; border-radius: 14px; border: 1.5px solid #e2e8f0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 18px; font-weight: 900; color: #1e293b;">【${b.label}】</span>
                     ${posBadge}
                   </div>
-                  ${currentVal ? '<span style="font-size: 13.5px; color: #16a34a; font-weight: 800;">✓ 已親自填寫</span>' : '<span style="font-size: 13px; color: #dc2626; font-weight: 800;">待輸入自己的詞語</span>'}
+                  ${currentVal ? '<span style="font-size: 15.5px; color: #16a34a; font-weight: 800;">✓ 已親自填寫</span>' : '<span style="font-size: 15px; color: #dc2626; font-weight: 800;">待輸入自己的詞語</span>'}
                 </div>
 
                 <!-- 🧠 大腦想一想思考導引問句 (激發內在聯想，非被動點選) -->
@@ -8907,17 +8907,17 @@ puzzleSentences: [
                 </div>
 
                 <!-- 學生親手輸入框 (預設鼓勵親自打字) -->
-                <div style="margin-top: 8px;">
+                <div style="margin-top: 10px;">
                   <input class="element-custom-input" 
                          id="guidedInput_${key}_${b.key}"
                          value="${currentVal.replace(/"/g, '&quot;')}" 
                          placeholder="${b.placeholder || '請親手輸入你想到的詞語（試著用自己的話寫出來）...'}" 
-                         style="padding: 10px 14px; font-size: 15px; font-weight: 600; width: 100%; border: 1.5px solid #94a3b8; border-radius: 10px; box-sizing: border-box; background: #ffffff;"
+                         style="padding: 12px 16px; font-size: 18px; font-weight: 700; width: 100%; border: 1.5px solid #94a3b8; border-radius: 12px; box-sizing: border-box; background: #ffffff;"
                          oninput="window.islandApp.setGuidedBlankText('${key}', '${b.key}', this.value)">
                 </div>
 
                 <!-- 💡 思考卡住時的按需展開靈感錦囊 (預設折疊，絕不直接攤開現成答案) -->
-                <div style="margin-top: 6px;">
+                <div style="margin-top: 8px;">
                   <button type="button" class="guided-hint-toggle" id="guidedHintBtn_${key}_${b.key}" onclick="window.islandApp.toggleGuidedHint('${key}', '${b.key}')">
                     💡 思考不出來嗎？點我看靈感提點
                   </button>
@@ -8925,8 +8925,8 @@ puzzleSentences: [
                     <div class="guided-idea-text">
                       ${ideaText}
                     </div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px;">
-                      <span style="font-size: 13.5px; color: #92400e; font-weight: 900;">📚 四上教材參考好詞（僅供眼睛閱讀激發靈感）：</span>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px;">
+                      <span style="font-size: 16px; color: #92400e; font-weight: 900;">📚 四上教材參考好詞（僅供眼睛閱讀激發靈感）：</span>
                       ${chipsHtml}
                     </div>
                     <div class="no-copy-notice">
@@ -8944,19 +8944,19 @@ puzzleSentences: [
 
           card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <div class="picker-label" style="background: ${color}; padding: 6px 12px; border-radius: 8px; font-size: 15px;">
+              <div class="picker-label" style="background: ${color}; padding: 8px 14px; border-radius: 10px; font-size: 18px;">
                 <span>${frameInfo.label}</span>
               </div>
-              <span style="font-size: 13.5px; font-weight: 800; color: #2563eb;">📐 句型鷹架</span>
+              <span style="font-size: 15.5px; font-weight: 800; color: #2563eb;">📐 句型鷹架</span>
             </div>
 
             <!-- 句型切換頁籤 -->
-            <div style="display: flex; gap: 8px; margin-top: 4px;">
+            <div style="display: flex; gap: 10px; margin-top: 6px;">
               ${patternTabs}
             </div>
 
             <!-- 底線與詞性導引欄 -->
-            <div style="margin-top: 4px;">
+            <div style="margin-top: 6px;">
               ${blanksHtml}
             </div>
 
