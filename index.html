@@ -7292,7 +7292,8 @@ puzzleSentences: [
         }
       }
 
-      // 【全新升級】：搭乘寫作小飛機載著小朋友跨島飛行過場動畫
+      // 【全面重構：電影級物理跑道平穩起降飛行動畫】
+      // 具備：跑道直線助跑加速 ➔ 抬頭離陸 ➔ 平緩爬升 ➔ 巡航轉彎側傾 ➔ 對正下滑道 ➔ 拉平接地 ➔ 跑道平穩減速滑行
       playAirplaneFlight(fromIdx, toIdx, onComplete) {
         if (this.isFlyingAirplane) return;
         this.isFlyingAirplane = true;
@@ -7322,79 +7323,183 @@ puzzleSentences: [
         const pEndIsland = new THREE.Vector3(...toData.position);
 
         const wStart = pStartIsland.clone().add(new THREE.Vector3(...fromCfg.localPos));
-        wStart.y += 0.12;
         const wEnd = pEndIsland.clone().add(new THREE.Vector3(...toCfg.localPos));
-        wEnd.y += 0.12;
 
-        const takeoffDir = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), fromCfg.angle).normalize();
-        const landingDir = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), toCfg.angle).normalize();
+        // 跑道航向向量 (沿跑道柏油路筆直方向)
+        const dirStart = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), fromCfg.angle).normalize();
+        const dirEnd = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), toCfg.angle).normalize();
 
-        const climbPoint = wStart.clone().addScaledVector(takeoffDir, 6.0);
-        climbPoint.y += 6.5;
+        const groundYStart = wStart.y + 0.08;
+        const groundYEnd = wEnd.y + 0.08;
 
-        const midPoint = new THREE.Vector3().addVectors(wStart, wEnd).multiplyScalar(0.5);
-        midPoint.y += 18.0;
+        // ---------- 1. 構建高真實度物理航線軌跡點 ----------
+        // 起飛跑道段：
+        // pt0: 跑道端頭助跑起點 (完全水平貼地)
+        const pt0 = wStart.clone().addScaledVector(dirStart, -(3.4)); pt0.y = groundYStart;
+        // pt1: 跑道中段平穩加速點 (完全水平貼地)
+        const pt1 = wStart.clone().addScaledVector(dirStart, -(0.6)); pt1.y = groundYStart;
+        // pt2: 跑道末端抬頭離陸點 (剛剛升空離地)
+        const pt2 = wStart.clone().addScaledVector(dirStart, 2.6); pt2.y = groundYStart + 0.28;
+        // pt3: 平緩初始爬升點 (14度平穩爬升)
+        const pt3 = wStart.clone().addScaledVector(dirStart, 8.5); pt3.y = groundYStart + 3.8;
+        // pt4: 出港進入巡航高度
+        const pt4 = wStart.clone().addScaledVector(dirStart, 16.5); pt4.y = groundYStart + 10.5;
 
-        const approachPoint = wEnd.clone().addScaledVector(landingDir, -6.5);
-        approachPoint.y += 5.5;
+        // 海天巡航段：
+        // pt5: 兩島跨海最高巡航點
+        const midPos = new THREE.Vector3().addVectors(pStartIsland, pEndIsland).multiplyScalar(0.5);
+        const pt5 = midPos.clone();
+        pt5.y = Math.max(groundYStart, groundYEnd) + 16.5;
+
+        // 降落進場跑道段：
+        // pt6: 進港航道對正點 (在空中提早 18 單位對齊目標跑道中心線)
+        const pt6 = wEnd.clone().addScaledVector(dirEnd, -(17.5)); pt6.y = groundYEnd + 8.8;
+        // pt7: 平緩進場下滑道 (下滑角約 7 度，絕非俯衝墜機)
+        const pt7 = wEnd.clone().addScaledVector(dirEnd, -(9.5)); pt7.y = groundYEnd + 4.2;
+        // pt8: 跑道斑馬線上方拉平接地點 (Touchdown，後輪輕柔著陸)
+        const pt8 = wEnd.clone().addScaledVector(dirEnd, -(2.8)); pt8.y = groundYEnd + 0.12;
+        // pt9: 跑道中央滑行減速點 (完全水平貼地)
+        const pt9 = wEnd.clone().addScaledVector(dirEnd, -(0.4)); pt9.y = groundYEnd;
+        // pt10: 跑道終點平穩停機點 (平穩收油門停妥)
+        const pt10 = wEnd.clone().addScaledVector(dirEnd, 0.8); pt10.y = groundYEnd;
 
         const flightCurve = new THREE.CatmullRomCurve3([
-          wStart,
-          climbPoint,
-          midPoint,
-          approachPoint,
-          wEnd
+          pt0, pt1, pt2, pt3, pt4, pt5, pt6, pt7, pt8, pt9, pt10
         ]);
 
         const banner = document.getElementById("airplaneFlightBanner");
         const bannerText = document.getElementById("airplaneFlightText");
         if (banner && bannerText) {
-          bannerText.textContent = `✈️ 登機啟航！搭乘寫作小飛機前往【${toData.shortName}】～`;
+          bannerText.textContent = `✈️ 跑道起飛！搭乘寫作小飛機前往【${toData.shortName}】～`;
           banner.classList.add("active");
         }
 
         sd.adventureAirplane.visible = true;
 
-        const duration = 4000;
+        // 總飛行時長 5.8 秒，優雅充裕且極具儀式感
+        const duration = 5800;
         const startTime = performance.now();
+        let hasTouchedDown = false;
 
         const animateFlight = (now) => {
           const elapsed = now - startTime;
           const u = Math.min(1.0, elapsed / duration);
-          const t = u < 0.5 ? 2 * u * u : -1 + (4 - 2 * u) * u;
+          // 經典 Smoothstep 緩動：靜止平穩加速 ➔ 勻速巡航 ➔ 平穩減速滑行停妥
+          const t = u * u * (3 - 2 * u);
 
           const currentPos = flightCurve.getPoint(t);
-          const nextT = Math.min(1.0, t + 0.015);
+          const nextT = Math.min(1.0, t + 0.012);
           const nextPos = flightCurve.getPoint(nextT);
           const tangent = new THREE.Vector3().subVectors(nextPos, currentPos).normalize();
 
+          // 1. 位置更新與地面貼地約束
           sd.adventureAirplane.position.copy(currentPos);
-          if (tangent.lengthSq() > 0.001) {
-            sd.adventureAirplane.lookAt(currentPos.clone().add(tangent));
+
+          // 跑道助跑階段 (t < 0.15)：機輪嚴格平貼起點跑道表面
+          if (t < 0.15) {
+            sd.adventureAirplane.position.y = groundYStart;
+          } 
+          // 跑道著陸減速滑行階段 (t > 0.88)：機輪嚴格平貼終點跑道表面
+          else if (t > 0.88) {
+            sd.adventureAirplane.position.y = groundYEnd;
           }
 
-          if (sd.adventureAirplane.userData.propeller) {
-            sd.adventureAirplane.userData.propeller.rotation.z += 0.8;
-          }
+          // 2. 姿態與朝向精準解算 (小飛機機鼻在 +Z 軸)
+          // 構造標準正交基：Z 軸為前進切線，Y 軸為向上，X 軸為側向
+          if (tangent.lengthSq() > 0.0001) {
+            const zAxis = tangent.clone().normalize();
+            let upVec = new THREE.Vector3(0, 1, 0);
 
-          if (t > 0.15 && t < 0.85) {
-            const bankAngle = Math.sin(t * Math.PI * 2) * 0.22;
-            sd.adventureAirplane.rotation.z += bankAngle;
-            sd.adventureAirplane.position.y += Math.sin(elapsed * 0.015) * 0.12;
+            // 空中巡航段 (0.22 ~ 0.82) 引入物理轉彎側傾角 (Bank Roll)
+            let bankRoll = 0;
+            if (t >= 0.22 && t <= 0.82) {
+              // 依據曲線側向彎曲計算側向傾斜
+              const laterT = Math.min(1.0, t + 0.03);
+              const laterTangent = new THREE.Vector3().subVectors(flightCurve.getPoint(laterT), nextPos).normalize();
+              const turnDelta = new THREE.Vector3().crossVectors(tangent, laterTangent).y;
+              bankRoll = THREE.MathUtils.clamp(turnDelta * 12.0, -0.32, 0.32);
+              
+              // 加上微風浮力微幅上下起伏 (0.15 單位)
+              sd.adventureAirplane.position.y += Math.sin(elapsed * 0.009) * 0.14;
 
-            if (Math.random() < 0.35 && sd.spawnSmokePuff) {
-              const exhaustPos = currentPos.clone().addScaledVector(tangent, -1.2);
-              sd.spawnSmokePuff(exhaustPos);
+              // 巡航引擎煙圈
+              if (Math.random() < 0.32 && sd.spawnSmokePuff) {
+                const exhaustPos = currentPos.clone().addScaledVector(tangent, -(1.3));
+                sd.spawnSmokePuff(exhaustPos);
+              }
+            } 
+            // 起飛離陸瞬間 (0.15 ~ 0.22)：機頭平滑抬頭仰角 (Pitch Up ~10度)
+            else if (t >= 0.15 && t < 0.22) {
+              const pitchProg = (t - 0.15) / 0.07;
+              zAxis.y += pitchProg * 0.18;
+              zAxis.normalize();
+            }
+            // 著陸拉平瞬間 (0.82 ~ 0.88)：機頭微抬 (Flare ~4度)
+            else if (t >= 0.82 && t <= 0.88) {
+              const flareProg = (t - 0.82) / 0.06;
+              zAxis.y += (1.0 - flareProg) * 0.08;
+              zAxis.normalize();
+            }
+
+            const xAxis = new THREE.Vector3().crossVectors(upVec, zAxis).normalize();
+            const yAxis = new THREE.Vector3().crossVectors(zAxis, xAxis).normalize();
+
+            // 套用旋轉矩陣，確保機鼻永遠 100% 朝著前進方向
+            const rotMatrix = new THREE.Matrix4().makeBasis(xAxis, yAxis, zAxis);
+            sd.adventureAirplane.quaternion.setFromRotationMatrix(rotMatrix);
+
+            // 若有轉彎側傾，沿本機 Z 軸旋轉
+            if (Math.abs(bankRoll) > 0.001) {
+              const rollQuat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), bankRoll);
+              sd.adventureAirplane.quaternion.multiply(rollQuat);
             }
           }
 
-          const camOffset = tangent.clone().multiplyScalar(-14.5);
-          camOffset.y += 6.5;
-          const targetCamPos = currentPos.clone().add(camOffset);
-          const targetLookAt = currentPos.clone().addScaledVector(tangent, 5.0);
+          // 3. 螺旋槳動態旋轉速比
+          if (sd.adventureAirplane.userData.propeller) {
+            let propSpeed = 0.85;
+            if (t < 0.12) {
+              // 助跑起步：轉速平滑提升
+              propSpeed = 0.25 + (t / 0.12) * 0.6;
+            } else if (t > 0.88) {
+              // 著陸滑行：發動機收油門，轉速降緩
+              propSpeed = 0.85 - ((t - 0.88) / 0.12) * 0.65;
+            }
+            sd.adventureAirplane.userData.propeller.rotation.z += propSpeed;
+          }
 
-          sd.camera.position.lerp(targetCamPos, 0.08);
-          sd.controls.target.lerp(targetLookAt, 0.08);
+          // 4. 接地瞬間特效 (Touchdown Smoke)
+          if (!hasTouchedDown && t >= 0.86) {
+            hasTouchedDown = true;
+            if (bannerText) {
+              bannerText.textContent = `🛬 順利降落跑道！正在減速滑行前往【${toData.shortName}】航廈...`;
+            }
+            if (sd.spawnSmokePuff) {
+              const touchPos = currentPos.clone();
+              touchPos.y = groundYEnd;
+              sd.spawnSmokePuff(touchPos);
+            }
+          }
+
+          // 5. 電影級長焦跟拍鏡頭平滑跟隨
+          let camDistance = 14.0;
+          let camHeight = 5.8;
+          if (t < 0.15) {
+            // 助跑時：鏡頭在起點跑道斜後側目送起飛
+            camDistance = 11.0;
+            camHeight = 4.2;
+          } else if (t > 0.86) {
+            // 著陸時：鏡頭拉至跑道側前方迎接小飛機平穩停妥
+            camDistance = 12.0;
+            camHeight = 4.5;
+          }
+          const camOffset = tangent.clone().multiplyScalar(-camDistance);
+          camOffset.y += camHeight;
+          const targetCamPos = currentPos.clone().add(camOffset);
+          const targetLookAt = currentPos.clone().addScaledVector(tangent, 3.5);
+
+          sd.camera.position.lerp(targetCamPos, 0.075);
+          sd.controls.target.lerp(targetLookAt, 0.075);
 
           if (u < 1.0) {
             requestAnimationFrame(animateFlight);
@@ -7402,6 +7507,7 @@ puzzleSentences: [
             if (banner) banner.classList.remove("active");
             this.isFlyingAirplane = false;
 
+            // 停妥在目標島嶼跑道停機坪
             sd.updateAirplaneParked(toIdx);
 
             this.currentIsland = toIdx;
@@ -7411,11 +7517,11 @@ puzzleSentences: [
             this.showToast(`🛬 平安抵達【${toData.name}】！開啟全新篇章寫作！`, 2800);
 
             const targetPos = CURRICULUM_DATA[toIdx].position;
-            const finalCam = new THREE.Vector3(targetPos[0] + 10, targetPos[1] + 11, targetPos[2] + 13);
-            const finalLook = new THREE.Vector3(targetPos[0] - 0.5, targetPos[1] + 3.0, targetPos[2]);
+            const finalCam = new THREE.Vector3(targetPos[0] + 15, targetPos[1] + 15, targetPos[2] + 18);
+            const finalLook = new THREE.Vector3(targetPos[0] - 1.0, targetPos[1] + 3.2, targetPos[2]);
 
             if (toIdx === 4) {
-              sd.flyTo(new THREE.Vector3(targetPos[0] + 0.8, targetPos[1] + 7.8, targetPos[2] + 7.8), new THREE.Vector3(targetPos[0], targetPos[1] + 5.2, targetPos[2] + 1.2), () => {
+              sd.flyTo(new THREE.Vector3(targetPos[0] + 1.2, targetPos[1] + 9.5, targetPos[2] + 11.5), new THREE.Vector3(targetPos[0], targetPos[1] + 5.0, targetPos[2] + 1.5), () => {
                 this.openGuardianModal();
                 if (onComplete) onComplete();
               });
