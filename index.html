@@ -48,45 +48,45 @@
 
     /* 頂部導航列 */
     .topbar {
-      position: absolute; top: 0; left: 0; right: 0; height: 64px; z-index: 20;
+      position: absolute; top: 0; left: 0; right: 0; height: 72px; z-index: 20;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 20px; background: rgba(255, 253, 249, 0.92); backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--line); box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+      padding: 0 24px; background: rgba(255, 253, 249, 0.94); backdrop-filter: blur(10px);
+      border-bottom: 1.5px solid var(--line); box-shadow: 0 2px 12px rgba(0,0,0,0.05);
     }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .brand-icon { font-size: 28px; }
-    .brand-title { font-size: 18px; font-weight: 900; color: var(--primary); letter-spacing: 0.5px; }
-    .brand-subtitle { font-size: 12px; color: var(--text-muted); font-weight: 500; }
-    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-icon { font-size: 32px; }
+    .brand-title { font-size: 21px; font-weight: 900; color: var(--primary); letter-spacing: 0.5px; }
+    .brand-subtitle { font-size: 13.5px; color: var(--text-muted); font-weight: 600; }
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
     .tier-badge {
-      display: flex; align-items: center; gap: 6px; padding: 6px 14px;
-      background: var(--primary-light); color: var(--primary); font-size: 13px; font-weight: 700;
-      border-radius: 999px; border: 1px solid rgba(29, 95, 138, 0.2);
+      display: flex; align-items: center; gap: 8px; padding: 7px 16px;
+      background: var(--primary-light); color: var(--primary); font-size: 14.5px; font-weight: 800;
+      border-radius: 999px; border: 1.5px solid rgba(29, 95, 138, 0.25);
     }
     .btn-top {
-      padding: 7px 15px; border-radius: 999px; font-size: 13.5px; font-weight: 700;
-      background: white; border: 1px solid var(--line); color: var(--text);
-      display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      padding: 8px 18px; border-radius: 999px; font-size: 15px; font-weight: 800;
+      background: white; border: 1.5px solid var(--line); color: var(--text);
+      display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
     .btn-top:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
 
     /* Google 帳號與雲端同步狀態膠囊 */
     .google-auth-pill {
-      display: flex; align-items: center; gap: 8px; padding: 6px 14px;
-      border-radius: 999px; font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; gap: 8px; padding: 7px 16px;
+      border-radius: 999px; font-size: 14.5px; font-weight: 800;
       background: white; border: 1.5px solid #4285f4; color: #1e293b;
       cursor: pointer; transition: all .2s ease; box-shadow: 0 2px 8px rgba(66, 133, 244, 0.18);
     }
     .google-auth-pill:hover { background: #f0f7ff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(66, 133, 244, 0.28); }
     .google-auth-pill.logged-in { border-color: #10b981; background: #ecfdf5; color: #065f46; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2); }
     .google-auth-pill.logged-in:hover { background: #d1fae5; }
-    .google-user-avatar { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; border: 1.5px solid #10b981; }
+    .google-user-avatar { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1.5px solid #10b981; }
     .sync-pulse { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulseDot 2s infinite; }
     @keyframes pulseDot { 0% { opacity: 0.4; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.4; transform: scale(0.9); } }
 
     /* Google 雲端同步彈窗面板 */
     .auth-tab-btn {
-      flex: 1; padding: 10px; border: none; background: #f1f5f9; font-size: 13.5px; font-weight: 700;
+      flex: 1; padding: 11px; border: none; background: #f1f5f9; font-size: 14.5px; font-weight: 800;
       color: #64748b; border-radius: 8px; cursor: pointer; transition: all .2s;
     }
     .auth-tab-btn.active { background: white; color: #1e293b; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
@@ -100,120 +100,120 @@
     }
     .island-marker:hover { transform: translate(-50%, -105%) scale(1.06); }
     .marker-bubble {
-      display: flex; align-items: center; gap: 8px; padding: 7px 14px;
-      background: rgba(255, 255, 255, 0.95); border-radius: 12px; border: 2px solid var(--primary);
+      display: flex; align-items: center; gap: 10px; padding: 9px 16px;
+      background: rgba(255, 255, 255, 0.95); border-radius: 14px; border: 2px solid var(--primary);
       box-shadow: 0 8px 24px rgba(29, 95, 138, 0.25); white-space: nowrap;
     }
     .marker-bubble.guardian { border-color: var(--accent); }
-    .marker-icon { font-size: 19px; }
-    .marker-title { font-size: 14px; font-weight: 900; color: var(--primary); }
+    .marker-icon { font-size: 22px; }
+    .marker-title { font-size: 16px; font-weight: 900; color: var(--primary); }
     .marker-status {
-      font-size: 11px; padding: 2px 7px; border-radius: 999px; font-weight: 700;
+      font-size: 12.5px; padding: 3px 9px; border-radius: 999px; font-weight: 800;
       background: #e0e0e0; color: #666;
     }
     .marker-status.passed { background: #d4edda; color: #155724; }
     .marker-pin {
-      width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent;
-      border-top: 9px solid var(--primary); margin-top: -1px;
+      width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent;
+      border-top: 10px solid var(--primary); margin-top: -1px;
     }
     .marker-bubble.guardian + .marker-pin { border-top-color: var(--accent); }
 
     /* 底部導航島嶼進度列 */
     .bottom-bar {
-      position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 20;
-      display: flex; align-items: center; gap: 10px; padding: 8px 18px;
-      background: rgba(255, 253, 249, 0.92); backdrop-filter: blur(8px);
-      border-radius: 999px; border: 1px solid var(--line); box-shadow: var(--shadow);
+      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 20;
+      display: flex; align-items: center; gap: 12px; padding: 10px 22px;
+      background: rgba(255, 253, 249, 0.94); backdrop-filter: blur(10px);
+      border-radius: 999px; border: 1.5px solid var(--line); box-shadow: var(--shadow);
     }
     .island-step-dot {
-      display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px;
-      font-size: 13px; font-weight: 700; cursor: pointer; background: white; border: 1px solid var(--line);
+      display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px;
+      font-size: 15px; font-weight: 800; cursor: pointer; background: white; border: 1.5px solid var(--line);
     }
     .island-step-dot.active { background: var(--primary); color: white; border-color: var(--primary); }
     .island-step-dot.completed { background: #e8f5e9; color: var(--success); border-color: #a5d6a7; }
 
     /* 寫作與任務抽屜 (側邊滑出) */
     .drawer {
-      position: absolute; top: 76px; right: 20px; bottom: 20px; width: 520px; max-width: calc(100vw - 32px);
+      position: absolute; top: 84px; right: 20px; bottom: 20px; width: 560px; max-width: calc(100vw - 32px);
       background: var(--surface); border-radius: var(--radius); border: 1px solid var(--line);
       box-shadow: 0 16px 48px rgba(10, 30, 60, 0.2); z-index: 30; display: flex; flex-direction: column;
       overflow: hidden; transform: translateX(110%); transition: transform .32s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .drawer.open { transform: translateX(0); }
     .drawer-header {
-      padding: 16px 20px; background: white; border-bottom: 1px solid var(--line);
+      padding: 18px 24px; background: white; border-bottom: 1px solid var(--line);
       display: flex; align-items: center; justify-content: space-between;
     }
-    .drawer-title { font-size: 19px; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 8px; }
-    .drawer-close { font-size: 20px; color: #888; background: none; padding: 4px 8px; border-radius: 8px; }
-    .drawer-close:hover { background: #f0f0f0; color: #333; }
-    .drawer-body { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+    .drawer-title { font-size: 22px; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+    .drawer-close { font-size: 24px; color: #64748b; background: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+    .drawer-close:hover { background: #f0f0f0; color: #0f172a; }
+    .drawer-body { flex: 1; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; gap: 18px; }
 
     /* 精靈任務引言卡 (CLT ≤ 60字) */
     .clt-prompt-card {
       background: linear-gradient(135deg, #f0f7fc 0%, #e8f4fb 100%);
-      border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 18px;
-      display: flex; gap: 14px; align-items: flex-start;
+      border-left: 5px solid var(--primary); border-radius: 12px; padding: 16px 20px;
+      display: flex; gap: 16px; align-items: flex-start;
     }
-    .sprite-avatar { font-size: 34px; line-height: 1; }
-    .sprite-text { font-size: 15.5px; line-height: 1.65; color: #234; font-weight: 600; }
-    .sprite-speaker { font-weight: 900; color: var(--primary); margin-bottom: 2px; }
+    .sprite-avatar { font-size: 38px; line-height: 1; }
+    .sprite-text { font-size: 16.5px; line-height: 1.75; color: #234; font-weight: 600; }
+    .sprite-speaker { font-weight: 900; color: var(--primary); margin-bottom: 4px; font-size: 17px; }
 
     /* 好詞百寶箱與同儕觀摩卡 */
-    .tools-accordion { display: flex; flex-direction: column; gap: 8px; }
+    .tools-accordion { display: flex; flex-direction: column; gap: 10px; }
     .tool-box {
-      background: white; border: 1px solid var(--line); border-radius: 12px; padding: 12px;
+      background: white; border: 1.5px solid var(--line); border-radius: 12px; padding: 14px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
-    .tool-title { font-size: 13px; font-weight: 900; color: var(--primary); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-    .chips-group { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tool-title { font-size: 15px; font-weight: 900; color: var(--primary); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .chips-group { display: flex; flex-wrap: wrap; gap: 8px; }
     .chip {
-      padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700;
-      background: #f4f7f9; border: 1px solid #dce4ec; color: #2c4a68; cursor: pointer;
+      padding: 6px 12px; border-radius: 8px; font-size: 14px; font-weight: 700;
+      background: #f4f7f9; border: 1.5px solid #dce4ec; color: #2c4a68; cursor: pointer;
     }
     .chip:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
     .chip.highlight { background: #fff3cd; border-color: #ffeeba; color: #856404; }
 
     /* 寫作輸入區 */
-    .writing-area { display: flex; flex-direction: column; gap: 8px; }
+    .writing-area { display: flex; flex-direction: column; gap: 10px; }
     .writing-textarea {
-      width: 100%; height: 145px; padding: 14px 16px; border-radius: 12px; border: 1.5px solid #c9d7e3;
-      font-size: 17px; font-family: var(--font-sans); line-height: 1.8; resize: none;
+      width: 100%; height: 165px; padding: 16px 18px; border-radius: 14px; border: 1.5px solid #c9d7e3;
+      font-size: 18.5px; font-family: var(--font-sans); line-height: 1.85; resize: none;
       background: #ffffff; color: #1f2937;
     }
     .writing-textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(29, 95, 138, 0.15); }
     
     /* 靈力能量條 (字數統計) */
-    .energy-bar-wrap { display: flex; flex-direction: column; gap: 4px; }
-    .energy-bar-label { display: flex; justify-content: space-between; font-size: 13.5px; font-weight: 700; color: var(--text-muted); }
-    .energy-bar-bg { width: 100%; height: 8px; background: #e0e8ef; border-radius: 999px; overflow: hidden; }
+    .energy-bar-wrap { display: flex; flex-direction: column; gap: 6px; }
+    .energy-bar-label { display: flex; justify-content: space-between; font-size: 15px; font-weight: 800; color: var(--text-muted); }
+    .energy-bar-bg { width: 100%; height: 10px; background: #e0e8ef; border-radius: 999px; overflow: hidden; }
     .energy-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #48cae4, #0077b6); transition: width .2s ease; }
     .energy-bar-fill.good { background: linear-gradient(90deg, #2a9d8f, #21867a); }
 
     /* 教師批改印章狀態卡 */
     .teacher-review-card {
-      background: #fff8f6; border: 1.5px dashed var(--accent); border-radius: 12px; padding: 14px;
-      display: flex; flex-direction: column; gap: 8px;
+      background: #fff8f6; border: 1.5px dashed var(--accent); border-radius: 12px; padding: 16px;
+      display: flex; flex-direction: column; gap: 10px;
     }
     .teacher-stamp-display { display: flex; align-items: center; justify-content: space-between; }
     .stamp-badge {
-      display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px;
-      border-radius: 999px; font-weight: 900; font-size: 13px;
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
+      border-radius: 999px; font-weight: 900; font-size: 14.5px;
     }
     .stamp-badge.unreviewed { background: #ffe3dc; color: var(--danger); }
     .stamp-badge.approved { background: #d4edda; color: #155724; border: 2px solid #28a745; }
-    .red-pen-feedback { font-size: 13px; color: var(--danger); font-weight: 700; line-height: 1.5; padding: 6px 10px; background: #ffebee; border-radius: 8px; }
+    .red-pen-feedback { font-size: 14.5px; color: var(--danger); font-weight: 700; line-height: 1.6; padding: 8px 12px; background: #ffebee; border-radius: 8px; }
 
     /* 操作按鈕群 */
-    .drawer-actions { padding: 16px 20px; background: white; border-top: 1px solid var(--line); display: flex; gap: 10px; }
+    .drawer-actions { padding: 18px 24px; background: white; border-top: 1px solid var(--line); display: flex; gap: 12px; }
     .btn-main {
-      flex: 1; padding: 11px; border-radius: 10px; font-size: 14.5px; font-weight: 900;
+      flex: 1; padding: 13px 20px; border-radius: 12px; font-size: 16px; font-weight: 900;
       background: var(--primary); color: white; display: flex; justify-content: center; align-items: center; gap: 8px;
     }
     .btn-main:hover { background: #154668; }
     .btn-teacher {
-      padding: 11px 16px; border-radius: 10px; font-size: 13.5px; font-weight: 900;
-      background: white; border: 1.5px solid var(--accent); color: var(--accent); display: flex; align-items: center; gap: 6px;
+      padding: 13px 18px; border-radius: 12px; font-size: 15px; font-weight: 900;
+      background: white; border: 1.5px solid var(--accent); color: var(--accent); display: flex; align-items: center; gap: 8px;
     }
     .btn-teacher:hover { background: #fff5f2; }
 
@@ -390,11 +390,11 @@
       font-size: 15.5px; line-height: 1.75; color: #1e3a8a; font-weight: 600;
     }
     .puzzle-options-group {
-      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;
     }
     .puzzle-opt-btn {
-      padding: 6px 12px; border-radius: 8px; font-size: 14px; font-weight: 800;
-      background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; cursor: pointer;
+      padding: 7px 15px; border-radius: 9px; font-size: 15px; font-weight: 800;
+      background: #e0f2fe; color: #0369a1; border: 1.5px solid #bae6fd; cursor: pointer;
       transition: all .15s;
     }
     .puzzle-opt-btn:hover { background: #38bdf8; color: #fff; }
@@ -403,11 +403,11 @@
     /* 段落三步組織句積木 */
     .starters-box {
       background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 12px; padding: 14px;
-      display: flex; flex-direction: column; gap: 8px;
+      display: flex; flex-direction: column; gap: 10px;
     }
     .starter-btn {
-      text-align: left; background: #ffffff; border: 1.5px solid #fcd34d; border-radius: 8px;
-      padding: 8px 12px; font-size: 14.5px; line-height: 1.6; color: #78350f; font-weight: 700;
+      text-align: left; background: #ffffff; border: 1.5px solid #fcd34d; border-radius: 10px;
+      padding: 10px 15px; font-size: 16px; line-height: 1.65; color: #78350f; font-weight: 700;
       cursor: pointer; transition: all .15s;
     }
     .starter-btn:hover { background: #fef3c7; color: #92400e; }
@@ -421,12 +421,12 @@
     /* 階梯寫作向導 (Step Wizard) 樣式 */
     .step-wizard-bar {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 14px; background: #ffffff; border-bottom: 1.5px solid var(--line);
+      padding: 12px 16px; background: #ffffff; border-bottom: 1.5px solid var(--line);
       box-shadow: 0 2px 8px rgba(0,0,0,0.03);
     }
     .wizard-step {
-      display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px;
-      font-size: 13.5px; font-weight: 800; color: #64748b; background: #f1f5f9; cursor: pointer;
+      display: flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px;
+      font-size: 15px; font-weight: 800; color: #64748b; background: #f1f5f9; cursor: pointer;
       transition: all .18s ease;
     }
     .wizard-step.active {
@@ -436,15 +436,15 @@
       background: #dcfce7; color: #15803d; border: 1px solid #86efac;
     }
     .step-num {
-      width: 22px; height: 22px; border-radius: 50%; background: rgba(0,0,0,0.12);
-      display: inline-flex; align-items: center; justify-content: center; font-size: 12.5px;
+      width: 25px; height: 25px; border-radius: 50%; background: rgba(0,0,0,0.12);
+      display: inline-flex; align-items: center; justify-content: center; font-size: 13.5px;
     }
     .wizard-step.active .step-num { background: #ffffff; color: var(--primary); font-weight: 900; }
-    .wizard-arrow { font-size: 11px; color: #cbd5e1; }
+    .wizard-arrow { font-size: 13px; color: #94a3b8; }
 
     /* 階梯面板切換 */
     .wizard-panel {
-      display: none; flex-direction: column; gap: 14px; animation: fadeIn .2s ease;
+      display: none; flex-direction: column; gap: 16px; animation: fadeIn .2s ease;
     }
     .wizard-panel.active { display: flex; }
     @keyframes fadeIn {
@@ -455,22 +455,22 @@
     /* Step 1 五要素點選卡樣式 */
     .step-header-card {
       background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-      border-left: 4px solid #16a34a; border-radius: 10px; padding: 12px 14px;
-      display: flex; flex-direction: column; gap: 4px;
+      border-left: 5px solid #16a34a; border-radius: 12px; padding: 14px 18px;
+      display: flex; flex-direction: column; gap: 6px;
     }
-    .step-header-title { font-size: 14px; font-weight: 900; color: #166534; display: flex; align-items: center; gap: 6px; }
-    .step-header-desc { font-size: 12px; color: #14532d; line-height: 1.5; }
+    .step-header-title { font-size: 16.5px; font-weight: 900; color: #166534; display: flex; align-items: center; gap: 8px; }
+    .step-header-desc { font-size: 14.5px; color: #14532d; line-height: 1.6; font-weight: 600; }
 
     .element-picker-card {
-      background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px;
-      display: flex; flex-direction: column; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px;
+      display: flex; flex-direction: column; gap: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
     .picker-label {
-      font-size: 12.5px; font-weight: 900; display: flex; align-items: center; gap: 6px;
+      font-size: 15px; font-weight: 900; display: flex; align-items: center; gap: 8px;
     }
-    .picker-options { display: flex; flex-wrap: wrap; gap: 6px; }
+    .picker-options { display: flex; flex-wrap: wrap; gap: 8px; }
     .picker-opt-btn {
-      padding: 6px 12px; border-radius: 8px; font-size: 12.5px; font-weight: 700;
+      padding: 8px 15px; border-radius: 10px; font-size: 14.5px; font-weight: 800;
       background: #f8fafc; color: #334155; border: 1.5px solid #cbd5e1; cursor: pointer;
       transition: all .15s ease; text-align: left;
     }
@@ -482,11 +482,11 @@
 
     /* 挑戰者句型鷹架卡片專屬樣式 (拒絕直接給整句，透過句型與詞性提示引導學生親自填寫詞語組裝) */
     .intermediate-guided-banner {
-      background: #eff6ff; border-left: 3.5px solid #2563eb; padding: 10px 14px;
-      border-radius: 8px; margin-bottom: 6px; box-shadow: 0 1px 3px rgba(37,99,235,0.06);
+      background: #eff6ff; border-left: 4px solid #2563eb; padding: 12px 16px;
+      border-radius: 10px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(37,99,235,0.06);
     }
     .guided-pattern-tab {
-      padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 800;
+      padding: 6px 14px; border-radius: 8px; font-size: 13.5px; font-weight: 800;
       background: #f1f5f9; color: #475569; border: 1.5px solid #cbd5e1; cursor: pointer;
       transition: all .15s ease;
     }
@@ -496,50 +496,50 @@
       box-shadow: 0 2px 6px rgba(37,99,235,0.25);
     }
     .guided-assembled-box {
-      margin-top: 6px; padding: 8px 12px; background: #f0fdf4; border: 1px solid #86efac;
-      border-radius: 8px; font-size: 12.5px; color: #15803d; font-weight: 700; line-height: 1.45;
+      margin-top: 8px; padding: 10px 14px; background: #f0fdf4; border: 1.5px solid #86efac;
+      border-radius: 10px; font-size: 15px; color: #15803d; font-weight: 700; line-height: 1.6;
     }
 
     /* 漸進式思考鷹架樣式 (啟發學生自我動腦思考詞性，卡住時才點開靈感錦囊) */
     .guided-pos-tag {
       display: inline-flex; align-items: center; gap: 4px;
-      padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800;
+      padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 800;
       background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe;
     }
     .guided-thinking-prompt {
-      font-size: 12px; color: #1e293b; font-weight: 700; line-height: 1.5;
-      background: #f8fafc; padding: 6px 10px; border-radius: 6px; margin: 4px 0 6px 0;
-      border-left: 3px solid #3b82f6;
+      font-size: 14px; color: #1e293b; font-weight: 700; line-height: 1.55;
+      background: #f8fafc; padding: 8px 12px; border-radius: 8px; margin: 6px 0 8px 0;
+      border-left: 3.5px solid #3b82f6;
     }
     .guided-hint-toggle {
       display: inline-flex; align-items: center; gap: 4px;
-      font-size: 11px; font-weight: 800; color: #b45309; background: #fef3c7;
-      border: 1px solid #fde68a; border-radius: 6px; padding: 3px 8px; cursor: pointer;
-      margin-top: 5px; transition: all .15s ease; width: fit-content;
+      font-size: 13px; font-weight: 800; color: #b45309; background: #fef3c7;
+      border: 1px solid #fde68a; border-radius: 6px; padding: 4px 10px; cursor: pointer;
+      margin-top: 6px; transition: all .15s ease; width: fit-content;
     }
     .guided-hint-toggle:hover { background: #fde68a; color: #78350f; }
     .guided-hint-box {
-      margin-top: 6px; padding: 8px 10px; background: #fffdf5; border: 1px solid #fef08a;
-      border-radius: 6px; display: none;
+      margin-top: 8px; padding: 10px 12px; background: #fffdf5; border: 1px solid #fef08a;
+      border-radius: 8px; display: none;
     }
     .guided-hint-box.is-open { display: block; animation: fadeIn .2s ease; }
     .guided-idea-text {
-      font-size: 11.5px; color: #92400e; line-height: 1.45; font-weight: 600; margin-bottom: 6px;
+      font-size: 13.5px; color: #92400e; line-height: 1.55; font-weight: 600; margin-bottom: 6px;
     }
 
     /* 導航切換按鈕組 */
     .step-actions-bar {
-      display: flex; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line);
+      display: flex; gap: 12px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);
     }
     .btn-step-prev {
-      padding: 10px 16px; border-radius: 10px; font-size: 13.5px; font-weight: 700;
-      background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; cursor: pointer;
+      padding: 12px 18px; border-radius: 12px; font-size: 15px; font-weight: 800;
+      background: #f1f5f9; color: #475569; border: 1.5px solid #cbd5e1; cursor: pointer;
     }
     .btn-step-prev:hover { background: #e2e8f0; }
     .btn-step-next {
-      flex: 1; padding: 11px; border-radius: 10px; font-size: 14.5px; font-weight: 900;
+      flex: 1; padding: 13px 20px; border-radius: 12px; font-size: 16px; font-weight: 900;
       background: var(--primary); color: white; border: none; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
       box-shadow: 0 4px 12px rgba(29, 95, 138, 0.25);
     }
     .btn-step-next:hover { background: #154668; }
@@ -548,22 +548,22 @@
 
     /* Step 2 句子積木卡樣式 */
     .sentence-block-card {
-      background: #ffffff; border: 1.5px solid #e0e7ff; border-radius: 12px; padding: 12px;
-      display: flex; flex-direction: column; gap: 6px;
+      background: #ffffff; border: 1.5px solid #e0e7ff; border-radius: 12px; padding: 14px;
+      display: flex; flex-direction: column; gap: 8px;
     }
-    .sentence-block-title { font-size: 13px; font-weight: 900; color: #3730a3; display: flex; justify-content: space-between; }
+    .sentence-block-title { font-size: 15px; font-weight: 900; color: #3730a3; display: flex; justify-content: space-between; }
     .sentence-block-text {
-      background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px;
-      font-size: 13px; line-height: 1.6; color: #1e293b; font-weight: 600;
+      background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px;
+      font-size: 15px; line-height: 1.7; color: #1e293b; font-weight: 600;
     }
 
     /* 組合預覽框 */
     .preview-box {
-      background: #fefce8; border: 1.5px dashed #f59e0b; border-radius: 12px; padding: 12px;
-      display: flex; flex-direction: column; gap: 6px;
+      background: #fefce8; border: 1.5px dashed #f59e0b; border-radius: 12px; padding: 14px;
+      display: flex; flex-direction: column; gap: 8px;
     }
-    .preview-title { font-size: 12px; font-weight: 900; color: #b45309; }
-    .preview-text { font-size: 13.5px; line-height: 1.7; color: #78350f; font-family: var(--font-sans); }
+    .preview-title { font-size: 14.5px; font-weight: 900; color: #b45309; }
+    .preview-text { font-size: 15.5px; line-height: 1.75; color: #78350f; font-family: var(--font-sans); }
 
 
     /* 三層成就模式專屬特色樣式 */
@@ -780,32 +780,32 @@
       pointer-events: auto;
       display: flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(255, 255, 255, 0.85);
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.88);
       -webkit-backdrop-filter: blur(18px) saturate(1.4);
       backdrop-filter: blur(18px) saturate(1.4);
       border: 1.5px solid rgba(255, 255, 255, 0.95);
       border-radius: 999px;
-      padding: 6px 10px;
+      padding: 8px 14px;
       box-shadow: 0 10px 30px rgba(15, 23, 42, 0.16), 0 2px 8px rgba(15, 23, 42, 0.06);
     }
     .hud-dock-btn {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
+      gap: 8px;
+      padding: 10px 18px;
       border-radius: 999px;
       border: none;
       background: transparent;
       color: #334155;
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 800;
       cursor: pointer;
       transition: all 0.18s ease;
       white-space: nowrap;
     }
     .hud-dock-btn:hover {
-      background: rgba(241, 245, 249, 0.9);
+      background: rgba(241, 245, 249, 0.95);
       color: #0f172a;
       transform: translateY(-2px);
     }
@@ -822,7 +822,7 @@
       color: #ffffff;
     }
     .hud-dock-icon {
-      font-size: 16px;
+      font-size: 20px;
       line-height: 1;
     }
 
@@ -940,20 +940,20 @@
       margin-bottom: 8px;
     }
     .element-inventory-title {
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 900;
       color: #0369a1;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
     .element-inventory-btn {
-      font-size: 11.5px;
+      font-size: 13.5px;
       font-weight: 800;
       color: #0284c7;
       background: white;
-      border: 1px solid #bae6fd;
-      padding: 3px 10px;
+      border: 1.5px solid #bae6fd;
+      padding: 5px 14px;
       border-radius: 999px;
       cursor: pointer;
       transition: all 0.2s;
@@ -965,18 +965,18 @@
     .element-inventory-chips {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 8px;
     }
     .inventory-chip {
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 700;
-      padding: 4px 9px;
-      border-radius: 6px;
+      padding: 6px 12px;
+      border-radius: 8px;
       background: white;
       border: 1px solid rgba(0, 0, 0, 0.08);
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
       color: #334155;
     }
     .inventory-chip-time { border-color: #fca5a5; background: #fff1f2; color: #be123c; }
@@ -988,24 +988,24 @@
     .inherited-element-tag {
       display: inline-block;
       font-weight: 900;
-      padding: 2px 7px;
-      border-radius: 5px;
-      font-size: 12px;
-      margin: 0 2px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin: 0 3px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
     .linkage-badge {
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 800;
-      padding: 2px 8px;
+      padding: 4px 10px;
       border-radius: 999px;
       background: #e0f2fe;
       color: #0284c7;
       border: 1px solid #bae6fd;
-      margin-left: 6px;
+      margin-left: 8px;
       display: inline-flex;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
     }
 
     /* Step 3 五要素連貫閉環檢驗儀樣式 */
@@ -1309,28 +1309,28 @@
 
   <!-- 📖 作文大綱行前說帖彈窗 (Outline Briefing Modal for Teachers & Students - 大字體教室投影專用版) -->
   <div class="modal-backdrop" id="outlineModalBackdrop">
-    <div class="modal-panel" style="width: 1220px; max-width: 96vw; max-height: 94vh;">
-      <div class="modal-header" style="background: linear-gradient(135deg, #1d3557, #2a4d7a); color: white; padding: 22px 30px;">
+    <div class="modal-panel" style="width: 1260px; max-width: 96vw; max-height: 94vh;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #1d3557, #2a4d7a); color: white; padding: 24px 34px;">
         <div>
-          <div style="font-size: 15px; font-weight: 800; color: #a8dadc; letter-spacing: 1px; text-transform: uppercase;">
+          <div style="font-size: 16.5px; font-weight: 800; color: #a8dadc; letter-spacing: 1px; text-transform: uppercase;">
             臺中市梧棲區中正國小四年級・作文沉浸式教學系統・行前導讀專用
           </div>
-          <h2 class="modal-title" style="color: white; font-size: 26px; font-weight: 900; margin-top: 4px;">
+          <h2 class="modal-title" style="color: white; font-size: 28px; font-weight: 900; margin-top: 5px;">
             <span>📖 《考試前後》作文大綱設計理念與篇章架構說帖</span>
           </h2>
         </div>
-        <button class="drawer-close" style="color: white; background: rgba(255,255,255,0.18); font-size: 24px; padding: 6px 14px; border-radius: 10px;" onclick="window.islandApp.closeOutlineModal()">✕</button>
+        <button class="drawer-close" style="color: white; background: rgba(255,255,255,0.18); font-size: 26px; padding: 8px 16px; border-radius: 12px;" onclick="window.islandApp.closeOutlineModal()">✕</button>
       </div>
 
-      <div class="modal-body" style="padding: 28px; gap: 26px;">
+      <div class="modal-body" style="padding: 30px; gap: 28px;">
         
         <!-- 💡 核心教學理念橫幅 -->
-        <div style="background: #fff8e7; border-left: 6px solid #f59e0b; border-radius: 12px; padding: 18px 24px;">
-          <h3 style="font-size: 20px; font-weight: 900; color: #92400e; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 24px;">💡</span>
+        <div style="background: #fff8e7; border-left: 6px solid #f59e0b; border-radius: 14px; padding: 20px 26px;">
+          <h3 style="font-size: 22px; font-weight: 900; color: #92400e; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 26px;">💡</span>
             <span>為什麼這樣設計這四座島嶼？（告別流水帳的寫作秘密）</span>
           </h3>
-          <p style="font-size: 17px; color: #334155; line-height: 1.8; margin: 0; font-weight: 500;">
+          <p style="font-size: 18.5px; color: #334155; line-height: 1.85; margin: 0; font-weight: 500;">
             國小四年級學童寫《考試前後》，最普遍的瓶頸是<strong>「記帳式流水帳」</strong>（例：<em>「今天早上我去考試，考完發考卷我考八十分，回家媽媽請我吃麥當勞」</em>）。這樣的文章缺乏心態轉變與感官細節。本系統將記敘文<strong>「起、承、轉、合」拆解為四座各具特色的小島</strong>，引導學童經歷一場<strong>「情緒鋪陳 ➔ 細部特寫 ➔ 衝突波瀾 ➔ 心靈昇華」</strong>的情感過山車，讓寫作變成引人入勝的冒險故事！
           </p>
         </div>
@@ -1339,105 +1339,105 @@
         <div class="outline-card-grid">
           
           <!-- 第 1 島：起之島 -->
-          <div class="outline-card" style="border-top: 5px solid #457b9d;">
+          <div class="outline-card" style="border-top: 6px solid #457b9d; padding: 22px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-size: 15px; font-weight: 900; color: #1d4ed8; background: #dbeafe; padding: 5px 14px; border-radius: 999px;">第一段【起】</span>
-              <span style="font-size: 28px;">🏝️</span>
+              <span style="font-size: 16px; font-weight: 900; color: #1d4ed8; background: #dbeafe; padding: 6px 16px; border-radius: 999px;">第一段【起】</span>
+              <span style="font-size: 32px;">🏝️</span>
             </div>
-            <h4 style="font-size: 21px; font-weight: 900; color: #0f172a; margin: 4px 0 2px 0;">起之島・月考倒數</h4>
-            <div style="font-size: 16px; font-weight: 800; color: #475569;">【醞釀氣氛・時間鋪陳】</div>
+            <h4 style="font-size: 23.5px; font-weight: 900; color: #0f172a; margin: 6px 0 3px 0;">起之島・月考倒數</h4>
+            <div style="font-size: 17.5px; font-weight: 800; color: #475569;">【醞釀氣氛・時間鋪陳】</div>
             
-            <div style="background: #f8fafc; border-radius: 10px; padding: 14px 18px; font-size: 16.5px; color: #1e293b; line-height: 1.75; border: 1.5px solid #e2e8f0;">
-              <strong style="color: #1d4ed8; font-size: 17px;">🎯 為何這樣設計？</strong><br>
+            <div style="background: #f8fafc; border-radius: 12px; padding: 16px 20px; font-size: 17.5px; color: #1e293b; line-height: 1.8; border: 1.5px solid #e2e8f0;">
+              <strong style="color: #1d4ed8; font-size: 18px;">🎯 為何這樣設計？</strong><br>
               不要開門見山直接寫發考卷！引導學童回到「考前幾天」的壓迫感，以書桌上的參考書堆、時鐘滴答聲與忐忑不安的心情為故事拉開序幕。
             </div>
 
-            <div style="font-size: 16px; color: #334155; line-height: 1.75;">
-              <div style="font-weight: 900; color: #0f172a; font-size: 16.5px; margin-bottom: 4px;">📝 教學重點鷹架：</div>
+            <div style="font-size: 17px; color: #334155; line-height: 1.8;">
+              <div style="font-weight: 900; color: #0f172a; font-size: 17.5px; margin-bottom: 6px;">📝 教學重點鷹架：</div>
               • 時間背景交代（考前倒數日曆、日夜更迭）<br>
               • 環境氛圍渲染（夜讀挑燈、書包沉甸甸）<br>
               • 心理活動描寫（忐忑不安的緊張心跳）
             </div>
 
-            <div style="margin-top: auto; padding: 10px 14px; background: #f0f9ff; border-radius: 8px; font-size: 15.5px; color: #0369a1; font-weight: 800; border: 1px solid #bae6fd;">
+            <div style="margin-top: auto; padding: 12px 16px; background: #f0f9ff; border-radius: 10px; font-size: 16.5px; color: #0369a1; font-weight: 800; border: 1px solid #bae6fd;">
               💥 破解盲點：不再只寫「明天要考試，我很緊張」
             </div>
           </div>
 
           <!-- 第 2 島：承之島 -->
-          <div class="outline-card" style="border-top: 5px solid #2a9d8f;">
+          <div class="outline-card" style="border-top: 6px solid #2a9d8f; padding: 22px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-size: 15px; font-weight: 900; color: #0f766e; background: #ccfbf1; padding: 5px 14px; border-radius: 999px;">第二段【承】</span>
-              <span style="font-size: 28px;">🏫</span>
+              <span style="font-size: 16px; font-weight: 900; color: #0f766e; background: #ccfbf1; padding: 6px 16px; border-radius: 999px;">第二段【承】</span>
+              <span style="font-size: 32px;">🏫</span>
             </div>
-            <h4 style="font-size: 21px; font-weight: 900; color: #0f172a; margin: 4px 0 2px 0;">承之島・考場神態</h4>
-            <div style="font-size: 16px; font-weight: 800; color: #475569;">【感官摹寫・微表情特寫】</div>
+            <h4 style="font-size: 23.5px; font-weight: 900; color: #0f172a; margin: 6px 0 3px 0;">承之島・考場神態</h4>
+            <div style="font-size: 17.5px; font-weight: 800; color: #475569;">【感官摹寫・微表情特寫】</div>
             
-            <div style="background: #f8fafc; border-radius: 10px; padding: 14px 18px; font-size: 16.5px; color: #1e293b; line-height: 1.75; border: 1.5px solid #e2e8f0;">
-              <strong style="color: #0f766e; font-size: 17px;">🎯 為何這樣設計？</strong><br>
+            <div style="background: #f8fafc; border-radius: 12px; padding: 16px 20px; font-size: 17.5px; color: #1e293b; line-height: 1.8; border: 1.5px solid #e2e8f0;">
+              <strong style="color: #0f766e; font-size: 18px;">🎯 為何這樣設計？</strong><br>
               考場是動靜對比的寶庫！放慢鏡頭速度，引導學童調動視覺、聽覺與觸覺，細膩捕捉手指冒汗、沙沙翻卷聲與同學的微表情。
             </div>
 
-            <div style="font-size: 16px; color: #334155; line-height: 1.75;">
-              <div style="font-weight: 900; color: #0f172a; font-size: 16.5px; margin-bottom: 4px;">📝 教學重點鷹架：</div>
+            <div style="font-size: 17px; color: #334155; line-height: 1.8;">
+              <div style="font-weight: 900; color: #0f172a; font-size: 17.5px; margin-bottom: 6px;">📝 教學重點鷹架：</div>
               • 聽覺摹寫（教室只有沙沙翻卷聲與時鐘秒針）<br>
               • 觸覺摹寫（手心冒冷汗、握筆指節泛白）<br>
               • 人物微表情（皺眉思索、托腮凝視、咬筆桿）
             </div>
 
-            <div style="margin-top: auto; padding: 10px 14px; background: #f0fdf4; border-radius: 8px; font-size: 15.5px; color: #15803d; font-weight: 800; border: 1px solid #bbf7d0;">
+            <div style="margin-top: auto; padding: 12px 16px; background: #f0fdf4; border-radius: 10px; font-size: 16.5px; color: #15803d; font-weight: 800; border: 1px solid #bbf7d0;">
               💥 破解盲點：不再只寫「大家都低頭很認真寫考卷」
             </div>
           </div>
 
           <!-- 第 3 島：轉之島 -->
-          <div class="outline-card" style="border-top: 5px solid #e76f51;">
+          <div class="outline-card" style="border-top: 6px solid #e76f51; padding: 22px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-size: 15px; font-weight: 900; color: #b91c1c; background: #fee2e2; padding: 5px 14px; border-radius: 999px;">第三段【轉】</span>
-              <span style="font-size: 28px;">⚡</span>
+              <span style="font-size: 16px; font-weight: 900; color: #b91c1c; background: #fee2e2; padding: 6px 16px; border-radius: 999px;">第三段【轉】</span>
+              <span style="font-size: 32px;">⚡</span>
             </div>
-            <h4 style="font-size: 21px; font-weight: 900; color: #0f172a; margin: 4px 0 2px 0;">轉之島・驚天動地</h4>
-            <div style="font-size: 16px; font-weight: 800; color: #475569;">【衝突危機・情節波瀾】</div>
+            <h4 style="font-size: 23.5px; font-weight: 900; color: #0f172a; margin: 6px 0 3px 0;">轉之島・驚天動地</h4>
+            <div style="font-size: 17.5px; font-weight: 800; color: #475569;">【衝突危機・情節波瀾】</div>
             
-            <div style="background: #f8fafc; border-radius: 10px; padding: 14px 18px; font-size: 16.5px; color: #1e293b; line-height: 1.75; border: 1.5px solid #e2e8f0;">
-              <strong style="color: #b91c1c; font-size: 17px;">🎯 為何這樣設計？</strong><br>
+            <div style="background: #f8fafc; border-radius: 12px; padding: 16px 20px; font-size: 17.5px; color: #1e293b; line-height: 1.8; border: 1.5px solid #e2e8f0;">
+              <strong style="color: #b91c1c; font-size: 18px;">🎯 為何這樣設計？</strong><br>
               文似看山不喜平！好文章必須有「轉折波瀾」。設計突發危機（碰上難題魔王、時間倒數、發現粗心算錯），讓心跳提到喉嚨！
             </div>
 
-            <div style="font-size: 16px; color: #334155; line-height: 1.75;">
-              <div style="font-weight: 900; color: #0f172a; font-size: 16.5px; margin-bottom: 4px;">📝 教學重點鷹架：</div>
+            <div style="font-size: 17px; color: #334155; line-height: 1.8;">
+              <div style="font-weight: 900; color: #0f172a; font-size: 17.5px; margin-bottom: 6px;">📝 教學重點鷹架：</div>
               • 危機事件（魔王題攔路、鐘聲倒數三分鐘危機）<br>
               • 誇飾修辭（心跳像大鼓狂擂、汗水如瀑布湧出）<br>
               • 動態心理拉扯（放棄還是堅持？爭分奪秒的抉擇）
             </div>
 
-            <div style="margin-top: auto; padding: 10px 14px; background: #fef2f2; border-radius: 8px; font-size: 15.5px; color: #b91c1c; font-weight: 800; border: 1px solid #fecaca;">
+            <div style="margin-top: auto; padding: 12px 16px; background: #fef2f2; border-radius: 10px; font-size: 16.5px; color: #b91c1c; font-weight: 800; border: 1px solid #fecaca;">
               💥 破解盲點：創造情節衝突張力，文章有了戲劇靈魂
             </div>
           </div>
 
           <!-- 第 4 島：合之島 -->
-          <div class="outline-card" style="border-top: 5px solid #8b5cf6;">
+          <div class="outline-card" style="border-top: 6px solid #8b5cf6; padding: 22px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-size: 15px; font-weight: 900; color: #6d28d9; background: #ede9fe; padding: 5px 14px; border-radius: 999px;">第四段【合】</span>
-              <span style="font-size: 28px;">🌈</span>
+              <span style="font-size: 16px; font-weight: 900; color: #6d28d9; background: #ede9fe; padding: 6px 16px; border-radius: 999px;">第四段【合】</span>
+              <span style="font-size: 32px;">🌈</span>
             </div>
-            <h4 style="font-size: 21px; font-weight: 900; color: #0f172a; margin: 4px 0 2px 0;">合之島・超越自我</h4>
-            <div style="font-size: 16px; font-weight: 800; color: #475569;">【反思體悟・心態昇華】</div>
+            <h4 style="font-size: 23.5px; font-weight: 900; color: #0f172a; margin: 6px 0 3px 0;">合之島・超越自我</h4>
+            <div style="font-size: 17.5px; font-weight: 800; color: #475569;">【反思體悟・心態昇華】</div>
             
-            <div style="background: #f8fafc; border-radius: 10px; padding: 14px 18px; font-size: 16.5px; color: #1e293b; line-height: 1.75; border: 1.5px solid #e2e8f0;">
-              <strong style="color: #6d28d9; font-size: 17px;">🎯 為何這樣設計？</strong><br>
+            <div style="background: #f8fafc; border-radius: 12px; padding: 16px 20px; font-size: 17.5px; color: #1e293b; line-height: 1.8; border: 1.5px solid #e2e8f0;">
+              <strong style="color: #6d28d9; font-size: 18px;">🎯 為何這樣設計？</strong><br>
               結尾絕非「考完去吃麥當勞」！四年級的核心寫作深度在於「成長」——分數是一時的，反省粗心並立志更進一步，達成精神昇華。
             </div>
 
-            <div style="font-size: 16px; color: #334155; line-height: 1.75;">
-              <div style="font-weight: 900; color: #0f172a; font-size: 16.5px; margin-bottom: 4px;">📝 教學重點鷹架：</div>
+            <div style="font-size: 17px; color: #334155; line-height: 1.8;">
+              <div style="font-weight: 900; color: #0f172a; font-size: 17.5px; margin-bottom: 6px;">📝 教學重點鷹架：</div>
               • 揭曉成績與心態平復（學會成熟面對成績與挫折）<br>
               • 首尾呼應（回扣第一段考前的辛勤準備與期許）<br>
               • 體悟反思（失敗為成功之母、找到弱點超越自我）
             </div>
 
-            <div style="margin-top: auto; padding: 10px 14px; background: #faf5ff; border-radius: 8px; font-size: 15.5px; color: #6d28d9; font-weight: 800; border: 1px solid #e9d5ff;">
+            <div style="margin-top: auto; padding: 12px 16px; background: #faf5ff; border-radius: 10px; font-size: 16.5px; color: #6d28d9; font-weight: 800; border: 1px solid #e9d5ff;">
               💥 破解盲點：不再只寫「考完發考卷真開心，放學去大吃一頓」
             </div>
           </div>
@@ -1445,12 +1445,12 @@
         </div>
 
         <!-- 🐲 守門神殿與教育閉環說明 -->
-        <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 14px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px;">
-          <div style="display: flex; align-items: center; gap: 18px;">
-            <div style="font-size: 42px;">🐲</div>
+        <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 16px; padding: 22px 28px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+          <div style="display: flex; align-items: center; gap: 20px;">
+            <div style="font-size: 46px;">🐲</div>
             <div>
-              <div style="font-weight: 900; font-size: 18px; color: #0f172a;">全篇教學閉環：【守門神殿】四格漫畫審查 ＋ 實體稿紙謄寫</div>
-              <div style="font-size: 16px; color: #475569; line-height: 1.75; margin-top: 4px;">
+              <div style="font-weight: 900; font-size: 20px; color: #0f172a;">全篇教學閉環：【守門神殿】四格漫畫審查 ＋ 實體稿紙謄寫</div>
+              <div style="font-size: 17.5px; color: #475569; line-height: 1.8; margin-top: 6px;">
                 ① <strong>矛盾劇情裂痕警報</strong>：若前後段落邏輯打架（如前面沒複習、後面卻說胸有成竹），神殿會觸發警報引導自省修正。<br>
                 ② <strong>Q版四格漫畫生成</strong>：通關後將整篇作文圖像化，增強學童寫作成就感。<br>
                 ③ <strong>實體稿紙專區</strong>：提供段落縮排、標點佔格直觀導覽，讓孩子親手誊寫回實體稿紙！
@@ -1460,45 +1460,45 @@
         </div>
 
         <!-- 📊 流水帳 VS 冒險島大綱 快速對照表 -->
-        <div style="background: white; border: 2px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-          <div style="background: #e2e8f0; padding: 12px 20px; font-weight: 900; font-size: 17px; color: #1e293b;">
+        <div style="background: white; border: 2px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+          <div style="background: #e2e8f0; padding: 14px 22px; font-weight: 900; font-size: 18.5px; color: #1e293b;">
             📋 課堂一分鐘對比教學（請老師帶學生朗讀對照，一眼看懂差距！）
           </div>
-          <div style="display: grid; grid-template-columns: 110px 1fr 1fr; font-size: 16px; border-bottom: 2px solid #cbd5e1;">
-            <div style="padding: 14px 16px; font-weight: 900; background: #f8fafc; border-right: 1.5px solid #e2e8f0;">篇章結構</div>
-            <div style="padding: 14px 18px; font-weight: 900; color: #dc2626; background: #fef2f2; border-right: 1.5px solid #e2e8f0;">❌ 傳統流水帳（避免這樣寫）</div>
-            <div style="padding: 14px 18px; font-weight: 900; color: #16a34a; background: #f0fdf4;">✅ 冒險島大綱（四年級進階寫法）</div>
+          <div style="display: grid; grid-template-columns: 120px 1fr 1fr; font-size: 17.5px; border-bottom: 2px solid #cbd5e1;">
+            <div style="padding: 16px 18px; font-weight: 900; background: #f8fafc; border-right: 1.5px solid #e2e8f0;">篇章結構</div>
+            <div style="padding: 16px 20px; font-weight: 900; color: #dc2626; background: #fef2f2; border-right: 1.5px solid #e2e8f0;">❌ 傳統流水帳（避免這樣寫）</div>
+            <div style="padding: 16px 20px; font-weight: 900; color: #16a34a; background: #f0fdf4;">✅ 冒險島大綱（四年級進階寫法）</div>
           </div>
-          <div style="display: grid; grid-template-columns: 110px 1fr 1fr; font-size: 16px; border-bottom: 1.5px solid #f1f5f9;">
-            <div style="padding: 14px 16px; font-weight: 900; background: #f8fafc; border-right: 1.5px solid #e2e8f0;">第一段【起】</div>
-            <div style="padding: 14px 18px; color: #64748b; line-height: 1.7; border-right: 1.5px solid #e2e8f0;">「明天要月考了，我很緊張。」</div>
-            <div style="padding: 14px 18px; color: #0f172a; line-height: 1.7; font-weight: 700;">「桌上厚重的課本像座小山，時鐘滴答滴答響，我的心跳也跟著狂跳不停……」</div>
+          <div style="display: grid; grid-template-columns: 120px 1fr 1fr; font-size: 17.5px; border-bottom: 1.5px solid #f1f5f9;">
+            <div style="padding: 16px 18px; font-weight: 900; background: #f8fafc; border-right: 1.5px solid #e2e8f0;">第一段【起】</div>
+            <div style="padding: 16px 20px; color: #64748b; line-height: 1.75; border-right: 1.5px solid #e2e8f0;">「明天要月考了，我很緊張。」</div>
+            <div style="padding: 16px 20px; color: #0f172a; line-height: 1.75; font-weight: 700;">「桌上厚重的課本像座小山，時鐘滴答滴答響，我的心跳也跟著狂跳不停……」</div>
           </div>
-          <div style="display: grid; grid-template-columns: 110px 1fr 1fr; font-size: 16px; border-bottom: 1.5px solid #f1f5f9;">
-            <div style="padding: 14px 16px; font-weight: 900; background: #f8fafc; border-right: 1.5px solid #e2e8f0;">第二段【承】</div>
-            <div style="padding: 14px 18px; color: #64748b; line-height: 1.7; border-right: 1.5px solid #e2e8f0;">「考卷發下來了，大家都認真在寫。」</div>
-            <div style="padding: 14px 18px; color: #0f172a; line-height: 1.7; font-weight: 700;">「鐘聲一響，教室只剩沙沙翻卷聲，我的手心全是冷汗，筆尖不敢停下……」</div>
+          <div style="display: grid; grid-template-columns: 120px 1fr 1fr; font-size: 17.5px; border-bottom: 1.5px solid #f1f5f9;">
+            <div style="padding: 16px 18px; font-weight: 900; background: #f8fafc; border-right: 1.5px solid #e2e8f0;">第二段【承】</div>
+            <div style="padding: 16px 20px; color: #64748b; line-height: 1.75; border-right: 1.5px solid #e2e8f0;">「考卷發下來了，大家都認真在寫。」</div>
+            <div style="padding: 16px 20px; color: #0f172a; line-height: 1.75; font-weight: 700;">「鐘聲一響，教室只剩沙沙翻卷聲，我的手心全是冷汗，筆尖不敢停下……」</div>
           </div>
-          <div style="display: grid; grid-template-columns: 110px 1fr 1fr; font-size: 16px; border-bottom: 1.5px solid #f1f5f9;">
-            <div style="padding: 14px 16px; font-weight: 900; background: #f8fafc; border-right: 1.5px solid #e2e8f0;">第三段【轉】</div>
-            <div style="padding: 14px 18px; color: #64748b; line-height: 1.7; border-right: 1.5px solid #e2e8f0;">「我有一題數學算不出來，很煩。」</div>
-            <div style="padding: 14px 18px; color: #0f172a; line-height: 1.7; font-weight: 700;">「倒數三分鐘！最後一題魔王應用題像銅牆鐵壁，我的腦袋瞬間一片空白……」</div>
+          <div style="display: grid; grid-template-columns: 120px 1fr 1fr; font-size: 17.5px; border-bottom: 1.5px solid #f1f5f9;">
+            <div style="padding: 16px 18px; font-weight: 900; background: #f8fafc; border-right: 1.5px solid #e2e8f0;">第三段【轉】</div>
+            <div style="padding: 16px 20px; color: #64748b; line-height: 1.75; border-right: 1.5px solid #e2e8f0;">「我有一題數學算不出來，很煩。」</div>
+            <div style="padding: 16px 20px; color: #0f172a; line-height: 1.75; font-weight: 700;">「倒數三分鐘！最後一題魔王應用題像銅牆鐵壁，我的腦袋瞬間一片空白……」</div>
           </div>
-          <div style="display: grid; grid-template-columns: 110px 1fr 1fr; font-size: 16px;">
-            <div style="padding: 14px 16px; font-weight: 900; background: #f8fafc; border-right: 1.5px solid #e2e8f0;">第四段【合】</div>
-            <div style="padding: 14px 18px; color: #64748b; line-height: 1.7; border-right: 1.5px solid #e2e8f0;">「發考卷我考八十分，考完真開心。」</div>
-            <div style="padding: 14px 18px; color: #0f172a; line-height: 1.7; font-weight: 700;">「紅筆圈出我的粗心，但分數只是一時的，這次跌倒讓我明白：面對弱點才能超越自我！」</div>
+          <div style="display: grid; grid-template-columns: 120px 1fr 1fr; font-size: 17.5px;">
+            <div style="padding: 16px 18px; font-weight: 900; background: #f8fafc; border-right: 1.5px solid #e2e8f0;">第四段【合】</div>
+            <div style="padding: 16px 20px; color: #64748b; line-height: 1.75; border-right: 1.5px solid #e2e8f0;">「發考卷我考八十分，考完真開心。」</div>
+            <div style="padding: 16px 20px; color: #0f172a; line-height: 1.75; font-weight: 700;">「紅筆圈出我的粗心，但分數只是一時的，這次跌倒讓我明白：面對弱點才能超越自我！」</div>
           </div>
         </div>
 
       </div>
 
       <!-- 彈窗底部行動條 -->
-      <div style="padding: 20px 30px; background: white; border-top: 1.5px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 20px;">
-        <div style="font-size: 15.5px; color: #475569; font-weight: 600;">
+      <div style="padding: 22px 34px; background: white; border-top: 1.5px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+        <div style="font-size: 16.5px; color: #475569; font-weight: 700;">
           💡 <strong>課堂提醒</strong>：老師隨時可點擊上方導航列【📖 大綱說帖】再次開啟本面板進行引導！
         </div>
-        <button class="btn-top highlight" style="padding: 16px 36px; font-size: 20px; font-weight: 900; background: #e63946; color: white; border: none; border-radius: 14px; box-shadow: 0 6px 20px rgba(230, 57, 70, 0.45); cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="window.islandApp.startAdventureAfterOutline()">
+        <button class="btn-top highlight" style="padding: 18px 44px; font-size: 22px; font-weight: 900; background: #e63946; color: white; border: none; border-radius: 14px; box-shadow: 0 6px 20px rgba(230, 57, 70, 0.45); cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="window.islandApp.startAdventureAfterOutline()">
           🚀 老師講解完畢・出發開始闖關！（前往第 1 島）
         </button>
       </div>
@@ -1565,7 +1565,7 @@
         </div>
 
         <!-- 5 個要素點選卡容器 -->
-        <div id="elementPickersList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        <div id="elementPickersList" style="display: flex; flex-direction: column; gap: 12px;"></div>
 
         <div class="step-actions-bar">
           <button class="btn-step-next" onclick="window.islandApp.goToStep(2)">
@@ -1591,13 +1591,13 @@
         <div id="step2ElementInventory"></div>
 
         <!-- 四大段落句組裝專區（100% 承接 Step 1 要素） -->
-        <div id="step2SentenceList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        <div id="step2SentenceList" style="display: flex; flex-direction: column; gap: 12px;"></div>
 
         <!-- 即時組合預覽 -->
         <div class="preview-box">
           <div class="preview-title" style="display: flex; justify-content: space-between; align-items: center;">
             <span>👁️ 目前段落組裝即時預覽：</span>
-            <span style="font-size: 11px; color: #0284c7; font-weight: 700;">（彩色標籤表示承接自 Step 1 的要素）</span>
+            <span style="font-size: 13.5px; color: #0284c7; font-weight: 800;">（彩色標籤表示承接自 Step 1 的要素）</span>
           </div>
           <div class="preview-text" id="step2CombinedPreview"></div>
         </div>
@@ -1631,11 +1631,11 @@
         <!-- 寫作輸入區 -->
         <div class="writing-area">
           <!-- 讓學生主動匯入 Step 2 填空成果按鈕 -->
-          <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 4px;">
-            <div style="font-size: 12.5px; color: #1e40af; font-weight: 700;">
+          <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 6px;">
+            <div style="font-size: 14.5px; color: #1e40af; font-weight: 800;">
               📥 已同步 Step 2 組裝成果！點擊右側可隨時重新帶入最新句子：
             </div>
-            <button type="button" style="padding: 6px 14px; background: #2563eb; color: white; border-radius: 8px; font-size: 12.5px; font-weight: 800; border: none; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 4px rgba(37,99,235,0.2);" onclick="window.islandApp.importStep2ToEditor()">
+            <button type="button" style="padding: 8px 16px; background: #2563eb; color: white; border-radius: 10px; font-size: 14px; font-weight: 800; border: none; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 6px rgba(37,99,235,0.25);" onclick="window.islandApp.importStep2ToEditor()">
               📋 重新匯入 Step 2 句子
             </button>
           </div>
@@ -1669,7 +1669,7 @@
             <div class="tool-title">
               <span>👀 四年級同儕佳作觀摩</span>
             </div>
-            <div style="font-size: 12.5px; line-height: 1.5; color: #4a5568; background: #f7fafc; padding: 8px 10px; border-radius: 8px;" id="peerExemplar"></div>
+            <div style="font-size: 15px; line-height: 1.7; color: #334155; background: #f8fafc; padding: 12px 14px; border-radius: 10px; border: 1px solid #e2e8f0;" id="peerExemplar"></div>
           </div>
         </div>
 
@@ -1697,22 +1697,22 @@
         </div>
 
         <!-- 最終段落完整預覽卡 -->
-        <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px;">
-          <div style="font-size: 12.5px; font-weight: 900; color: var(--primary);">📄 本段作文最終預覽：</div>
-          <div id="finalParagraphPreview" style="font-size: 14px; line-height: 1.8; color: #1e293b; font-family: var(--font-serif); background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; white-space: pre-wrap;"></div>
+        <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+          <div style="font-size: 15px; font-weight: 900; color: var(--primary);">📄 本段作文最終預覽：</div>
+          <div id="finalParagraphPreview" style="font-size: 16.5px; line-height: 1.85; color: #1e293b; font-family: var(--font-serif); background: #f8fafc; padding: 12px 16px; border-radius: 10px; border: 1px solid #e2e8f0; white-space: pre-wrap;"></div>
         </div>
 
         <!-- 教師批改狀態卡 -->
         <div class="teacher-review-card">
           <div class="teacher-stamp-display">
-            <span style="font-size: 13.5px; font-weight: 900; color: #333;">👨‍🏫 教師批改狀態</span>
+            <span style="font-size: 15.5px; font-weight: 900; color: #333;">👨‍🏫 教師批改狀態</span>
             <span class="stamp-badge unreviewed" id="stampBadge">⏳ 待教師蓋章</span>
           </div>
           <div id="teacherFeedbackBox" style="display: none;" class="red-pen-feedback"></div>
         </div>
 
-        <div style="display: flex; gap: 10px; margin-top: 6px;">
-          <button class="btn-teacher" style="flex: 1; padding: 12px;" onclick="window.islandApp.openTeacherModal()">
+        <div style="display: flex; gap: 12px; margin-top: 8px;">
+          <button class="btn-teacher" style="flex: 1; padding: 14px; font-size: 16px;" onclick="window.islandApp.openTeacherModal()">
             <span>💮 教師批改蓋章面板</span>
           </button>
         </div>
@@ -8318,8 +8318,8 @@ puzzleSentences: [
                   ${optBtns}
                 </div>
                 <div class="element-custom-row">
-                  <span style="font-size: 11px; color: #64748b; white-space: nowrap;">✍️ 或自己寫：</span>
-                  <input class="element-custom-input" placeholder="可自行補充個人經歷..." value="${customVal}" onchange="window.islandApp.setElementCustomText('${key}', this.value)">
+                  <span style="font-size: 13.5px; color: #475569; font-weight: 700; white-space: nowrap;">✍️ 或自己寫：</span>
+                  <input class="element-custom-input" placeholder="可自行補充個人經歷..." value="${customVal}" onchange="window.islandApp.setElementCustomText('${key}', this.value)" style="font-size: 14.5px; padding: 8px 12px;">
                 </div>
               `;
               list.appendChild(card);
@@ -8331,13 +8331,13 @@ puzzleSentences: [
           const tipCard = document.createElement("div");
           tipCard.className = "master-challenge-card";
           tipCard.innerHTML = `
-            <span class="master-badge-tag">👑 大師級・深層審題思維定位</span>
-            <div style="font-size: 13px; font-weight: 700; color: #78350f; line-height: 1.6;">
+            <span class="master-badge-tag" style="font-size: 13.5px; padding: 4px 12px;">👑 大師級・深層審題思維定位</span>
+            <div style="font-size: 15px; font-weight: 700; color: #78350f; line-height: 1.7;">
               真正的寫作大師在動筆前必先「沉思審題」！請閉上雙眼回想當時的情境，依據每一欄的「審題啟發問題」填入鮮活生動的詞句，為後續段落注入文學張力：
             </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; background: rgba(255,255,255,0.7); padding: 8px 10px; border-radius: 8px;">
-              <span style="font-size: 11.5px; color: #b45309; font-weight: 900;">💎 推薦四上高級成語（點擊可直接填入）：</span>
-              ${data.words.map(w => `<span class="chip" style="font-size: 11.5px; padding: 3px 8px; font-weight: 700;" onclick="window.islandApp.insertToActiveElement('${w}')">${w}</span>`).join("")}
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 10px;">
+              <span style="font-size: 13.5px; color: #b45309; font-weight: 900;">💎 推薦四上高級成語（點擊可直接填入）：</span>
+              ${data.words.map(w => `<span class="chip" style="font-size: 13.5px; padding: 5px 12px; font-weight: 700;" onclick="window.islandApp.insertToActiveElement('${w}')">${w}</span>`).join("")}
             </div>
           `;
           list.appendChild(tipCard);
@@ -8357,25 +8357,25 @@ puzzleSentences: [
 
             card.innerHTML = `
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div class="picker-label" style="background: ${color}; padding: 4px 10px; border-radius: 6px; font-size: 13px;">
+                <div class="picker-label" style="background: ${color}; padding: 6px 12px; border-radius: 8px; font-size: 15px;">
                   <span>${promptInfo.title}</span>
                 </div>
-                <span style="font-size: 11px; font-weight: 700; color: #b45309;">💡 審題引導</span>
+                <span style="font-size: 13.5px; font-weight: 800; color: #b45309;">💡 審題引導</span>
               </div>
 
               <!-- 審題引導問題 -->
-              <div style="font-size: 12.5px; line-height: 1.5; color: #334155; font-weight: 600; padding: 4px 2px;">
+              <div style="font-size: 15px; line-height: 1.6; color: #334155; font-weight: 700; padding: 6px 2px;">
                 ${promptInfo.question}
               </div>
 
               <!-- 聚焦提示 -->
-              <div style="font-size: 11.5px; color: #64748b; line-height: 1.4;">
+              <div style="font-size: 13.5px; color: #64748b; line-height: 1.5;">
                 ${promptInfo.hint}
               </div>
 
               <!-- 大師輸入框 -->
-              <div style="margin-top: 4px;">
-                <input class="element-custom-input" id="masterInput_${key}" style="padding: 9px 12px; font-weight: 600; font-size: 13.5px; width: 100%; border: 1.5px solid #e2e8f0; border-radius: 8px;" placeholder="${promptInfo.placeholder}" value="${curVal}" onfocus="window.islandApp.lastFocusedElement='${key}'" oninput="window.islandApp.setElementCustomText('${key}', this.value)">
+              <div style="margin-top: 6px;">
+                <input class="element-custom-input" id="masterInput_${key}" style="padding: 11px 14px; font-weight: 600; font-size: 15px; width: 100%; border: 1.5px solid #e2e8f0; border-radius: 10px;" placeholder="${promptInfo.placeholder}" value="${curVal}" onfocus="window.islandApp.lastFocusedElement='${key}'" oninput="window.islandApp.setElementCustomText('${key}', this.value)">
               </div>
             `;
             list.appendChild(card);
@@ -8398,10 +8398,10 @@ puzzleSentences: [
         const tipCard = document.createElement("div");
         tipCard.className = "intermediate-guided-banner";
         tipCard.innerHTML = `
-          <div style="font-size: 13.5px; font-weight: 900; color: #1e40af; display: flex; align-items: center; gap: 6px;">
+          <div style="font-size: 16px; font-weight: 900; color: #1e40af; display: flex; align-items: center; gap: 8px;">
             <span>⚔️ 挑戰者句型鷹架：為各要素選句型，依詞性填入好詞！</span>
           </div>
-          <div style="font-size: 12px; color: #3b82f6; margin-top: 4px; line-height: 1.5;">
+          <div style="font-size: 14.5px; color: #1e3a8a; margin-top: 6px; line-height: 1.6; font-weight: 600;">
             💡 <strong>拒絕偷懶挑現成句子！</strong>請為每個要素選擇句型，依據<strong>【詞性提示】</strong>親手打字或點選推薦的<strong>好詞積木</strong>填入底線，親手組裝出鮮活生動的作文要素！
           </div>
         `;
@@ -8453,13 +8453,13 @@ puzzleSentences: [
             const ideaText = b.ideaAngles || '思考方向：試著回想生活情境，用貼切生動的詞語來描述。';
 
             blanksHtml += `
-              <div class="guided-blank-row" style="margin-top: 8px; background: #f8fafc; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #e2e8f0;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                  <div style="display: flex; align-items: center; gap: 6px;">
-                    <span style="font-size: 12px; font-weight: 900; color: #1e293b;">【${b.label}】</span>
+              <div class="guided-blank-row" style="margin-top: 10px; background: #f8fafc; padding: 12px 14px; border-radius: 12px; border: 1.5px solid #e2e8f0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 15px; font-weight: 900; color: #1e293b;">【${b.label}】</span>
                     ${posBadge}
                   </div>
-                  ${currentVal ? '<span style="font-size: 11px; color: #16a34a; font-weight: 800;">✓ 已親自填寫</span>' : '<span style="font-size: 11px; color: #dc2626; font-weight: 700;">待輸入自己的詞語</span>'}
+                  ${currentVal ? '<span style="font-size: 13.5px; color: #16a34a; font-weight: 800;">✓ 已親自填寫</span>' : '<span style="font-size: 13px; color: #dc2626; font-weight: 800;">待輸入自己的詞語</span>'}
                 </div>
 
                 <!-- 🧠 大腦想一想思考導引問句 (激發內在聯想，非被動點選) -->
@@ -8468,17 +8468,17 @@ puzzleSentences: [
                 </div>
 
                 <!-- 學生親手輸入框 (預設鼓勵親自打字) -->
-                <div style="margin-top: 6px;">
+                <div style="margin-top: 8px;">
                   <input class="element-custom-input" 
                          id="guidedInput_${key}_${b.key}"
                          value="${currentVal.replace(/"/g, '&quot;')}" 
                          placeholder="${b.placeholder || '請親手輸入你想到的詞語（試著用自己的話寫出來）...'}" 
-                         style="padding: 8px 12px; font-size: 13px; font-weight: 600; width: 100%; border: 1.5px solid #94a3b8; border-radius: 8px; box-sizing: border-box; background: #ffffff;"
+                         style="padding: 10px 14px; font-size: 15px; font-weight: 600; width: 100%; border: 1.5px solid #94a3b8; border-radius: 10px; box-sizing: border-box; background: #ffffff;"
                          oninput="window.islandApp.setGuidedBlankText('${key}', '${b.key}', this.value)">
                 </div>
 
                 <!-- 💡 思考卡住時的按需展開靈感錦囊 (預設折疊，絕不直接攤開現成答案) -->
-                <div style="margin-top: 4px;">
+                <div style="margin-top: 6px;">
                   <button type="button" class="guided-hint-toggle" id="guidedHintBtn_${key}_${b.key}" onclick="window.islandApp.toggleGuidedHint('${key}', '${b.key}')">
                     💡 思考不出來嗎？點我看靈感提點
                   </button>
@@ -8486,8 +8486,8 @@ puzzleSentences: [
                     <div class="guided-idea-text">
                       ${ideaText}
                     </div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin-top: 4px;">
-                      <span style="font-size: 11px; color: #92400e; font-weight: 800;">📚 四上教材參考好詞（可參考或點選）：</span>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px;">
+                      <span style="font-size: 13px; color: #92400e; font-weight: 800;">📚 四上教材參考好詞（可參考或點選）：</span>
                       ${chipsHtml}
                     </div>
                   </div>
@@ -8502,19 +8502,19 @@ puzzleSentences: [
 
           card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <div class="picker-label" style="background: ${color}; padding: 4px 10px; border-radius: 6px; font-size: 13px;">
+              <div class="picker-label" style="background: ${color}; padding: 6px 12px; border-radius: 8px; font-size: 15px;">
                 <span>${frameInfo.label}</span>
               </div>
-              <span style="font-size: 11px; font-weight: 800; color: #2563eb;">📐 句型鷹架</span>
+              <span style="font-size: 13.5px; font-weight: 800; color: #2563eb;">📐 句型鷹架</span>
             </div>
 
             <!-- 句型切換頁籤 -->
-            <div style="display: flex; gap: 6px; margin-top: 2px;">
+            <div style="display: flex; gap: 8px; margin-top: 4px;">
               ${patternTabs}
             </div>
 
             <!-- 底線與詞性導引欄 -->
-            <div style="margin-top: 2px;">
+            <div style="margin-top: 4px;">
               ${blanksHtml}
             </div>
 
@@ -8966,11 +8966,11 @@ puzzleSentences: [
               <span>${spec.title}</span>
               <span class="linkage-badge">🔗 承接 Step 1【${spec.elementTag}】</span>
             </div>
-            <div class="sentence-block-text" style="margin: 6px 0; font-size: 13.5px; line-height: 1.6; color: #1e293b;">
+            <div class="sentence-block-text" style="margin: 8px 0; font-size: 15.5px; line-height: 1.75; color: #1e293b;">
               ${fullSentence}
             </div>
-            <div class="puzzle-options-group" style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(0,0,0,0.08);">
-              <span style="font-size: 11px; font-weight: 700; color: #64748b; line-height: 24px;">可微調誇飾修辭：</span>
+            <div class="puzzle-options-group" style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(0,0,0,0.08);">
+              <span style="font-size: 13.5px; font-weight: 800; color: #64748b; line-height: 26px;">可微調誇飾修辭：</span>
               ${optBtnsHtml}
             </div>
           `;
