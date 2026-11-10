@@ -14,7 +14,7 @@
      - 學生在編寫作文、五要素點選、教師蓋章時，以 1.4 秒防抖自動非同步 POST 同步至 Google 試算表。
      - 換電腦時，只要輸入或登入相同 Google 帳號，系統自動連線試算表將先前的段落進度完整還原到畫面與 3D 島嶼！
   4. **實機檢測**：Playwright 實機驗證（0 errors, 0 warnings），微縮模型驗收全項通過。
-- **Commit 雜湊**：待提交
+- **Commit 雜湊**：`a89d4cc` (feat: Google sign-in and Google Sheets GAS auto-sync)
 
 ## 2026-11-10 移除 2D 概念圖對照功能，設定進入網頁直接對焦起之島（第 1 島・月考倒數）
 - **執行人**：Antigravity Agent
