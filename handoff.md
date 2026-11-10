@@ -15,7 +15,7 @@
      - `IslandScene` 相機初始位置設為 `(x0 + 15, y0 + 15, z0 + 18)`，`controls.target` 設為 `(x0 - 1.0, y0 + 3.2, z0)`，首幀即在起之島。
      - 開場 Loader 淡出後直接執行 `this.flyToIsland(0)`，流暢對焦特寫起之島並展開寫作任務抽屜引導學生。
   3. **實機檢測**：Playwright 實機驗證（0 errors, 0 warnings），微縮模型自動驗收 100% 通過。
-- **Commit 雜湊**：待提交
+- **Commit 雜湊**：`e5ba5d1` (refactor: remove 2D concept art modal/banner and set default camera focus on Island 0)
 
 ## 2026-11-10 依據 `three_js.md` 規範完成 Three.js 袖珍微縮模型（Resin Diorama）渲染重構與四項驗收
 - **執行人**：Antigravity Agent
