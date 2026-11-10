@@ -10,7 +10,7 @@
   4. **提早對正下滑道 (72% ~ 86%)**：於空中提早 18 單位對齊目標島嶼跑道中心線，以 7 度小下滑角平順進場（絕非俯衝墜機）。
   5. **跑道平穩拉平接地與滑行減速 (86% ~ 100%)**：於跑道斑馬線上方拉平機身（Flare），後輪輕柔接地（Touchdown 冒出著陸輪胎白煙），接地後機身完全平貼跑道表面直線向前滑行減速，發動機收油門降低轉速，最後絲滑停妥於停機坪！
 - **實機檢測**：Playwright 實機驗證（0 errors, 0 warnings），截圖確認助跑、巡航與著陸滑行流暢自然。
-- **Commit 雜湊**：待提交
+- **Commit 雜湊**：`5e2bcb9` (feat: smooth runway takeoff roll & deceleration landing)
 
 ## 2026-11-10 串接教師專屬 Google 試算表 Web App API，實裝開箱即用雙向寫入與跨裝置還原
 - **執行人**：Antigravity Agent
