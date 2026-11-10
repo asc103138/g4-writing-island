@@ -21,7 +21,7 @@
        - `3. 材質分佈: 物理材質 x2597, 基礎無光材質 x1`（天穹）
        - `4. 材質合格判定: ✅ 通過 (物理材質為主體)`
        - 控制台 0 錯誤、0 警告。
-- **Commit 雜湊**：待提交
+- **Commit 雜湊**：`68381f5` (feat: implement three_js.md resin diorama rendering pipeline)
 
 ## 2026-11-10 島嶼面積放大 3.1 倍、開闊分區規劃（海灣機場/聚落建築/自然地貌/海岬燈塔）與真實寫真自然樹木/風化露岩重構
 - **執行人**：Antigravity Agent
