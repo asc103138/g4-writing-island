@@ -4186,11 +4186,12 @@ puzzleSentences: [
         // ----------------------------------------------------
     // 2. 狀態管理器 (持久化支援)
     // ----------------------------------------------------
+    const DEFAULT_GAS_API_URL = "https://script.google.com/macros/s/AKfycbw1zKKkVajQRMO2MwclcycHtjoGUBfYmmVDuni9o8xFVinc-YOfvP8n6NhHr-kqCNzB/exec";
+
     class IslandStateManager {
       constructor() {
-        this.tier = "intermediate";
+        this.tier = "intermediate"; // beginner, intermediate, advanced
         this.teacherMode = false;
-        this.activeIslandIndex = 0;
         this.paragraphs = ["", "", "", ""];
         this.teacherApprovals = [false, false, false, false];
         this.teacherStamps = ["", "", "", ""];
@@ -4210,11 +4211,33 @@ puzzleSentences: [
         this.step2ClozeData = [ {}, {}, {}, {} ];
         this.guidedSelections = [ {}, {}, {}, {} ];
         this.isNightMode = false;
+
+        // 【Google 帳號與雲端試算表同步狀態】
+        this.currentUser = localStorage.getItem("g4_writing_current_user") || "";
+        this.currentUserName = localStorage.getItem("g4_writing_current_user_name") || "";
+        this.currentUserAvatar = localStorage.getItem("g4_writing_current_user_avatar") || "";
+        this.gasApiUrl = localStorage.getItem("g4_writing_gas_api_url") || DEFAULT_GAS_API_URL;
+        this.lastSyncTime = localStorage.getItem("g4_writing_last_sync_time") || "";
+        this.syncTimer = null;
+        this.isSyncing = false;
+
         this.loadState();
       }
+
+      getStorageKey() {
+        if (this.currentUser) {
+          return "g4_writing_island_state_v4_" + encodeURIComponent(this.currentUser.toLowerCase());
+        }
+        return "g4_writing_island_state_v4";
+      }
+
       loadState() {
         try {
-          const raw = localStorage.getItem("g4_writing_island_state_v4");
+          const key = this.getStorageKey();
+          let raw = localStorage.getItem(key);
+          if (!raw && this.currentUser) {
+            raw = localStorage.getItem("g4_writing_island_state_v4");
+          }
           if (raw) {
             const data = JSON.parse(raw);
             this.tier = data.tier || "intermediate";
@@ -4243,7 +4266,8 @@ puzzleSentences: [
           console.warn("無法讀取舊存檔", e);
         }
       }
-      saveState() {
+
+      saveState(skipCloud = false) {
         try {
           const data = {
             tier: this.tier,
@@ -4256,12 +4280,97 @@ puzzleSentences: [
             elementSelections: this.elementSelections,
             step2ClozeData: this.step2ClozeData,
             guidedSelections: this.guidedSelections,
-            isNightMode: this.isNightMode
+            isNightMode: this.isNightMode,
+            lastSavedAt: new Date().toISOString()
           };
+          const key = this.getStorageKey();
+          localStorage.setItem(key, JSON.stringify(data));
           localStorage.setItem("g4_writing_island_state_v4", JSON.stringify(data));
+
+          if (!skipCloud && this.currentUser && this.gasApiUrl) {
+            this.syncToCloud(1400);
+          }
         } catch (e) {
           console.warn("儲存失敗", e);
         }
+      }
+
+      syncToCloud(debounceMs = 0) {
+        if (!this.currentUser || !this.gasApiUrl) return;
+        if (this.syncTimer) clearTimeout(this.syncTimer);
+
+        const doSync = async () => {
+          this.isSyncing = true;
+          if (window.islandApp && window.islandApp.updateGoogleAuthUI) {
+            window.islandApp.updateGoogleAuthUI(true);
+          }
+          try {
+            const payload = {
+              action: "save",
+              user_id: this.currentUser,
+              user_name: this.currentUserName || this.currentUser.split("@")[0],
+              tier: this.tier,
+              paragraphs: this.paragraphs,
+              teacherApprovals: this.teacherApprovals,
+              teacherStamps: this.teacherStamps,
+              teacherComments: this.teacherComments,
+              elementSelections: this.elementSelections,
+              puzzleSelections: this.puzzleSelections,
+              step2ClozeData: this.step2ClozeData,
+              guidedSelections: this.guidedSelections
+            };
+
+            const resp = await fetch(this.gasApiUrl, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify(payload)
+            });
+            const resJson = await resp.json();
+            if (resJson && resJson.success) {
+              this.lastSyncTime = new Date().toLocaleTimeString("zh-TW", { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+              localStorage.setItem("g4_writing_last_sync_time", this.lastSyncTime);
+            }
+          } catch (err) {
+            console.warn("雲端試算表同步暫時延遲:", err);
+          } finally {
+            this.isSyncing = false;
+            if (window.islandApp && window.islandApp.updateGoogleAuthUI) {
+              window.islandApp.updateGoogleAuthUI(false);
+            }
+          }
+        };
+
+        if (debounceMs > 0) {
+          this.syncTimer = setTimeout(doSync, debounceMs);
+        } else {
+          doSync();
+        }
+      }
+
+      async loadFromCloud(userId) {
+        if (!userId || !this.gasApiUrl) return false;
+        try {
+          const resp = await fetch(this.gasApiUrl + "?action=load&user_id=" + encodeURIComponent(userId));
+          const res = await resp.json();
+          if (res && res.found && res.state) {
+            const data = res.state;
+            if (data.paragraphs) this.paragraphs = data.paragraphs;
+            if (data.teacherApprovals) this.teacherApprovals = data.teacherApprovals;
+            if (data.teacherStamps) this.teacherStamps = data.teacherStamps;
+            if (data.teacherComments) this.teacherComments = data.teacherComments;
+            if (data.elementSelections) this.elementSelections = data.elementSelections;
+            if (data.puzzleSelections) this.puzzleSelections = data.puzzleSelections;
+            if (data.step2ClozeData) this.step2ClozeData = data.step2ClozeData;
+            if (data.tier) this.tier = data.tier;
+            this.saveState(true);
+            this.lastSyncTime = new Date().toLocaleTimeString("zh-TW", { hour: '2-digit', minute: '2-digit' });
+            localStorage.setItem("g4_writing_last_sync_time", this.lastSyncTime);
+            return true;
+          }
+        } catch (e) {
+          console.warn("無法從雲端試算表讀取:", e);
+        }
+        return false;
       }
     }
 

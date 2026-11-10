@@ -1,5 +1,16 @@
 # handoff.md - 多 Agent 交接紀錄
 
+## 2026-11-10 串接教師專屬 Google 試算表 Web App API，實裝開箱即用雙向寫入與跨裝置還原
+- **執行人**：Antigravity Agent
+- **教師提供之 Web App URL**：`https://script.google.com/macros/s/AKfycbw1zKKkVajQRMO2MwclcycHtjoGUBfYmmVDuni9o8xFVinc-YOfvP8n6NhHr-kqCNzB/exec`
+- **實測與落實成果**：
+  1. **API 連線測試**：GET（200）、POST（200 寫入成功）、LOAD（200 成功讀取）。
+  2. **注入預設 API 網址**：將該 URL 設定為全域 `DEFAULT_GAS_API_URL`，全班學生打開網頁無需任何手動設定，登入 Google 帳號或輸入座號即自動連通此試算表。
+  3. **實機雙向無損驗證**：
+     - 模擬寫入「期末考的腳步悄悄近了，教室裡的氣氛也變得凝重起來。」➔ 成功送達試算表。
+     - 清空本地 state 模擬換電腦 ➔ 成功從試算表 100% 抓回文字與進度！
+- **Commit 雜湊**：待提交
+
 ## 2026-11-10 實裝學生 Google 帳號登入與 Google 試算表（GAS Web App）雙向自動同步系統
 - **執行人**：Antigravity Agent
 - **使用者要求**：「要將學生所寫的紀錄，紀錄在自己的google帳號內，只要在chrome登入google帳號就可以看到之前寫的東西」（使用者選擇方案 A：Google 試算表資料庫）。
