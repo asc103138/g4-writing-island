@@ -322,6 +322,380 @@
       .drawer { width: 100vw; right: 0; left: 0; bottom: 0; top: 64px; max-width: 100vw; border-radius: 0; }
     }
 
+    /* 本島 3 位常駐島民 NPC 系統樣式 */
+    .island-villagers-section {
+      margin: 10px 16px 14px 16px;
+      padding: 14px 16px;
+      background: linear-gradient(135deg, #f0fdf4 0%, #fefce8 100%);
+      border: 2px solid #bbf7d0;
+      border-radius: 16px;
+      box-shadow: 0 4px 14px rgba(34, 197, 94, 0.08);
+    }
+    .villagers-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .villagers-title {
+      font-size: 16.5px;
+      font-weight: 900;
+      color: #166534;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .villagers-sub {
+      font-size: 13px;
+      color: #15803d;
+      font-weight: 700;
+      background: #dcfce7;
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+    .villager-chips-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .villager-chip {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 10px;
+      background: #ffffff;
+      border: 2px solid #86efac;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #1e293b;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+    }
+    .villager-chip:hover {
+      transform: translateY(-2px);
+      border-color: #22c55e;
+      background: #f0fdf4;
+    }
+    .villager-chip.active {
+      background: #22c55e;
+      color: #ffffff;
+      border-color: #16a34a;
+      box-shadow: 0 4px 10px rgba(34, 197, 94, 0.35);
+      transform: scale(1.03);
+    }
+    .villager-chip .chip-avatar {
+      font-size: 18px;
+    }
+    .villager-speech-card {
+      background: #ffffff;
+      border-radius: 14px;
+      border: 1.5px solid #dcfce7;
+      padding: 12px 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .villager-card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+    .villager-card-name-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .villager-card-avatar {
+      font-size: 22px;
+    }
+    .villager-card-name {
+      font-size: 16px;
+      font-weight: 900;
+      color: #0f172a;
+    }
+    .villager-card-role {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #047857;
+      background: #d1fae5;
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+    .villager-view-dialog-btn {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #0284c7;
+      background: #e0f2fe;
+      border: 1px solid #bae6fd;
+      padding: 3px 9px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .villager-view-dialog-btn:hover {
+      background: #bae6fd;
+      color: #0369a1;
+    }
+    .villager-outline-speech {
+      font-size: 15.5px;
+      line-height: 1.7;
+      color: #334155;
+      font-weight: 600;
+      margin-bottom: 10px;
+      padding: 8px 10px;
+      background: #f8fafc;
+      border-radius: 10px;
+      border-left: 4px solid #3b82f6;
+    }
+    .villager-focus-alert {
+      font-size: 15px;
+      line-height: 1.65;
+      color: #9a3412;
+      font-weight: 800;
+      padding: 8px 10px;
+      background: #fff7ed;
+      border-radius: 10px;
+      border: 1.5px solid #ffedd5;
+      border-left: 4px solid #ea580c;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .villager-focus-alert-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    /* 3D 畫面上方常駐 NPC 懸浮氣泡 */
+    .screen-npc-bubble {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      background: rgba(255, 255, 255, 0.96);
+      border: 2px solid #10b981;
+      border-radius: 18px;
+      padding: 8px 14px;
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25), 0 2px 6px rgba(0,0,0,0.08);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      pointer-events: auto;
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+      max-width: 260px;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .screen-npc-bubble:hover {
+      transform: translate(-50%, -105%) scale(1.05);
+      box-shadow: 0 12px 28px rgba(16, 185, 129, 0.35);
+      border-color: #059669;
+    }
+    .screen-npc-bubble::after {
+      content: "";
+      position: absolute;
+      bottom: -9px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 9px 8px 0 8px;
+      border-style: solid;
+      border-color: #10b981 transparent transparent transparent;
+    }
+    .screen-npc-bubble::before {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 7px 6px 0 6px;
+      border-style: solid;
+      border-color: #ffffff transparent transparent transparent;
+      z-index: 1;
+    }
+    .npc-bubble-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .npc-bubble-name {
+      font-size: 13.5px;
+      font-weight: 900;
+      color: #065f46;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .npc-bubble-tag {
+      font-size: 11px;
+      font-weight: 800;
+      background: #fee2e2;
+      color: #b91c1c;
+      padding: 1px 6px;
+      border-radius: 999px;
+      animation: pulseSlow 2s infinite ease-in-out;
+    }
+    .npc-bubble-text {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #1f2937;
+      line-height: 1.5;
+    }
+    .npc-bubble-hint {
+      margin-top: 4px;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #0284c7;
+      text-align: right;
+    }
+
+    /* NPC 對話全螢幕彈窗 */
+    .npc-dialog-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.2s ease;
+    }
+    .npc-dialog-backdrop.show {
+      display: flex;
+    }
+    .npc-dialog-card {
+      background: #ffffff;
+      border-radius: 24px;
+      max-width: 580px;
+      width: 100%;
+      padding: 26px 28px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3);
+      border: 3px solid #6ee7b7;
+      animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .npc-dialog-close-btn {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: #f1f5f9;
+      color: #64748b;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .npc-dialog-close-btn:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .npc-dialog-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .npc-dialog-avatar-wrap {
+      width: 68px;
+      height: 68px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border: 2px solid #a7f3d0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+    .npc-dialog-title-wrap h3 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 900;
+      color: #0f172a;
+    }
+    .npc-dialog-title-wrap .npc-dialog-role {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: #059669;
+      margin-top: 3px;
+      display: inline-block;
+    }
+    .npc-dialog-section-block {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+    }
+    .npc-dialog-section-label {
+      font-size: 15px;
+      font-weight: 900;
+      color: #1e40af;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .npc-dialog-section-content {
+      font-size: 17.5px;
+      line-height: 1.8;
+      color: #334155;
+      font-weight: 600;
+    }
+    .npc-dialog-alert-block {
+      background: #fff7ed;
+      border: 2px solid #ffedd5;
+      border-left: 6px solid #ea580c;
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+    }
+    .npc-dialog-alert-label {
+      font-size: 16px;
+      font-weight: 900;
+      color: #c2410c;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .npc-dialog-alert-content {
+      font-size: 17.5px;
+      line-height: 1.75;
+      color: #9a3412;
+      font-weight: 800;
+    }
+    .npc-dialog-action-btn {
+      width: 100%;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 900;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s ease;
+    }
+    .npc-dialog-action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+    }
+
     /* 全域浮動 Toast 通知 */
     .toast-notification {
       position: fixed; top: 76px; left: 50%; transform: translateX(-50%) translateY(-20px);
@@ -1119,6 +1493,8 @@
 
   <!-- 乃誠島同款 2D 螢幕浮動標籤圖層 (隨相機旋轉投影) -->
   <div class="screen-label-layer" id="labels-layer"></div>
+  <!-- 3D 常駐島民懸浮對話氣泡層 -->
+  <div class="screen-label-layer" id="npcBubbleLayer"></div>
 
 
   <!-- 頂部功能列 -->
@@ -1551,6 +1927,20 @@
       <button class="drawer-close" onclick="window.islandApp.closeDrawer()">✕</button>
     </div>
 
+    <!-- 本島 3 位常駐島民區 (訴說大綱・專注提醒) -->
+    <div class="island-villagers-section" id="islandVillagersSection">
+      <div class="villagers-section-header">
+        <span class="villagers-title">👥 本島 3 位常駐島民（訴說大綱・專注作答）</span>
+        <span class="villagers-sub">點擊島民聆聽本段寫作重點</span>
+      </div>
+      <div class="villager-chips-row" id="villagerChipsRow">
+        <!-- 由 JS 動態渲染 3 位島民切換按鈕 -->
+      </div>
+      <div class="villager-speech-card" id="villagerSpeechCard">
+        <!-- 由 JS 動態渲染選取島民的發言與警報 -->
+      </div>
+    </div>
+
     <!-- 寫作四步階梯導航列 -->
     <div class="step-wizard-bar">
       <div class="wizard-step active" id="wizardTab1" onclick="window.islandApp.goToStep(1)">
@@ -1864,6 +2254,39 @@
           💡 全班同學一律由【🌟🌟 挑戰者模式】展開冒險！若寫作遇到困難需啟動【初探者補救模式】，請舉手由老師從認證門開啟。
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- 常駐島民大綱與專注對話彈窗 -->
+  <div class="npc-dialog-backdrop" id="npcDialogModalBackdrop">
+    <div class="npc-dialog-card">
+      <button class="npc-dialog-close-btn" onclick="window.islandApp.closeNPCDialog()">✕</button>
+      <div class="npc-dialog-header">
+        <div class="npc-dialog-avatar-wrap" id="npcDialogAvatar">🦉</div>
+        <div class="npc-dialog-title-wrap">
+          <h3 id="npcDialogName">學霸貓頭鷹長老</h3>
+          <span class="npc-dialog-role" id="npcDialogRole">考前大綱守護者</span>
+        </div>
+      </div>
+      <div class="npc-dialog-section-block">
+        <div class="npc-dialog-section-label">
+          <span>📖 本段大綱核心指導</span>
+        </div>
+        <div class="npc-dialog-section-content" id="npcDialogOutline">
+          咕咕！大綱指引載入中...
+        </div>
+      </div>
+      <div class="npc-dialog-alert-block">
+        <div class="npc-dialog-alert-label">
+          <span>⚡ 專注叮嚀・認真作答不發呆！</span>
+        </div>
+        <div class="npc-dialog-alert-content" id="npcDialogAlert">
+          專注作答提醒載入中...
+        </div>
+      </div>
+      <button class="npc-dialog-action-btn" onclick="window.islandApp.closeNPCDialog()">
+        ✍️ 我懂了！立刻動腦認真作答（絕不發呆）
+      </button>
     </div>
   </div>
 
@@ -4615,6 +5038,214 @@ puzzleSentences: [
       { code: "05", name: "守門神殿空港", localPos: [4.2, 3.4, 12.5], angle: -0.32 }
     ];
 
+    // 各島嶼 3 位常駐島民 NPC 配置（大綱訴說與認真作答提醒）
+    const ISLAND_NPCS = [
+      // 00 起之島（第一段：考前準備與緊繃氛圍）
+      [
+        {
+          id: "npc_0_1",
+          name: "學霸貓頭鷹長老",
+          role: "考前大綱守護者",
+          avatar: "🦉",
+          type: "owl",
+          islandIndex: 0,
+          localPos: [-5.2, 3.85, 0.5],
+          rotation: 0.45,
+          color: 0x8b5a2b,
+          accentColor: 0xfef08a,
+          shortOutline: "第一段大綱：描寫月考逼近的緊繃壓迫感與挑燈苦讀！",
+          shortAlert: "眼神集中！認真動腦回想生活經驗，千萬不要發呆遊神！",
+          outlineSpeech: "咕咕～第一段『起』是整篇文章的靈魂開端！不要一開始就急著寫走進考場，要先帶讀者回到月考前幾天——書桌上堆得像小山一樣的考卷、牆上鮮紅的倒數日曆、夜晚檯燈下揉著發酸眼睛苦讀的情景。先把那種逼近的壓迫感寫活，讀者才會跟著你一起緊張喔！",
+          focusReminder: "🦉 長老盯著你呢！握緊筆桿、眼神集中，動腦回想你真實的苦讀經驗，認真寫下每一句話！千萬不要咬著筆桿發呆神遊，專注才能寫出滿分起筆！"
+        },
+        {
+          id: "npc_0_2",
+          name: "勤奮松鼠阿寶",
+          role: "生活細節小探員",
+          avatar: "🐿️",
+          type: "squirrel",
+          islandIndex: 0,
+          localPos: [3.6, 3.8, -2.2],
+          rotation: -0.35,
+          color: 0xd97706,
+          accentColor: 0xfef3c7,
+          shortOutline: "第一段大綱：捕捉客廳安靜、媽媽收起笑容的真實生活細節！",
+          shortAlert: "雙手在鍵盤敲起來！發呆不能消滅月考大魔王，動動小腦袋！",
+          outlineSpeech: "吱吱！第一段的大綱重點是『考前的生活細節』！客廳電視被關掉的安靜、媽媽收起笑臉的嚴肅叮嚀、自己手忙腳亂翻找複習講義的焦慮……把這些最真實的家庭生活氣氛寫進五要素裡，你的開頭就會超級生動！",
+          focusReminder: "🐿️ 尾巴搖呀搖！動動你的小腦袋，雙手在鍵盤上敲起來！發呆可不能消滅月考大魔王，認真思考五要素，一秒都不要放空！"
+        },
+        {
+          id: "npc_0_3",
+          name: "滴答兔妹妹",
+          role: "時間倒數小嚮導",
+          avatar: "🐰",
+          type: "rabbit",
+          islandIndex: 0,
+          localPos: [-0.5, 3.85, 3.8],
+          rotation: 0.1,
+          color: 0xfce7f3,
+          accentColor: 0xf43f5e,
+          shortOutline: "第一段大綱：用『每當……時』寫出時鐘倒數的心跳加速！",
+          shortAlert: "滴答滴答時間在走！不要兩眼發直發呆，全神貫注作答！",
+          outlineSpeech: "滴答！滴答！第一段的時間感最關鍵了！試著用『每當月考逼近時……』或『看著桌曆上的紅圈……』當作起手式，描寫時間一分一秒流逝的急迫感，讓讀者的心跳跟著時鐘一起加速！",
+          focusReminder: "🐰 豎起長耳朵！時間正在滴答滴答跑喔！趕快全神貫注作答，不要兩眼發直望著螢幕發呆，寫出你的精采開頭吧！"
+        }
+      ],
+      // 01 承之島（第二段：考場神態與緊繃氛圍）
+      [
+        {
+          id: "npc_1_1",
+          name: "柴犬巡查班長",
+          role: "考場紀律小隊長",
+          avatar: "🐕",
+          type: "shiba",
+          islandIndex: 1,
+          localPos: [-4.5, 3.85, 0.5],
+          rotation: 0.3,
+          color: 0xca8a04,
+          accentColor: 0xef4444,
+          shortOutline: "第二段大綱：考場是無聲戰場，描寫鐘聲響、全班安靜發考卷！",
+          shortAlert: "考場紀律第一！挺直腰桿認真作答，不要東張西望或望天發呆！",
+          outlineSpeech: "汪！第二段『承』是故事的推進——考場是無聲的動靜戰場！大綱核心在於捕捉考卷發下的瞬間：監考老師嚴肅巡視的腳步聲、全班安靜得連一根針掉地上都能聽見的壓迫感。調動你的耳朵和眼睛，把考場氣氛拉到最緊繃！",
+          focusReminder: "🐕 班長吹哨提醒！考場紀律第一，寫作態度也是第一！挺直腰桿認真作答，絕不要東張西望或望著天花板發呆！專注作答的小朋友最帥氣！"
+        },
+        {
+          id: "npc_1_2",
+          name: "冷汗小企鵝",
+          role: "五感神態觀察家",
+          avatar: "🐧",
+          type: "penguin",
+          islandIndex: 1,
+          localPos: [3.5, 3.85, -0.8],
+          rotation: -0.4,
+          color: 0x1e293b,
+          accentColor: 0x38bdf8,
+          shortOutline: "第二段大綱：寫出手心冒冷汗、心跳狂飆與老師微表情！",
+          shortAlert: "深呼吸別慌張！親手把緊張體驗寫出來，千萬別愣住發呆！",
+          outlineSpeech: "呼～好緊張！第二段一定要有『身體神態與微表情』！握著筆桿手心狂冒冷汗、胸口心跳像小鼓一樣咚咚狂敲、額頭冒出的汗珠……用四年級學過的動作與形容詞把自己的緊張神情刻劃出來，文章就會充滿臨場感！",
+          focusReminder: "🐧 深呼吸～別慌張！把手心冒汗的真實體驗寫出來，動手把好詞組裝起來！千萬不要愣住發呆，認真思考每一道題目與句子！"
+        },
+        {
+          id: "npc_1_3",
+          name: "筆尖小麻雀",
+          role: "五感節奏小精靈",
+          avatar: "🐦",
+          type: "sparrow",
+          islandIndex: 1,
+          localPos: [0.2, 3.85, 3.5],
+          rotation: 0.15,
+          color: 0xa16207,
+          accentColor: 0xfef08a,
+          shortOutline: "第二段大綱：五感捕捉雪白考卷、黑螞蟻鉛字與沙沙筆聲！",
+          shortAlert: "沙沙沙！筆尖不要停！發呆考試時間就溜走囉，認真作答！",
+          outlineSpeech: "啾啾！第二段的景物與聲音非常迷人！潔白平整的試卷、排得像黑螞蟻大軍般的鉛字題目，還有全班此起彼落『沙沙沙』的鉛筆書寫聲！把考場的聲音和畫面寫進去，第二段就會像一幅會動的畫卷！",
+          focusReminder: "🐦 啾啾！筆尖不要停下來！大腦在運轉，雙手就要跟著動！發呆的話考試時間可就偷偷溜走囉，認真作答，加油！"
+        }
+      ],
+      // 02 轉之島（第三段：成績審判與家庭風暴）
+      [
+        {
+          id: "npc_2_1",
+          name: "刺蝟火爆教練",
+          role: "情節高潮總教頭",
+          avatar: "🦔",
+          type: "hedgehog",
+          islandIndex: 2,
+          localPos: [-4.5, 3.85, 1.5],
+          rotation: 0.25,
+          color: 0x78350f,
+          accentColor: 0xdc2626,
+          shortOutline: "第三段大綱：滿江紅考卷與退步分數，引爆家庭狂風暴雨！",
+          shortAlert: "拿出骨氣！遇到難題別逃避發呆，認真思考修辭把風暴寫活！",
+          outlineSpeech: "喝！第三段『轉』是全文的高潮大轉折！不能平淡無奇！大綱核心就是『殘酷的成績審判與震撼風暴』！滿江紅的考卷、刺眼的分數、退步的錯愕，緊接著迎接家裡火山爆發般的嚴厲訓斥！情節要有起伏，故事才會扣人心弦！",
+          focusReminder: "🦔 拿出骨氣來！遇到挫折別逃避，寫作卡住也不准放棄發呆！集中精神思考修辭，認真把風暴場面寫出來，發愣分數可不會自己變漂亮！"
+        },
+        {
+          id: "npc_2_2",
+          name: "淚眼小浣熊",
+          role: "情感起伏體驗官",
+          avatar: "🦝",
+          type: "raccoon",
+          islandIndex: 2,
+          localPos: [3.2, 3.85, -1.5],
+          rotation: -0.2,
+          color: 0x475569,
+          accentColor: 0x93c5fd,
+          shortOutline: "第三段大綱：雙腿發軟領成績，如坐針氈般自責與懊悔！",
+          shortAlert: "擦乾眼淚打起精神！親自動腦打字，千萬別坐在位子上發呆嘆氣！",
+          outlineSpeech: "嗚嗚……發考卷時雙腿都在發軟發抖！第三段的大綱精髓在於『內心受審的真實煎熬』！屁股像坐在長滿硬刺的針氈上、拿著成績單像拿著燙手山芋、被責備時眼眶泛淚又慚愧自責的心情，寫出這份悔恨，轉折才會深刻！",
+          focusReminder: "🦝 擦乾眼淚打起精神！認真思考每一個動詞和形容詞，親手打字輸入，千萬別坐在位子上發呆嘆氣！認真作答才能扭轉乾坤！"
+        },
+        {
+          id: "npc_2_3",
+          name: "閃電飛鼠小俠",
+          role: "修辭爆發特技員",
+          avatar: "🐿️⚡",
+          type: "glider",
+          islandIndex: 2,
+          localPos: [-0.8, 4.0, 3.5],
+          rotation: 0.1,
+          color: 0xb45309,
+          accentColor: 0xfacc15,
+          shortOutline: "第三段大綱：用誇飾法寫出十級大地震眼神與降龍十八掌！",
+          shortAlert: "雷電轟鳴！手指飛舞起來！認真作答，絕不要神遊外太空發呆！",
+          outlineSpeech: "霹靂啪啦！第三段最適合大顯身手運用『誇飾法與生動比喻』！媽媽嚴厲的目光像十級大地震、客廳氣氛宛如暴風雨前的寧靜、爸爸的訓斥像降龍十八掌般震撼！用大膽的修辭把家庭風暴寫得天崩地裂！",
+          focusReminder: "⚡ 電光火石！抓緊寶貴的寫作時間！腦袋動起來，手指飛舞起來！認真作答，絕不要神遊到外太空發呆喔！"
+        }
+      ],
+      // 03 合之島（第四段：深刻省思與超越自我）
+      [
+        {
+          id: "npc_3_1",
+          name: "金冠獅子小爵士",
+          role: "思想領航小王者",
+          avatar: "🦁",
+          type: "lion",
+          islandIndex: 3,
+          localPos: [-4.5, 4.15, 0.8],
+          rotation: 0.35,
+          color: 0xb45309,
+          accentColor: 0xfbbf24,
+          shortOutline: "第四段大綱：結尾不寫流水帳，領悟天下沒有不勞而獲的真理！",
+          shortAlert: "最後一哩路全力以赴！挺起胸膛認真作答，絕不鬆懈發呆！",
+          outlineSpeech: "吼～第四段『合』是整篇作文的靈魂總結！大綱千萬要記住：結尾絕對不能只寫『下次要考好』或『考完去吃大餐』流水帳！要寫出深刻的成長領悟——領悟到『天下沒有不勞而獲的事』，腳踏實地才是真正的智慧，給全文一個鏗鏘有力的昇華結尾！",
+          focusReminder: "🦁 昂首挺胸！最後一哩路全力以赴！認真作答，一字一句雕琢你的結尾，絕不鬆懈發呆，寫出四年級大師級的完美收尾！"
+        },
+        {
+          id: "npc_3_2",
+          name: "勤勉小蜜蜂",
+          role: "踏實行動築夢者",
+          avatar: "🐝",
+          type: "bee",
+          islandIndex: 3,
+          localPos: [3.5, 4.1, -1.0],
+          rotation: -0.3,
+          color: 0xeab308,
+          accentColor: 0x38bdf8,
+          shortOutline: "第四段大綱：制定每天按部就班複習表，具體行動迎向希望！",
+          shortAlert: "一分耕耘一分收穫！動手打字，不要偷懶發呆遊神，加油！",
+          outlineSpeech: "嗡嗡嗡！好結尾必須看見『改變的具體行動』！第四段大綱要具體寫出你的新計畫：收拾乾淨凌亂的書桌、制定每日按部就班的複習進度表、上課專心作筆記、讓爸媽臉上重新綻放欣慰的笑容。寫出行動，作文才更有說服力！",
+          focusReminder: "🐝 一分耕耘，一分收穫！專心致志動手打字，不要偷懶發呆遊神！勤奮的孩子最耀眼，現在就認真把行動盟約寫下來！"
+        },
+        {
+          id: "npc_3_3",
+          name: "智慧海龜爺爺",
+          role: "哲理深思大學士",
+          avatar: "🐢",
+          type: "turtle",
+          islandIndex: 3,
+          localPos: [0.5, 4.15, 3.2],
+          rotation: 0.1,
+          color: 0x15803d,
+          accentColor: 0x86efac,
+          shortOutline: "第四段大綱：千里之行始於足下，改掉臨時抱佛腳，超越昨日自我！",
+          shortAlert: "專注是一生的超能力！動動智慧大腦認真作答，切勿發呆放空！",
+          outlineSpeech: "呵呵呵～老夫告訴你，第四段的精髓是『千里之行，始於足下』！把這次考試的教訓化作前進的養分，徹底改掉平時不燒香、臨時抱佛腳的壞習慣，立志每一天都超越昨天的自己！引用一句座右銘，你的文章立意就會深遠拔尖！",
+          focusReminder: "🐢 孩子呀，專注是受用一生的超能力！現在就動動智慧的大腦，把深刻的省思寫在稿紙上，不可心不在焉發呆！認真作答直到最後一秒！"
+        }
+      ]
+    ];
+
     const SLANG_FILTER = ["超廢", "完蛋了", "超狂", "GG", "芭比Q", "傻眼貓咪", "廢到笑", "很瞎", "很扯", "狂按猛按"];
 
     // ----------------------------------------------------
@@ -5108,6 +5739,445 @@ puzzleSentences: [
       return plane;
     }
 
+    // ----------------------------------------------------
+    // 常駐島民 NPC 微縮 3D 模型生成器 (童話黏土/繪本動物風)
+    // ----------------------------------------------------
+    function createCuteVillagerNPC(npcData) {
+      const npcGroup = new THREE.Group();
+      const type = npcData.type;
+      const primaryColor = npcData.color || 0x8b5a2b;
+      const accentColor = npcData.accentColor || 0xfef08a;
+
+      // 通用材質快取
+      const bodyMat = getMat(primaryColor, { roughness: 0.65, metalness: 0.08 });
+      const bellyMat = getMat(0xfffaed, { roughness: 0.72, metalness: 0.05 });
+      const darkMat = getMat(0x1e293b, { roughness: 0.5, metalness: 0.05 });
+      const whiteMat = getMat(0xffffff, { roughness: 0.6, metalness: 0.05 });
+      const blushMat = getMat(0xf472b6, { roughness: 0.7, metalness: 0.05 });
+      const accentMat = getMat(accentColor, { roughness: 0.65, metalness: 0.08 });
+      const goldMat = getMat(0xf59e0b, { roughness: 0.35, metalness: 0.25 });
+
+      // ① 站立底座石板 (小木樁/圓石台)
+      const plinthMat = getMat(0x94a3b8, { roughness: 0.9, metalness: 0.05 });
+      const plinth = new THREE.Mesh(new THREE.CylinderGeometry(0.72, 0.78, 0.12, 16), plinthMat);
+      plinth.position.y = 0.06;
+      plinth.receiveShadow = true;
+      npcGroup.add(plinth);
+
+      // 角色核心身軀主群組 (方便動畫跳躍與轉向)
+      const character = new THREE.Group();
+      character.position.y = 0.12;
+
+      // 腳掌
+      const footGeo = new THREE.SphereGeometry(0.18, 10, 8);
+      const footL = new THREE.Mesh(footGeo, accentMat);
+      footL.scale.set(1.1, 0.6, 1.4);
+      footL.position.set(-0.25, 0.1, 0.05);
+      footL.castShadow = true;
+      character.add(footL);
+
+      const footR = new THREE.Mesh(footGeo, accentMat);
+      footR.scale.set(1.1, 0.6, 1.4);
+      footR.position.set(0.25, 0.1, 0.05);
+      footR.castShadow = true;
+      character.add(footR);
+
+      // 圓滾滾身軀 (Squashed Sphere)
+      const bodyGeo = new THREE.SphereGeometry(0.55, 16, 14);
+      const body = new THREE.Mesh(bodyGeo, bodyMat);
+      body.scale.set(1.0, 1.05, 0.92);
+      body.position.y = 0.65;
+      body.castShadow = true;
+      body.receiveShadow = true;
+      character.add(body);
+
+      // 淺色肚兜斑塊
+      const bellyGeo = new THREE.SphereGeometry(0.38, 14, 12);
+      const belly = new THREE.Mesh(bellyGeo, bellyMat);
+      belly.scale.set(0.9, 1.05, 0.45);
+      belly.position.set(0, 0.62, 0.32);
+      character.add(belly);
+
+      // 頭部群組 (可微幅左右微晃 tilt)
+      const headGroup = new THREE.Group();
+      headGroup.position.set(0, 1.25, 0);
+
+      const headGeo = new THREE.SphereGeometry(0.52, 16, 14);
+      const head = new THREE.Mesh(headGeo, bodyMat);
+      head.castShadow = true;
+      headGroup.add(head);
+
+      // 眼睛與腮紅 (共通萌系五官)
+      const eyeGeo = new THREE.SphereGeometry(0.08, 8, 8);
+      const eyeL = new THREE.Mesh(eyeGeo, darkMat);
+      eyeL.position.set(-0.2, 0.05, 0.46);
+      headGroup.add(eyeL);
+
+      const eyeR = new THREE.Mesh(eyeGeo, darkMat);
+      eyeR.position.set(0.2, 0.05, 0.46);
+      headGroup.add(eyeR);
+
+      const highlightGeo = new THREE.SphereGeometry(0.028, 6, 6);
+      const hlL = new THREE.Mesh(highlightGeo, whiteMat);
+      hlL.position.set(-0.18, 0.08, 0.52);
+      headGroup.add(hlL);
+
+      const hlR = new THREE.Mesh(highlightGeo, whiteMat);
+      hlR.position.set(0.22, 0.08, 0.52);
+      headGroup.add(hlR);
+
+      // 萌萌粉嫩腮紅
+      const blushGeo = new THREE.SphereGeometry(0.09, 8, 8);
+      const blushL = new THREE.Mesh(blushGeo, blushMat);
+      blushL.scale.set(1.2, 0.5, 0.3);
+      blushL.position.set(-0.32, -0.06, 0.42);
+      headGroup.add(blushL);
+
+      const blushR = new THREE.Mesh(blushGeo, blushMat);
+      blushR.scale.set(1.2, 0.5, 0.3);
+      blushR.position.set(0.32, -0.06, 0.42);
+      headGroup.add(blushR);
+
+      // 依據動物種類打造專屬特徵配件
+      if (type === "owl") {
+        // 學霸貓頭鷹：四方學士帽、金黃小流蘇、圓圓鏡框與尖小嘴
+        const capMat = getMat(0x1e1b4b, { roughness: 0.5 });
+        const cap = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.06, 0.68), capMat);
+        cap.position.set(0, 0.55, 0);
+        headGroup.add(cap);
+
+        const capBase = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 0.16, 12), capMat);
+        capBase.position.set(0, 0.46, 0);
+        headGroup.add(capBase);
+
+        const tassel = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.35, 6), goldMat);
+        tassel.position.set(0.28, 0.4, 0.2);
+        tassel.rotation.z = -0.4;
+        headGroup.add(tassel);
+
+        const beak = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.2, 8), accentMat);
+        beak.rotation.x = Math.PI / 2;
+        beak.position.set(0, -0.04, 0.54);
+        headGroup.add(beak);
+
+        // 圓圓眼鏡鏡架
+        const glassesGeo = new THREE.TorusGeometry(0.12, 0.025, 8, 16);
+        const glassL = new THREE.Mesh(glassesGeo, goldMat);
+        glassL.position.set(-0.2, 0.05, 0.48);
+        headGroup.add(glassL);
+        const glassR = new THREE.Mesh(glassesGeo, goldMat);
+        glassR.position.set(0.2, 0.05, 0.48);
+        headGroup.add(glassR);
+
+      } else if (type === "squirrel") {
+        // 勤奮松鼠：大蓬鬆立體尾巴、圓尖耳朵、懷抱橡實
+        const earL = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.32, 8), bodyMat);
+        earL.position.set(-0.28, 0.52, 0);
+        earL.rotation.z = 0.25;
+        headGroup.add(earL);
+
+        const earR = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.32, 8), bodyMat);
+        earR.position.set(0.28, 0.52, 0);
+        earR.rotation.z = -0.25;
+        headGroup.add(earR);
+
+        // 大尾巴
+        const tail = new THREE.Mesh(new THREE.SphereGeometry(0.42, 12, 10), bodyMat);
+        tail.scale.set(0.8, 1.4, 0.9);
+        tail.position.set(0, 0.78, -0.45);
+        tail.rotation.x = -0.45;
+        tail.castShadow = true;
+        character.add(tail);
+
+        // 懷抱橡實
+        const acorn = new THREE.Mesh(new THREE.SphereGeometry(0.18, 10, 8), getMat(0x78350f));
+        acorn.scale.set(0.9, 1.2, 0.9);
+        acorn.position.set(0, 0.65, 0.45);
+        character.add(acorn);
+
+      } else if (type === "rabbit") {
+        // 滴答兔：長長兔耳朵（內層粉紅）、懷表背飾
+        const earGeo = new THREE.BoxGeometry(0.15, 0.68, 0.1);
+        const earPinkGeo = new THREE.BoxGeometry(0.08, 0.55, 0.04);
+
+        const earL = new THREE.Group();
+        const earLMesh = new THREE.Mesh(earGeo, bodyMat);
+        const earLPink = new THREE.Mesh(earPinkGeo, blushMat);
+        earLPink.position.z = 0.04;
+        earL.add(earLMesh);
+        earL.add(earLPink);
+        earL.position.set(-0.24, 0.72, 0);
+        earL.rotation.z = 0.15;
+        headGroup.add(earL);
+
+        const earR = new THREE.Group();
+        const earRMesh = new THREE.Mesh(earGeo, bodyMat);
+        const earRPink = new THREE.Mesh(earPinkGeo, blushMat);
+        earRPink.position.z = 0.04;
+        earR.add(earRMesh);
+        earR.add(earRPink);
+        earR.position.set(0.24, 0.72, 0);
+        earR.rotation.z = -0.15;
+        headGroup.add(earR);
+
+        // 圓球兔尾巴
+        const tail = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), whiteMat);
+        tail.position.set(0, 0.35, -0.48);
+        character.add(tail);
+
+        // 胸前背著金色懷表
+        const watch = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.06, 16), goldMat);
+        watch.rotation.x = Math.PI / 2;
+        watch.position.set(0, 0.65, 0.46);
+        character.add(watch);
+
+      } else if (type === "shiba") {
+        // 柴犬班長：立耳、黑色濕潤鼻子、紅色童趣領巾
+        const earL = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.32, 6), bodyMat);
+        earL.position.set(-0.28, 0.48, 0.08);
+        earL.rotation.z = 0.22;
+        headGroup.add(earL);
+
+        const earR = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.32, 6), bodyMat);
+        earR.position.set(0.28, 0.48, 0.08);
+        earR.rotation.z = -0.22;
+        headGroup.add(earR);
+
+        // 口鼻吻部
+        const muzzle = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 8), whiteMat);
+        muzzle.scale.set(1.1, 0.8, 1.2);
+        muzzle.position.set(0, -0.08, 0.45);
+        headGroup.add(muzzle);
+
+        const nose = new THREE.Mesh(new THREE.SphereGeometry(0.06, 6, 6), darkMat);
+        nose.position.set(0, -0.04, 0.66);
+        headGroup.add(nose);
+
+        // 紅色領巾
+        const bandana = new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.08, 8, 16), getMat(0xdc2626));
+        bandana.rotation.x = Math.PI / 2;
+        bandana.position.set(0, 1.15, 0);
+        character.add(bandana);
+
+      } else if (type === "penguin") {
+        // 冷汗小企鵝：橙黃小扁嘴、天藍溫暖圍巾、側邊小鰭翼
+        const beak = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.25, 8), getMat(0xf97316));
+        beak.rotation.x = Math.PI / 2;
+        beak.position.set(0, -0.06, 0.54);
+        headGroup.add(beak);
+
+        // 天藍色針織圍巾
+        const scarf = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.1, 8, 16), getMat(0x0284c7));
+        scarf.rotation.x = Math.PI / 2;
+        scarf.position.set(0, 1.15, 0);
+        character.add(scarf);
+
+        // 企鵝鰭翼
+        const wingL = new THREE.Mesh(new THREE.SphereGeometry(0.28, 10, 8), bodyMat);
+        wingL.scale.set(0.35, 1.2, 0.6);
+        wingL.position.set(-0.54, 0.7, 0);
+        wingL.rotation.z = 0.35;
+        character.add(wingL);
+
+        const wingR = new THREE.Mesh(new THREE.SphereGeometry(0.28, 10, 8), bodyMat);
+        wingR.scale.set(0.35, 1.2, 0.6);
+        wingR.position.set(0.54, 0.7, 0);
+        wingR.rotation.z = -0.35;
+        character.add(wingR);
+
+      } else if (type === "sparrow") {
+        // 筆尖小麻雀：黃色小短嘴、頭頂呆毛、手上握著羽毛筆
+        const beak = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.18, 6), getMat(0xfacc15));
+        beak.rotation.x = Math.PI / 2;
+        beak.position.set(0, -0.05, 0.54);
+        headGroup.add(beak);
+
+        // 頭頂俏皮呆毛
+        const tuft = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.25, 6), bodyMat);
+        tuft.position.set(0, 0.58, -0.05);
+        tuft.rotation.x = -0.35;
+        headGroup.add(tuft);
+
+        // 羽毛筆
+        const pen = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.65, 6), getMat(0x38bdf8));
+        pen.position.set(0.48, 0.75, 0.25);
+        pen.rotation.z = -0.55;
+        character.add(pen);
+
+      } else if (type === "hedgehog") {
+        // 刺蝟火爆教練：背後軟萌刺刺盔甲、額頭紅色運動防汗帶
+        const headband = new THREE.Mesh(new THREE.TorusGeometry(0.48, 0.06, 8, 16), getMat(0xef4444));
+        headband.rotation.x = Math.PI / 2;
+        headband.position.set(0, 0.15, 0);
+        headGroup.add(headband);
+
+        // 刺猬尖刺群 (自然放射狀排列圓錐)
+        const spineMat = getMat(0x451a03);
+        const spineGeo = new THREE.ConeGeometry(0.1, 0.32, 6);
+        for (let s = 0; s < 12; s++) {
+          const spine = new THREE.Mesh(spineGeo, spineMat);
+          const angle = (s / 12) * Math.PI * 1.3 - 0.65;
+          spine.position.set(Math.sin(angle) * 0.42, 0.7 + (s % 3) * 0.15, -0.35 - Math.cos(angle) * 0.15);
+          spine.rotation.x = -1.2;
+          spine.rotation.y = angle * 0.5;
+          character.add(spine);
+        }
+
+      } else if (type === "raccoon") {
+        // 淚眼小浣熊：眼罩黑眼圈、條紋大尾巴、眼角一滴藍色小眼淚
+        const maskMat = getMat(0x1e293b);
+        const maskL = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 8), maskMat);
+        maskL.scale.set(1.2, 0.7, 0.3);
+        maskL.position.set(-0.2, 0.05, 0.44);
+        headGroup.add(maskL);
+
+        const maskR = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 8), maskMat);
+        maskR.scale.set(1.2, 0.7, 0.3);
+        maskR.position.set(0.2, 0.05, 0.44);
+        headGroup.add(maskR);
+
+        // 眼角淚珠
+        const teardrop = new THREE.Mesh(new THREE.SphereGeometry(0.045, 6, 6), getMat(0x60a5fa));
+        teardrop.position.set(0.3, -0.08, 0.5);
+        headGroup.add(teardrop);
+
+        // 條紋尾巴
+        const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.24, 0.7, 10), bodyMat);
+        tail.rotation.x = 1.1;
+        tail.position.set(0, 0.45, -0.42);
+        character.add(tail);
+
+      } else if (type === "glider") {
+        // 閃電飛鼠小俠：頭頂飛行風鏡、側翼滑翔翼膜、胸口黃色閃電標誌
+        const goggles = new THREE.Mesh(new THREE.TorusGeometry(0.48, 0.07, 8, 16), getMat(0x334155));
+        goggles.rotation.x = Math.PI / 2;
+        goggles.position.set(0, 0.22, 0);
+        headGroup.add(goggles);
+
+        const lensMat = getMat(0xfbbf24, { metalness: 0.3 });
+        const lensL = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.05, 12), lensMat);
+        lensL.rotation.x = Math.PI / 2;
+        lensL.position.set(-0.2, 0.22, 0.46);
+        headGroup.add(lensL);
+
+        const lensR = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.05, 12), lensMat);
+        lensR.rotation.x = Math.PI / 2;
+        lensR.position.set(0.2, 0.22, 0.46);
+        headGroup.add(lensR);
+
+        // 滑翔膜
+        const wingMemL = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.6, 0.04), accentMat);
+        wingMemL.position.set(-0.55, 0.65, -0.05);
+        wingMemL.rotation.z = -0.3;
+        character.add(wingMemL);
+
+        const wingMemR = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.6, 0.04), accentMat);
+        wingMemR.position.set(0.55, 0.65, -0.05);
+        wingMemR.rotation.z = 0.3;
+        character.add(wingMemR);
+
+      } else if (type === "lion") {
+        // 金冠獅子：蓬鬆橘紅鬃毛圓球環、頭頂金色小皇冠、背後紅色披風
+        const maneMat = getMat(0xd97706, { roughness: 0.8 });
+        const mane = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.18, 10, 20), maneMat);
+        mane.position.set(0, 0, -0.08);
+        headGroup.add(mane);
+
+        // 金冠
+        const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.16, 0.2, 5), goldMat);
+        crown.position.set(0, 0.62, 0);
+        headGroup.add(crown);
+
+        // 紅色披風
+        const cape = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.82, 0.05), getMat(0xb91c1c));
+        cape.position.set(0, 0.58, -0.42);
+        cape.rotation.x = 0.15;
+        character.add(cape);
+
+      } else if (type === "bee") {
+        // 勤勉小蜜蜂：黃黑相間條紋身體、半透明藍色薄翅、懷抱蜂蜜罐
+        const stripeMat = getMat(0x1e293b);
+        const stripe1 = new THREE.Mesh(new THREE.TorusGeometry(0.54, 0.06, 8, 16), stripeMat);
+        stripe1.rotation.x = Math.PI / 2;
+        stripe1.position.set(0, 0.72, 0);
+        character.add(stripe1);
+
+        const stripe2 = new THREE.Mesh(new THREE.TorusGeometry(0.52, 0.06, 8, 16), stripeMat);
+        stripe2.rotation.x = Math.PI / 2;
+        stripe2.position.set(0, 0.52, 0);
+        character.add(stripe2);
+
+        // 半透明薄翅
+        const wingMat = new THREE.MeshStandardMaterial({
+          color: 0xbae6fd,
+          roughness: 0.2,
+          transparent: true,
+          opacity: 0.65
+        });
+        const beeWingL = new THREE.Mesh(new THREE.SphereGeometry(0.32, 8, 8), wingMat);
+        beeWingL.scale.set(0.15, 0.8, 0.4);
+        beeWingL.position.set(-0.35, 0.85, -0.38);
+        beeWingL.rotation.y = 0.4;
+        beeWingL.rotation.x = -0.4;
+        character.add(beeWingL);
+
+        const beeWingR = new THREE.Mesh(new THREE.SphereGeometry(0.32, 8, 8), wingMat);
+        beeWingR.scale.set(0.15, 0.8, 0.4);
+        beeWingR.position.set(0.35, 0.85, -0.38);
+        beeWingR.rotation.y = -0.4;
+        beeWingR.rotation.x = -0.4;
+        character.add(beeWingR);
+
+        // 蜂蜜罐
+        const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.14, 0.3, 12), getMat(0xd97706));
+        pot.position.set(0, 0.52, 0.42);
+        character.add(pot);
+
+      } else if (type === "turtle") {
+        // 智慧海龜：翡翠龜殼、殼邊紋路、身後背著古樸卷軸
+        const shellMat = getMat(0x166534, { roughness: 0.5 });
+        const shell = new THREE.Mesh(new THREE.SphereGeometry(0.52, 12, 10), shellMat);
+        shell.scale.set(0.9, 1.2, 0.65);
+        shell.position.set(0, 0.65, -0.32);
+        shell.rotation.x = 0.2;
+        character.add(shell);
+
+        // 書卷 (Scroll)
+        const scroll = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.65, 10), getMat(0xfef3c7));
+        scroll.rotation.z = Math.PI / 3;
+        scroll.position.set(0, 0.72, -0.58);
+        character.add(scroll);
+      }
+
+      character.add(headGroup);
+      npcGroup.add(character);
+
+      // 設置所有子 Mesh 投射與接收陰影
+      npcGroup.traverse(child => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+
+      // 裝配動畫與互動屬性
+      npcGroup.userData = {
+        isNPC: true,
+        npcData: npcData,
+        basePosY: npcData.localPos[1],
+        jumpVelocity: 0,
+        bobPhase: Math.random() * Math.PI * 2,
+        headGroup: headGroup,
+        character: character
+      };
+
+      npcGroup.position.set(...npcData.localPos);
+      npcGroup.rotation.y = npcData.rotation || 0;
+      npcGroup.scale.setScalar(1.0);
+
+      return npcGroup;
+    }
+
 
 
     // ----------------------------------------------------
@@ -5153,6 +6223,7 @@ puzzleSentences: [
         this.islands = [];
         this.markers = [];
         this.animatedObjects = [];
+        this.villagerNPCs = [];
 
         // 【新技能規範系統集合】：微風植被、岸邊浪花、氣候連動與守門獸關節
         this.windyGrassList = [];
@@ -5164,6 +6235,10 @@ puzzleSentences: [
         this.guardianSockets = {};
         this.guardianStage = 1;
         this.currentWeather = 'sunny';
+
+        this.raycaster = new THREE.Raycaster();
+        this.pointer = new THREE.Vector2();
+        this.setupNPCInteraction();
 
         this.initLights();
         this.initSea();
@@ -5177,6 +6252,44 @@ puzzleSentences: [
 
         window.addEventListener("resize", () => this.onResize());
         this.animate();
+      }
+
+      // 常駐島民 3D 點擊互動監聽 (點選島民彈跳並開啟大綱對話)
+      setupNPCInteraction() {
+        let pointerDownPos = { x: 0, y: 0 };
+        this.canvas.addEventListener("pointerdown", (e) => {
+          pointerDownPos = { x: e.clientX, y: e.clientY };
+        });
+
+        this.canvas.addEventListener("pointerup", (e) => {
+          const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+          if (dist > 6) return; // 視為旋轉視野操作
+
+          const rect = this.canvas.getBoundingClientRect();
+          this.pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+          this.pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+          this.raycaster.setFromCamera(this.pointer, this.camera);
+          const npcMeshes = this.villagerNPCs.map(item => item.mesh);
+          const intersects = this.raycaster.intersectObjects(npcMeshes, true);
+          if (intersects.length > 0) {
+            let hitObj = intersects[0].object;
+            while (hitObj && (!hitObj.userData || !hitObj.userData.isNPC)) {
+              hitObj = hitObj.parent;
+            }
+            if (hitObj && hitObj.userData && hitObj.userData.npcData) {
+              const npcData = hitObj.userData.npcData;
+              hitObj.userData.jumpVelocity = 0.22;
+              if (window.islandApp) {
+                const targetEntry = this.villagerNPCs.find(v => v.mesh === hitObj);
+                if (targetEntry) {
+                  window.islandApp.selectVillager(targetEntry.islandIndex, targetEntry.npcIndex);
+                  window.islandApp.openNPCDialog(npcData);
+                }
+              }
+            }
+          }
+        });
       }
 
       // 【規格任務 2：攝影棚三點光照與柔和接地陰影 (Studio Lighting)】
@@ -5784,6 +6897,19 @@ puzzleSentences: [
           else if (i === 1) this.buildSchoolExamDiorama(islandGroup);
           else if (i === 2) this.buildStormHouseDiorama(islandGroup);
           else if (i === 3) this.buildTrophyTempleDiorama(islandGroup);
+
+          // ⑭ 部署該島 3 位常駐島民 NPC（訴說大綱・專注作答提醒）
+          const npcsForThisIsland = ISLAND_NPCS[i] || [];
+          npcsForThisIsland.forEach((npcData, npcIdx) => {
+            const npcMesh = createCuteVillagerNPC(npcData);
+            islandGroup.add(npcMesh);
+            this.villagerNPCs.push({
+              mesh: npcMesh,
+              data: npcData,
+              islandIndex: i,
+              npcIndex: npcIdx
+            });
+          });
 
           this.scene.add(islandGroup);
           this.islands.push(islandGroup);
@@ -7532,6 +8658,34 @@ puzzleSentences: [
           window.islandApp.updateScreenLabels();
         }
 
+        // ⑧ 常駐島民 NPC 微縮動畫（呼吸擺動、頭部微晃、點擊彈跳）與 3D 對話氣泡
+        if (this.villagerNPCs) {
+          this.villagerNPCs.forEach(item => {
+            const mesh = item.mesh;
+            const ud = mesh.userData;
+            if (ud) {
+              const breath = Math.sin(now * 2.5 + ud.bobPhase);
+              if (ud.headGroup) {
+                ud.headGroup.rotation.z = Math.sin(now * 1.6 + ud.bobPhase) * 0.07;
+                ud.headGroup.rotation.y = Math.cos(now * 1.2 + ud.bobPhase) * 0.08;
+              }
+              if (ud.jumpVelocity > 0 || mesh.position.y > ud.basePosY) {
+                mesh.position.y += ud.jumpVelocity;
+                ud.jumpVelocity -= 0.016;
+                if (mesh.position.y <= ud.basePosY) {
+                  mesh.position.y = ud.basePosY;
+                  ud.jumpVelocity = 0;
+                }
+              } else {
+                mesh.position.y = ud.basePosY + Math.max(0, breath * 0.035);
+              }
+            }
+          });
+        }
+        if (window.islandApp && window.islandApp.updateNPCBubbles) {
+          window.islandApp.updateNPCBubbles();
+        }
+
         this.renderer.render(this.scene, this.camera);
       }
     }
@@ -7545,6 +8699,7 @@ puzzleSentences: [
         this.currentStep = 1; // 1:選五要素, 2:組段落句, 3:潤飾檢驗, 4:教師蓋章
         this.currentStamp = "💯 甲上";
         this.rejectTags = [];
+        this.activeNPCIndices = [0, 0, 0, 0];
         this.initUI();
       }
 
@@ -7559,6 +8714,11 @@ puzzleSentences: [
           this.sceneDirector.updateGuardianBadges();
         }
         this.loadIslandData(0);
+
+        // 每 6.5 秒自動輪播島民發言，加深大綱印象與專注提醒
+        setInterval(() => {
+          this.cycleNextNPC();
+        }, 6500);
 
         // 嚴格停用靈感提點與成語區的剪貼簿複製功能
         document.addEventListener("copy", (e) => {
@@ -8650,6 +9810,182 @@ puzzleSentences: [
         } else {
           this.goToStep(1);
         }
+
+        // 渲染本島 3 位常駐島民 NPC 面板
+        this.renderIslandVillagers(index);
+      }
+
+      // ----------------------------------------------------
+      // 常駐島民 NPC 系統：大綱訴說與專注作答引導
+      // ----------------------------------------------------
+      getCurrentNPC() {
+        const islandIdx = this.currentIsland ?? 0;
+        const npcs = ISLAND_NPCS[islandIdx] || [];
+        const activeIdx = (this.activeNPCIndices && this.activeNPCIndices[islandIdx]) || 0;
+        return npcs[activeIdx] || npcs[0];
+      }
+
+      renderIslandVillagers(islandIdx) {
+        const row = document.getElementById("villagerChipsRow");
+        if (!row) return;
+        row.innerHTML = "";
+
+        const npcs = ISLAND_NPCS[islandIdx] || [];
+        const activeIdx = (this.activeNPCIndices && this.activeNPCIndices[islandIdx]) || 0;
+
+        npcs.forEach((npc, idx) => {
+          const chip = document.createElement("button");
+          chip.className = `villager-chip ${idx === activeIdx ? "active" : ""}`;
+          chip.innerHTML = `<span class="chip-avatar">${npc.avatar}</span> <span>${npc.name.split(" ")[0]}</span>`;
+          chip.onclick = () => this.selectVillager(islandIdx, idx);
+          row.appendChild(chip);
+        });
+
+        this.updateVillagerCard(islandIdx, activeIdx);
+      }
+
+      updateVillagerCard(islandIdx, npcIdx) {
+        const card = document.getElementById("villagerSpeechCard");
+        if (!card) return;
+        const npcs = ISLAND_NPCS[islandIdx] || [];
+        const npc = npcs[npcIdx] || npcs[0];
+        if (!npc) return;
+
+        card.innerHTML = `
+          <div class="villager-card-meta">
+            <div class="villager-card-name-group">
+              <span class="villager-card-avatar">${npc.avatar}</span>
+              <span class="villager-card-name">${npc.name}</span>
+              <span class="villager-card-role">${npc.role}</span>
+            </div>
+            <button class="villager-view-dialog-btn" onclick="window.islandApp.openNPCDialog()">
+              💬 深入對話
+            </button>
+          </div>
+          <div class="villager-outline-speech">
+            ${npc.outlineSpeech}
+          </div>
+          <div class="villager-focus-alert">
+            <span class="villager-focus-alert-icon">⚡</span>
+            <div>${npc.focusReminder}</div>
+          </div>
+        `;
+      }
+
+      selectVillager(islandIdx, npcIdx) {
+        if (!this.activeNPCIndices) this.activeNPCIndices = [0, 0, 0, 0];
+        this.activeNPCIndices[islandIdx] = npcIdx;
+
+        // 更新寫作抽屜內的按鈕狀態與卡片內容
+        const row = document.getElementById("villagerChipsRow");
+        if (row) {
+          const chips = row.querySelectorAll(".villager-chip");
+          chips.forEach((c, idx) => {
+            if (idx === npcIdx) c.classList.add("active");
+            else c.classList.remove("active");
+          });
+        }
+        this.updateVillagerCard(islandIdx, npcIdx);
+
+        // 觸發 3D 場景中對應 NPC 的歡樂彈跳
+        if (this.sceneDirector && this.sceneDirector.villagerNPCs) {
+          const target = this.sceneDirector.villagerNPCs.find(v => v.islandIndex === islandIdx && v.npcIndex === npcIdx);
+          if (target && target.mesh && target.mesh.userData) {
+            target.mesh.userData.jumpVelocity = 0.22;
+          }
+        }
+
+        this.updateNPCBubbles();
+      }
+
+      cycleNextNPC() {
+        if (this.isFlyingAirplane) return;
+        const curIsland = this.currentIsland ?? 0;
+        if (curIsland > 3) return; // 守門神殿不輪播
+        if (!this.activeNPCIndices) this.activeNPCIndices = [0, 0, 0, 0];
+        const nextIdx = (this.activeNPCIndices[curIsland] + 1) % 3;
+        this.selectVillager(curIsland, nextIdx);
+      }
+
+      updateNPCBubbles() {
+        const bubbleLayer = document.getElementById("npcBubbleLayer");
+        if (!bubbleLayer || !this.sceneDirector || !this.sceneDirector.camera) return;
+
+        // 若正在搭乘飛機或開啟大綱彈窗，隱藏 3D 浮動氣泡避免遮擋
+        const isOutlineOpen = document.getElementById("outlineModalBackdrop")?.classList.contains("open");
+        const isGuardianOpen = document.getElementById("guardianModalBackdrop")?.classList.contains("open");
+        if (this.isFlyingAirplane || isOutlineOpen || isGuardianOpen) {
+          bubbleLayer.style.display = "none";
+          return;
+        }
+
+        const curIsland = this.currentIsland ?? 0;
+        if (curIsland > 3) {
+          bubbleLayer.style.display = "none";
+          return;
+        }
+
+        const activeIdx = (this.activeNPCIndices && this.activeNPCIndices[curIsland]) || 0;
+        const npcs = this.sceneDirector.villagerNPCs || [];
+        const activeEntry = npcs.find(v => v.islandIndex === curIsland && v.npcIndex === activeIdx);
+
+        if (!activeEntry || !activeEntry.mesh) {
+          bubbleLayer.style.display = "none";
+          return;
+        }
+
+        // 計算 3D 世界座標並投影至螢幕
+        const worldPos = new THREE.Vector3();
+        activeEntry.mesh.getWorldPosition(worldPos);
+        worldPos.y += 2.2; // 氣泡浮於 NPC 頭頂上方
+
+        const tempV = worldPos.clone();
+        tempV.project(this.sceneDirector.camera);
+
+        if (tempV.z > 1) {
+          bubbleLayer.style.display = "none";
+          return;
+        }
+
+        const halfW = window.innerWidth / 2;
+        const halfH = window.innerHeight / 2;
+        const screenX = (tempV.x * halfW) + halfW;
+        const screenY = -(tempV.y * halfH) + halfH;
+
+        bubbleLayer.style.display = "block";
+        const npcData = activeEntry.data;
+
+        bubbleLayer.innerHTML = `
+          <div class="screen-npc-bubble" style="left: ${screenX}px; top: ${screenY}px;" onclick="window.islandApp.openNPCDialog()">
+            <div class="npc-bubble-header">
+              <span class="npc-bubble-name">${npcData.avatar} ${npcData.name}</span>
+              <span class="npc-bubble-tag">⚡ 認真作答！</span>
+            </div>
+            <div class="npc-bubble-text">${npcData.shortOutline}</div>
+            <div class="npc-bubble-hint">👉 點擊深入聆聽大綱</div>
+          </div>
+        `;
+      }
+
+      openNPCDialog(npcData) {
+        const data = npcData || this.getCurrentNPC();
+        if (!data) return;
+
+        const modal = document.getElementById("npcDialogModalBackdrop");
+        if (!modal) return;
+
+        document.getElementById("npcDialogAvatar").textContent = data.avatar || "🦉";
+        document.getElementById("npcDialogName").textContent = data.name || "常駐島民";
+        document.getElementById("npcDialogRole").textContent = data.role || "大綱引路人";
+        document.getElementById("npcDialogOutline").textContent = data.outlineSpeech || "";
+        document.getElementById("npcDialogAlert").textContent = data.focusReminder || "";
+
+        modal.classList.add("show");
+      }
+
+      closeNPCDialog() {
+        const modal = document.getElementById("npcDialogModalBackdrop");
+        if (modal) modal.classList.remove("show");
       }
 
       // ----------------------------------------------------
