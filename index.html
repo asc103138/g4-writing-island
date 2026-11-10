@@ -1703,8 +1703,8 @@
       if (!matCache.has(key)) {
         matCache.set(key, new THREE.MeshStandardMaterial({
           color: color,
-          roughness: opts.roughness !== undefined ? opts.roughness : 0.42,
-          metalness: opts.metalness !== undefined ? opts.metalness : 0.06,
+          roughness: opts.roughness !== undefined ? opts.roughness : 0.45,
+          metalness: opts.metalness !== undefined ? opts.metalness : 0.05,
           flatShading: opts.flatShading !== undefined ? opts.flatShading : false,
           bumpMap: opts.bumpMap !== undefined ? opts.bumpMap : miniatureNoiseTex,
           bumpScale: opts.bumpScale !== undefined ? opts.bumpScale : 0.008,
@@ -4835,7 +4835,7 @@ puzzleSentences: [
         this.sun = sun;
 
         // ④ 輪廓光 (Rim Light)：斜後方冷白光勾勒微縮模型邊緣立體高光
-        const rimLight = new THREE.DirectionalLight(0xbae6fd, 0.85);
+        const rimLight = new THREE.DirectionalLight(0xbae6fd, 0.95);
         rimLight.position.set(-50, 40, -50);
         this.scene.add(rimLight);
         this.rimLight = rimLight;
