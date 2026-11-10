@@ -4798,6 +4798,7 @@ puzzleSentences: [
         this.buildAllIslands();
         this.buildGuardianSanctuary();
         this.buildAllAirports();
+        this.buildIslandFogCanopies(); // 【遊戲化機制】：建立全島探索迷霧罩
         this.createMarkers();
 
         window.addEventListener("resize", () => this.onResize());
@@ -6582,6 +6583,145 @@ puzzleSentences: [
         };
       }
 
+
+      // ====================================================
+      // 【全新遊戲化機制】：全島探索迷霧系統 (Fog of War & Cloud Canopy)
+      // 每一座未解鎖島嶼被蓬鬆棉花糖雲海所籠罩，唯有完成前一座島嶼並獲老師蓋章，迷霧才會破除散開！
+      // ====================================================
+      buildIslandFogCanopies() {
+        this.islandFogGroups = [];
+
+        for (let i = 0; i < 5; i++) {
+          const fogGroup = new THREE.Group();
+          const targetPos = CURRICULUM_DATA[i].position;
+          fogGroup.position.set(...targetPos);
+          fogGroup.name = "island_fog_" + i;
+
+          const isSanctuary = (i === 4);
+          const fogR = isSanctuary ? 15.0 : 20.0;
+          const puffCount = isSanctuary ? 22 : 30;
+
+          // 純白柔和半透明迷霧雲朵材質
+          const fogMat = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            roughness: 0.85,
+            metalness: 0.02,
+            transparent: true,
+            opacity: 0.94,
+            depthWrite: false,
+            flatShading: false
+          });
+
+          const puffs = [];
+          for (let p = 0; p < puffCount; p++) {
+            const angle = (p / puffCount) * Math.PI * 2 + (p % 4) * 0.28;
+            const dist = (p % 2 === 0 ? 0.42 : 0.85) * fogR * (0.8 + (p % 3) * 0.12);
+            const px = Math.cos(angle) * dist;
+            const pz = Math.sin(angle) * dist;
+            const py = 3.2 + (p % 4) * 1.5 + (dist < fogR * 0.45 ? 2.5 : 0);
+            const pr = 3.4 + (p % 3) * 1.6 + (dist < fogR * 0.4 ? 1.2 : 0);
+
+            const puffGeo = new THREE.SphereGeometry(pr, 14, 10);
+            const puffMesh = new THREE.Mesh(puffGeo, fogMat);
+            puffMesh.position.set(px, py, pz);
+            puffMesh.userData.origPos = new THREE.Vector3(px, py, pz);
+            fogGroup.add(puffMesh);
+            puffs.push(puffMesh);
+          }
+
+          // 迷霧中心頂部：懸浮立體【🔒 待解鎖篇章】徽章
+          const badgeText = i === 4 ? "🔒 守門神殿・通關前四島解鎖" : "🔒 探索迷霧・完成上一島解鎖";
+          const lockBadge = signBoard(badgeText, 4.2, 0.8, '#334155', '#ffffff');
+          lockBadge.position.set(0, 14.5, 0);
+          fogGroup.add(lockBadge);
+          fogGroup.userData.lockBadge = lockBadge;
+
+          fogGroup.userData.puffs = puffs;
+          fogGroup.userData.mat = fogMat;
+          fogGroup.userData.islandIndex = i;
+
+          this.scene.add(fogGroup);
+          this.islandFogGroups.push(fogGroup);
+        }
+
+        this.updateAllIslandFogs();
+      }
+
+      updateAllIslandFogs() {
+        if (!this.islandFogGroups) return;
+        this.islandFogGroups.forEach((fg, i) => {
+          let isUnlocked = false;
+          if (i === 0) {
+            isUnlocked = true; // 第 1 島始終解鎖
+          } else if (state.teacherMode) {
+            isUnlocked = true; // 教師巡堂模式全部解鎖
+          } else {
+            isUnlocked = !!state.teacherApprovals[i - 1]; // 完成前一島則解鎖
+          }
+
+          fg.visible = !isUnlocked;
+        });
+      }
+
+      // 迷霧散開昇華動畫 (Dissolve Fog Animation)
+      dissolveIslandFog(islandIdx, onComplete) {
+        if (!this.islandFogGroups || !this.islandFogGroups[islandIdx]) {
+          if (onComplete) onComplete();
+          return;
+        }
+
+        const fg = this.islandFogGroups[islandIdx];
+        if (!fg.visible) {
+          if (onComplete) onComplete();
+          return;
+        }
+
+        const startTime = performance.now();
+        const duration = 1800; // 1.8秒神聖散開動畫
+        const puffs = fg.userData.puffs || [];
+        const mat = fg.userData.mat;
+
+        const animateDissolve = (now) => {
+          const elapsed = now - startTime;
+          const prog = Math.min(1.0, elapsed / duration);
+          const easeProg = prog * prog * (3 - 2 * prog);
+
+          puffs.forEach(p => {
+            const orig = p.userData.origPos;
+            const expandFactor = 1.0 + easeProg * 1.6;
+            p.position.x = orig.x * expandFactor;
+            p.position.z = orig.z * expandFactor;
+            p.position.y = orig.y + easeProg * 7.5;
+            p.scale.setScalar(1.0 + easeProg * 0.9);
+          });
+
+          if (fg.userData.lockBadge) {
+            fg.userData.lockBadge.position.y = 14.5 + easeProg * 9.0;
+          }
+
+          if (mat) {
+            mat.opacity = Math.max(0, 0.94 * (1.0 - easeProg));
+          }
+
+          if (prog < 1.0) {
+            requestAnimationFrame(animateDissolve);
+          } else {
+            fg.visible = false;
+            if (mat) mat.opacity = 0.94;
+            puffs.forEach(p => {
+              p.position.copy(p.userData.origPos);
+              p.scale.setScalar(1.0);
+            });
+            if (fg.userData.lockBadge) {
+              fg.userData.lockBadge.position.set(0, 14.5, 0);
+            }
+            if (onComplete) onComplete();
+          }
+        };
+
+        requestAnimationFrame(animateDissolve);
+      }
+
       // 【新技能規範 Pass 6】：情境氣候連動系統 (Weather Envelope & Wet Surfaces)
       setWeather(mode) {
         this.currentWeather = mode;
@@ -6871,6 +7011,17 @@ puzzleSentences: [
           });
         }
 
+        // 【迷霧呼吸浮動】：未解鎖島嶼上方的探索迷霧群緩慢隨風起伏自轉
+        if (this.islandFogGroups) {
+          this.islandFogGroups.forEach((fg, idx) => {
+            if (fg && fg.visible) {
+              const breath = Math.sin(now * 1.6 + idx * 1.7) * 0.25;
+              fg.position.y = CURRICULUM_DATA[idx].position[1] + breath;
+              fg.rotation.y += 0.0008;
+            }
+          });
+        }
+
         // ② 【新技能規範 Pass 4】：微風搖曳低多邊形植被 (根部錨定、葉尖擺動)
         if (this.windyGrassList) {
           this.windyGrassList.forEach(clump => {
@@ -7012,7 +7163,7 @@ puzzleSentences: [
 
       initUI() {
         this.updateTierDisplay();
-        this.updateTeacherModeUI();
+        this.updateTeacherModeUI(); if (this.sceneDirector?.updateAllIslandFogs) this.sceneDirector.updateAllIslandFogs();
         this.updateNavStepDots();
         this.updateGoogleAuthUI();
         this.initScreenLabels();
@@ -7602,17 +7753,38 @@ puzzleSentences: [
         this.currentIsland = index;
         this.updateNavStepDots();
 
-        // 溫和引導：未解鎖島嶼提供參觀導覽，不阻擋鏡頭特寫欣賞
-        if (index > 0 && index < 4 && !state.teacherApprovals[index - 1]) {
+        // 探索迷霧防護：未解鎖島嶼被迷霧籠罩，不展開寫作抽屜，鏡頭移至迷霧外圍遠景俯瞰
+        if (index > 0 && index < 4 && !state.teacherApprovals[index - 1] && !state.teacherMode) {
           const prevName = CURRICULUM_DATA[index - 1].shortName;
-          this.showToast(`👀 參觀特寫導覽：【${CURRICULUM_DATA[index].name}】（寫作提交需先完成【${prevName}】）`, 2600);
-        } else if (index === 4) {
+          this.showToast(`☁️ 【${CURRICULUM_DATA[index].name}】被探索迷霧籠罩中！請先完成【${prevName}】並由老師過關蓋章後，迷霧才會散開解鎖喔！`, 3500);
+          
+          if (this.sceneDirector) {
+            this.sceneDirector.setWeather('sunny');
+            this.sceneDirector.setKeeperExpression(index + 1);
+            const targetData = CURRICULUM_DATA[index];
+            const [x, y, z] = targetData.position;
+            this.sceneDirector.flyTo(new THREE.Vector3(x + 22, y + 26, z + 28), new THREE.Vector3(x, y + 8, z), () => {
+              // 迷霧鎖定中，不展開寫作抽屜
+            });
+          }
+          return;
+        } else if (index === 4 && !state.teacherMode) {
           const unapproved = [];
           for (let i = 0; i < 4; i++) {
             if (!state.teacherApprovals[i]) unapproved.push(CURRICULUM_DATA[i].shortName);
           }
           if (unapproved.length > 0) {
-            this.showToast(`👀 守門神殿特寫導覽（通關前四島後將生成四格漫畫總評）`, 2600);
+            this.showToast(`☁️ 【守門神殿】被神聖迷霧籠罩中！請完成前四座島嶼的寫作過關蓋章，迷霧才會破除喔！`, 3500);
+            if (this.sceneDirector) {
+              this.sceneDirector.setWeather('sunny');
+              this.sceneDirector.setKeeperExpression(5);
+              const targetData = CURRICULUM_DATA[index];
+              const [x, y, z] = targetData.position;
+              this.sceneDirector.flyTo(new THREE.Vector3(x + 22, y + 26, z + 28), new THREE.Vector3(x, y + 8, z), () => {
+                // 迷霧鎖定中，不開啟神殿
+              });
+            }
+            return;
           }
         }
 
@@ -8769,9 +8941,18 @@ puzzleSentences: [
         const nextIdx = idx + 1;
         if (nextIdx <= 4) {
           this.closeDrawer();
-          setTimeout(() => {
-            this.playAirplaneFlight(idx, nextIdx);
-          }, 700);
+          this.showToast(`✨ 賀！下一座島嶼【${CURRICULUM_DATA[nextIdx].shortName}】探索迷霧破除散開！`, 3000);
+
+          // 先觸發下一座島嶼的迷霧散開動畫，散開後小飛機在跑道助跑起飛！
+          if (this.sceneDirector && this.sceneDirector.dissolveIslandFog) {
+            this.sceneDirector.dissolveIslandFog(nextIdx, () => {
+              this.playAirplaneFlight(idx, nextIdx);
+            });
+          } else {
+            setTimeout(() => {
+              this.playAirplaneFlight(idx, nextIdx);
+            }, 800);
+          }
         }
       }
 
@@ -9214,7 +9395,7 @@ puzzleSentences: [
 
       async afterUserLoggedIn() {
         state.loadState();
-        this.updateGoogleAuthUI();
+        this.updateGoogleAuthUI(); if (this.sceneDirector?.updateAllIslandFogs) this.sceneDirector.updateAllIslandFogs();
         this.loadIslandData(this.currentIsland);
         this.updateNavStepDots();
 
