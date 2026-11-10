@@ -1631,29 +1631,54 @@
     import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
     // ----------------------------------------------------
-    // 0. 模型建造工具包 (微縮模型風格元件)
+    // 0. 模型建造工具包 (微縮模型風格元件與樹脂微噪點材質)
     // ----------------------------------------------------
+    // === 程序化微縮模型漆面噪點貼圖 ===
+    const miniatureNoiseTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 128;
+      c.height = 128;
+      const ctx = c.getContext('2d');
+      const imgData = ctx.createImageData(128, 128);
+      for (let i = 0; i < imgData.data.length; i += 4) {
+        const n = 128 + (Math.random() * 36 - 18);
+        imgData.data[i] = n;
+        imgData.data[i + 1] = n;
+        imgData.data[i + 2] = n;
+        imgData.data[i + 3] = 255;
+      }
+      ctx.putImageData(imgData, 0, 0);
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(6, 6);
+      return t;
+    })();
+
     const matCache = new Map();
-    // 【風格生成規範 1】：一律使用 MeshStandardMaterial，粗糙度 0.6~0.8，金屬度 0.05~0.1，營造黏土/玩具溫潤質感
     function getMat(color, opts = {}) {
       const key = `${color}_${JSON.stringify(opts)}`;
       if (!matCache.has(key)) {
         matCache.set(key, new THREE.MeshStandardMaterial({
           color: color,
-          roughness: opts.roughness !== undefined ? opts.roughness : 0.72,
-          metalness: opts.metalness !== undefined ? opts.metalness : 0.08,
-          flatShading: opts.flatShading !== undefined ? opts.flatShading : true,
+          roughness: opts.roughness !== undefined ? opts.roughness : 0.42,
+          metalness: opts.metalness !== undefined ? opts.metalness : 0.06,
+          flatShading: opts.flatShading !== undefined ? opts.flatShading : false,
+          bumpMap: opts.bumpMap !== undefined ? opts.bumpMap : miniatureNoiseTex,
+          bumpScale: opts.bumpScale !== undefined ? opts.bumpScale : 0.008,
           ...opts
         }));
       }
       return matCache.get(key);
     }
 
-    // 【風格生成規範 2】：雙層 Mesh 賽璐珞/四格漫畫黑邊外框線 (Toon Shading Outline)
+    // 【風格生成規範 2】：雙層 Mesh 賽璐珞/四格漫畫黑邊外框線 (Toon Shading Outline - 採用標準材質)
     function addComicOutline(mesh, thickness = 0.04, color = 0x1e293b) {
       if (!mesh || !mesh.geometry) return mesh;
-      const outlineMat = new THREE.MeshBasicMaterial({
+      const outlineMat = new THREE.MeshStandardMaterial({
         color: color,
+        roughness: 1.0,
+        metalness: 0,
         side: THREE.BackSide
       });
       const outlineMesh = new THREE.Mesh(mesh.geometry, outlineMat);
@@ -4514,9 +4539,9 @@ puzzleSentences: [
         this.scene.background = this.clearSkyColor;
         this.scene.fog = new THREE.FogExp2(0xddeeff, 0.007);
 
-        this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-        // 【全新微縮黃金視角】：拉近至微距等角透視，清晰展現微縮島嶼、草簇與守門龍
-        this.camera.position.set(5, 36, 52);
+        // 【規格任務 3：微縮長焦鏡頭配置 (Tilt-Shift Telephoto Feeling)】
+        this.camera = new THREE.PerspectiveCamera(32, window.innerWidth / window.innerHeight, 1, 1000);
+        this.camera.position.set(10, 55, 80);
 
         this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -4565,39 +4590,43 @@ puzzleSentences: [
         this.animate();
       }
 
+      // 【規格任務 2：攝影棚三點光照與柔和接地陰影 (Studio Lighting)】
       initLights() {
-        // 【新技能規範 Pass 2】：明亮採光系統 (Playful Lighting)
-        // ① 環境光 (AmbientLight) 保持在 0.65，明亮溫潤
-        const ambient = new THREE.AmbientLight(0xfff8ee, 0.65);
+        // ① 環境光 (AmbientLight) 降低至 0.35 避免洗白微縮陰影
+        const ambient = new THREE.AmbientLight(0xfff8ee, 0.35);
         this.scene.add(ambient);
         this.ambientLight = ambient;
 
-        // ② 半球光 (HemisphereLight)：天空淡藍 0xddeeff，地面淺草綠 0x88bb77，背光粉嫩漸層
-        const hemiLight = new THREE.HemisphereLight(0xddeeff, 0x88bb77, 0.55);
+        // ② 半球光 (HemisphereLight)：天空淡藍 0xddeeff，地面自然綠 0x556644，強度 0.35
+        const hemiLight = new THREE.HemisphereLight(0xddeeff, 0x556644, 0.35);
         hemiLight.position.set(0, 50, 0);
         this.scene.add(hemiLight);
         this.hemiLight = hemiLight;
 
-        // ③ 方向光 (DirectionalLight)：45度斜射暖陽
-        const sun = new THREE.DirectionalLight(0xfffaed, 1.15);
-        sun.position.set(48, 52, 48);
+        // ③ 方向主光 (Sun / Key Light)：攝影棚 45 度主光 1.45，高精度 2048 柔和陰影
+        const sun = new THREE.DirectionalLight(0xfffaed, 1.45);
+        sun.position.set(45, 60, 45);
         sun.castShadow = true;
-        this.sun = sun;
-
-        // 輕量化陰影 (Performance Shadow 1024x1024)
-        sun.shadow.mapSize.width = 1024;
-        sun.shadow.mapSize.height = 1024;
-        sun.shadow.camera.near = 1;
-        sun.shadow.camera.far = 320;
-        const d = 110;
+        sun.shadow.mapSize.width = 2048;
+        sun.shadow.mapSize.height = 2048;
+        sun.shadow.camera.near = 5;
+        sun.shadow.camera.far = 280;
+        const d = 80;
         sun.shadow.camera.left = -d;
         sun.shadow.camera.right = d;
         sun.shadow.camera.top = d;
         sun.shadow.camera.bottom = -d;
-        sun.shadow.bias = -0.0005;
+        sun.shadow.bias = -0.0003;
         this.scene.add(sun);
+        this.sun = sun;
 
-        // ④ 轉之島專屬氣候連動微弱閃電光源 (預設強度 0，暴雨模式隨機微弱閃爍)
+        // ④ 輪廓光 (Rim Light)：斜後方冷白光勾勒微縮模型邊緣立體高光
+        const rimLight = new THREE.DirectionalLight(0xbae6fd, 0.85);
+        rimLight.position.set(-50, 40, -50);
+        this.scene.add(rimLight);
+        this.rimLight = rimLight;
+
+        // ⑤ 轉之島專屬氣候連動閃電光源 (預設強度 0，暴雨模式隨機微弱閃爍)
         const stormPos = CURRICULUM_DATA[2].position;
         const lightning = new THREE.PointLight(0xfef08a, 0, 70);
         lightning.position.set(stormPos[0], stormPos[1] + 20, stormPos[2]);
@@ -6352,12 +6381,12 @@ puzzleSentences: [
           }
           if (this.ambientLight) {
             this.ambientLight.color.setHex(0x64748b);
-            this.ambientLight.intensity = 0.45;
+            this.ambientLight.intensity = 0.22;
           }
           if (this.hemiLight) {
             this.hemiLight.color.setHex(0x312e81);
             this.hemiLight.groundColor.setHex(0x1e1b4b);
-            this.hemiLight.intensity = 0.45;
+            this.hemiLight.intensity = 0.22;
           }
           if (this.sun) this.sun.intensity = 0.4;
           // 轉之島地面積水潮濕反射倒影 (roughness 降為 0.22)
@@ -6366,7 +6395,7 @@ puzzleSentences: [
           }
           if (this.rainParticles) this.rainParticles.visible = true;
         } else {
-          // 晴朗日間模式：陽光暖照、天朗氣清、乾燥溫潤草地
+          // 晴朗日間模式：微縮攝影棚溫暖柔光
           this.scene.background = this.clearSkyColor;
           if (this.skyDome) this.skyDome.visible = !state.isNightMode;
           if (this.scene.fog) {
@@ -6375,14 +6404,14 @@ puzzleSentences: [
           }
           if (this.ambientLight) {
             this.ambientLight.color.setHex(0xfff8ee);
-            this.ambientLight.intensity = 0.65;
+            this.ambientLight.intensity = 0.35;
           }
           if (this.hemiLight) {
             this.hemiLight.color.setHex(0xddeeff);
-            this.hemiLight.groundColor.setHex(0x88bb77);
-            this.hemiLight.intensity = 0.55;
+            this.hemiLight.groundColor.setHex(0x556644);
+            this.hemiLight.intensity = 0.35;
           }
-          if (this.sun) this.sun.intensity = 1.15;
+          if (this.sun) this.sun.intensity = 1.45;
           if (this.stormIslandMaterials) {
             this.stormIslandMaterials.forEach(m => { m.roughness = 0.75; });
           }
@@ -6906,29 +6935,29 @@ puzzleSentences: [
             if (sd.sea) sd.sea.material.color.setHex(0x1e293b);
             if (sd.ambientLight) {
               sd.ambientLight.color.setHex(0x38bdf8);
-              sd.ambientLight.intensity = 0.42;
+              sd.ambientLight.intensity = 0.22;
             }
             if (sd.hemiLight) {
               sd.hemiLight.color.setHex(0x1e1b4b);
               sd.hemiLight.groundColor.setHex(0x022c22);
-              sd.hemiLight.intensity = 0.48;
+              sd.hemiLight.intensity = 0.22;
             }
-            if (sd.sun) sd.sun.intensity = 0.55;
+            if (sd.sun) sd.sun.intensity = 0.45;
           } else {
             sd.scene.background = sd.clearSkyColor || new THREE.Color(0xbfe6fb);
             if (sd.skyDome) sd.skyDome.visible = true;
-            if (sd.scene.fog) sd.scene.fog.color.setHex(0xdaf0fc);
+            if (sd.scene.fog) sd.scene.fog.color.setHex(0xddeeff);
             if (sd.sea) sd.sea.material.color.setHex(0x38bdf8);
             if (sd.ambientLight) {
               sd.ambientLight.color.setHex(0xfff8ee);
-              sd.ambientLight.intensity = 0.65;
+              sd.ambientLight.intensity = 0.35;
             }
             if (sd.hemiLight) {
-              sd.hemiLight.color.setHex(0xdff0ff);
-              sd.hemiLight.groundColor.setHex(0xe8f5e9);
-              sd.hemiLight.intensity = 0.68;
+              sd.hemiLight.color.setHex(0xddeeff);
+              sd.hemiLight.groundColor.setHex(0x556644);
+              sd.hemiLight.intensity = 0.35;
             }
-            if (sd.sun) sd.sun.intensity = 1.15;
+            if (sd.sun) sd.sun.intensity = 1.45;
           }
         }
       }
@@ -7070,8 +7099,8 @@ puzzleSentences: [
         if (this.sceneDirector) {
           this.sceneDirector.setWeather('sunny');
           this.sceneDirector.setKeeperExpression(1);
-          // 【全新開闊全景視野】：廣角微縮黃金透視，俯瞰五座壯麗大島嶼
-          this.sceneDirector.flyTo(new THREE.Vector3(15, 68, 120), new THREE.Vector3(15, 0, 0));
+          // 【規格任務 3：微縮長焦俯瞰視角】：長焦微距攝影棚透視 (10, 55, 80)
+          this.sceneDirector.flyTo(new THREE.Vector3(10, 55, 80), new THREE.Vector3(5, 0, 0));
         }
         this.closeDrawer();
       }
@@ -8708,6 +8737,40 @@ puzzleSentences: [
     }
 
     window.islandApp = new IslandApp();
+    window.app = window.islandApp.sceneDirector;
+
+    // === 【規格任務 4：Three.js 微縮場景自動驗收審查腳本】 ===
+    setTimeout(() => {
+      const app = window.app || (window.islandApp ? window.islandApp.sceneDirector : null);
+      if (!app) return;
+      console.group("【Three.js 微縮場景驗收報告】");
+      console.log("1. 陰影狀態:", app.renderer.shadowMap.enabled ? "✅ 通過" : "❌ 失敗");
+      console.log("2. 色調映射:", app.renderer.toneMapping === THREE.ACESFilmicToneMapping ? "✅ 通過 (ACESFilmic)" : "❌ 失敗");
+      
+      let basicCount = 0;
+      let standardCount = 0;
+      app.scene.traverse((obj) => {
+        if (obj.isMesh && obj.material) {
+          const mat = obj.material;
+          if (Array.isArray(mat)) {
+            mat.forEach(m => {
+              if (m.type === "MeshBasicMaterial") basicCount++;
+              if (m.type === "MeshStandardMaterial" || m.type === "MeshPhysicalMaterial") standardCount++;
+            });
+          } else {
+            if (mat.type === "MeshBasicMaterial") basicCount++;
+            if (mat.type === "MeshStandardMaterial" || mat.type === "MeshPhysicalMaterial") standardCount++;
+          }
+        }
+      });
+      console.log(`3. 材質分佈: 物理材質 x${standardCount}, 基礎無光材質 x${basicCount}`);
+      if (basicCount > 10) {
+        console.warn("⚠️ 警告：仍有大量基礎無光材質未替換！");
+      } else {
+        console.log("4. 材質合格判定: ✅ 通過 (物理材質為主體)");
+      }
+      console.groupEnd();
+    }, 2000);
   </script>
 </body>
 </html>

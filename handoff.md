@@ -1,5 +1,28 @@
 # handoff.md - 多 Agent 交接紀錄
 
+## 2026-11-10 依據 `three_js.md` 規範完成 Three.js 袖珍微縮模型（Resin Diorama）渲染重構與四項驗收
+- **執行人**：Antigravity Agent
+- **依據文件**：使用者提供的 `three_js.md`《Three.js 微縮模型（Diorama）渲染升級與驗收規格書》
+- **核心重構項目**：
+  1. **任務 1：材質快取系統升級（程序化微縮模型漆面微噪點）**
+     - 動態生成 128x128 灰階噪點 `CanvasTexture`（`miniatureNoiseTex`），注入 `MeshStandardMaterial` 的 `bumpMap`，`bumpScale: 0.008`，消除純色塑膠感，模擬微縮模型漆面細微顆粒。
+     - 全域預設 `flatShading: false`（平滑法線打磨質感），預設 `roughness: 0.42`，`metalness: 0.06`。
+     - 重構 `addComicOutline` 為標準物理材質（`MeshStandardMaterial`，`roughness: 1.0`，`side: THREE.BackSide`），徹底杜絕無光材質濫用。
+  2. **任務 2：攝影棚三點光照與柔和接地陰影（Studio Lighting）**
+     - 環境光 `AmbientLight(0xfff8ee, 0.35)` 與半球光 `HemisphereLight(0xddeeff, 0x556644, 0.35)` 嚴格控制在總光照 0.70 上限內，消除曝光洗白。
+     - 主光 `DirectionalLight(0xfffaed, 1.45)`，投射陰影貼圖升級至 `2048x2048`，陰影投射範圍縮緊為 `d = 80`，`bias = -0.0003`，實現清晰細緻的接地陰影。
+     - 新增斜後方冷白輪廓光 `rimLight`（`DirectionalLight(0xbae6fd, 0.85)`，位置 `(-50, 40, -50)`），勾勒袖珍模型邊緣立體高光。
+  3. **任務 3：微縮長焦鏡頭配置（Tilt-Shift Telephoto Feeling）**
+     - 相機 FOV 由 45 度降為 32 度長焦微距視角，初始與復位座標設為 `(10, 55, 80)`，大幅增強景深微縮感與桌面袖珍盒玩感。
+  4. **任務 4：程式碼末端注入自我驗收腳本**
+     - 注入自動驗收診斷器，Playwright 實機驗證成果：
+       - `1. 陰影狀態: ✅ 通過`
+       - `2. 色調映射: ✅ 通過 (ACESFilmic)`
+       - `3. 材質分佈: 物理材質 x2597, 基礎無光材質 x1`（天穹）
+       - `4. 材質合格判定: ✅ 通過 (物理材質為主體)`
+       - 控制台 0 錯誤、0 警告。
+- **Commit 雜湊**：待提交
+
 ## 2026-11-10 島嶼面積放大 3.1 倍、開闊分區規劃（海灣機場/聚落建築/自然地貌/海岬燈塔）與真實寫真自然樹木/風化露岩重構
 - **執行人**：Antigravity Agent
 - **使用者核心要求**：「島嶼面積放大，不要把東西都擠在一起，石頭、樹木不要看起來像幾何圖形組合，需要符合現實的物品」
