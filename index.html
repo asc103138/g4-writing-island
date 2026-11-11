@@ -7324,8 +7324,13 @@ puzzleSentences: [
         const deskY = getTerrainHeight ? getTerrainHeight(deskX, deskZ) : 3.37;
         deskGroup.position.set(deskX, deskY, deskZ);
 
-        // 橡木大書桌 (厚桌面與車削桌腳)
-        deskGroup.add(at(rbox(3.4, 0.28, 2.2, getMat(0x78350f, { roughness: 0.65 })), 0, 1.4, 0));
+        // 橡木大書桌 (厚桌面與車削桌腳：升級細緻玩具木紋與柔和高光)
+        const deskTopMat = getMat(0x854d0e, {
+          roughness: 0.55,
+          bumpScale: 0.012,
+          map: miniatureWoodTex
+        });
+        deskGroup.add(at(rbox(3.4, 0.28, 2.2, deskTopMat), 0, 1.4, 0));
         for (const [dx, dz] of [[-1.4, -0.9], [1.4, -0.9], [-1.4, 0.9], [1.4, 0.9]]) {
           deskGroup.add(at(cyl(0.14, 0.1, 1.4, 6, getMat(0x5c3a21)), dx, 0.7, dz));
         }
@@ -7347,15 +7352,82 @@ puzzleSentences: [
         backpack.rotation.z = 0.15;
         deskGroup.add(backpack);
 
-        // 散落翻開的試卷與大筆記本 (Open Planner)
+        // 考前苦讀筆記本/試卷專屬程序化貼圖 (128x128 零 CORS Canvas)
+        const leftPageTex = (() => {
+          const c = document.createElement('canvas');
+          c.width = 128; c.height = 128;
+          const ctx = c.getContext('2d');
+          ctx.fillStyle = '#fdfbf7';
+          ctx.fillRect(0, 0, 128, 128);
+          // 淡紅色題號分隔線
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.45)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(22.5, 0); ctx.lineTo(22.5, 128);
+          ctx.stroke();
+          // 淡藍色筆記橫條線
+          ctx.strokeStyle = 'rgba(96, 165, 250, 0.4)';
+          ctx.lineWidth = 1;
+          for (let y = 14; y < 128; y += 14) {
+            ctx.beginPath();
+            ctx.moveTo(6, y + 0.5); ctx.lineTo(122, y + 0.5);
+            ctx.stroke();
+          }
+          const t = new THREE.CanvasTexture(c);
+          t.colorSpace = THREE.SRGBColorSpace;
+          return t;
+        })();
+
+        const rightPageTex = (() => {
+          const c = document.createElement('canvas');
+          c.width = 128; c.height = 128;
+          const ctx = c.getContext('2d');
+          ctx.fillStyle = '#fdfbf7';
+          ctx.fillRect(0, 0, 128, 128);
+          // 淡紅色題號分隔線
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.45)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(22.5, 0); ctx.lineTo(22.5, 128);
+          ctx.stroke();
+          // 淡藍色筆記橫條線
+          ctx.strokeStyle = 'rgba(96, 165, 250, 0.4)';
+          ctx.lineWidth = 1;
+          for (let y = 14; y < 128; y += 14) {
+            ctx.beginPath();
+            ctx.moveTo(6, y + 0.5); ctx.lineTo(122, y + 0.5);
+            ctx.stroke();
+          }
+          // 右頁上方淡淡的鉛筆草稿筆跡感 (考前苦讀運算與勾劃重點痕跡)
+          ctx.strokeStyle = 'rgba(71, 85, 105, 0.42)';
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          // 模擬草稿算式與重點底線
+          ctx.moveTo(34, 24); ctx.lineTo(58, 24);
+          ctx.moveTo(66, 22); ctx.lineTo(82, 26);
+          ctx.moveTo(36, 38); ctx.quadraticCurveTo(52, 34, 76, 38);
+          ctx.moveTo(82, 36); ctx.lineTo(102, 38);
+          // 淡淡的小打勾/星號重點記號
+          ctx.moveTo(32, 52); ctx.lineTo(38, 56); ctx.lineTo(48, 48);
+          ctx.moveTo(56, 52); ctx.lineTo(92, 52);
+          ctx.stroke();
+          const t = new THREE.CanvasTexture(c);
+          t.colorSpace = THREE.SRGBColorSpace;
+          return t;
+        })();
+
+        // 散落翻開的試卷與大筆記本 (Open Planner - 升級稿紙與鉛筆草稿貼圖)
         const openBook = new THREE.Group();
         openBook.position.set(0.3, 1.56, 0.1);
         openBook.rotation.y = 0.15;
-        // 左右兩頁白紙
-        openBook.add(at(rbox(0.65, 0.05, 0.85, getMat(0xffffff, { roughness: 0.9 })), -0.32, 0, 0, 0));
-        openBook.add(at(rbox(0.65, 0.05, 0.85, getMat(0xffffff, { roughness: 0.9 })), 0.32, 0, 0, 0));
+        // 左頁白紙 (帶淡紅題號線與淡藍筆記線)
+        const leftPageMat = getMat(0xffffff, { roughness: 0.85, map: leftPageTex });
+        openBook.add(at(rbox(0.65, 0.05, 0.85, leftPageMat), -0.32, 0, 0, 0));
+        // 右頁白紙 (帶淡藍橫線與鉛筆草稿筆跡)
+        const rightPageMat = getMat(0xffffff, { roughness: 0.85, map: rightPageTex });
+        openBook.add(at(rbox(0.65, 0.05, 0.85, rightPageMat), 0.32, 0, 0, 0));
         // 皮革書脊書底
-        openBook.add(at(rbox(1.36, 0.04, 0.9, getMat(0x854d0e)), 0, -0.03, 0));
+        openBook.add(at(rbox(1.36, 0.04, 0.9, getMat(0x854d0e, { roughness: 0.65 })), 0, -0.03, 0));
         deskGroup.add(openBook);
 
         // 墨水瓶與鵝毛筆 (Inkwell & Quill)
