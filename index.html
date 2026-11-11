@@ -7484,10 +7484,57 @@ puzzleSentences: [
         clockDial.rotation.x = Math.PI / 2;
         clockDial.position.set(0, 5.0, 0.9);
         clockTower.add(clockDial);
-        // 指針指在深夜 11:55
-        const hand = rbox(0.12, 0.75, 0.06, getMat(0xd90429));
+
+        // 指針旋轉中心群組 (錨點位於鐘面正中心，註冊 isClockHand)
+        const hand = new THREE.Group();
         hand.position.set(0, 5.0, 1.08);
+        hand.userData.isClockHand = true;
+        // 紅色長分針（中心點向下對齊樞紐中心，旋轉圍繞鐘盤圓心）
+        const redMinuteBlade = rbox(0.11, 0.78, 0.05, getMat(0xd90429, { roughness: 0.4 }));
+        redMinuteBlade.position.set(0, 0.34, 0);
+        hand.add(redMinuteBlade);
+        // 短時針（指向深夜 11 點刻度）
+        const hourBlade = rbox(0.12, 0.45, 0.05, getMat(0x1e293b, { roughness: 0.5 }));
+        hourBlade.position.set(-0.1, 0.14, -0.01);
+        hourBlade.rotation.z = 0.55;
+        hand.add(hourBlade);
+        // 金色中心軸蓋鉚釘
+        const centerPin = cyl(0.12, 0.12, 0.08, 10, getMat(0xf59e0b, { metalness: 0.8 }));
+        centerPin.rotation.x = Math.PI / 2;
+        hand.add(centerPin);
+
+        const initialHandAngle = 0.08;
+        hand.rotation.z = initialHandAngle;
         clockTower.add(hand);
+        this.animatedObjects.push({ obj: hand, type: 'clockTick', baseRot: initialHandAngle });
+
+        // 鐘面下方「深夜 11:59」微光電子顯示器與轉動齒輪裝飾
+        const ledCanvas = document.createElement('canvas');
+        ledCanvas.width = 64; ledCanvas.height = 32;
+        const lctx = ledCanvas.getContext('2d');
+        lctx.fillStyle = '#0f172a';
+        lctx.fillRect(0, 0, 64, 32);
+        lctx.fillStyle = '#f87171';
+        lctx.font = 'bold 18px monospace';
+        lctx.textAlign = 'center';
+        lctx.textBaseline = 'middle';
+        lctx.fillText('11:59', 32, 16);
+        const ledTex = new THREE.CanvasTexture(ledCanvas);
+        ledTex.colorSpace = THREE.SRGBColorSpace;
+        const ledPlate = rbox(0.78, 0.32, 0.08, getMat(0xffffff, {
+          map: ledTex,
+          emissive: 0xdc2626,
+          emissiveIntensity: 0.65,
+          roughness: 0.3
+        }));
+        ledPlate.position.set(-0.08, 3.45, 1.02);
+        clockTower.add(ledPlate);
+
+        const miniGear = cyl(0.18, 0.18, 0.06, 8, getMat(0xd97706, { metalness: 0.75, roughness: 0.3 }));
+        miniGear.rotation.x = Math.PI / 2;
+        miniGear.position.set(0.45, 3.45, 1.02);
+        clockTower.add(miniGear);
+        this.animatedObjects.push({ obj: miniGear, type: 'spinZ', speed: 1.5 });
 
         // 標語招牌：倒數 3 天！
         clockTower.add(at(signBoard("倒數３天！", 1.8, 0.55), 0, 1.8, 1.1));
@@ -8949,13 +8996,20 @@ puzzleSentences: [
 
         const now = Date.now() * 0.001;
 
-        // 驅動場景動畫物件 (旋轉、浮動、搖晃)
+        // 驅動場景動畫物件 (旋轉、浮動、搖晃、鐘錶滴答急促微震)
         this.animatedObjects.forEach(item => {
           if (item.type === 'spin') item.obj.rotation.y += (item.speed || 1) * 0.01;
           if (item.type === 'spinZ') item.obj.rotation.z += (item.speed || 1) * 0.01;
           if (item.type === 'bob') item.obj.position.y += Math.sin(now * (item.speed || 1)) * 0.005;
           if (item.type === 'float') item.obj.position.y = item.base + Math.sin(now * 1.2) * 0.25;
           if (item.type === 'shake') item.obj.position.x = Math.sin(now * 8) * 0.08;
+          if (item.type === 'clockTick') {
+            const secFrac = now % 1.0;
+            const step = Math.floor(now);
+            // 每次跳格瞬間伴隨急促微震動，呼應考前倒數最後關頭緊繃感
+            const vib = secFrac < 0.16 ? Math.sin(secFrac * 55) * 0.03 : 0;
+            item.obj.rotation.z = (item.baseRot || 0) - (step % 60) * 0.008 + vib;
+          }
         });
 
         // ① 【新技能規範 Pass 3】：動態岸邊接觸浪花帶呼吸縮放與透明度循環
