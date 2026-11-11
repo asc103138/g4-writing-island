@@ -7193,7 +7193,60 @@ puzzleSentences: [
           }
 
           // ⑬ 專屬島嶼微縮建築群 (精緻立體繪本微縮模型，坐落於中央後方寬闊主台地，傳入地形高度函數確保建築物穩固接地)
-          if (i === 0) this.buildStudyHouseDiorama(islandGroup, getTerrainHeight);
+          if (i === 0) {
+            this.buildStudyHouseDiorama(islandGroup, getTerrainHeight);
+
+            // 田園鵝卵石踏腳石曲徑 (從跑道出口 [5.0, 11.5] 蜿蜒通往書房前廊 [0, 2.9])
+            const stoneWaypoints = [
+              [4.9, 11.1],
+              [4.3, 9.8],
+              [3.6, 8.5],
+              [2.9, 7.3],
+              [2.2, 6.1],
+              [1.5, 5.0],
+              [0.9, 4.1],
+              [0.4, 3.4],
+              [0.0, 2.9]
+            ];
+            const pebbleColors = [0xd6d3d1, 0xe7e5e4, 0xdeb887, 0xd4a373, 0xccbba7];
+            stoneWaypoints.forEach(([px, pz], sIdx) => {
+              const rad = 0.38 + (sIdx % 3) * 0.08 + (sIdx % 2) * 0.04;
+              const stoneMat = getMat(pebbleColors[sIdx % pebbleColors.length], {
+                roughness: 0.88,
+                bumpMap: miniatureNoiseTex,
+                bumpScale: 0.012
+              });
+              const stoneGeo = new THREE.CylinderGeometry(rad, rad * 1.06, 0.12, 9);
+              const stone = new THREE.Mesh(stoneGeo, stoneMat);
+              const py = getTerrainHeight(px, pz) + 0.04;
+              stone.position.set(px, py, pz);
+              stone.rotation.y = sIdx * 0.75;
+              stone.scale.set(1.0 + (sIdx % 2) * 0.15, 1.0, 0.88 + (sIdx % 3) * 0.08);
+              stone.receiveShadow = true;
+              stone.castShadow = true;
+              islandGroup.add(stone);
+            });
+
+            // 步道兩側點綴 3 簇矮小微風草叢與白色小雛菊，引導視線帶入第一段書房場景
+            const pathDecors = [
+              [5.2, 10.0],
+              [2.0, 7.8],
+              [1.8, 4.3]
+            ];
+            pathDecors.forEach(([dx, dz], dIdx) => {
+              const grass = createWindyGrassClump(0.55 + (dIdx % 2) * 0.1, palette.grassClumpColor);
+              grass.position.set(dx, getTerrainHeight(dx, dz), dz);
+              islandGroup.add(grass);
+              this.windyGrassList.push(grass);
+
+              const daisy = createFlowerPatch([0xffffff, 0xfef08a]);
+              daisy.scale.set(0.65, 0.65, 0.65);
+              const fx = dx + 0.32 * (dIdx % 2 === 0 ? 1 : -1);
+              const fz = dz + 0.28;
+              daisy.position.set(fx, getTerrainHeight(fx, fz) + 0.03, fz);
+              islandGroup.add(daisy);
+            });
+          }
           else if (i === 1) this.buildSchoolExamDiorama(islandGroup, getTerrainHeight);
           else if (i === 2) this.buildStormHouseDiorama(islandGroup, getTerrainHeight);
           else if (i === 3) this.buildTrophyTempleDiorama(islandGroup, getTerrainHeight);
