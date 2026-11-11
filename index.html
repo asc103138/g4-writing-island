@@ -7456,11 +7456,19 @@ puzzleSentences: [
           deskGroup.add(b2);
         }
 
-        // 復古發光綠罩檯燈
+        // 復古發光綠罩檯燈（透光綠琉璃燈罩 + 局部專屬暖黃桌面光照）
         const lamp = new THREE.Group();
         lamp.add(at(cyl(0.28, 0.32, 0.1, 8, getMat(0x1e293b)), 1.0, 1.55, -0.5));
         lamp.add(at(cyl(0.06, 0.06, 0.9, 6, getMat(0xd97706, { metalness: 0.8 })), 1.0, 2.0, -0.5));
-        lamp.add(at(cone(0.4, 0.42, 8, getMat(0x166534, { emissive: 0x22c55e, emissiveIntensity: 0.4 })), 1.0, 2.4, -0.5));
+        // 綠色錐形燈罩透光感材質
+        const shadeMat = getMat(0x166534, { roughness: 0.25, emissive: 0x15803d, emissiveIntensity: 0.6 });
+        lamp.add(at(cone(0.4, 0.42, 8, shadeMat), 1.0, 2.4, -0.5));
+
+        // 局部專屬桌面暖黃點光源（柔和照亮大書桌與開卷試卷，無全島陰影，兼顧平板效能）
+        const deskPointLight = new THREE.PointLight(0xfef08a, 1.8, 4.2, 2.0);
+        deskPointLight.position.set(1.0, 2.1, -0.5);
+        lamp.add(deskPointLight);
+
         deskGroup.add(lamp);
 
         g.add(deskGroup);
