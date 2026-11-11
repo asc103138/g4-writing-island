@@ -2341,7 +2341,7 @@
     // ----------------------------------------------------
     // 0. 模型建造工具包 (微縮模型風格元件與樹脂微噪點材質)
     // ----------------------------------------------------
-    // === 程序化微縮模型漆面噪點貼圖 ===
+    // === 1. 程序化微縮模型漆面噪點貼圖 ===
     const miniatureNoiseTex = (() => {
       const c = document.createElement('canvas');
       c.width = 128;
@@ -2360,12 +2360,111 @@
       t.wrapS = THREE.RepeatWrapping;
       t.wrapT = THREE.RepeatWrapping;
       t.repeat.set(6, 6);
+      t.colorSpace = THREE.SRGBColorSpace;
       return t;
     })();
 
+    // === 2. 程序化童話紅磚與石階地磚紋理 ===
+    const miniatureBrickTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 128;
+      c.height = 128;
+      const ctx = c.getContext('2d');
+      // 灰白勾縫底色
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(0, 0, 128, 128);
+      const rows = 8;
+      const rowH = 16;
+      const brickW = 32;
+      for (let r = 0; r < rows; r++) {
+        const offset = (r % 2) * (brickW / 2);
+        for (let x = -offset; x < 128; x += brickW) {
+          const tone = 200 + Math.floor(Math.random() * 35);
+          ctx.fillStyle = `rgb(${tone}, ${Math.floor(tone * 0.52)}, ${Math.floor(tone * 0.38)})`;
+          ctx.fillRect(Math.max(0, x + 1.5), r * rowH + 1.5, Math.min(128 - x - 1.5, brickW - 3), rowH - 3);
+        }
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(2, 2);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+
+    // === 3. 程序化溫暖玩具木紋貼圖 ===
+    const miniatureWoodTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 128;
+      c.height = 128;
+      const ctx = c.getContext('2d');
+      // 溫潤暖木底色
+      ctx.fillStyle = '#d97706';
+      ctx.fillRect(0, 0, 128, 128);
+      // 繪製縱向木質纖維與年輪同心紋
+      for (let y = 0; y < 128; y++) {
+        const alpha = 0.08 + Math.abs(Math.sin(y * 0.15)) * 0.18;
+        ctx.fillStyle = `rgba(254, 243, 199, ${alpha})`;
+        ctx.fillRect(0, y, 128, 1);
+        if (y % 16 === 0) {
+          ctx.fillStyle = 'rgba(120, 53, 15, 0.22)';
+          ctx.fillRect(0, y, 128, 2);
+        }
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(2, 2);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+
+    // === 4. 程序化方格作文稿紙/試卷貼圖 ===
+    const miniaturePaperTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 128;
+      c.height = 128;
+      const ctx = c.getContext('2d');
+      // 柔和象牙白試卷底色
+      ctx.fillStyle = '#fdfbf7';
+      ctx.fillRect(0, 0, 128, 128);
+      // 稿紙淡紅/淡灰方格線
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.28)';
+      ctx.lineWidth = 1;
+      const step = 16;
+      ctx.beginPath();
+      for (let i = 0; i <= 128; i += step) {
+        ctx.moveTo(i + 0.5, 0);
+        ctx.lineTo(i + 0.5, 128);
+        ctx.moveTo(0, i + 0.5);
+        ctx.lineTo(128, i + 0.5);
+      }
+      ctx.stroke();
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(4, 4);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+
+    // === 5. 材質快取系統（修復紋理 UUID 快取防衝突） ===
     const matCache = new Map();
+    function getMatKey(color, opts) {
+      const clean = {};
+      for (const k in opts) {
+        const v = opts[k];
+        if (v && typeof v === 'object' && (v.isTexture || v.uuid)) {
+          clean[k] = `tex_${v.uuid}`;
+        } else {
+          clean[k] = v;
+        }
+      }
+      return `${color}_${JSON.stringify(clean)}`;
+    }
+
     function getMat(color, opts = {}) {
-      const key = `${color}_${JSON.stringify(opts)}`;
+      const key = getMatKey(color, opts);
       if (!matCache.has(key)) {
         matCache.set(key, new THREE.MeshStandardMaterial({
           color: color,

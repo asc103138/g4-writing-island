@@ -1,5 +1,24 @@
 # handoff.md - 多 Agent 交接紀錄
 
+## 2026-11-11 模型建造工具包升級：零 CORS 程序化繪本紋理庫與紋理 UUID 材質快取修復
+- **執行人**：Antigravity Agent
+- **使用者核心要求**：「為 115四上作文 index.html 精確升級『模型建造工具包』，引入零 CORS 程序化繪本紋理庫與修正材質快取」
+- **修改行號**：第 2341 行至第 2445 行（嚴格隔離於 0. 模型建造工具包，不影響其餘 1.1 萬行核心系統）
+- **架構與落實成果**：
+  1. **色彩空間校準**：
+     - `miniatureNoiseTex` 補上 `t.colorSpace = THREE.SRGBColorSpace;`，確保貼圖在 ACESFilmic 色調映射下色彩自然。
+  2. **引入三款 128x128 零 CORS 程序化微縮繪本貼圖**：
+     - `miniatureBrickTex`：童話紅磚與石階地磚紋理（灰白水泥勾縫、溫暖赤陶紅磚塊帶有隨機明暗色調，2x2 循環平鋪）。
+     - `miniatureWoodTex`：溫暖玩具木紋貼圖（溫潤暖木底色、縱向木質纖維與年輪同心紋，2x2 循環平鋪）。
+     - `miniaturePaperTex`：方格作文稿紙/試卷貼圖（象牙白試卷紙底、淡紅色方格稿紙線，4x4 循環平鋪）。
+  3. **材質快取系統防衝突修復**：
+     - 封裝 `getMatKey(color, opts)`，遞迴檢查 `opts` 屬性，若為 Texture 物件則提取 `v.uuid` 注入快取鍵值（`tex_${v.uuid}`）。
+     - 徹底杜絕過去傳入 `map` 或 `bumpMap` 時，因 `JSON.stringify` 產出相同空鍵而導致不同貼圖錯誤共用同一材質快取的問題。
+  4. **全端無損驗證**：
+     - JavaScript 語法檢測通過（`node --check` 0 錯誤）。
+     - Playwright 實機走訪：ACESFilmic 色調映射正常、物理材質 3,182 件，控制台 0 報錯 0 警告。
+- **Commit 雜湊**：待提交
+
 ## 2026-11-11 冒險小飛機依照 Battat 經典童玩 (Take-Apart Airplane) 依樣精準重新建模
 - **執行人**：Antigravity Agent
 - **使用者核心要求**：「飛機請依照我給你的圖重新建模」（提供 Battat Take-Apart Airplane 實體玩具包裝圖）
