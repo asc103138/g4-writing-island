@@ -1709,14 +1709,36 @@
             登入後，您在任何電腦或平板上寫的《考試前後》作文四段、五要素選擇與評分，都會自動即時同步，換電腦不用重寫！
           </p>
 
-          <!-- 登入模式分頁標籤 -->
+          <!-- 登入模式分頁標籤（預設先顯示學校帳號免打網域快速輸入） -->
           <div style="display: flex; gap: 8px; background: #e2e8f0; padding: 4px; border-radius: 10px; margin-bottom: 16px;">
-            <button class="auth-tab-btn active" id="tabBtnGoogle" onclick="window.islandApp.switchAuthTab('google')">🌐 Google 帳號一鍵登入</button>
-            <button class="auth-tab-btn" id="tabBtnSchool" onclick="window.islandApp.switchAuthTab('school')">🏫 學校教育帳號 / 座號</button>
+            <button class="auth-tab-btn active" id="tabBtnSchool" onclick="window.islandApp.switchAuthTab('school')">🏫 學校帳號（免打 @st.tc.edu.tw）</button>
+            <button class="auth-tab-btn" id="tabBtnGoogle" onclick="window.islandApp.switchAuthTab('google')">🌐 Chrome / 其他信箱</button>
           </div>
 
-          <!-- 分頁 1: Google 官方帳號快速連線 -->
-          <div id="authTabGoogle" style="text-align: center; padding: 12px 0;">
+          <!-- 分頁 1 (預設): 學生學校帳號快捷連線（只打前面帳號自動補 @st.tc.edu.tw） -->
+          <div id="authTabSchool" style="display: block; padding: 6px 0;">
+            <div style="margin-bottom: 12px;">
+              <label for="schoolAccountInput" style="display: block; font-size: 13px; font-weight: 800; color: #334155; margin-bottom: 8px;">
+                請輸入學校帳號前面部分（<span style="color: #0284c7;">不用打 @st.tc.edu.tw</span>，例：<code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">s110301</code>）：
+              </label>
+              <div style="display: flex; gap: 8px; align-items: stretch;">
+                <div style="flex: 1; display: flex; align-items: center; border: 1.5px solid var(--line); border-radius: 10px; background: white; overflow: hidden; transition: border-color .2s;">
+                  <input type="text" id="schoolAccountInput" placeholder="只打前面帳號（例：s110301）" autocomplete="username" autocapitalize="none" spellcheck="false" oninput="window.islandApp.updateSchoolAccountPreview()" onkeydown="if(event.key==='Enter'){event.preventDefault();window.islandApp.loginWithSchoolAccount();}" style="flex: 1; min-width: 0; padding: 10px 12px; border: none; outline: none; font-size: 15px; font-weight: 700; color: #0f172a; background: transparent;">
+                  <span id="schoolDomainSuffix" style="display: inline-flex; align-items: center; padding: 0 11px; height: 100%; background: #eff6ff; color: #1d4ed8; font-size: 13.5px; font-weight: 800; border-left: 1px solid #dbeafe; white-space: nowrap; user-select: none;">@st.tc.edu.tw</span>
+                </div>
+                <button class="btn-top highlight" style="background: var(--primary); color: white; border: none; padding: 0 18px; border-radius: 10px; white-space: nowrap;" onclick="window.islandApp.loginWithSchoolAccount()">
+                  連線同步
+                </button>
+              </div>
+              <div id="schoolAccountPreview" style="font-size: 12px; color: #0369a1; font-weight: 700; margin-top: 6px; min-height: 18px;"></div>
+            </div>
+            <p style="font-size: 12px; color: #64748b; line-height: 1.5;">
+              💡 只要輸入 <code>@st.tc.edu.tw</code> 前面的帳號即可記錄與同步；若使用個人信箱（如 Gmail）也能直接貼上完整信箱。
+            </p>
+          </div>
+
+          <!-- 分頁 2: Google 官方帳號快速連線 -->
+          <div id="authTabGoogle" style="display: none; text-align: center; padding: 12px 0;">
             <div id="googleButtonContainer" style="display: flex; justify-content: center; margin-bottom: 12px;"></div>
             <button class="btn-top highlight" style="width: 100%; justify-content: center; padding: 11px; background: #4285f4; color: white; border: none; font-size: 14px; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);" onclick="window.islandApp.promptFastGoogleLogin()">
               <span style="display: flex; align-items: center; gap: 8px;">
@@ -1725,25 +1747,7 @@
               </span>
             </button>
             <p style="font-size: 12px; color: #64748b; margin-top: 10px;">
-              💡 只要在 Chrome 瀏覽器登入自己的帳號，點擊上方即可一鍵連線同步！
-            </p>
-          </div>
-
-          <!-- 分頁 2: 學生學校帳號 / 座號快捷連線 -->
-          <div id="authTabSchool" style="display: none; padding: 6px 0;">
-            <div style="margin-bottom: 12px;">
-              <label style="display: block; font-size: 12.5px; font-weight: 700; color: #475569; margin-bottom: 6px;">
-                請輸入學生 Google 教育帳號或座號（例：s110301@st.tc.edu.tw 或 40125）：
-              </label>
-              <div style="display: flex; gap: 8px;">
-                <input type="text" id="schoolAccountInput" placeholder="例：s110301@st.tc.edu.tw 或 40125" style="flex: 1; padding: 9px 12px; border: 1.5px solid var(--line); border-radius: 8px; font-size: 14px;">
-                <button class="btn-top highlight" style="background: var(--primary); color: white; border: none; padding: 0 18px;" onclick="window.islandApp.loginWithSchoolAccount()">
-                  連線同步
-                </button>
-              </div>
-            </div>
-            <p style="font-size: 12px; color: #64748b; line-height: 1.4;">
-              💡 提示：輸入相同的帳號或座號，在任何平板上都能隨時載入與接續先前的作文進度。
+              💡 同樣支援僅輸入 <code>@st.tc.edu.tw</code> 前面帳號部分，系統會自動補全學校網域！
             </p>
           </div>
         </div>
@@ -13251,7 +13255,11 @@ puzzleSentences: [
         this.updateGoogleAuthUI();
         const gasInput = document.getElementById("gasApiUrlInput");
         if (gasInput) gasInput.value = state.gasApiUrl || "";
+        this.updateSchoolAccountPreview();
         modal.classList.add("open");
+        if (!state.currentUser) {
+          setTimeout(() => document.getElementById("schoolAccountInput")?.focus(), 120);
+        }
       }
 
       closeGoogleAuthModal() {
@@ -13370,32 +13378,61 @@ puzzleSentences: [
         }
       }
 
+      normalizeSchoolAccount(raw) {
+        let clean = String(raw || "").trim().toLowerCase().replace(/\s+/g, "");
+        if (!clean || clean.startsWith("@")) return "";
+        if (clean.endsWith("@")) clean = clean.slice(0, -1);
+        if (!clean) return "";
+        return clean.includes("@") ? clean : `${clean}@st.tc.edu.tw`;
+      }
+
+      updateSchoolAccountPreview() {
+        const input = document.getElementById("schoolAccountInput");
+        const suffix = document.getElementById("schoolDomainSuffix");
+        const preview = document.getElementById("schoolAccountPreview");
+        if (!input) return;
+        const raw = input.value.trim();
+        if (suffix) suffix.style.display = raw.includes("@") ? "none" : "inline-flex";
+        const normalized = this.normalizeSchoolAccount(raw);
+        if (preview) {
+          preview.textContent = normalized ? `📌 將記錄與同步為：${normalized}` : "";
+        }
+      }
+
       promptFastGoogleLogin() {
-        const email = prompt("請輸入您的 Google 帳號（例：student@st.tc.edu.tw 或個人 Gmail）：", state.currentUser || "");
-        if (email && email.trim()) {
-          const cleanEmail = email.trim().toLowerCase();
-          const name = prompt("請輸入學生姓名或座號（例：林小明 或 40125）：", state.currentUserName || cleanEmail.split("@")[0]);
+        const defaultPrefix = (state.currentUser || "").replace(/@st\.tc\.edu\.tw$/i, "");
+        const rawInput = prompt("請輸入學校 Google 帳號前面部分（免打 @st.tc.edu.tw，例：s110301；若用個人信箱請輸入完整信箱）：", defaultPrefix);
+        if (rawInput && rawInput.trim()) {
+          const cleanEmail = this.normalizeSchoolAccount(rawInput);
+          if (!cleanEmail) {
+            this.showToast("⚠️ 請輸入有效的帳號前綴（不用只輸入 @st.tc.edu.tw）！", 3000);
+            return;
+          }
+          const prefixName = cleanEmail.split("@")[0];
+          const codeName = prompt("請輸入班級座號代號（例：40125，請勿填寫真實姓名）：", state.currentUserName || prefixName);
           state.currentUser = cleanEmail;
-          state.currentUserName = name || cleanEmail.split("@")[0];
+          state.currentUserName = (codeName && codeName.trim()) ? codeName.trim() : prefixName;
           localStorage.setItem("g4_writing_current_user", state.currentUser);
           localStorage.setItem("g4_writing_current_user_name", state.currentUserName);
-          this.showToast(`🎉 歡迎！已登入帳號【${state.currentUserName}】！`, 3000);
+          this.showToast(`🎉 歡迎！已登入帳號【${state.currentUser}】！`, 3000);
           this.afterUserLoggedIn();
         }
       }
 
       loginWithSchoolAccount() {
         const input = document.getElementById("schoolAccountInput");
-        const val = input ? input.value.trim() : "";
-        if (!val) {
-          alert("請輸入學生 Google 帳號或座號！");
+        const rawVal = input ? input.value.trim() : "";
+        const cleanEmail = this.normalizeSchoolAccount(rawVal);
+        if (!cleanEmail) {
+          alert("請輸入 @st.tc.edu.tw 前面的學生帳號部分（例如：s110301）！");
+          input?.focus();
           return;
         }
-        state.currentUser = val.toLowerCase();
-        state.currentUserName = val.includes("@") ? val.split("@")[0] : `座號 ${val}`;
+        state.currentUser = cleanEmail;
+        state.currentUserName = cleanEmail.split("@")[0];
         localStorage.setItem("g4_writing_current_user", state.currentUser);
         localStorage.setItem("g4_writing_current_user_name", state.currentUserName);
-        this.showToast(`🎉 成功連線學生帳號【${state.currentUserName}】！`, 3000);
+        this.showToast(`🎉 成功連線學生帳號【${state.currentUser}】！`, 3000);
         this.afterUserLoggedIn();
       }
 
