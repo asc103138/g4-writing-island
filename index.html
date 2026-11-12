@@ -12,8 +12,8 @@
   <script type="importmap">
   {
     "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
     }
   }
   </script>
@@ -5953,16 +5953,9 @@ puzzleSentences: [
       const accentMat = getMat(accentColor, { roughness: 0.65, metalness: 0.08 });
       const goldMat = getMat(0xf59e0b, { roughness: 0.35, metalness: 0.25 });
 
-      // ① 站立底座石板 (小木樁/圓石台)
-      const plinthMat = getMat(0x94a3b8, { roughness: 0.9, metalness: 0.05 });
-      const plinth = new THREE.Mesh(new THREE.CylinderGeometry(0.72, 0.78, 0.12, 16), plinthMat);
-      plinth.position.y = 0.06;
-      plinth.receiveShadow = true;
-      npcGroup.add(plinth);
-
-      // 角色核心身軀主群組 (方便動畫跳躍與轉向)
+      // 角色核心身軀主群組 (直接雙腳站立於島嶼地面，方便動畫跳躍與轉向)
       const character = new THREE.Group();
-      character.position.y = 0.12;
+      character.position.y = 0;
 
       // 腳掌
       const footGeo = new THREE.SphereGeometry(0.18, 10, 8);
@@ -6362,6 +6355,7 @@ puzzleSentences: [
         npcData: npcData,
         basePosY: npcData.localPos[1],
         jumpVelocity: 0,
+        landSquash: 0,
         bobPhase: Math.random() * Math.PI * 2,
         headGroup: headGroup,
         character: character
@@ -6410,11 +6404,20 @@ puzzleSentences: [
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableDamping = true;
-        this.controls.dampingFactor = 0.05;
+        this.controls.dampingFactor = 0.06;
         this.controls.maxPolarAngle = Math.PI / 2 - 0.06;
-        this.controls.minDistance = 10;
+        this.controls.minDistance = 8;
         this.controls.maxDistance = 150;
+        this.controls.zoomSpeed = 1.0;
         this.controls.target.set(CURRICULUM_DATA[0].position[0] - 1.0, CURRICULUM_DATA[0].position[1] + 3.2, CURRICULUM_DATA[0].position[2]);
+
+        // 平滑阻尼縮放狀態（避免滾輪縮放突跳與瀏覽器縮放比率 dpr < 1 導致的級距異常）
+        this._zoomLogRemaining = 0;
+        this._lastZoomFrameTime = performance.now();
+        this._zoomTmpVec = new THREE.Vector3();
+        this._isFlyingTo = false;
+        this._flyToSeq = 0;
+        this.setupSmoothZoom();
 
         this.islands = [];
         this.markers = [];
@@ -6450,6 +6453,59 @@ puzzleSentences: [
         this.animate();
       }
 
+      // 平滑阻尼縮放（統一處理滑鼠滾輪與觸控板捏合縮放，確保極致絲滑且不受瀏覽器 dpr < 1 影響）
+      setupSmoothZoom() {
+        this.canvas.addEventListener("wheel", (e) => {
+          if (!this.controls || !this.controls.enableZoom) return;
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
+          if (!this.controls.enabled || window.islandApp?.isFlyingAirplane || this._isFlyingTo) {
+            return;
+          }
+
+          let dy = e.deltaY;
+          if (e.deltaMode === 1) dy *= 32;       // DOM_DELTA_LINE
+          else if (e.deltaMode === 2) dy *= 400; // DOM_DELTA_PAGE
+          if (e.ctrlKey) dy *= 3.5;              // 觸控板雙指捏合縮放
+
+          const clampedDy = THREE.MathUtils.clamp(dy, -220, 220);
+          const stepLog = clampedDy * 0.0012 * (this.controls.zoomSpeed || 1);
+
+          const curDist = this.camera.position.distanceTo(this.controls.target);
+          if (curDist > 0.001) {
+            const desiredTargetDist = THREE.MathUtils.clamp(
+              curDist * Math.exp(this._zoomLogRemaining + stepLog),
+              this.controls.minDistance,
+              this.controls.maxDistance
+            );
+            this._zoomLogRemaining = Math.log(desiredTargetDist / curDist);
+          }
+        }, { capture: true, passive: false });
+      }
+
+      updateSmoothZoom(dt) {
+        if (Math.abs(this._zoomLogRemaining) <= 0.0002) {
+          this._zoomLogRemaining = 0;
+          return;
+        }
+        const alpha = 1 - Math.exp(-12 * Math.min(dt, 0.05));
+        const applyLog = this._zoomLogRemaining * alpha;
+        this._zoomLogRemaining -= applyLog;
+
+        this._zoomTmpVec.subVectors(this.camera.position, this.controls.target);
+        const currentDist = this._zoomTmpVec.length();
+        if (currentDist > 0.001) {
+          const nextDist = THREE.MathUtils.clamp(
+            currentDist * Math.exp(applyLog),
+            this.controls.minDistance,
+            this.controls.maxDistance
+          );
+          this._zoomTmpVec.multiplyScalar(nextDist / currentDist);
+          this.camera.position.copy(this.controls.target).add(this._zoomTmpVec);
+        }
+      }
+
       // 常駐島民 3D 點擊互動監聽 (點選島民彈跳並開啟大綱對話)
       setupNPCInteraction() {
         let pointerDownPos = { x: 0, y: 0 };
@@ -6475,7 +6531,7 @@ puzzleSentences: [
             }
             if (hitObj && hitObj.userData && hitObj.userData.npcData) {
               const npcData = hitObj.userData.npcData;
-              hitObj.userData.jumpVelocity = 0.22;
+              hitObj.userData.jumpVelocity = 4.0;
               if (window.islandApp) {
                 const targetEntry = this.villagerNPCs.find(v => v.mesh === hitObj);
                 if (targetEntry) {
@@ -7252,10 +7308,24 @@ puzzleSentences: [
           else if (i === 3) this.buildTrophyTempleDiorama(islandGroup, getTerrainHeight);
 
           // ⑭ 部署該島 3 位常駐島民 NPC（訴說大綱・專注作答提醒）
+          // 直接對實際渲染出的地形網格（草皮/土壤/岩壁/沙灘）進行垂直射線取樣，徹底消除圓柱頂面插值誤差造成的懸空或下陷
+          islandGroup.updateMatrixWorld(true);
+          const terrainRaycaster = new THREE.Raycaster();
+          const downDir = new THREE.Vector3(0, -1, 0);
+          const terrainTargets = [grassMesh, soilMesh, cliffMesh, sandMesh];
+
           const npcsForThisIsland = ISLAND_NPCS[i] || [];
           npcsForThisIsland.forEach((npcData, npcIdx) => {
-            // 動態精準計算島民所在座標的地面高度，徹底杜絕浮空與穿插
-            const groundY = getTerrainHeight(npcData.localPos[0], npcData.localPos[2]);
+            const worldOrigin = new THREE.Vector3(
+              data.position[0] + npcData.localPos[0],
+              data.position[1] + 25,
+              data.position[2] + npcData.localPos[2]
+            );
+            terrainRaycaster.set(worldOrigin, downDir);
+            const hits = terrainRaycaster.intersectObjects(terrainTargets, false);
+            const groundY = hits.length > 0
+              ? (hits[0].point.y - data.position[1])
+              : getTerrainHeight(npcData.localPos[0], npcData.localPos[2]);
             npcData.localPos[1] = groundY;
             const npcMesh = createCuteVillagerNPC(npcData);
             npcMesh.position.set(npcData.localPos[0], groundY, npcData.localPos[2]);
@@ -8959,8 +9029,12 @@ puzzleSentences: [
         const startTarget = this.controls.target.clone();
         const duration = 1200;
         const startTime = performance.now();
+        const seq = ++this._flyToSeq;
+        this._isFlyingTo = true;
+        this._zoomLogRemaining = 0;
 
         const animateCamera = (time) => {
+          if (seq !== this._flyToSeq) return;
           const elapsed = time - startTime;
           const progress = Math.min(elapsed / duration, 1);
           // 帶阻尼的三次方平滑內插
@@ -8972,6 +9046,7 @@ puzzleSentences: [
           if (progress < 1) {
             requestAnimationFrame(animateCamera);
           } else {
+            this._isFlyingTo = false;
             if (onComplete) onComplete();
           }
         };
@@ -8980,6 +9055,8 @@ puzzleSentences: [
 
       // 【全新震撼行前過場】：從天而降至第一個島嶼，從天旋轉視角緩緩而下
       descendFromSkyToIsland(islandIdx = 0, onComplete) {
+        this._zoomLogRemaining = 0;
+        this._isFlyingTo = false;
         const targetData = CURRICULUM_DATA[islandIdx];
         const [x0, y0, z0] = targetData.position;
 
@@ -9042,7 +9119,14 @@ puzzleSentences: [
       // 【新技能規範流水線】：統一驅動水體波動、岸邊浪花、微風植被、落雨粒子與 Action-Ready 守門獸
       animate() {
         requestAnimationFrame(() => this.animate());
+        const frameNow = performance.now();
+        const dt = (frameNow - (this._lastZoomFrameTime || frameNow)) * 0.001;
+        this._lastZoomFrameTime = frameNow;
+
         if (!window.islandApp?.isFlyingAirplane && this.controls?.enabled) {
+          if (!this._isFlyingTo) {
+            this.updateSmoothZoom(dt);
+          }
           this.controls.update();
         }
         this.updateMarkers();
@@ -9211,26 +9295,45 @@ puzzleSentences: [
           window.islandApp.updateScreenLabels();
         }
 
-        // ⑧ 常駐島民 NPC 微縮動畫（呼吸擺動、頭部微晃、點擊彈跳）與 3D 對話氣泡
+        // ⑧ 常駐島民 NPC 微縮動畫（腳踏實地的柔和呼吸、緩慢晃腦、點擊自然 Q 彈小跳）與 3D 對話氣泡
         if (this.villagerNPCs) {
+          const npcDt = Math.min(dt, 0.05);
           this.villagerNPCs.forEach(item => {
             const mesh = item.mesh;
             const ud = mesh.userData;
             if (ud) {
-              const breath = Math.sin(now * 2.5 + ud.bobPhase);
+              // 輕柔連續的正弦呼吸與緩慢張望（無折點、不離地）
+              const breath = Math.sin(now * 2.0 + ud.bobPhase);
               if (ud.headGroup) {
-                ud.headGroup.rotation.z = Math.sin(now * 1.6 + ud.bobPhase) * 0.07;
-                ud.headGroup.rotation.y = Math.cos(now * 1.2 + ud.bobPhase) * 0.08;
+                ud.headGroup.rotation.z = Math.sin(now * 1.15 + ud.bobPhase) * 0.045;
+                ud.headGroup.rotation.y = Math.cos(now * 0.85 + ud.bobPhase) * 0.065;
               }
+
+              let scaleY = 1 + breath * 0.016;
+              let scaleXZ = 1 - breath * 0.01;
+
               if (ud.jumpVelocity > 0 || mesh.position.y > ud.basePosY) {
-                mesh.position.y += ud.jumpVelocity;
-                ud.jumpVelocity -= 0.016;
+                mesh.position.y += ud.jumpVelocity * npcDt;
+                ud.jumpVelocity -= 18.0 * npcDt;
+                scaleY = 1 + THREE.MathUtils.clamp(ud.jumpVelocity * 0.022, -0.05, 0.09);
+                scaleXZ = 1 / Math.sqrt(scaleY);
                 if (mesh.position.y <= ud.basePosY) {
                   mesh.position.y = ud.basePosY;
                   ud.jumpVelocity = 0;
+                  ud.landSquash = 1.0;
                 }
               } else {
-                mesh.position.y = ud.basePosY + Math.max(0, breath * 0.035);
+                mesh.position.y = ud.basePosY;
+                if (ud.landSquash > 0.001) {
+                  const sq = Math.sin(ud.landSquash * Math.PI) * 0.1 * ud.landSquash;
+                  scaleY = 1 - sq;
+                  scaleXZ = 1 + sq * 0.55;
+                  ud.landSquash = Math.max(0, ud.landSquash - npcDt * 4.2);
+                }
+              }
+
+              if (ud.character) {
+                ud.character.scale.set(scaleXZ, scaleY, scaleXZ);
               }
             }
           });
@@ -9688,6 +9791,9 @@ puzzleSentences: [
         }
 
         if (sd.controls) sd.controls.enabled = false;
+        sd._zoomLogRemaining = 0;
+        sd._isFlyingTo = false;
+        sd._flyToSeq = (sd._flyToSeq || 0) + 1;
         sd.setWeather('sunny');
         sd.setKeeperExpression(1);
 
@@ -9909,6 +10015,9 @@ puzzleSentences: [
 
         // 飛行期間暫時鎖定 OrbitControls，完全交由電影級跟拍相機主導
         if (sd.controls) sd.controls.enabled = false;
+        sd._zoomLogRemaining = 0;
+        sd._isFlyingTo = false;
+        sd._flyToSeq = (sd._flyToSeq || 0) + 1;
 
         // 配合新島嶼切換情境氣候與守門獸情緒
         if (toIdx === 2) {
@@ -10444,7 +10553,7 @@ puzzleSentences: [
         `;
       }
 
-      selectVillager(islandIdx, npcIdx) {
+      selectVillager(islandIdx, npcIdx, triggerJump = true) {
         if (!this.activeNPCIndices) this.activeNPCIndices = [0, 0, 0, 0];
         this.activeNPCIndices[islandIdx] = npcIdx;
 
@@ -10459,11 +10568,11 @@ puzzleSentences: [
         }
         this.updateVillagerCard(islandIdx, npcIdx);
 
-        // 觸發 3D 場景中對應 NPC 的歡樂彈跳
-        if (this.sceneDirector && this.sceneDirector.villagerNPCs) {
+        // 僅在主動點選時觸發 3D NPC 親切小跳躍，背景輪播時維持平穩呼吸不驚擾視線
+        if (triggerJump && this.sceneDirector && this.sceneDirector.villagerNPCs) {
           const target = this.sceneDirector.villagerNPCs.find(v => v.islandIndex === islandIdx && v.npcIndex === npcIdx);
           if (target && target.mesh && target.mesh.userData) {
-            target.mesh.userData.jumpVelocity = 0.22;
+            target.mesh.userData.jumpVelocity = 4.0;
           }
         }
 
@@ -10476,7 +10585,7 @@ puzzleSentences: [
         if (curIsland > 3) return; // 守門神殿不輪播
         if (!this.activeNPCIndices) this.activeNPCIndices = [0, 0, 0, 0];
         const nextIdx = (this.activeNPCIndices[curIsland] + 1) % 3;
-        this.selectVillager(curIsland, nextIdx);
+        this.selectVillager(curIsland, nextIdx, false);
       }
 
       updateNPCBubbles() {
