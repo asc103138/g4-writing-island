@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>考試前後・3D 作文冒險島嶼與四格漫畫守門獸</title>
   <meta name="description" content="臺中市國小四年級作文 3D 沉浸式學習島嶼：起承轉合四島、微縮立體地標模型、四上期末教材句型審查、教師逐段批改印章、四格漫畫守門獸與稿紙抄寫專區。">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏝️</text></svg>">
@@ -38,7 +38,8 @@
       --font-serif: 'Noto Serif TC', serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--font-sans); background: var(--bg); color: var(--text); user-select: none; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    html, body { width: 100vw; height: 100dvh; overflow: hidden; font-family: var(--font-sans); background: var(--bg); color: var(--text); user-select: none; touch-action: manipulation; overscroll-behavior: none; }
     button { font: inherit; cursor: pointer; border: none; outline: none; transition: all .18s ease; }
     button:active { transform: scale(0.97); }
 
@@ -993,6 +994,45 @@
       font-size: 17.5px; font-family: var(--font-sans); font-weight: 600;
     }
     .element-custom-input:focus { border-color: var(--primary); outline: none; }
+    .input-required-error {
+      border-color: #ef4444 !important;
+      background: #fef2f2 !important;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.22) !important;
+    }
+
+    /* 轉之島考試結果兩種狀況分流卡 */
+    .twist-outcome-card {
+      background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
+      border: 2px solid #f59e0b; border-radius: 16px; padding: 18px;
+      display: flex; flex-direction: column; gap: 12px;
+      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.14);
+    }
+    .twist-outcome-title {
+      font-size: 18.5px; font-weight: 900; color: #9a3412;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .twist-outcome-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    .twist-outcome-btn {
+      padding: 14px 16px; border-radius: 14px; border: 2px solid #e2e8f0;
+      background: #ffffff; text-align: left; cursor: pointer;
+      display: flex; flex-direction: column; gap: 6px; transition: all .18s ease;
+    }
+    .twist-outcome-btn:hover { transform: translateY(-2px); border-color: #f59e0b; }
+    .twist-outcome-btn.active-better {
+      border-color: #16a34a; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.18);
+    }
+    .twist-outcome-btn.active-worse {
+      border-color: #dc2626; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.18);
+    }
+    .twist-outcome-wait {
+      background: #ffffff; border: 2px dashed #f59e0b; border-radius: 14px;
+      padding: 24px 18px; text-align: center; font-size: 17.5px; font-weight: 800;
+      color: #92400e; line-height: 1.7;
+    }
 
     /* 3. 大師級金色修辭挑戰 */
     .master-challenge-card {
@@ -1466,6 +1506,39 @@
       color: white;
     }
 
+    /* 100% 畫面比例與全螢幕自適應響應式調整（確保 1280px~1920px+ 皆不裁切） */
+    .btn-top.is-fullscreen {
+      background: #0f766e;
+      color: #ffffff;
+      border-color: #0d9488;
+    }
+    .hud-dock-btn.is-fullscreen {
+      background: rgba(15, 118, 110, 0.14);
+      color: #0f766e;
+    }
+    .hud-dock-wrapper {
+      max-width: calc(100vw - 24px);
+    }
+    .hud-dock-bar {
+      max-width: calc(100vw - 24px);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .hud-dock-bar::-webkit-scrollbar { display: none; }
+    @media (max-width: 1520px) {
+      .topbar { padding: 0 14px; height: 64px; }
+      .brand-title { font-size: 18px; }
+      .brand-subtitle { font-size: 12px; }
+      .nav-actions { gap: 8px; }
+      .btn-top, .tier-badge, .google-auth-pill { padding: 6px 12px; font-size: 13.5px; }
+      .hud-dock-wrapper { bottom: 14px; gap: 8px; }
+      .hud-dock-btn { padding: 8px 13px; font-size: 13.5px; }
+    }
+    @media (max-width: 1240px) {
+      .brand-subtitle { display: none; }
+      .btn-top, .tier-badge, .google-auth-pill { padding: 6px 10px; font-size: 12.5px; gap: 5px; }
+    }
+
   </style>
 </head>
 <body>
@@ -1526,10 +1599,14 @@
       </button>
       <button class="btn-top" onclick="window.islandApp.toggleTeacherMode()">
         <span id="teacherModeIcon">🔒</span>
-        <span id="teacherModeText">教師模式 (密碼 888)</span>
+        <span id="teacherModeText">教師模式</span>
       </button>
       <button class="btn-top" onclick="window.islandApp.focusCurrentIsland()" title="鏡頭重新聚焦回目前正在進行的島嶼">
         <span id="topFocusBtnText">🎯 對焦當前島</span>
+      </button>
+      <button class="btn-top" id="topFullscreenBtn" onclick="window.islandApp.toggleFullscreen()" title="切換全螢幕沉浸模式（Esc 可退出）">
+        <span id="topFullscreenIcon">⛶</span>
+        <span id="topFullscreenText">全螢幕</span>
       </button>
     </div>
   </header>
@@ -1592,6 +1669,10 @@
       <button class="hud-dock-btn" onclick="window.islandApp.openTeacherModal()" title="教師批閱通行門">
         <span class="hud-dock-icon">👨‍🏫</span>
         <span>教師認證</span>
+      </button>
+      <button class="hud-dock-btn" id="hudFullscreenBtn" onclick="window.islandApp.toggleFullscreen()" title="切換全螢幕顯示">
+        <span class="hud-dock-icon" id="hudFullscreenIcon">⛶</span>
+        <span id="hudFullscreenText">全螢幕</span>
       </button>
     </div>
   </div>
@@ -1900,7 +1981,7 @@
           💡 <strong>冒險小秘訣</strong>：寫作時隨時點擊上方【📖 作文大綱】，就能隨時重溫這張航海圖喔！
         </div>
         <button class="btn-top highlight" style="padding: 18px 44px; font-size: 22px; font-weight: 900; background: #e63946; color: white; border: none; border-radius: 14px; box-shadow: 0 6px 20px rgba(230, 57, 70, 0.45); cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="window.islandApp.startAdventureAfterOutline()">
-          ✈️ 我看懂大綱了・搭乘飛機出發！（破浪降落第 1 島）
+          ✈️ 我看懂大綱了・進入全螢幕並搭機出發！
         </button>
       </div>
 
@@ -2042,7 +2123,7 @@
           </div>
 
           <div class="textarea-wrapper">
-            <textarea class="writing-textarea" id="paragraphInput" placeholder="請在此微調你的段落內容……" oninput="window.islandApp.onTextChange()"></textarea>
+            <textarea class="writing-textarea" id="paragraphInput" required placeholder="請在此微調你的段落內容（必填）……" oninput="window.islandApp.onTextChange()"></textarea>
           </div>
           
           <!-- 字數靈力能量條 (50~80字) -->
@@ -2140,8 +2221,8 @@
       </div>
 
       <div id="pwdSection" style="display: flex; flex-direction: column; gap: 6px;">
-        <label style="font-size: 13px; font-weight: 700; color: #555;">請輸入教師通關密碼（預設 888）</label>
-        <input type="password" id="teacherPwdInput" style="padding: 8px 12px; border-radius: 8px; border: 1.5px solid #ccc; font-size: 16px;" placeholder="輸入密碼">
+        <label style="font-size: 13px; font-weight: 700; color: #555;">請輸入教師通關密碼</label>
+        <input type="password" id="teacherPwdInput" autocomplete="off" style="padding: 8px 12px; border-radius: 8px; border: 1.5px solid #ccc; font-size: 16px;" placeholder="請輸入教師密碼">
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 6px;">
@@ -2367,21 +2448,21 @@
     // === 2. 程序化童話紅磚與石階地磚紋理 ===
     const miniatureBrickTex = (() => {
       const c = document.createElement('canvas');
-      c.width = 128;
-      c.height = 128;
+      c.width = 256;
+      c.height = 256;
       const ctx = c.getContext('2d');
-      // 灰白勾縫底色
-      ctx.fillStyle = '#e2e8f0';
-      ctx.fillRect(0, 0, 128, 128);
+      // 溫潤灰白水泥勾縫底色
+      ctx.fillStyle = '#e7e5e4';
+      ctx.fillRect(0, 0, 256, 256);
       const rows = 8;
-      const rowH = 16;
-      const brickW = 32;
+      const rowH = 32;
+      const brickW = 64;
       for (let r = 0; r < rows; r++) {
         const offset = (r % 2) * (brickW / 2);
-        for (let x = -offset; x < 128; x += brickW) {
-          const tone = 200 + Math.floor(Math.random() * 35);
-          ctx.fillStyle = `rgb(${tone}, ${Math.floor(tone * 0.52)}, ${Math.floor(tone * 0.38)})`;
-          ctx.fillRect(Math.max(0, x + 1.5), r * rowH + 1.5, Math.min(128 - x - 1.5, brickW - 3), rowH - 3);
+        for (let x = -offset; x < 256; x += brickW) {
+          const v = ((r * 7 + Math.round(x)) * 13) % 28;
+          ctx.fillStyle = `rgb(${182 + v}, ${78 + Math.floor(v * 0.5)}, ${56 + Math.floor(v * 0.35)})`;
+          ctx.fillRect(x + 3, r * rowH + 3, brickW - 6, rowH - 6);
         }
       }
       const t = new THREE.CanvasTexture(c);
@@ -2395,21 +2476,137 @@
     // === 3. 程序化溫暖玩具木紋貼圖 ===
     const miniatureWoodTex = (() => {
       const c = document.createElement('canvas');
-      c.width = 128;
-      c.height = 128;
+      c.width = 256;
+      c.height = 256;
       const ctx = c.getContext('2d');
-      // 溫潤暖木底色
-      ctx.fillStyle = '#d97706';
-      ctx.fillRect(0, 0, 128, 128);
-      // 繪製縱向木質纖維與年輪同心紋
-      for (let y = 0; y < 128; y++) {
-        const alpha = 0.08 + Math.abs(Math.sin(y * 0.15)) * 0.18;
-        ctx.fillStyle = `rgba(254, 243, 199, ${alpha})`;
-        ctx.fillRect(0, y, 128, 1);
-        if (y % 16 === 0) {
-          ctx.fillStyle = 'rgba(120, 53, 15, 0.22)';
-          ctx.fillRect(0, y, 128, 2);
+      // 溫潤暖金橡木底色（配合 0xfff4e6 材質色可清晰顯現木紋而不變黑）
+      ctx.fillStyle = '#b96f34';
+      ctx.fillRect(0, 0, 256, 256);
+      // 4 條拼木木板帶＋明顯木質纖維紋與板縫
+      const plankH = 64;
+      for (let p = 0; p < 4; p++) {
+        const y0 = p * plankH;
+        ctx.fillStyle = p % 2 === 0 ? 'rgba(254, 243, 199, 0.14)' : 'rgba(120, 53, 15, 0.14)';
+        ctx.fillRect(0, y0, 256, plankH);
+        for (let y = 0; y < plankH; y += 2) {
+          const wave = Math.sin((y + p * 17) * 0.28) * 0.5 + 0.5;
+          ctx.fillStyle = wave > 0.55 ? 'rgba(254, 230, 185, 0.24)' : 'rgba(92, 42, 12, 0.24)';
+          ctx.fillRect(0, y0 + y, 256, 1.5);
         }
+        // 木板接縫深紋
+        ctx.fillStyle = 'rgba(67, 29, 7, 0.55)';
+        ctx.fillRect(0, y0, 256, 3);
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(1.5, 1.5);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+
+    // === 4. 程序化方格作文稿紙/試卷貼圖 ===
+    const miniaturePaperTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 256;
+      c.height = 256;
+      const ctx = c.getContext('2d');
+      // 柔和象牙奶油試卷底色（避免強光過曝洗白）
+      ctx.fillStyle = '#f6eed9';
+      ctx.fillRect(0, 0, 256, 256);
+      // 稿紙鮮明淡紅方格線
+      ctx.strokeStyle = 'rgba(220, 38, 38, 0.52)';
+      ctx.lineWidth = 2;
+      const step = 32;
+      ctx.beginPath();
+      for (let i = 0; i <= 256; i += step) {
+        ctx.moveTo(i + 0.5, 0);
+        ctx.lineTo(i + 0.5, 256);
+        ctx.moveTo(0, i + 0.5);
+        ctx.lineTo(256, i + 0.5);
+      }
+      ctx.stroke();
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(2, 2);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+
+    // === 4B. 程序化童話魚鱗瓦片屋頂紋理（白灰基底，可完美乘上紅/藍/青各色屋頂） ===
+    const miniatureRoofTileTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 256;
+      c.height = 256;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#efefef';
+      ctx.fillRect(0, 0, 256, 256);
+      const rows = 8;
+      const rowH = 32;
+      const cols = 6;
+      const tileW = 256 / cols;
+      for (let r = 0; r < rows; r++) {
+        const y0 = r * rowH;
+        const offset = (r % 2) * (tileW * 0.5);
+        // 每層瓦片上亮下暗漸層，營造立體疊瓦陰影
+        const grad = ctx.createLinearGradient(0, y0, 0, y0 + rowH);
+        grad.addColorStop(0, '#ffffff');
+        grad.addColorStop(0.7, '#e2e8f0');
+        grad.addColorStop(1, '#94a3b8');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, y0, 256, rowH);
+
+        // 個別瓦片略微色差與垂直瓦縫
+        for (let col = -1; col <= cols; col++) {
+          const x0 = col * tileW + offset;
+          const shade = ((r * 5 + col * 3) % 3) * 10;
+          ctx.fillStyle = `rgba(15, 23, 42, ${0.04 + shade * 0.004})`;
+          ctx.fillRect(x0 + 2, y0 + 2, tileW - 4, rowH - 6);
+          // 圓弧瓦片底緣陰影與豎縫
+          ctx.strokeStyle = 'rgba(30, 41, 59, 0.42)';
+          ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          ctx.moveTo(x0, y0);
+          ctx.lineTo(x0, y0 + rowH - 5);
+          ctx.arc(x0 + tileW / 2, y0 + rowH - 6, tileW / 2, Math.PI, 0, true);
+          ctx.stroke();
+        }
+        // 橫向層疊暗線
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.38)';
+        ctx.fillRect(0, y0 + rowH - 3, 256, 3);
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(1, 1);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+
+    // === 4C. 程序化溫潤抹灰泥牆紋理 (Storybook Plaster / Stucco) ===
+    const miniatureStuccoTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 256;
+      c.height = 256;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#faf7f0';
+      ctx.fillRect(0, 0, 256, 256);
+      // 柔和手作批土肌理斑塊與細微砂岩顆粒
+      for (let i = 0; i < 48; i++) {
+        const x = (i * 73) % 256;
+        const y = (i * 137) % 256;
+        const r = 18 + (i % 5) * 8;
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(214, 198, 174, 0.28)' : 'rgba(255, 255, 255, 0.45)';
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      for (let i = 0; i < 320; i++) {
+        const x = (i * 59 + 11) % 256;
+        const y = (i * 97 + 23) % 256;
+        ctx.fillStyle = i % 3 === 0 ? 'rgba(168, 150, 128, 0.24)' : 'rgba(255, 255, 255, 0.35)';
+        ctx.fillRect(x, y, 3, 2);
       }
       const t = new THREE.CanvasTexture(c);
       t.wrapS = THREE.RepeatWrapping;
@@ -2419,31 +2616,73 @@
       return t;
     })();
 
-    // === 4. 程序化方格作文稿紙/試卷貼圖 ===
-    const miniaturePaperTex = (() => {
+    // === 4D. 程序化砌石地基紋理 (Cobblestone / Ashlar Masonry) ===
+    const miniatureStoneTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 256;
+      c.height = 256;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(0, 0, 256, 256);
+      const rows = 4;
+      const rowH = 64;
+      const colW = 64;
+      for (let r = 0; r < rows; r++) {
+        const off = (r % 2) * 32;
+        for (let x = -off; x < 256; x += colW) {
+          const lum = 185 + ((r * 19 + Math.round(x)) % 40);
+          ctx.fillStyle = `rgb(${lum}, ${lum + 3}, ${lum + 8})`;
+          ctx.fillRect(x + 4, r * rowH + 4, colW - 8, rowH - 8);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
+          ctx.fillRect(x + 6, r * rowH + 6, colW - 12, 8);
+        }
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(3, 1);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+
+    // === 4E. 程序化精裝書頁側面與布紋封面貼圖 ===
+    const miniatureBookPagesTex = (() => {
       const c = document.createElement('canvas');
       c.width = 128;
       c.height = 128;
       const ctx = c.getContext('2d');
-      // 柔和象牙白試卷底色
-      ctx.fillStyle = '#fdfbf7';
+      ctx.fillStyle = '#f7efd9';
       ctx.fillRect(0, 0, 128, 128);
-      // 稿紙淡紅/淡灰方格線
-      ctx.strokeStyle = 'rgba(239, 68, 68, 0.28)';
-      ctx.lineWidth = 1;
-      const step = 16;
-      ctx.beginPath();
-      for (let i = 0; i <= 128; i += step) {
-        ctx.moveTo(i + 0.5, 0);
-        ctx.lineTo(i + 0.5, 128);
-        ctx.moveTo(0, i + 0.5);
-        ctx.lineTo(128, i + 0.5);
+      // 細密紙張疊頁橫紋，讓書本側面呈現真實一頁頁紙張質感
+      for (let y = 0; y < 128; y += 4) {
+        ctx.fillStyle = y % 8 === 0 ? 'rgba(148, 163, 184, 0.55)' : 'rgba(203, 213, 225, 0.38)';
+        ctx.fillRect(0, y, 128, 1.5);
       }
-      ctx.stroke();
       const t = new THREE.CanvasTexture(c);
       t.wrapS = THREE.RepeatWrapping;
       t.wrapT = THREE.RepeatWrapping;
-      t.repeat.set(4, 4);
+      t.repeat.set(2, 1);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+
+    const miniatureBookCoverTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 128;
+      c.height = 128;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#f4f4f5';
+      ctx.fillRect(0, 0, 128, 128);
+      // 精裝布面十字織紋
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      for (let i = 0; i < 128; i += 4) {
+        ctx.fillRect(i, 0, 1, 128);
+        ctx.fillRect(0, i, 128, 1);
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(3, 3);
       t.colorSpace = THREE.SRGBColorSpace;
       return t;
     })();
@@ -2961,6 +3200,28 @@
       s.closePath();
       const geo = new THREE.ExtrudeGeometry(s, { depth: len, bevelEnabled: false });
       geo.translate(0, 0, -len / 2);
+
+      // 重算均勻世界比例 UV，讓斜屋面與山牆在各種尺寸屋頂上都能正確平鋪瓦片貼圖
+      const pos = geo.attributes.position;
+      const norm = geo.attributes.normal;
+      const uv = geo.attributes.uv;
+      if (pos && norm && uv) {
+        const tileScale = 1.8;
+        for (let i = 0; i < pos.count; i++) {
+          const x = pos.getX(i);
+          const y = pos.getY(i);
+          const z = pos.getZ(i);
+          const nz = Math.abs(norm.getZ(i));
+          if (nz > 0.7) {
+            uv.setXY(i, x / tileScale, y / tileScale);
+          } else {
+            const slopeDist = Math.hypot(x, h - y);
+            uv.setXY(i, z / tileScale, slopeDist / tileScale);
+          }
+        }
+        uv.needsUpdate = true;
+      }
+
       const mesh = new THREE.Mesh(geo, mat);
       mesh.castShadow = true;
       mesh.receiveShadow = true;
@@ -2981,9 +3242,9 @@
       const tex = canvasTexture(512, Math.round(512 * (h / w)), (ctx, cw, ch) => {
         ctx.fillStyle = '#f4a261'; ctx.fillRect(0, 0, cw, ch);
         ctx.fillStyle = bg; ctx.fillRect(8, 8, cw - 16, ch - 16);
-        ctx.fillStyle = fg; ctx.font = `bold ${ch * 0.48}px "Noto Sans TC", sans-serif`;
+        ctx.fillStyle = fg; ctx.font = `bold ${ch * 0.46}px "Noto Sans TC", sans-serif`;
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(text, cw / 2, ch / 2 + 2);
+        ctx.fillText(text, cw / 2, ch / 2 + 2, cw - 32);
       });
       const mat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.8 });
       const fMat = getMat(0xe76f51);
@@ -3081,13 +3342,23 @@
       return g;
     }
 
-    // 寬簷雙折斜屋頂 (含前後挑出屋簷與凸出屋脊壓條，拒絕單薄幾何三角)
+    // 寬簷雙折斜屋頂 (含前後挑出屋簷與凸出屋脊壓條，套用童話魚鱗瓦片材質)
     function createArtisanRoof(w, h, len, tileColor, ridgeColor = 0x451a03, eaves = 0.35) {
       const g = new THREE.Group();
       const rw = w + eaves * 2;
       const rlen = len + eaves * 2;
-      const rMat = getMat(tileColor, { roughness: 0.65 });
-      const ridgeMat = getMat(ridgeColor, { roughness: 0.75 });
+      const rMat = getMat(tileColor, {
+        roughness: 0.68,
+        map: miniatureRoofTileTex,
+        bumpMap: miniatureRoofTileTex,
+        bumpScale: 0.038
+      });
+      const ridgeMat = getMat(0x9a6b4c, {
+        roughness: 0.72,
+        map: miniatureWoodTex,
+        bumpMap: miniatureWoodTex,
+        bumpScale: 0.015
+      });
 
       // 主斜屋面 (使用厚度擠出)
       const roof = gableRoof(rw, h, rlen, rMat);
@@ -3112,8 +3383,8 @@
     // 可愛老虎窗 (Dormer Window - 從斜屋頂突出的閣樓小窗)
     function createDormerWindow(wallColor = 0xfdf0d5, roofColor = 0xc1121f) {
       const g = new THREE.Group();
-      // 小身軀
-      g.add(at(rbox(1.3, 1.2, 1.3, getMat(wallColor)), 0, 0.6, 0));
+      // 小身軀（套用抹灰泥牆質感）
+      g.add(at(rbox(1.3, 1.2, 1.3, getMat(wallColor, { roughness: 0.82, map: miniatureStuccoTex, bumpMap: miniatureStuccoTex, bumpScale: 0.02 })), 0, 0.6, 0));
       // 小斜屋頂
       g.add(at(createArtisanRoof(1.4, 0.7, 1.4, roofColor, 0x5c3a21, 0.15), 0, 1.2, 0));
       // 前方小白框窗
@@ -3126,7 +3397,7 @@
     // 磚石煙囪與裊裊漂浮白煙圈 (悠閒手作繪本感)
     function createChimneyWithSmoke(h = 2.4, brickColor = 0x991b1b) {
       const g = new THREE.Group();
-      const bMat = getMat(brickColor, { roughness: 0.85 });
+      const bMat = getMat(0xfff5eb, { roughness: 0.85, map: miniatureBrickTex, bumpMap: miniatureBrickTex, bumpScale: 0.025 });
       const rimMat = getMat(0x374151, { roughness: 0.8 });
 
       // 煙囪主幹
@@ -3232,6 +3503,88 @@
       transparent: true,
       opacity: 0.95
     });
+
+    // 精裝故事書／課本立體造型（含外凸上下硬殼封面、內縮書頁疊紋、書背金邊與可選封面貼牌/書籤緞帶）
+    function createDetailedBook(w = 1.15, h = 0.22, d = 0.85, coverColor = 0xe63946, opts = {}) {
+      const g = new THREE.Group();
+      const coverMat = getMat(coverColor, {
+        roughness: 0.62,
+        map: miniatureBookCoverTex,
+        bumpMap: miniatureBookCoverTex,
+        bumpScale: 0.012
+      });
+      const pagesMat = getMat(0xffffff, {
+        roughness: 0.92,
+        map: miniatureBookPagesTex,
+        bumpMap: miniatureBookPagesTex,
+        bumpScale: 0.015
+      });
+      const goldBandMat = getMat(opts.bandColor || 0xfde68a, { roughness: 0.45, metalness: 0.25 });
+
+      const boardH = Math.min(0.036, h * 0.18);
+      const pageH = Math.max(0.06, h - boardH * 2);
+
+      // 1. 內縮奶油白紙頁塊（前/右/後三側露出紙頁疊紋）
+      const pages = rbox(w - 0.08, pageH, d - 0.08, pagesMat, 0.012);
+      pages.position.set(0.025, 0, 0);
+      g.add(pages);
+
+      // 2. 上下微凸硬殼封面與封底
+      const topCover = rbox(w, boardH, d, coverMat, 0.015);
+      topCover.position.set(0, h / 2 - boardH / 2, 0);
+      g.add(topCover);
+
+      const botCover = rbox(w, boardH, d, coverMat, 0.015);
+      botCover.position.set(0, -h / 2 + boardH / 2, 0);
+      g.add(botCover);
+
+      // 3. 圓弧立體書背（-X 側）與書背雙條裝飾金邊
+      const spineW = 0.085;
+      const spine = rbox(spineW, h, d, coverMat, 0.03);
+      spine.position.set(-w / 2 + spineW / 2, 0, 0);
+      g.add(spine);
+
+      for (const zOff of [-d * 0.28, d * 0.28]) {
+        const band = rbox(spineW + 0.012, h * 0.72, 0.045, goldBandMat, 0.008);
+        band.position.set(-w / 2 + spineW / 2 - 0.003, 0, zOff);
+        g.add(band);
+      }
+
+      // 4. 封面中央壓紋書名牌（若指定 titleText 則繪製文字標籤，否則呈現典雅燙金邊框牌）
+      if (opts.titleText) {
+        const labelTex = canvasTexture(256, 160, (ctx, cw, ch) => {
+          ctx.fillStyle = '#fffbeb';
+          ctx.fillRect(0, 0, cw, ch);
+          ctx.strokeStyle = '#d97706';
+          ctx.lineWidth = 8;
+          ctx.strokeRect(8, 8, cw - 16, ch - 16);
+          ctx.fillStyle = '#1e293b';
+          ctx.font = 'bold 42px "Noto Sans TC", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(opts.titleText, cw / 2, ch / 2);
+        });
+        const labelMat = getMat(0xffffff, { roughness: 0.7, map: labelTex });
+        const plaque = rbox(w * 0.56, 0.014, d * 0.44, labelMat, 0.004);
+        plaque.position.set(0.03, h / 2 + 0.004, 0);
+        g.add(plaque);
+      } else {
+        const plaque = rbox(w * 0.46, 0.01, d * 0.38, goldBandMat, 0.004);
+        plaque.position.set(0.03, h / 2 + 0.003, 0);
+        g.add(plaque);
+      }
+
+      // 5. 夾在書頁間的小書籤緞帶
+      if (opts.hasRibbon) {
+        const ribbonMat = getMat(opts.ribbonColor || 0xef4444, { roughness: 0.65 });
+        const rib = rbox(0.14, 0.016, 0.09, ribbonMat, 0.004);
+        rib.position.set(w / 2 + 0.02, -0.01, d * 0.14);
+        rib.rotation.z = -0.35;
+        g.add(rib);
+      }
+
+      return g;
+    }
 
     // 專門用於雲朵的軟體幾何泡泡 (不投射生硬陰影、圓潤細緻高細分球體)
     function cloudPuff(rx, ry, rz, mat = softCloudMat, ws = 24, hs = 18) {
@@ -4647,21 +5000,21 @@ puzzleSentences: [
               },
               {
                 id: "p2",
-                name: "句型 B：回家遭遇……，被訓得……",
-                template: "回家遭遇{part1}，被訓得{part2}",
+                name: "句型 B：回到家亮出考卷，迎來……，讓我覺得……",
+                template: "回到家亮出考卷，迎來{part1}，讓我覺得{part2}",
                 blanks: [
                   {
                     key: "part1",
-                    label: "家庭風暴比喻",
+                    label: "家裡的反應比喻",
                     pos: "比喻名詞",
-                    thinkingPrompt: "想一想：回家面對家人的責怪，這場衝突像大自然裡的什麼災難？",
+                    thinkingPrompt: "想一想：回家面對家人的反應，這場畫面像大自然裡的什麼災難？",
                     ideaAngles: "思考方向：運用誇飾譬喻，比如大地震、暴風雨或火山爆發！",
                     placeholder: "例：十級大地震般的家庭風暴",
                     chips: ["十級大地震般的家庭風暴", "狂風暴雨般的責難", "火山爆發般的盛怒"]
                   },
                   {
                     key: "part2",
-                    label: "挨訓結果",
+                    label: "當下感受",
                     pos: "四字語詞",
                     thinkingPrompt: "想一想：被媽媽訓話完後，你的樣子和心情是如何？",
                     ideaAngles: "思考方向：回想慚愧低頭、眼淚奪眶而出的神態！",
@@ -4671,6 +5024,242 @@ puzzleSentences: [
                 ]
               }
             ]
+          }
+        },
+        // 🎯 轉之島雙分支引導（共用同一套句型架構，但依「比想像中好 / 比想像中壞」切換截然不同的思考引導與參考詞庫）
+        twistVariants: {
+          better: {
+            words: ["喜出望外", "大吃一驚", "眉開眼笑", "雀躍不已", "不敢置信", "大放異彩"],
+            masterPrompts: {
+              time: {
+                title: "⏰ 【時・驚喜揭曉時刻審題】",
+                question: "哪一個時刻最令你又緊張又驚喜？是老師喊出你名字發考卷的那一秒，還是放學興奮衝進家門的瞬間？",
+                hint: "提示：寫出從忐忑等待轉為驚喜揭曉的瞬間（例：熬過考試、發考卷那一節課，以及放學雀躍衝進家門時）",
+                placeholder: "例：老師笑著發考卷的那一節課，以及放學衝進家門的那一刻"
+              },
+              place: {
+                title: "🏫 【地・歡呼舞台審題】",
+                question: "拿到高分的舞臺在哪裡？講臺到座位這幾步路走起來有多輕快？家裡客廳頓時變成什麼快樂氣氛？",
+                hint: "提示：描寫腳步輕盈像踩在雲端上的教室與溫暖的客廳（例：充滿驚呼聲的講臺前，以及笑聲不斷的客廳沙發旁）",
+                placeholder: "例：彷彿鋪了紅地毯般的講臺前，以及充滿笑聲的客廳沙發旁"
+              },
+              person: {
+                title: "👤 【人・讚嘆驚喜神態審題】",
+                question: "原本緊繃的你，看到分數那一刻眼神怎麼變？老師與媽媽看到考卷時臉上有什麼驚喜的表情？",
+                hint: "提示：描繪自己不敢置信的驚喜神情與家人笑逐顏開的模樣（例：高興得合不攏嘴的我，與眉開眼笑的媽媽）",
+                placeholder: "例：睜大雙眼不敢置信的我，與笑逐顏開、豎起大拇指的媽媽"
+              },
+              object: {
+                title: "💯 【物・閃亮高分與獎勵審題】",
+                question: "那張考卷上的紅字和分數像什麼寶物？媽媽開心之下舉起什麼獎勵或讚美手勢？",
+                hint: "提示：運用誇飾法形容高分考卷與讚美（例：紅勾勾多到閃閃發亮的高分考卷，與媽媽比出的大大的讚）",
+                placeholder: "例：簡直會發光發亮的滿意高分考卷，與媽媽高高豎起的大拇指"
+              },
+              event: {
+                title: "⚡ 【事・大逆轉驚喜審題】",
+                question: "接過考卷前後心情有多大落差？回到家亮出成績單時，迎來了怎樣一場歡天喜地的家庭慶祝？",
+                hint: "提示：寫出從忐忑不安到大喜過望的心理反轉（例：接過考卷欣喜若狂，回家獲得全場掌聲與擁抱）",
+                placeholder: "例：原本七上八下的心瞬間飛上雲端，回家獲得家人熱烈掌聲與擁抱"
+              }
+            },
+            elementOptions: {
+              time: { label: "⏰ 【時】何時發生？", options: ["懷著忐忑心情、發考卷那一節課", "放學興奮衝進家門時"] },
+              place: { label: "🏫 【地】在什麼地方？", options: ["在講臺前與自己的座位上", "在充滿笑聲的客廳沙發旁"] },
+              person: { label: "👤 【人】身邊有誰？", options: ["露出肯定微笑的老師和欣喜若狂的我", "眉開眼笑、又驚又喜的媽媽"] },
+              object: { label: "💯 【物】看到什麼景物？", options: ["閃閃發亮的高分考卷和比預期更棒的成績", "媽媽高高豎起的大拇指"] },
+              event: { label: "⚡ 【事】發生什麼核心事件？", options: ["心裡像熱鍋上的螞蟻，接過考卷喜出望外", "回家亮出考卷，迎來如雷的掌聲與擁抱"] }
+            },
+            guidedGuidance: {
+              time: {
+                label: "⏰ 【時】驚喜發卷時間引導",
+                p1: [
+                  {
+                    label: "發卷時刻",
+                    thinkingPrompt: "想一想：考完試原本很擔心，是在哪一個時刻迎來了出乎意料的驚喜成績？用「當……那一節課」寫寫看！",
+                    ideaAngles: "思考方向：回想老師帶著神祕微笑抱著考卷走進教室、全班屏息期待的那一堂課！",
+                    placeholder: "例：懷著忐忑心情、發考卷",
+                    chips: ["懷著忐忑心情、發考卷", "老師微笑抱著考卷進教室", "令人屏息期待的揭曉成績"]
+                  }
+                ],
+                p2: [
+                  {
+                    label: "回家時刻",
+                    thinkingPrompt: "想一想：考得比預期還好！放學後在什麼瞬間你最想立刻把考卷秀給家人看？",
+                    ideaAngles: "思考方向：回想一放學就迫不及待奔跑進家門、掏出考卷的那一刻！",
+                    placeholder: "例：放學興奮衝進家門",
+                    chips: ["放學興奮衝進家門", "迫不及待拿出考卷給媽媽看", "一打開書包掏出成績單"]
+                  }
+                ]
+              },
+              place: {
+                label: "🏫 【地】歡喜舞台空間引導",
+                p1: [
+                  {
+                    label: "第一地點",
+                    thinkingPrompt: "想一想：你在教室的哪個位置從老師手中接過這張讓你大吃一驚的高分考卷？",
+                    ideaAngles: "思考方向：回想全班目光焦點的講臺前，這回走上去感覺完全不一樣！",
+                    placeholder: "例：講臺前",
+                    chips: ["講臺前", "黑板旁", "彷彿發光的領卷區"]
+                  },
+                  {
+                    label: "第二地點",
+                    thinkingPrompt: "想一想：接過考卷走回哪裡時，你的嘴角忍不住一直往上揚？",
+                    ideaAngles: "思考方向：回想自己那張忽然變得像雲朵般輕飄飄的座位！",
+                    placeholder: "例：自己的座位",
+                    chips: ["自己的座位", "陽光灑落的課桌前", "感覺輕飄飄的椅子"]
+                  }
+                ],
+                p2: [
+                  {
+                    label: "家庭空間",
+                    thinkingPrompt: "想一想：回到家後，你在哪裡把這份好消息分享給媽媽？那裡變成了什麼快樂空間？",
+                    ideaAngles: "思考方向：回想溫暖明亮的客廳沙發或全家團聚的餐桌！",
+                    placeholder: "例：溫暖的客廳沙發",
+                    chips: ["溫暖的客廳沙發", "熱鬧的餐桌", "笑聲洋溢的客廳"]
+                  }
+                ]
+              },
+              person: {
+                label: "👤 【人】驚喜互動神態引導",
+                p1: [
+                  {
+                    label: "老師神態",
+                    thinkingPrompt: "想一想：當老師把比預期還要好的考卷遞給你時，老師臉上有什麼表情？",
+                    ideaAngles: "思考方向：觀察老師點頭稱讚、眼角帶著笑意的肯定神情！",
+                    placeholder: "例：面帶微笑點頭稱讚",
+                    chips: ["面帶微笑點頭稱讚", "眼裡閃著肯定光芒", "豎起大拇指鼓勵"]
+                  },
+                  {
+                    label: "自己神態",
+                    thinkingPrompt: "想一想：看到分數竟然比想像中更好，你的表情與反應是什麼模樣？",
+                    ideaAngles: "思考方向：回想不敢相信、睜大眼睛或笑得合不攏嘴的樣子！",
+                    placeholder: "例：欣喜若狂、不敢置信",
+                    chips: ["欣喜若狂、不敢置信", "高興得合不攏嘴", "心花怒放、眉飛色舞"]
+                  }
+                ],
+                p2: [
+                  {
+                    label: "媽媽神態",
+                    thinkingPrompt: "想一想：當媽媽看清楚你的進步分數時，臉上露出了什麼樣驚喜又開心的表情？",
+                    ideaAngles: "思考方向：運用四年級常見的四字成語描寫媽媽的歡喜神態！",
+                    placeholder: "例：眉開眼笑",
+                    chips: ["眉開眼笑", "笑逐顏開", "喜出望外", "大為讚賞"]
+                  }
+                ]
+              },
+              object: {
+                label: "💯 【物】亮眼考卷與讚美獎勵引導",
+                p1: [
+                  {
+                    label: "考卷樣貌",
+                    thinkingPrompt: "想一想：考卷發下來，上面滿滿的紅勾勾或高分數字看起來有多耀眼？",
+                    ideaAngles: "思考方向：用生動的四字語詞形容考卷就像獎狀或寶物一樣亮眼！",
+                    placeholder: "例：閃閃發光",
+                    chips: ["閃閃發光", "幾乎全是紅勾勾", "整齊又亮眼"]
+                  },
+                  {
+                    label: "驚喜分數",
+                    thinkingPrompt: "想一想：這個比想像中好許多的分數，帶給你什麼樣的感覺？",
+                    ideaAngles: "思考方向：形容分數多麼出乎意料、令人振奮！",
+                    placeholder: "例：出乎意料",
+                    chips: ["出乎意料", "破紀錄般優異", "令人驕傲"]
+                  }
+                ],
+                p2: [
+                  {
+                    label: "誇飾讚美物",
+                    thinkingPrompt: "想一想：媽媽開心地稱讚你時，用有趣的誇飾法形容媽媽高高舉起的動作或獎勵是什麼？",
+                    ideaAngles: "思考方向：回想大大的讚美手勢、滿天飛舞的愛心或特別小獎勵！",
+                    placeholder: "例：比出大大的讚與滿滿愛心掌",
+                    chips: ["比出大大的讚", "宛如頒獎台般的雙手大拇指", "驚喜小獎賞"]
+                  }
+                ]
+              },
+              event: {
+                label: "⚡ 【事】心情反轉與開心慶祝引導",
+                p1: [
+                  {
+                    label: "原本忐忑",
+                    thinkingPrompt: "想一想：在老師還沒喊到你之前，等著領考卷時原本緊張得像什麼一樣？",
+                    ideaAngles: "思考方向：先寫出領卷前的緊張反差（如熱鍋上的螞蟻、心裡小鹿亂撞），後面的驚喜才會更精彩！",
+                    placeholder: "例：熱鍋上的螞蟻七上八下",
+                    chips: ["熱鍋上的螞蟻七上八下", "小鹿亂撞般緊張", "打鼓一樣撲通狂跳"]
+                  },
+                  {
+                    label: "驚喜反應",
+                    thinkingPrompt: "想一想：結果翻開考卷發現大逆轉，你接過考卷那一秒的反應是什麼？",
+                    ideaAngles: "思考方向：用四年級好詞形容簡直不敢相信或開心得快飛起來！",
+                    placeholder: "例：喜出望外",
+                    chips: ["喜出望外", "歡呼雀躍", "差點從椅子上跳起來"]
+                  }
+                ],
+                p2: [
+                  {
+                    label: "家庭反應比喻",
+                    thinkingPrompt: "想一想：回家跟家人公布這個比想像中更好的好成績，客廳瞬間變得像什麼一樣熱鬧？",
+                    ideaAngles: "思考方向：運用誇飾譬喻，例如像放煙火、小型慶功宴或如雷的掌聲！",
+                    placeholder: "例：像放煙火般的熱烈掌聲",
+                    chips: ["像放煙火般的熱烈掌聲", "歡呼聲掀翻屋頂的慶功會", "陽光灑滿屋子的溫暖擁抱"]
+                  },
+                  {
+                    label: "當下感受",
+                    thinkingPrompt: "想一想：得到大家的肯定與讚美後，你的心裡有什麼甜滋滋的感受？",
+                    ideaAngles: "思考方向：回想覺得自己在作夢、辛苦總算值得的開心成語！",
+                    placeholder: "例：像在作夢一樣幸福",
+                    chips: ["像在作夢一樣幸福", "心裡甜滋滋的", "飄飄然像飛上雲端"]
+                  }
+                ]
+              }
+            }
+          },
+          worse: {
+            words: ["火冒三丈", "如坐針氈", "心驚膽戰", "眼冒金星", "滿江紅", "降龍十八掌"],
+            masterPrompts: {
+              time: {
+                title: "⏰ 【時・判決時刻審題】",
+                question: "最令人膽戰心驚的揭曉時刻何時降臨？是你踏上講臺的那一秒，還是踩進家門的瞬間？",
+                hint: "提示：寫出判決揭曉的窒息時刻（例：老師面無表情宣讀成績那一刻，與放學踏進家門時）",
+                placeholder: "例：老師面無表情宣讀成績的那一刻，以及放學推開家門的瞬間"
+              },
+              place: {
+                title: "🏫 【地・處刑舞台審題】",
+                question: "審判的舞臺在哪裡？講臺前三公尺的距離走起來有多沉重？客廳沙發旁瀰漫著怎樣的低氣壓？",
+                hint: "提示：描寫講臺與客廳的心理壓迫感（例：在猶如斷頭台般沉重的講臺前，以及狂風暴雨籠罩的客廳裡）",
+                placeholder: "例：在猶如斷頭台般沉重的講臺前，以及狂風暴雨籠罩的客廳裡"
+              },
+              person: {
+                title: "👤 【人・怒火對峙審題】",
+                question: "宣判成績的老師眼神如何？雙腿發軟的你，與看到滿江紅分數即刻引爆的媽媽如何交鋒？",
+                hint: "提示：描繪雙腿發軟的自己與火冒三丈的家人（例：雙腿發軟心驚膽戰的我，與氣得頭頂冒煙的媽媽）",
+                placeholder: "例：雙腳發軟、心驚膽戰的我，與氣得頭頂冒煙、火冒三丈的媽媽"
+              },
+              object: {
+                title: "💯 【物・降龍十八掌審題】",
+                question: "考卷上刺眼的分數像什麼？媽媽暴怒之下使出了什麼武林絕學般的誇飾懲罰？",
+                hint: "提示：運用誇飾法描寫刺眼成績與懲罰（例：滿江紅刺眼的退步成績單，與媽媽高舉的降龍十八掌）",
+                placeholder: "例：那疊滿江紅、慘不忍睹的退步成績單，與媽媽高高舉起的「降龍十八掌」"
+              },
+              event: {
+                title: "⚡ 【事・家庭風暴審題】",
+                question: "接過考卷時屁股與心臟有多痛苦？回到家迎來了怎樣一場驚天動地的家庭風暴？",
+                hint: "提示：寫出如坐針氈與被訓得眼冒金星（例：屁股像坐在針氈上痛苦萬分，回家後被訓得眼冒金星）",
+                placeholder: "例：屁股像坐在針氈上痛苦萬分，回家後被媽媽訓得眼冒金星、狂風暴雨"
+              }
+            },
+            elementOptions: {
+              time: { label: "⏰ 【時】何時發生？", options: ["熬過考試、發考卷那一節課", "放學踏進家門時"] },
+              place: { label: "🏫 【地】在什麼地方？", options: ["在講臺前與自己的座位上", "在客廳沙發旁"] },
+              person: { label: "👤 【人】身邊有誰？", options: ["面無表情唸名字的老師和冷汗直流的我", "火冒三丈的媽媽"] },
+              object: { label: "💯 【物】看到什麼景物？", options: ["滿江紅的考卷和刺眼的退步分數", "媽媽高高舉起的降龍十八掌"] },
+              event: { label: "⚡ 【事】發生什麼核心事件？", options: ["屁股像坐在針氈上坐立難安，接過考卷心驚膽戰", "回家遭遇家庭風暴，被訓得眼冒金星"] }
+            },
+            guidedGuidance: {
+              time: { label: "⏰ 【時】發卷時間引導" },
+              place: { label: "🏫 【地】審判空間引導" },
+              person: { label: "👤 【人】衝突對峙引導" },
+              object: { label: "💯 【物】成績單與誇飾處罰引導" },
+              event: { label: "⚡ 【事】家庭風暴與身心崩潰引導" }
+            }
           }
         },
         sentenceTemplates: [
@@ -5360,6 +5949,7 @@ puzzleSentences: [
         ];
         this.step2ClozeData = [ {}, {}, {}, {} ];
         this.guidedSelections = [ {}, {}, {}, {} ];
+        this.twistOutcome = ""; // 轉之島考試結果分支：""（未選）| "better"（比想像中好）| "worse"（比想像中壞）
         this.isNightMode = false;
 
         // 【Google 帳號與雲端試算表同步狀態】
@@ -5410,6 +6000,7 @@ puzzleSentences: [
             ];
             this.step2ClozeData = data.step2ClozeData || [ {}, {}, {}, {} ];
             this.guidedSelections = data.guidedSelections || [ {}, {}, {}, {} ];
+            this.twistOutcome = data.twistOutcome || "";
             this.isNightMode = !!data.isNightMode;
           }
         } catch (e) {
@@ -5430,6 +6021,7 @@ puzzleSentences: [
             elementSelections: this.elementSelections,
             step2ClozeData: this.step2ClozeData,
             guidedSelections: this.guidedSelections,
+            twistOutcome: this.twistOutcome,
             isNightMode: this.isNightMode,
             lastSavedAt: new Date().toISOString()
           };
@@ -5540,8 +6132,8 @@ puzzleSentences: [
         angle = 0
       } = opts;
 
-      // 0. 混泥土停機坪與跑道厚實地基底座 (Concrete Apron Sub-base Plinth - 徹底杜絕破圖與草皮穿刺)
-      const plinthMat = getMat(0x64748b, { roughness: 0.88, metalness: 0.05 });
+      // 0. 混泥土停機坪與跑道厚實地基底座 (Concrete Apron Sub-base Plinth - 套用砌石鋪面材質)
+      const plinthMat = getMat(0x94a3b8, { roughness: 0.88, metalness: 0.05, map: miniatureStoneTex, bumpMap: miniatureStoneTex, bumpScale: 0.02 });
       const plinthMesh = rbox(runwayW + 0.8, 0.32, runwayL + 0.8, plinthMat);
       plinthMesh.position.set(0, 0.08, 0); // 地基深扎地面，向上隆起 0.24 單位
       plinthMesh.rotation.y = angle;
@@ -5666,14 +6258,14 @@ puzzleSentences: [
       const termOffset = new THREE.Vector3(-(runwayW * 0.5 + 2.4), 0, -runwayL * 0.12).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
       terminalGroup.position.copy(termOffset);
 
-      // 航廈一樓小木屋
-      const wallMat = getMat(0xfef3c7);
+      // 航廈一樓小木屋（抹灰泥牆＋瓦片斜屋頂）
+      const wallMat = getMat(0xfef3c7, { roughness: 0.8, map: miniatureStuccoTex, bumpMap: miniatureStuccoTex, bumpScale: 0.022 });
       terminalGroup.add(at(rbox(2.2, 1.5, 2.0, wallMat), 0, 0.75, 0));
-      terminalGroup.add(at(gableRoof(2.6, 0.75, 2.3, getMat(0x0284c7)), 0, 1.5, 0));
+      terminalGroup.add(at(gableRoof(2.6, 0.75, 2.3, getMat(0x0284c7, { roughness: 0.65, map: miniatureRoofTileTex, bumpMap: miniatureRoofTileTex, bumpScale: 0.032 })), 0, 1.5, 0));
       terminalGroup.add(at(rbox(0.7, 1.0, 0.08, getMat(0x38bdf8)), 0, 0.5, 1.02));
 
-      // 二樓圓柱玻璃航空管制塔台
-      const towerMat = getMat(0xffffff);
+      // 二樓圓柱玻璃航空管制塔台（灰泥白牆）
+      const towerMat = getMat(0xf8fafc, { roughness: 0.75, map: miniatureStuccoTex, bumpMap: miniatureStuccoTex, bumpScale: 0.018 });
       terminalGroup.add(at(cyl(0.55, 0.65, 1.2, 8, towerMat), 0.55, 1.6, 0));
       terminalGroup.add(at(cyl(0.62, 0.62, 0.5, 8, getMat(0x7dd3fc, { transparent: true, opacity: 0.85 })), 0.55, 2.0, 0));
       terminalGroup.add(at(cyl(0.72, 0.72, 0.12, 8, getMat(0x0369a1)), 0.55, 2.3, 0));
@@ -7185,19 +7777,19 @@ puzzleSentences: [
             this.windyGrassList.push(clump);
           });
 
-          // ⑪ 指引海岬燈塔 (坐落在延伸海岬獨立峭壁端點，空間開闊舒暢)
+          // ⑪ 指引海岬燈塔 (坐落在延伸海岬獨立峭壁端點，套用砌石基座＋灰泥塔身＋瓦片塔頂)
           const tx = 13.5;
           const tz = -9.0;
           const ty = getTerrainHeight(tx, tz);
-          const towerBase = rbox(2.2, 0.7, 2.2, getMat(0x334155));
+          const towerBase = rbox(2.2, 0.7, 2.2, getMat(0x94a3b8, { roughness: 0.88, map: miniatureStoneTex, bumpMap: miniatureStoneTex, bumpScale: 0.03 }));
           towerBase.position.set(tx, ty + 0.35, tz);
           islandGroup.add(towerBase);
 
-          const tower = cyl(0.65, 1.05, 5.8, 8, getMat(0xffffff));
+          const tower = cyl(0.65, 1.05, 5.8, 8, getMat(0xfaf7f0, { roughness: 0.76, map: miniatureStuccoTex, bumpMap: miniatureStuccoTex, bumpScale: 0.022 }));
           tower.position.set(tx, ty + 3.6, tz);
           islandGroup.add(tower);
 
-          const towerRoof = cone(1.1, 1.0, 8, getMat(0xd97706));
+          const towerRoof = cone(1.1, 1.0, 8, getMat(0xd97706, { roughness: 0.65, map: miniatureRoofTileTex, bumpMap: miniatureRoofTileTex, bumpScale: 0.03 }));
           towerRoof.position.set(tx, ty + 6.9, tz);
           islandGroup.add(towerRoof);
 
@@ -7352,19 +7944,19 @@ puzzleSentences: [
         const house = new THREE.Group();
         house.position.set(hx, hy, hz); // 穩坐於後方高地台地上
 
-        // ① 石砌地基基石 (Plinth) - 加厚向下扎根，緊貼地表徹底杜絕懸空
-        const plinth = rbox(6.6, 0.65, 5.6, getMat(0x64748b, { roughness: 0.9 }));
+        // ① 石砌地基基石 (Plinth) - 加厚向下扎根，套用砌石磚紋
+        const plinth = rbox(6.6, 0.65, 5.6, getMat(0x94a3b8, { roughness: 0.88, map: miniatureStoneTex, bumpMap: miniatureStoneTex, bumpScale: 0.032 }));
         plinth.position.y = 0.12;
         house.add(plinth);
 
-        // ② 主屋體 (暖米白抹灰泥牆面)
-        const stuccoMat = getMat(0xfdf0d5, { roughness: 0.78 });
+        // ② 主屋體 (暖米白抹灰泥牆面質感 + 紅磚暖底腰牆)
+        const stuccoMat = getMat(0xfef3dc, { roughness: 0.82, map: miniatureStuccoTex, bumpMap: miniatureStuccoTex, bumpScale: 0.025 });
         const mainBody = rbox(6.0, 3.8, 5.0, stuccoMat);
         mainBody.position.y = 2.35;
         house.add(mainBody);
 
-        // ③ 半木結構原木骨架 (Half-timbering beams)
-        const timberMat = getMat(0x5c3a21, { roughness: 0.85 });
+        // ③ 半木結構原木骨架 (Half-timbering beams - 套用木紋質感)
+        const timberMat = getMat(0xa67c52, { roughness: 0.78, map: miniatureWoodTex, bumpMap: miniatureWoodTex, bumpScale: 0.018 });
         // 四個轉角木柱
         for (const [cx, cz] of [[-3.0, -2.5], [3.0, -2.5], [-3.0, 2.5], [3.0, 2.5]]) {
           house.add(at(rbox(0.25, 3.8, 0.25, timberMat), cx, 2.35, cz));
@@ -7391,14 +7983,14 @@ puzzleSentences: [
         house.add(chimney);
 
         // ⑦ 立體前廊露台與遮雨木簷 (Front Porch)
-        const deck = rbox(2.4, 0.25, 1.4, getMat(0x854d0e, { roughness: 0.7 }));
+        const deck = rbox(2.4, 0.25, 1.4, getMat(0xfff4e6, { roughness: 0.65, map: miniatureWoodTex, bumpMap: miniatureWoodTex, bumpScale: 0.02 }));
         deck.position.set(0, 0.4, 2.9);
         house.add(deck);
 
         // 前廊兩側小木柱與小斜簷
         house.add(at(rbox(0.12, 1.8, 0.12, timberMat), -1.05, 1.4, 3.4));
         house.add(at(rbox(0.12, 1.8, 0.12, timberMat), 1.05, 1.4, 3.4));
-        const porchRoof = gableRoof(2.4, 0.6, 1.2, getMat(0xc1121f));
+        const porchRoof = gableRoof(2.4, 0.6, 1.2, getMat(0xc1121f, { roughness: 0.68, map: miniatureRoofTileTex, bumpMap: miniatureRoofTileTex, bumpScale: 0.035 }));
         porchRoof.position.set(0, 2.3, 3.0);
         house.add(porchRoof);
 
@@ -7421,21 +8013,21 @@ puzzleSentences: [
         winR.position.set(1.8, 2.0, 2.53);
         house.add(winR);
 
-        // 【設計圖核心地標】：童話紅白條紋微型燈塔 (Mini Striped Lighthouse - 依照 island_0_origin.png 1:1 雕刻)
+        // 【設計圖核心地標】：童話紅白條紋微型燈塔 (砌石基座＋灰泥紋理紅白條紋＋瓦片尖頂)
         const lighthouse = new THREE.Group();
         lighthouse.position.set(4.3, 0.2, 1.6);
-        lighthouse.add(at(cyl(1.15, 1.3, 0.6, 14, getMat(0x475569)), 0, 0.3, 0));
+        lighthouse.add(at(cyl(1.15, 1.3, 0.6, 14, getMat(0x94a3b8, { roughness: 0.88, map: miniatureStoneTex, bumpMap: miniatureStoneTex, bumpScale: 0.03 })), 0, 0.3, 0));
         const lhColors = [0xef4444, 0xffffff, 0xef4444, 0xffffff];
         for (let l = 0; l < 4; l++) {
-          const seg = cyl(0.95 - l * 0.08, 1.05 - l * 0.08, 0.72, 14, getMat(lhColors[l], { roughness: 0.6 }));
+          const seg = cyl(0.95 - l * 0.08, 1.05 - l * 0.08, 0.72, 14, getMat(lhColors[l], { roughness: 0.72, map: miniatureStuccoTex, bumpMap: miniatureStuccoTex, bumpScale: 0.02 }));
           seg.position.y = 0.95 + l * 0.72;
           lighthouse.add(seg);
         }
-        lighthouse.add(at(cyl(0.85, 0.85, 0.12, 14, getMat(0x1e293b)), 0, 3.85, 0));
+        lighthouse.add(at(cyl(0.85, 0.85, 0.12, 14, getMat(0x475569, { roughness: 0.8, map: miniatureStoneTex, bumpMap: miniatureStoneTex, bumpScale: 0.015 })), 0, 3.85, 0));
         const lampRoom = cyl(0.55, 0.55, 0.72, 12, getMat(0xfef08a, { emissive: 0xfbbf24, emissiveIntensity: 0.85, transparent: true, opacity: 0.85 }));
         lampRoom.position.y = 4.3;
         lighthouse.add(lampRoom);
-        lighthouse.add(at(cone(0.85, 0.85, 12, getMat(0xef4444)), 0, 5.05, 0));
+        lighthouse.add(at(cone(0.85, 0.85, 12, getMat(0xef4444, { roughness: 0.65, map: miniatureRoofTileTex, bumpMap: miniatureRoofTileTex, bumpScale: 0.03 })), 0, 5.05, 0));
         lighthouse.add(at(cyl(0.04, 0.04, 0.5, 4, getMat(0xf59e0b, { metalness: 0.8 })), 0, 5.65, 0));
         house.add(lighthouse);
 
@@ -7447,10 +8039,11 @@ puzzleSentences: [
         const deskY = getTerrainHeight ? getTerrainHeight(deskX, deskZ) : 3.37;
         deskGroup.position.set(deskX, deskY, deskZ);
 
-        // 橡木大書桌 (厚桌面與車削桌腳：升級細緻玩具木紋與柔和高光)
-        const deskTopMat = getMat(0x854d0e, {
+        // 橡木大書桌 (厚桌面與車削桌腳：升級細緻玩具木紋與柔和高光，使用淺暖底色避免疊乘過暗)
+        const deskTopMat = getMat(0xfff4e6, {
           roughness: 0.55,
-          bumpScale: 0.012,
+          bumpMap: miniatureWoodTex,
+          bumpScale: 0.024,
           map: miniatureWoodTex
         });
         deskGroup.add(at(rbox(3.4, 0.28, 2.2, deskTopMat), 0, 1.4, 0));
@@ -7458,15 +8051,16 @@ puzzleSentences: [
           deskGroup.add(at(cyl(0.14, 0.1, 1.4, 6, getMat(0x5c3a21)), dx, 0.7, dz));
         }
 
-        // 靠背木椅子 (依照設計圖)
+        // 靠背木椅子 (同步套用玩具木紋貼圖)
+        const chairMat = getMat(0xffe8cc, { roughness: 0.6, map: miniatureWoodTex, bumpMap: miniatureWoodTex, bumpScale: 0.018 });
         const chair = new THREE.Group();
         chair.position.set(0.6, 0, 1.6);
         chair.rotation.y = -0.3;
-        chair.add(at(rbox(1.0, 0.12, 1.0, getMat(0x854d0e)), 0, 0.7, 0));
+        chair.add(at(rbox(1.0, 0.12, 1.0, chairMat), 0, 0.7, 0));
         for (const [cx, cz] of [[-0.4, -0.4], [0.4, -0.4], [-0.4, 0.4], [0.4, 0.4]]) {
           chair.add(at(cyl(0.06, 0.06, 0.7, 6, getMat(0x5c3a21)), cx, 0.35, cz));
         }
-        chair.add(at(rbox(0.9, 0.85, 0.1, getMat(0x854d0e)), 0, 1.2, 0.45));
+        chair.add(at(rbox(0.9, 0.85, 0.1, chairMat), 0, 1.2, 0.45));
         deskGroup.add(chair);
 
         // 小學生皮質書包 (靠在桌腳旁)
@@ -7475,27 +8069,38 @@ puzzleSentences: [
         backpack.rotation.z = 0.15;
         deskGroup.add(backpack);
 
-        // 考前苦讀筆記本/試卷專屬程序化貼圖 (128x128 零 CORS Canvas)
+        // 考前苦讀筆記本/試卷專屬程序化貼圖 (256x256 高對比零 CORS Canvas，防止燈光洗白)
         const leftPageTex = (() => {
           const c = document.createElement('canvas');
-          c.width = 128; c.height = 128;
+          c.width = 256; c.height = 256;
           const ctx = c.getContext('2d');
-          ctx.fillStyle = '#fdfbf7';
-          ctx.fillRect(0, 0, 128, 128);
-          // 淡紅色題號分隔線
-          ctx.strokeStyle = 'rgba(239, 68, 68, 0.45)';
-          ctx.lineWidth = 1.5;
+          ctx.fillStyle = '#f6eed9';
+          ctx.fillRect(0, 0, 256, 256);
+          // 鮮明紅色題號分隔線
+          ctx.strokeStyle = 'rgba(220, 38, 38, 0.75)';
+          ctx.lineWidth = 3;
           ctx.beginPath();
-          ctx.moveTo(22.5, 0); ctx.lineTo(22.5, 128);
+          ctx.moveTo(46, 0); ctx.lineTo(46, 256);
           ctx.stroke();
-          // 淡藍色筆記橫條線
-          ctx.strokeStyle = 'rgba(96, 165, 250, 0.4)';
-          ctx.lineWidth = 1;
-          for (let y = 14; y < 128; y += 14) {
+          // 清晰天藍色筆記橫條線
+          ctx.strokeStyle = 'rgba(37, 99, 235, 0.62)';
+          ctx.lineWidth = 2;
+          for (let y = 26; y < 256; y += 26) {
             ctx.beginPath();
-            ctx.moveTo(6, y + 0.5); ctx.lineTo(122, y + 0.5);
+            ctx.moveTo(12, y + 0.5); ctx.lineTo(244, y + 0.5);
             ctx.stroke();
           }
+          // 左頁深鉛筆重點標題與條列字跡
+          ctx.strokeStyle = '#334155';
+          ctx.lineWidth = 3;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(60, 44); ctx.lineTo(155, 44);
+          ctx.moveTo(60, 70); ctx.lineTo(195, 70);
+          ctx.moveTo(60, 96); ctx.lineTo(175, 96);
+          ctx.moveTo(60, 122); ctx.lineTo(210, 122);
+          ctx.moveTo(60, 148); ctx.lineTo(145, 148);
+          ctx.stroke();
           const t = new THREE.CanvasTexture(c);
           t.colorSpace = THREE.SRGBColorSpace;
           return t;
@@ -7503,55 +8108,70 @@ puzzleSentences: [
 
         const rightPageTex = (() => {
           const c = document.createElement('canvas');
-          c.width = 128; c.height = 128;
+          c.width = 256; c.height = 256;
           const ctx = c.getContext('2d');
-          ctx.fillStyle = '#fdfbf7';
-          ctx.fillRect(0, 0, 128, 128);
-          // 淡紅色題號分隔線
-          ctx.strokeStyle = 'rgba(239, 68, 68, 0.45)';
-          ctx.lineWidth = 1.5;
+          ctx.fillStyle = '#f6eed9';
+          ctx.fillRect(0, 0, 256, 256);
+          // 鮮明紅色題號分隔線
+          ctx.strokeStyle = 'rgba(220, 38, 38, 0.75)';
+          ctx.lineWidth = 3;
           ctx.beginPath();
-          ctx.moveTo(22.5, 0); ctx.lineTo(22.5, 128);
+          ctx.moveTo(46, 0); ctx.lineTo(46, 256);
           ctx.stroke();
-          // 淡藍色筆記橫條線
-          ctx.strokeStyle = 'rgba(96, 165, 250, 0.4)';
-          ctx.lineWidth = 1;
-          for (let y = 14; y < 128; y += 14) {
+          // 清晰天藍色筆記橫條線
+          ctx.strokeStyle = 'rgba(37, 99, 235, 0.62)';
+          ctx.lineWidth = 2;
+          for (let y = 26; y < 256; y += 26) {
             ctx.beginPath();
-            ctx.moveTo(6, y + 0.5); ctx.lineTo(122, y + 0.5);
+            ctx.moveTo(12, y + 0.5); ctx.lineTo(244, y + 0.5);
             ctx.stroke();
           }
-          // 右頁上方淡淡的鉛筆草稿筆跡感 (考前苦讀運算與勾劃重點痕跡)
-          ctx.strokeStyle = 'rgba(71, 85, 105, 0.42)';
-          ctx.lineWidth = 1.2;
+          // 右頁清楚的鉛筆草稿筆跡與波浪重點線
+          ctx.strokeStyle = '#1e293b';
+          ctx.lineWidth = 3.2;
+          ctx.lineCap = 'round';
           ctx.beginPath();
-          // 模擬草稿算式與重點底線
-          ctx.moveTo(34, 24); ctx.lineTo(58, 24);
-          ctx.moveTo(66, 22); ctx.lineTo(82, 26);
-          ctx.moveTo(36, 38); ctx.quadraticCurveTo(52, 34, 76, 38);
-          ctx.moveTo(82, 36); ctx.lineTo(102, 38);
-          // 淡淡的小打勾/星號重點記號
-          ctx.moveTo(32, 52); ctx.lineTo(38, 56); ctx.lineTo(48, 48);
-          ctx.moveTo(56, 52); ctx.lineTo(92, 52);
+          ctx.moveTo(62, 44); ctx.lineTo(120, 44);
+          ctx.moveTo(136, 42); ctx.lineTo(188, 46);
+          ctx.moveTo(62, 70); ctx.quadraticCurveTo(106, 62, 165, 70);
+          ctx.moveTo(175, 68); ctx.lineTo(220, 72);
+          ctx.moveTo(62, 122); ctx.lineTo(190, 122);
+          ctx.moveTo(62, 148); ctx.lineTo(160, 148);
+          ctx.stroke();
+          // 紅筆大打勾與重點圈記（考前複習標記）
+          ctx.strokeStyle = '#dc2626';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.moveTo(58, 96); ctx.lineTo(74, 108); ctx.lineTo(102, 82);
+          ctx.moveTo(118, 98); ctx.lineTo(212, 98);
           ctx.stroke();
           const t = new THREE.CanvasTexture(c);
           t.colorSpace = THREE.SRGBColorSpace;
           return t;
         })();
 
-        // 散落翻開的試卷與大筆記本 (Open Planner - 升級稿紙與鉛筆草稿貼圖)
+        // 散落翻開的試卷與大筆記本 (Open Planner - 加大開本與高對比稿紙筆跡貼圖)
         const openBook = new THREE.Group();
-        openBook.position.set(0.3, 1.56, 0.1);
+        openBook.position.set(0.32, 1.56, 0.12);
         openBook.rotation.y = 0.15;
-        // 左頁白紙 (帶淡紅題號線與淡藍筆記線)
-        const leftPageMat = getMat(0xffffff, { roughness: 0.85, map: leftPageTex });
-        openBook.add(at(rbox(0.65, 0.05, 0.85, leftPageMat), -0.32, 0, 0, 0));
-        // 右頁白紙 (帶淡藍橫線與鉛筆草稿筆跡)
-        const rightPageMat = getMat(0xffffff, { roughness: 0.85, map: rightPageTex });
-        openBook.add(at(rbox(0.65, 0.05, 0.85, rightPageMat), 0.32, 0, 0, 0));
+        // 左頁白紙 (帶鮮明紅題號線、藍筆記線與鉛筆筆記)
+        const leftPageMat = getMat(0xffffff, { roughness: 0.92, map: leftPageTex });
+        openBook.add(at(rbox(0.76, 0.05, 0.98, leftPageMat), -0.38, 0, 0, 0));
+        // 右頁白紙 (帶藍橫線、深色草稿筆跡與紅筆打勾)
+        const rightPageMat = getMat(0xffffff, { roughness: 0.92, map: rightPageTex });
+        openBook.add(at(rbox(0.76, 0.05, 0.98, rightPageMat), 0.38, 0, 0, 0));
         // 皮革書脊書底
-        openBook.add(at(rbox(1.36, 0.04, 0.9, getMat(0x854d0e, { roughness: 0.65 })), 0, -0.03, 0));
+        openBook.add(at(rbox(1.58, 0.04, 1.04, getMat(0x7c2d12, { roughness: 0.65 })), 0, -0.03, 0));
         deskGroup.add(openBook);
+
+        // 桌上散落的單張紅色方格作文稿紙（實際應用 miniaturePaperTex）
+        const loosePaperMat = getMat(0xffffff, { roughness: 0.92, map: miniaturePaperTex });
+        const looseSheet1 = at(rbox(0.72, 0.02, 0.92, loosePaperMat, 0.01), 0.15, 1.555, -0.58);
+        looseSheet1.rotation.y = -0.28;
+        deskGroup.add(looseSheet1);
+        const looseSheet2 = at(rbox(0.68, 0.02, 0.88, loosePaperMat, 0.01), 1.05, 1.555, 0.58);
+        looseSheet2.rotation.y = 0.42;
+        deskGroup.add(looseSheet2);
 
         // 墨水瓶與鵝毛筆 (Inkwell & Quill)
         const inkwell = cyl(0.16, 0.2, 0.28, 8, getMat(0x1e293b, { roughness: 0.3, metalness: 0.6 }));
@@ -7562,22 +8182,40 @@ puzzleSentences: [
         deskQuill.rotation.z = -0.35;
         deskGroup.add(deskQuill);
 
-        // 堆積如山的彩色精裝書本 (放大誇飾書本山)
-        const colors = [0xe63946, 0x457b9d, 0x2a9d8f, 0xe9c46a, 0x8b5cf6, 0xffffff, 0xd97706, 0x06b6d4];
-        for (let b = 0; b < 7; b++) {
-          const book = rbox(1.15, 0.22, 0.85, getMat(colors[b % colors.length], { roughness: 0.6 }));
-          book.position.set(-0.9, 1.62 + b * 0.23, -0.3 + (b % 2) * 0.08);
-          book.rotation.y = (b * 0.22);
+        // 堆積如山的彩色精裝課本與參考書 (立體書背、奶油書頁疊紋、書名標籤與書籤緞帶)
+        const mainStackSpecs = [
+          { color: 0xe63946, w: 1.22, h: 0.23, d: 0.90, rot: 0.05 },
+          { color: 0x06b6d4, w: 1.18, h: 0.21, d: 0.86, rot: 0.28, hasRibbon: true, ribbonColor: 0xf59e0b },
+          { color: 0x2a9d8f, w: 1.16, h: 0.22, d: 0.85, rot: 0.48 },
+          { color: 0xe9c46a, w: 1.12, h: 0.20, d: 0.84, rot: 0.72 },
+          { color: 0x8b5cf6, w: 1.14, h: 0.22, d: 0.86, rot: 0.96, hasRibbon: true, ribbonColor: 0xfef08a },
+          { color: 0x457b9d, w: 1.10, h: 0.20, d: 0.82, rot: 1.18 },
+          { color: 0xd97706, w: 1.12, h: 0.22, d: 0.84, rot: 1.38, titleText: '國語課本', hasRibbon: true }
+        ];
+        let stackY1 = 1.54;
+        mainStackSpecs.forEach((spec, b) => {
+          const book = createDetailedBook(spec.w, spec.h, spec.d, spec.color, spec);
+          book.position.set(-0.92 + (b % 2) * 0.03, stackY1 + spec.h / 2, -0.32 + (b % 2) * 0.06);
+          book.rotation.y = spec.rot;
           deskGroup.add(book);
-        }
+          stackY1 += spec.h;
+        });
 
-        // 第二疊小書本山
-        for (let b = 0; b < 4; b++) {
-          const b2 = rbox(0.95, 0.18, 0.7, getMat(colors[(b + 3) % colors.length], { roughness: 0.6 }));
-          b2.position.set(-0.7, 1.62 + b * 0.19, 0.6 + (b % 2) * 0.04);
-          b2.rotation.y = (-b * 0.18);
+        // 第二疊小書本山 (作文秘笈與月考複習卷)
+        const subStackSpecs = [
+          { color: 0xe9c46a, w: 0.98, h: 0.19, d: 0.74, rot: 0.0 },
+          { color: 0x8b5cf6, w: 0.96, h: 0.18, d: 0.72, rot: -0.22, hasRibbon: true, ribbonColor: 0x38bdf8 },
+          { color: 0x3b82f6, w: 0.94, h: 0.18, d: 0.70, rot: -0.42 },
+          { color: 0xd97706, w: 0.92, h: 0.19, d: 0.70, rot: -0.62, titleText: '作文秘笈', hasRibbon: true }
+        ];
+        let stackY2 = 1.54;
+        subStackSpecs.forEach((spec, b) => {
+          const b2 = createDetailedBook(spec.w, spec.h, spec.d, spec.color, spec);
+          b2.position.set(-0.72, stackY2 + spec.h / 2, 0.62 + (b % 2) * 0.03);
+          b2.rotation.y = spec.rot;
           deskGroup.add(b2);
-        }
+          stackY2 += spec.h;
+        });
 
         // 復古發光綠罩檯燈（透光綠琉璃燈罩 + 局部專屬暖黃桌面光照）
         const lamp = new THREE.Group();
@@ -7596,21 +8234,68 @@ puzzleSentences: [
 
         g.add(deskGroup);
 
-        // 月考倒數大鐘樓
+        // 月考倒數大鐘樓（砌石磚塔樓＋木質腰帶＋瓦片尖頂＋手繪復古鐘盤）
         const clockTower = new THREE.Group();
         const clkX = -5.5, clkZ = 3.5;
         const clkY = getTerrainHeight ? getTerrainHeight(clkX, clkZ) : 3.08;
         clockTower.position.set(clkX, clkY, clkZ);
-        clockTower.add(at(cyl(0.9, 1.1, 5.2, 8, getMat(0x334155)), 0, 2.6, 0));
-        // 大時鐘面
-        const clockDial = cyl(1.3, 1.3, 0.28, 20, getMat(0xffffff));
+        // 砌石底座圓台與八角石磚塔身
+        clockTower.add(at(cyl(1.25, 1.4, 0.52, 8, getMat(0x94a3b8, { roughness: 0.88, map: miniatureStoneTex, bumpMap: miniatureStoneTex, bumpScale: 0.032 })), 0, 0.24, 0));
+        clockTower.add(at(cyl(0.9, 1.1, 5.2, 8, getMat(0x64748b, { roughness: 0.85, map: miniatureStoneTex, bumpMap: miniatureStoneTex, bumpScale: 0.035 })), 0, 2.6, 0));
+        // 原木紋飾腰帶與鐘樓瓦片尖頂帽
+        clockTower.add(at(cyl(1.04, 1.04, 0.22, 8, getMat(0xa67c52, { roughness: 0.75, map: miniatureWoodTex, bumpMap: miniatureWoodTex, bumpScale: 0.02 })), 0, 3.88, 0));
+        clockTower.add(at(cone(1.08, 1.15, 8, getMat(0x1e3a8a, { roughness: 0.68, map: miniatureRoofTileTex, bumpMap: miniatureRoofTileTex, bumpScale: 0.035 })), 0, 5.82, 0));
+        clockTower.add(at(ball(0.14, getMat(0xf59e0b, { metalness: 0.85, roughness: 0.25 }), 8, 6), 0, 6.44, 0));
+
+        // 古銅外框大時鐘外殼
+        const clockDial = cyl(1.32, 1.32, 0.28, 24, getMat(0xb45309, { roughness: 0.45, metalness: 0.35, map: miniatureWoodTex }));
         clockDial.rotation.x = Math.PI / 2;
-        clockDial.position.set(0, 5.0, 0.9);
+        clockDial.position.set(0, 5.0, 0.98);
         clockTower.add(clockDial);
+
+        // 手繪古典時鐘盤面（12/3/6/9 數字＋60 格精細刻度，正面朝向 +Z）
+        const clockFaceTex = canvasTexture(256, 256, (ctx, cw, ch) => {
+          const cx = cw / 2, cy = ch / 2;
+          ctx.fillStyle = '#faf3df';
+          ctx.fillRect(0, 0, cw, ch);
+          ctx.strokeStyle = '#92400e';
+          ctx.lineWidth = 8;
+          ctx.beginPath();
+          ctx.arc(cx, cy, 118, 0, Math.PI * 2);
+          ctx.stroke();
+          // 12 小時與 60 分刻度
+          for (let m = 0; m < 60; m++) {
+            const ang = (m / 60) * Math.PI * 2 - Math.PI / 2;
+            const isHour = m % 5 === 0;
+            const r1 = isHour ? 96 : 105;
+            const r2 = 113;
+            ctx.strokeStyle = isHour ? '#1e293b' : '#64748b';
+            ctx.lineWidth = isHour ? 4 : 1.8;
+            ctx.beginPath();
+            ctx.moveTo(cx + Math.cos(ang) * r1, cy + Math.sin(ang) * r1);
+            ctx.lineTo(cx + Math.cos(ang) * r2, cy + Math.sin(ang) * r2);
+            ctx.stroke();
+          }
+          // 四個主方位數字 12, 3, 6, 9
+          ctx.fillStyle = '#1e293b';
+          ctx.font = 'bold 26px "Noto Serif TC", serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('12', cx, cy - 76);
+          ctx.fillText('3', cx + 76, cy);
+          ctx.fillText('6', cx, cy + 78);
+          ctx.fillText('9', cx - 76, cy);
+        });
+        const faceMesh = new THREE.Mesh(
+          new THREE.CircleGeometry(1.20, 28),
+          getMat(0xffffff, { roughness: 0.72, map: clockFaceTex })
+        );
+        faceMesh.position.set(0, 5.0, 1.126);
+        clockTower.add(faceMesh);
 
         // 指針旋轉中心群組 (錨點位於鐘面正中心，註冊 isClockHand)
         const hand = new THREE.Group();
-        hand.position.set(0, 5.0, 1.08);
+        hand.position.set(0, 5.0, 1.16);
         hand.userData.isClockHand = true;
         // 紅色長分針（中心點向下對齊樞紐中心，旋轉圍繞鐘盤圓心）
         const redMinuteBlade = rbox(0.11, 0.78, 0.05, getMat(0xd90429, { roughness: 0.4 }));
@@ -7677,13 +8362,13 @@ puzzleSentences: [
         const school = new THREE.Group();
         school.position.set(sx, sy, sz); // 穩坐於後方高地上
 
-        // ① 白色花崗岩地基 (Granite Plinth) - 加厚向下扎根，緊貼地表徹底杜絕懸空
-        const plinth = rbox(8.4, 0.7, 5.0, getMat(0xe2e8f0, { roughness: 0.85 }));
+        // ① 白色花崗岩地基 (Granite Plinth) - 加厚向下扎根，套用砌石材質
+        const plinth = rbox(8.4, 0.7, 5.0, getMat(0xe2e8f0, { roughness: 0.85, map: miniatureStoneTex, bumpMap: miniatureStoneTex, bumpScale: 0.03 }));
         plinth.position.y = 0.15;
         school.add(plinth);
 
-        // ② 主建築兩層紅磚校舍 (Red-brick Academy)
-        const brickMat = getMat(0xb91c1c, { roughness: 0.82 });
+        // ② 主建築兩層紅磚校舍 (Red-brick Academy - 實際套用紅磚紋理)
+        const brickMat = getMat(0xffe4d6, { roughness: 0.82, map: miniatureBrickTex, bumpMap: miniatureBrickTex, bumpScale: 0.03 });
         const mainBuilding = rbox(7.8, 4.8, 4.4, brickMat);
         mainBuilding.position.y = 2.9;
         school.add(mainBuilding);
@@ -7734,14 +8419,14 @@ puzzleSentences: [
         // ⑦ 八角古典鐘塔閣樓 (Octagonal Cupola with Bell & Spire)
         const bellTower = new THREE.Group();
         bellTower.position.set(0, 6.3, 0);
-        // 下層木百葉閣樓
-        bellTower.add(at(cyl(1.2, 1.3, 1.8, 8, whiteTrim), 0, 0.9, 0));
+        // 下層木百葉閣樓（灰泥紋理）
+        bellTower.add(at(cyl(1.2, 1.3, 1.8, 8, getMat(0xf8fafc, { roughness: 0.72, map: miniatureStuccoTex, bumpMap: miniatureStuccoTex, bumpScale: 0.018 })), 0, 0.9, 0));
         // 金銅鐘
         const bell = cyl(0.4, 0.65, 0.85, 8, getMat(0xf59e0b, { metalness: 0.85, roughness: 0.2 }));
         bell.position.set(0, 0.9, 0.4);
         bellTower.add(bell);
-        // 上層青銅尖頂
-        bellTower.add(at(cone(1.5, 2.2, 8, getMat(0x0f766e, { roughness: 0.5 })), 0, 2.9, 0));
+        // 上層青銅瓦片尖頂
+        bellTower.add(at(cone(1.5, 2.2, 8, getMat(0x0f766e, { roughness: 0.58, map: miniatureRoofTileTex, bumpMap: miniatureRoofTileTex, bumpScale: 0.028 })), 0, 2.9, 0));
         // 避雷針與金球
         bellTower.add(at(cyl(0.04, 0.04, 0.8, 4, getMat(0xf59e0b, { metalness: 0.9 })), 0, 4.3, 0));
         bellTower.add(at(ball(0.15, getMat(0xf59e0b, { metalness: 0.9 }), 8, 6), 0, 4.7, 0));
@@ -7845,13 +8530,13 @@ puzzleSentences: [
         const house = new THREE.Group();
         house.position.set(hx, hy, hz); // 穩坐於後方高地上
 
-        // ① 白色木棧地基 - 加厚向下扎根，緊貼地表徹底杜絕懸空
-        const plinth = rbox(7.0, 0.65, 6.0, getMat(0x475569));
+        // ① 砌石地基 - 加厚向下扎根，套用砌石紋理
+        const plinth = rbox(7.0, 0.65, 6.0, getMat(0x94a3b8, { roughness: 0.85, map: miniatureStoneTex, bumpMap: miniatureStoneTex, bumpScale: 0.03 }));
         plinth.position.y = 0.12;
         house.add(plinth);
 
-        // ② L 型複合洋房主體 (打破單調立方體)
-        const wallMat = getMat(0xfef08a, { roughness: 0.75 }); // 鵝黃色木板牆
+        // ② L 型複合洋房主體 (鵝黃木板牆紋理)
+        const wallMat = getMat(0xfef9c3, { roughness: 0.75, map: miniatureWoodTex, bumpMap: miniatureWoodTex, bumpScale: 0.02 }); // 鵝黃色木板牆
         // 主房身
         const mainWing = rbox(5.4, 3.6, 4.6, wallMat);
         mainWing.position.set(-0.3, 2.0, 0);
@@ -8042,7 +8727,7 @@ puzzleSentences: [
         const temple = new THREE.Group();
         temple.position.set(tx, ty, tz); // 穩坐於後方巔峰高地上
 
-        const marbleMat = getMat(0xf8fafc, { roughness: 0.4 });
+        const marbleMat = getMat(0xf8fafc, { roughness: 0.48, map: miniatureStuccoTex, bumpMap: miniatureStoneTex, bumpScale: 0.018 });
         // 三級圓環階梯基石 - 第一層加厚向下扎根，緊貼地表徹底杜絕懸空
         for (let st = 0; st < 3; st++) {
           const stepR = 3.6 - st * 0.35;
@@ -8115,24 +8800,24 @@ puzzleSentences: [
         const stairColors = [0xef4444, 0xf97316, 0xeab308, 0x22c55e, 0x06b6d4, 0x6366f1, 0xa855f7];
         const baseStairY = getTerrainHeight ? getTerrainHeight(2.6, 1.2) : 3.4;
         for (let s = 0; s < 7; s++) {
-          const bookStep = rbox(1.5, 0.32, 1.0, getMat(stairColors[s], { roughness: 0.6 }));
+          const bookStep = createDetailedBook(1.5, 0.32, 1.0, stairColors[s], { hasRibbon: s % 2 === 0 });
           const theta = s * 0.45;
           bookStep.position.set(2.6 + Math.cos(theta) * 1.6, baseStairY + s * 0.48, 1.2 + Math.sin(theta) * 1.6);
           bookStep.rotation.y = -theta;
           g.add(bookStep);
         }
 
-        // ⑥ 金色四葉童話大風車 (在微風中緩緩旋轉)
+        // ⑥ 金色四葉童話大風車 (灰泥塔身＋瓦片尖頂＋木紋風車葉片)
         const mill = new THREE.Group();
         const mx = 5.5, mz = -3.5;
         const my = getTerrainHeight ? getTerrainHeight(mx, mz) : 3.2;
         mill.position.set(mx, my, mz);
-        mill.add(at(cyl(0.55, 0.85, 6.2, 8, getMat(0xffffff, { roughness: 0.6 })), 0, 3.1, 0));
-        mill.add(at(cone(0.95, 1.2, 8, getMat(0xd97706)), 0, 6.8, 0));
+        mill.add(at(cyl(0.55, 0.85, 6.2, 8, getMat(0xfaf7f0, { roughness: 0.72, map: miniatureStuccoTex, bumpMap: miniatureStoneTex, bumpScale: 0.02 })), 0, 3.1, 0));
+        mill.add(at(cone(0.95, 1.2, 8, getMat(0xd97706, { roughness: 0.62, map: miniatureRoofTileTex, bumpMap: miniatureRoofTileTex, bumpScale: 0.03 })), 0, 6.8, 0));
         const blades = new THREE.Group();
         blades.position.set(0, 6.0, 0.75);
         for (let b = 0; b < 4; b++) {
-          const blade = rbox(0.38, 2.4, 0.06, getMat(0xf59e0b, { roughness: 0.5 }));
+          const blade = rbox(0.38, 2.4, 0.06, getMat(0xfde68a, { roughness: 0.58, map: miniatureWoodTex, bumpMap: miniatureWoodTex, bumpScale: 0.015 }));
           blade.position.y = 1.2;
           const bg = new THREE.Group();
           bg.rotation.z = b * (Math.PI / 2);
@@ -8328,9 +9013,9 @@ puzzleSentences: [
         sanctuaryIsland.add(at(rock(1.5, 0xa0b2c6, true), -12.0, 3.4, -4.5));
         sanctuaryIsland.add(at(rock(1.3, 0xb0c4de, true), 12.0, 3.4, 4.5));
 
-        // 白玉八角神聖祭壇台階
-        sanctuaryIsland.add(at(cyl(9.2, 10.5, 0.8, 8, getMat(0xffffff, { roughness: 0.4 })), 0, 4.0, 0));
-        sanctuaryIsland.add(at(cyl(7.2, 8.4, 0.8, 8, getMat(0x38bdf8, { metalness: 0.3, roughness: 0.4 })), 0, 4.6, 0));
+        // 白玉八角神聖祭壇台階（套用神殿砌石與白玉灰泥質感）
+        sanctuaryIsland.add(at(cyl(9.2, 10.5, 0.8, 8, getMat(0xf8fafc, { roughness: 0.48, map: miniatureStuccoTex, bumpMap: miniatureStoneTex, bumpScale: 0.022 })), 0, 4.0, 0));
+        sanctuaryIsland.add(at(cyl(7.2, 8.4, 0.8, 8, getMat(0x7dd3fc, { metalness: 0.25, roughness: 0.42, map: miniatureStoneTex, bumpMap: miniatureStoneTex, bumpScale: 0.018 })), 0, 4.6, 0));
 
         // 【新技能規範 Pass 6】：成就印章插槽 (Achievement Badge Pillars)
         // 四方四根墨玉毛筆圖騰柱 (起承轉合四筆)，配備實體印章成就托盤與徽章
@@ -8653,11 +9338,48 @@ puzzleSentences: [
 
 
       // ====================================================
-      // 【全新遊戲化機制】：全島探索迷霧系統 (Fog of War & Cloud Canopy)
-      // 每一座未解鎖島嶼被蓬鬆棉花糖雲海所籠罩，唯有完成前一座島嶼並獲老師蓋章，迷霧才會破除散開！
+      // 【全新遊戲化機制】：全島柔和飄渺立體迷霧系統 (Volumetric Mist Sprites)
+      // 每一座未解鎖島嶼被真實飄散柔和的海霧雲氣層層籠罩，破除時如晨霧般向四周擴散消散！
       // ====================================================
+      getMistTexture() {
+        if (this._mistTexture) return this._mistTexture;
+        const c = document.createElement('canvas');
+        c.width = 256;
+        c.height = 256;
+        const ctx = c.getContext('2d');
+        ctx.clearRect(0, 0, 256, 256);
+
+        // 多團交疊的高斯徑向柔光雲絮，邊緣完全衰減至 alpha = 0，徹底消除生硬球邊
+        const lobes = [
+          { x: 128, y: 128, r: 112, a: 0.42 },
+          { x: 96,  y: 114, r: 78,  a: 0.30 },
+          { x: 158, y: 120, r: 76,  a: 0.28 },
+          { x: 118, y: 152, r: 74,  a: 0.28 },
+          { x: 146, y: 96,  r: 64,  a: 0.24 },
+          { x: 92,  y: 148, r: 62,  a: 0.22 }
+        ];
+        lobes.forEach(lb => {
+          const g = ctx.createRadialGradient(lb.x, lb.y, 0, lb.x, lb.y, lb.r);
+          g.addColorStop(0.0, `rgba(255, 255, 255, ${lb.a})`);
+          g.addColorStop(0.35, `rgba(248, 252, 255, ${lb.a * 0.65})`);
+          g.addColorStop(0.7, `rgba(235, 245, 255, ${lb.a * 0.22})`);
+          g.addColorStop(1.0, 'rgba(235, 245, 255, 0)');
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(lb.x, lb.y, lb.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        const tex = new THREE.CanvasTexture(c);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        this._mistTexture = tex;
+        return tex;
+      }
+
       buildIslandFogCanopies() {
         this.islandFogGroups = [];
+        const mistTex = this.getMistTexture();
+        const mistTints = [0xffffff, 0xf1f7ff, 0xe8f3ff, 0xf8fafc];
 
         for (let i = 0; i < 5; i++) {
           const fogGroup = new THREE.Group();
@@ -8666,47 +9388,63 @@ puzzleSentences: [
           fogGroup.name = "island_fog_" + i;
 
           const isSanctuary = (i === 4);
-          const fogR = isSanctuary ? 15.0 : 20.0;
-          const puffCount = isSanctuary ? 22 : 30;
-
-          // 純白柔和半透明迷霧雲朵材質
-          const fogMat = new THREE.MeshStandardMaterial({
-            color: 0xffffff,
-            roughness: 0.85,
-            metalness: 0.02,
-            transparent: true,
-            opacity: 0.94,
-            depthWrite: false,
-            flatShading: false
-          });
+          const fogR = isSanctuary ? 15.0 : 19.5;
+          const wispCount = isSanctuary ? 34 : 44;
 
           const puffs = [];
-          for (let p = 0; p < puffCount; p++) {
-            const angle = (p / puffCount) * Math.PI * 2 + (p % 4) * 0.28;
-            const dist = (p % 2 === 0 ? 0.42 : 0.85) * fogR * (0.8 + (p % 3) * 0.12);
+          for (let p = 0; p < wispCount; p++) {
+            const tier = p % 3; // 0:貼海低霧, 1:中層濃霧, 2:頂部薄紗霧
+            const angle = (p / wispCount) * Math.PI * 2 + tier * 0.7 + (p % 5) * 0.22;
+            const radialRatio = tier === 0
+              ? (0.58 + (p % 4) * 0.14)
+              : (tier === 1 ? (0.18 + (p % 4) * 0.18) : (0.08 + (p % 3) * 0.18));
+            const dist = fogR * radialRatio;
             const px = Math.cos(angle) * dist;
             const pz = Math.sin(angle) * dist;
-            const py = 3.2 + (p % 4) * 1.5 + (dist < fogR * 0.45 ? 2.5 : 0);
-            const pr = 3.4 + (p % 3) * 1.6 + (dist < fogR * 0.4 ? 1.2 : 0);
+            const py = tier === 0
+              ? (2.2 + (p % 3) * 1.1)
+              : (tier === 1 ? (5.2 + (p % 4) * 1.1) : (8.6 + (p % 3) * 1.2));
 
-            const puffGeo = new THREE.SphereGeometry(pr, 14, 10);
-            const puffMesh = new THREE.Mesh(puffGeo, fogMat);
-            puffMesh.position.set(px, py, pz);
-            puffMesh.userData.origPos = new THREE.Vector3(px, py, pz);
-            fogGroup.add(puffMesh);
-            puffs.push(puffMesh);
+            const baseScale = tier === 0
+              ? (15.5 + (p % 3) * 2.5)
+              : (tier === 1 ? (14.5 + (p % 4) * 2.2) : (12.5 + (p % 3) * 2.0));
+            const baseOpacity = tier === 0
+              ? 0.66
+              : (tier === 1 ? 0.76 : 0.52);
+
+            const spriteMat = new THREE.SpriteMaterial({
+              map: mistTex,
+              color: mistTints[p % mistTints.length],
+              transparent: true,
+              opacity: baseOpacity,
+              depthWrite: false,
+              fog: false,
+              rotation: (p * 1.17) % (Math.PI * 2)
+            });
+
+            const mistSprite = new THREE.Sprite(spriteMat);
+            mistSprite.position.set(px, py, pz);
+            mistSprite.scale.set(baseScale * 1.25, baseScale * 0.85, 1);
+            mistSprite.userData.origPos = new THREE.Vector3(px, py, pz);
+            mistSprite.userData.baseScaleX = baseScale * 1.25;
+            mistSprite.userData.baseScaleY = baseScale * 0.85;
+            mistSprite.userData.baseOpacity = baseOpacity;
+            mistSprite.userData.driftSeed = p * 0.91 + i * 1.7;
+            mistSprite.userData.rotSpeed = (p % 2 === 0 ? 1 : -1) * (0.04 + (p % 4) * 0.015);
+            fogGroup.add(mistSprite);
+            puffs.push(mistSprite);
           }
 
           // 迷霧中心頂部：懸浮立體【🔒 待解鎖篇章】徽章
           const badgeText = i === 4 ? "🔒 守門神殿・通關前四島解鎖" : "🔒 探索迷霧・完成上一島解鎖";
-          const lockBadge = signBoard(badgeText, 4.2, 0.8, '#334155', '#ffffff');
-          lockBadge.position.set(0, 14.5, 0);
+          const lockBadge = signBoard(badgeText, 5.8, 0.92, '#334155', '#ffffff');
+          lockBadge.position.set(0, 12.8, 0);
           fogGroup.add(lockBadge);
           fogGroup.userData.lockBadge = lockBadge;
 
           fogGroup.userData.puffs = puffs;
-          fogGroup.userData.mat = fogMat;
           fogGroup.userData.islandIndex = i;
+          fogGroup.userData.isDissolving = false;
 
           this.scene.add(fogGroup);
           this.islandFogGroups.push(fogGroup);
@@ -8723,15 +9461,35 @@ puzzleSentences: [
             isUnlocked = true; // 第 1 島始終解鎖
           } else if (state.teacherMode) {
             isUnlocked = true; // 教師巡堂模式全部解鎖
+          } else if (i === 4) {
+            isUnlocked = [0, 1, 2, 3].every(k => !!state.teacherApprovals[k]);
           } else {
             isUnlocked = !!state.teacherApprovals[i - 1]; // 完成前一島則解鎖
           }
 
-          fg.visible = !isUnlocked;
+          if (isUnlocked) {
+            if (!fg.userData.isDissolving) {
+              fg.visible = false;
+            }
+          } else {
+            fg.userData.isDissolving = false;
+            fg.visible = true;
+            const puffs = fg.userData.puffs || [];
+            puffs.forEach(p => {
+              if (p.userData.origPos) p.position.copy(p.userData.origPos);
+              if (p.userData.baseScaleX) p.scale.set(p.userData.baseScaleX, p.userData.baseScaleY, 1);
+              if (p.material && p.userData.baseOpacity !== undefined) {
+                p.material.opacity = p.userData.baseOpacity;
+              }
+            });
+            if (fg.userData.lockBadge) {
+              fg.userData.lockBadge.position.set(0, 12.8, 0);
+            }
+          }
         });
       }
 
-      // 迷霧散開昇華動畫 (Dissolve Fog Animation)
+      // 迷霧散開昇華動畫 (Dissolve Fog Animation - 如晨霧般向外飄散蒸發)
       dissolveIslandFog(islandIdx, onComplete) {
         if (!this.islandFogGroups || !this.islandFogGroups[islandIdx]) {
           if (onComplete) onComplete();
@@ -8739,49 +9497,54 @@ puzzleSentences: [
         }
 
         const fg = this.islandFogGroups[islandIdx];
-        if (!fg.visible) {
-          if (onComplete) onComplete();
+        if (!fg.visible || fg.userData.isDissolving) {
+          if (!fg.visible && onComplete) onComplete();
           return;
         }
 
+        fg.userData.isDissolving = true;
         const startTime = performance.now();
-        const duration = 1800; // 1.8秒神聖散開動畫
+        const duration = 1600; // 1.6 秒柔和散霧動畫
         const puffs = fg.userData.puffs || [];
-        const mat = fg.userData.mat;
 
         const animateDissolve = (now) => {
+          if (!fg.userData.isDissolving) {
+            if (onComplete) onComplete();
+            return;
+          }
           const elapsed = now - startTime;
           const prog = Math.min(1.0, elapsed / duration);
           const easeProg = prog * prog * (3 - 2 * prog);
 
           puffs.forEach(p => {
             const orig = p.userData.origPos;
-            const expandFactor = 1.0 + easeProg * 1.6;
+            const expandFactor = 1.0 + easeProg * 1.45;
             p.position.x = orig.x * expandFactor;
             p.position.z = orig.z * expandFactor;
-            p.position.y = orig.y + easeProg * 7.5;
-            p.scale.setScalar(1.0 + easeProg * 0.9);
+            p.position.y = orig.y + easeProg * 5.5;
+            const scaleMul = 1.0 + easeProg * 0.75;
+            p.scale.set(p.userData.baseScaleX * scaleMul, p.userData.baseScaleY * scaleMul, 1);
+            if (p.material) {
+              p.material.opacity = Math.max(0, p.userData.baseOpacity * (1.0 - easeProg));
+            }
           });
 
           if (fg.userData.lockBadge) {
-            fg.userData.lockBadge.position.y = 14.5 + easeProg * 9.0;
-          }
-
-          if (mat) {
-            mat.opacity = Math.max(0, 0.94 * (1.0 - easeProg));
+            fg.userData.lockBadge.position.y = 12.8 + easeProg * 8.0;
           }
 
           if (prog < 1.0) {
             requestAnimationFrame(animateDissolve);
           } else {
+            fg.userData.isDissolving = false;
             fg.visible = false;
-            if (mat) mat.opacity = 0.94;
             puffs.forEach(p => {
               p.position.copy(p.userData.origPos);
-              p.scale.setScalar(1.0);
+              p.scale.set(p.userData.baseScaleX, p.userData.baseScaleY, 1);
+              if (p.material) p.material.opacity = p.userData.baseOpacity;
             });
             if (fg.userData.lockBadge) {
-              fg.userData.lockBadge.position.set(0, 14.5, 0);
+              fg.userData.lockBadge.position.set(0, 12.8, 0);
             }
             if (onComplete) onComplete();
           }
@@ -9111,9 +9874,12 @@ puzzleSentences: [
       }
 
       onResize() {
-        this.camera.aspect = window.innerWidth / window.innerHeight;
+        const w = Math.max(window.innerWidth || document.documentElement.clientWidth, 1);
+        const h = Math.max(window.innerHeight || document.documentElement.clientHeight, 1);
+        this.camera.aspect = w / h;
         this.camera.updateProjectionMatrix();
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        this.renderer.setSize(w, h);
       }
 
       // 【新技能規範流水線】：統一驅動水體波動、岸邊浪花、微風植被、落雨粒子與 Action-Ready 守門獸
@@ -9161,13 +9927,28 @@ puzzleSentences: [
           });
         }
 
-        // 【迷霧呼吸浮動】：未解鎖島嶼上方的探索迷霧群緩慢隨風起伏自轉
+        // 【迷霧飄渺流動】：未解鎖島嶼的柔和霧氣隨海風緩緩盤旋流動與呼吸起伏
         if (this.islandFogGroups) {
+          const mistDt = Math.min(dt, 0.05);
           this.islandFogGroups.forEach((fg, idx) => {
             if (fg && fg.visible) {
-              const breath = Math.sin(now * 1.6 + idx * 1.7) * 0.25;
+              const breath = Math.sin(now * 1.2 + idx * 1.7) * 0.22;
               fg.position.y = CURRICULUM_DATA[idx].position[1] + breath;
-              fg.rotation.y += 0.0008;
+              fg.rotation.y += 0.0007;
+              if (!fg.userData.isDissolving && fg.userData.puffs) {
+                fg.userData.puffs.forEach(sp => {
+                  const orig = sp.userData.origPos;
+                  const s = sp.userData.driftSeed || 0;
+                  if (orig) {
+                    sp.position.x = orig.x + Math.sin(now * 0.45 + s) * 0.85;
+                    sp.position.z = orig.z + Math.cos(now * 0.38 + s * 1.3) * 0.85;
+                    sp.position.y = orig.y + Math.sin(now * 0.7 + s * 0.7) * 0.35;
+                  }
+                  if (sp.material) {
+                    sp.material.rotation += (sp.userData.rotSpeed || 0.05) * mistDt;
+                  }
+                });
+              }
             }
           });
         }
@@ -9366,6 +10147,7 @@ puzzleSentences: [
         this.updateGoogleAuthUI();
         this.initScreenLabels();
         this.applyDayNightMode();
+        this.setupAutoFullscreenAndScaleLock();
         if (this.sceneDirector && this.sceneDirector.updateGuardianBadges) {
           this.sceneDirector.updateGuardianBadges();
         }
@@ -9619,6 +10401,171 @@ puzzleSentences: [
       }
 
       // ====================================================
+      // ⛶ 全螢幕與 100% 畫面比例鎖定／偵測控制
+      // ====================================================
+      isFullscreen() {
+        return Boolean(
+          document.fullscreenElement ||
+          document.webkitFullscreenElement ||
+          document.msFullscreenElement
+        );
+      }
+
+      enterFullscreen(silent = false) {
+        if (this.isFullscreen()) {
+          this.updateFullscreenUI();
+          return Promise.resolve(true);
+        }
+        // 瀏覽器安全規範：未經使用者互動前直接呼叫 requestFullscreen() 會產生主控台警告並被擋下
+        if (silent && navigator.userActivation && !navigator.userActivation.isActive) {
+          return Promise.resolve(false);
+        }
+        const el = document.documentElement;
+        const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+        if (typeof req !== "function") {
+          if (!silent) this.showToast("⚠️ 目前瀏覽器環境不支援網頁全螢幕，請按 F11 切換！", 3200);
+          return Promise.resolve(false);
+        }
+        try {
+          const res = el.requestFullscreen
+            ? el.requestFullscreen({ navigationUI: "hide" })
+            : req.call(el);
+          return Promise.resolve(res)
+            .then(() => {
+              this.updateFullscreenUI();
+              requestAnimationFrame(() => this.sceneDirector?.onResize());
+              return true;
+            })
+            .catch(() => {
+              if (!silent) this.showToast("💡 請點擊畫面按鈕或按 F11 進入全螢幕模式", 3000);
+              return false;
+            });
+        } catch (err) {
+          if (!silent) this.showToast("💡 請點擊畫面按鈕或按 F11 進入全螢幕模式", 3000);
+          return Promise.resolve(false);
+        }
+      }
+
+      exitFullscreen() {
+        if (!this.isFullscreen()) return Promise.resolve();
+        const exitFn = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+        if (typeof exitFn !== "function") return Promise.resolve();
+        try {
+          return Promise.resolve(exitFn.call(document))
+            .then(() => {
+              this.updateFullscreenUI();
+              requestAnimationFrame(() => this.sceneDirector?.onResize());
+            })
+            .catch(() => {});
+        } catch (e) {
+          return Promise.resolve();
+        }
+      }
+
+      toggleFullscreen() {
+        if (this.isFullscreen()) {
+          this._userExitedFullscreen = true;
+          this.exitFullscreen();
+        } else {
+          this._userExitedFullscreen = false;
+          this.enterFullscreen(false);
+        }
+      }
+
+      updateFullscreenUI() {
+        const active = this.isFullscreen();
+        const topBtn = document.getElementById("topFullscreenBtn");
+        const topIcon = document.getElementById("topFullscreenIcon");
+        const topText = document.getElementById("topFullscreenText");
+        if (topBtn) topBtn.classList.toggle("is-fullscreen", active);
+        if (topIcon) topIcon.textContent = active ? "🗗" : "⛶";
+        if (topText) topText.textContent = active ? "退出全螢幕" : "全螢幕";
+
+        const hudBtn = document.getElementById("hudFullscreenBtn");
+        const hudIcon = document.getElementById("hudFullscreenIcon");
+        const hudText = document.getElementById("hudFullscreenText");
+        if (hudBtn) hudBtn.classList.toggle("is-fullscreen", active);
+        if (hudIcon) hudIcon.textContent = active ? "🗗" : "⛶";
+        if (hudText) hudText.textContent = active ? "退出全螢幕" : "全螢幕";
+      }
+
+      checkBrowserZoomRatio() {
+        const vvScale = window.visualViewport?.scale || 1;
+        let desktopZoom = 1;
+        // 全螢幕或一般視窗下，若無側邊開發者工具，outerWidth/innerWidth 可反映瀏覽器縮放比例
+        if (this.isFullscreen() && window.outerWidth > 0 && window.innerWidth > 0) {
+          desktopZoom = window.outerWidth / window.innerWidth;
+        }
+        const effectiveZoom = Math.abs(vvScale - 1) > 0.05 ? vvScale : desktopZoom;
+        if (Math.abs(effectiveZoom - 1) > 0.08 && !this._zoomWarnedOnce) {
+          this._zoomWarnedOnce = true;
+          const pct = Math.round(effectiveZoom * 100);
+          this.showToast(`🔍 目前瀏覽器縮放約為 ${pct}%，建議按 Ctrl + 0（Mac 按 Cmd + 0）調回 100% 獲得最佳比例！`, 4800);
+        }
+      }
+
+      setupAutoFullscreenAndScaleLock() {
+        this._userExitedFullscreen = false;
+        this._zoomWarnedOnce = false;
+
+        // 1. 嘗試在開啟網頁當下立即進入全螢幕（Kiosk / PWA 環境直接生效；一般瀏覽器由下方首次互動無縫接手）
+        this.enterFullscreen(true);
+
+        // 2. 瀏覽器安全規範下，首次點擊、觸控或按鍵時自動進入全螢幕
+        const triggerFirstFullscreen = (e) => {
+          if (this._userExitedFullscreen || this.isFullscreen()) {
+            cleanupFirstGesture();
+            return;
+          }
+          // 避免點擊退出全螢幕按鈕時誤觸進入
+          if (e?.target?.closest?.("#topFullscreenBtn, #hudFullscreenBtn")) return;
+          this.enterFullscreen(true).then((ok) => {
+            if (ok) cleanupFirstGesture();
+          });
+        };
+        const cleanupFirstGesture = () => {
+          document.removeEventListener("click", triggerFirstFullscreen, true);
+          document.removeEventListener("touchend", triggerFirstFullscreen, true);
+          document.removeEventListener("keydown", triggerFirstFullscreen, true);
+        };
+        document.addEventListener("click", triggerFirstFullscreen, true);
+        document.addEventListener("touchend", triggerFirstFullscreen, true);
+        document.addEventListener("keydown", triggerFirstFullscreen, true);
+
+        // 3. 監聽全螢幕狀態與視窗尺寸變更，即時同步 UI 與 Three.js 100% 畫布比例
+        const handleFsOrResize = () => {
+          this.updateFullscreenUI();
+          this.sceneDirector?.onResize();
+          this.checkBrowserZoomRatio();
+        };
+        document.addEventListener("fullscreenchange", handleFsOrResize);
+        document.addEventListener("webkitfullscreenchange", handleFsOrResize);
+        document.addEventListener("msfullscreenchange", handleFsOrResize);
+        window.addEventListener("resize", () => this.checkBrowserZoomRatio());
+        window.visualViewport?.addEventListener("resize", () => {
+          this.sceneDirector?.onResize();
+          this.checkBrowserZoomRatio();
+        });
+
+        // 4. 阻擋頁面誤觸 Ctrl+滾輪、Ctrl +/-、雙指捏合，避免畫面比例偏離 100%
+        window.addEventListener("wheel", (e) => {
+          if (e.ctrlKey && e.target?.id !== "webgl-canvas") {
+            e.preventDefault();
+          }
+        }, { passive: false });
+        document.addEventListener("gesturestart", (e) => e.preventDefault(), { passive: false });
+        document.addEventListener("gesturechange", (e) => e.preventDefault(), { passive: false });
+        window.addEventListener("keydown", (e) => {
+          if ((e.ctrlKey || e.metaKey) && ["+", "-", "=", "_"].includes(e.key)) {
+            e.preventDefault();
+          }
+        });
+
+        this.updateFullscreenUI();
+        setTimeout(() => this.checkBrowserZoomRatio(), 1200);
+      }
+
+      // ====================================================
       // 📖 作文大綱行前冒險指南彈窗控制 (Student Outline Modal)
       // ====================================================
       openOutlineModal() {
@@ -9632,6 +10579,9 @@ puzzleSentences: [
       }
 
       startAdventureAfterOutline() {
+        if (!this._userExitedFullscreen && !this.isFullscreen()) {
+          this.enterFullscreen(true);
+        }
         this.closeOutlineModal();
         this.closeDrawer();
         this.isFlyingAirplane = false;
@@ -9682,8 +10632,8 @@ puzzleSentences: [
       teacherSwitchTier(tier) {
         if (!state.teacherMode) {
           const pwd = document.getElementById("teacherPwdInput").value;
-          if (pwd !== "888") {
-            this.showToast("🔒 請先於上方輸入教師通關密碼（888），方可進行分層輔導調度！");
+          if (pwd !== "40329") {
+            this.showToast("🔒 請先於上方輸入正確的教師通關密碼，方可進行分層輔導調度！");
             return;
           }
         }
@@ -9700,7 +10650,7 @@ puzzleSentences: [
         const textEl = document.getElementById("teacherModeText");
         if (iconEl && textEl) {
           iconEl.textContent = state.teacherMode ? "🔓" : "🔒";
-          textEl.textContent = state.teacherMode ? "巡堂免密碼蓋章" : "教師模式 (密碼 888)";
+          textEl.textContent = state.teacherMode ? "巡堂免密碼蓋章" : "教師模式";
         }
       }
 
@@ -9718,10 +10668,25 @@ puzzleSentences: [
       }
 
       toggleTeacherMode() {
+        if (!state.teacherMode) {
+          const pwd = window.prompt("請輸入教師通關密碼以開啟教師模式：");
+          if (pwd === null) return;
+          if (pwd !== "40329") {
+            this.showToast("❌ 教師密碼錯誤，無法開啟教師模式！");
+            return;
+          }
+        }
         state.teacherMode = !state.teacherMode;
         state.saveState();
         this.updateTeacherModeUI();
-        this.showToast(state.teacherMode ? "🔓 已切換為【巡堂免密碼快速蓋章】模式！" : "🔒 已切換為【密碼保護】模式 (預設 888)！");
+        this.updateNavStepDots();
+        if (this.sceneDirector?.updateAllIslandFogs) {
+          this.sceneDirector.updateAllIslandFogs();
+        }
+        if (this.sceneDirector?.createMarkers) {
+          this.sceneDirector.createMarkers();
+        }
+        this.showToast(state.teacherMode ? "🔓 已切換為【巡堂免密碼快速蓋章】模式！" : "🔒 已切換為【教師密碼保護】模式！");
       }
 
       // 聚焦在目前正在進行的島嶼 (取代原有的全景俯瞰功能)
@@ -10019,6 +10984,11 @@ puzzleSentences: [
         sd._isFlyingTo = false;
         sd._flyToSeq = (sd._flyToSeq || 0) + 1;
 
+        // 若目標島嶼已解鎖但迷霧尚未散開，起飛同時立刻吹散該島迷霧
+        if (sd.islandFogGroups && sd.islandFogGroups[toIdx] && sd.islandFogGroups[toIdx].visible && sd.dissolveIslandFog) {
+          sd.dissolveIslandFog(toIdx);
+        }
+
         // 配合新島嶼切換情境氣候與守門獸情緒
         if (toIdx === 2) {
           sd.setWeather('storm');
@@ -10279,6 +11249,10 @@ puzzleSentences: [
 
             // 停妥在目標島嶼跑道停機坪
             sd.updateAirplaneParked(toIdx);
+            if (sd.islandFogGroups && sd.islandFogGroups[toIdx]) {
+              sd.islandFogGroups[toIdx].userData.isDissolving = false;
+            }
+            if (sd.updateAllIslandFogs) sd.updateAllIslandFogs();
 
             this.currentIsland = toIdx;
             this.updateNavStepDots();
@@ -10428,10 +11402,199 @@ puzzleSentences: [
         document.getElementById("conceptArtModalBackdrop")?.classList.remove("open");
       }
 
+      // 必填作答檢核：任何一格未填寫皆不得前往下一步
+      highlightMissingField(el, message) {
+        if (el) {
+          el.classList.add("input-required-error");
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          el.focus({ preventScroll: true });
+        }
+        this.showToast(message, 3200);
+      }
+
+      // 轉之島考試結果兩種狀況切換：共用句型模板，依所選結果動態切換引導與參考詞庫
+      getEffectiveIslandData(data) {
+        if (!data || data.id !== 2 || !data.twistVariants) return data;
+        const outcome = state.twistOutcome === "better" ? "better" : "worse";
+        const variant = data.twistVariants[outcome];
+        if (!variant) return data;
+
+        const mergedGuided = {};
+        if (data.guidedFrames) {
+          for (const key of Object.keys(data.guidedFrames)) {
+            const baseFrame = data.guidedFrames[key];
+            const guideOverride = (variant.guidedGuidance && variant.guidedGuidance[key]) || {};
+            mergedGuided[key] = {
+              label: guideOverride.label || baseFrame.label,
+              patterns: baseFrame.patterns.map((pat) => {
+                const patOverrides = guideOverride[pat.id] || [];
+                return {
+                  id: pat.id,
+                  name: pat.name,
+                  template: pat.template,
+                  blanks: pat.blanks.map((b, bIdx) => ({
+                    ...b,
+                    ...(patOverrides[bIdx] || {})
+                  }))
+                };
+              })
+            };
+          }
+        }
+
+        return {
+          ...data,
+          words: variant.words || data.words,
+          masterPrompts: variant.masterPrompts || data.masterPrompts,
+          elementOptions: variant.elementOptions || data.elementOptions,
+          guidedFrames: Object.keys(mergedGuided).length > 0 ? mergedGuided : data.guidedFrames
+        };
+      }
+
+      setTwistOutcome(outcome) {
+        if (outcome !== "better" && outcome !== "worse") return;
+        const prev = state.twistOutcome;
+        state.twistOutcome = outcome;
+
+        // 若從另一種結果切換過來，清空原本不相符的第 2 島作答與段落草稿
+        if (prev && prev !== outcome) {
+          if (state.guidedSelections) state.guidedSelections[2] = {};
+          if (state.elementSelections) state.elementSelections[2] = { time: 0, place: 0, person: 0, object: 0, event: 0 };
+          if (state.puzzleSelections) state.puzzleSelections[2] = [0, 0, 0, 0];
+          if (state.paragraphs) state.paragraphs[2] = "";
+        }
+        state.saveState();
+
+        this.renderWordChips(2);
+        this.renderStep1Pickers(CURRICULUM_DATA[2]);
+        this.showToast(
+          outcome === "better"
+            ? "🌟 已切換為【比想像中好・驚喜高分】寫作引導！"
+            : "⛈️ 已切換為【比想像中壞・震撼風暴】寫作引導！",
+          2600
+        );
+      }
+
+      renderWordChips(index) {
+        const effData = this.getEffectiveIslandData(CURRICULUM_DATA[index]);
+        const wordWrap = document.getElementById("wordChips");
+        if (wordWrap && effData && effData.words) {
+          wordWrap.innerHTML = "";
+          effData.words.forEach(w => {
+            const btn = document.createElement("button");
+            btn.className = "chip";
+            btn.textContent = w;
+            btn.onclick = () => this.insertText(w);
+            wordWrap.appendChild(btn);
+          });
+        }
+      }
+
+      validateStep1Required() {
+        const islandIdx = this.currentIsland;
+        const rawData = CURRICULUM_DATA[islandIdx];
+        if (!rawData) return true;
+
+        if (islandIdx === 2 && state.twistOutcome !== "better" && state.twistOutcome !== "worse") {
+          const outcomeCard = document.getElementById("twistOutcomeCard");
+          this.highlightMissingField(
+            outcomeCard,
+            "⚠️ 請先選擇這次發考卷的結果是「比想像中好」還是「比想像中壞」，才能開啟對應的寫作引導與繼續下一步！"
+          );
+          return false;
+        }
+
+        const data = this.getEffectiveIslandData(rawData);
+        const elemKeys = ["time", "place", "person", "object", "event"];
+
+        if (state.tier === "intermediate" && data.guidedFrames) {
+          const gSel = (state.guidedSelections && state.guidedSelections[islandIdx]) || {};
+          for (const key of elemKeys) {
+            const frameInfo = data.guidedFrames[key];
+            if (!frameInfo) continue;
+            const curKeyData = gSel[key] || { patternIdx: 0, blanks: {} };
+            const pIdx = curKeyData.patternIdx || 0;
+            const curPattern = frameInfo.patterns[pIdx] || frameInfo.patterns[0];
+            for (const b of curPattern.blanks) {
+              const inputEl = document.getElementById(`guidedInput_${key}_${b.key}`);
+              const storedVal = (curKeyData.blanks && curKeyData.blanks[b.key]) || "";
+              const val = (inputEl ? inputEl.value : storedVal).trim();
+              if (!val) {
+                this.highlightMissingField(
+                  inputEl,
+                  `⚠️【${frameInfo.label}】的「${b.label}」為必填作答格！請先填寫所有空格再前往下一步。`
+                );
+                return false;
+              }
+            }
+          }
+          return true;
+        }
+
+        if (state.tier === "master") {
+          const curSel = state.elementSelections[islandIdx] || {};
+          const mp = data.masterPrompts || {};
+          for (const key of elemKeys) {
+            const promptInfo = mp[key];
+            if (!promptInfo) continue;
+            const inputEl = document.getElementById(`masterInput_${key}`);
+            const storedVal = curSel[`${key}_custom`] || "";
+            const val = (inputEl ? inputEl.value : storedVal).trim();
+            if (!val) {
+              this.highlightMissingField(
+                inputEl,
+                `⚠️【${promptInfo.title}】為必填作答格！請先填寫所有格子再前往下一步。`
+              );
+              return false;
+            }
+          }
+          return true;
+        }
+
+        return true;
+      }
+
+      validateStep3Required() {
+        const islandIdx = this.currentIsland;
+        const textarea = document.getElementById("paragraphInput");
+        const val = (this.currentStep === 3 && textarea ? textarea.value : (state.paragraphs[islandIdx] || "")).trim();
+        if (!val) {
+          this.highlightMissingField(
+            this.currentStep === 3 ? textarea : null,
+            "⚠️ 第 3 步段落作答格為必填，尚未填寫內容前不能前往下一步！"
+          );
+          return false;
+        }
+        if (val.includes("【______】")) {
+          this.highlightMissingField(
+            this.currentStep === 3 ? textarea : null,
+            "⚠️ 段落中仍有未填寫的【______】空格，請補齊後再前往下一步！"
+          );
+          return false;
+        }
+        return true;
+      }
+
       // ====================================================
-      // 階梯向導切換 (依據 low / mid / high 成就全面分流)
+      // 階梯向導切換 (依據 low / mid / high 成就全面分流，前進時強制檢查所有必填格)
       // ====================================================
-      goToStep(step) {
+      goToStep(step, opts = {}) {
+        const { skipValidation = false } = opts;
+        if (!skipValidation && step > (this.currentStep || 1)) {
+          if (step >= 2 && !this.validateStep1Required()) {
+            return false;
+          }
+          if (step >= 4) {
+            if (this.currentStep < 3) {
+              this.showToast("⚠️ 請先依序完成第 3 步「潤飾檢驗」作答，再前往教師蓋章喔！", 3000);
+              return false;
+            }
+            if (!this.validateStep3Required()) {
+              return false;
+            }
+          }
+        }
+
         this.currentStep = step;
         const data = CURRICULUM_DATA[this.currentIsland];
 
@@ -10462,6 +11625,7 @@ puzzleSentences: [
           }
           this.updateTeacherUI(this.currentIsland);
         }
+        return true;
       }
 
       // 載入當前島嶼資料
@@ -10470,26 +11634,16 @@ puzzleSentences: [
         document.getElementById("drawerTitle").textContent = `🏝️ ${data.name}`;
         document.getElementById("peerExemplar").textContent = data.peer;
 
-        // 好詞百寶箱初始化
-        const wordWrap = document.getElementById("wordChips");
-        if (wordWrap) {
-          wordWrap.innerHTML = "";
-          data.words.forEach(w => {
-            const btn = document.createElement("button");
-            btn.className = "chip";
-            btn.textContent = w;
-            btn.onclick = () => this.insertText(w);
-            wordWrap.appendChild(btn);
-          });
-        }
+        // 好詞百寶箱初始化（含轉之島分支詞庫）
+        this.renderWordChips(index);
 
-        // 依據完成狀態決定停留步數
+        // 依據完成狀態決定停留步數（載入既有進度時略過切換防呆）
         if (state.teacherApprovals[index]) {
-          this.goToStep(4);
+          this.goToStep(4, { skipValidation: true });
         } else if (state.paragraphs[index] && state.paragraphs[index].length >= 30) {
-          this.goToStep(3);
+          this.goToStep(3, { skipValidation: true });
         } else {
-          this.goToStep(1);
+          this.goToStep(1, { skipValidation: true });
         }
 
         // 渲染本島 3 位常駐島民 NPC 面板
@@ -10670,14 +11824,51 @@ puzzleSentences: [
       }
 
       // ----------------------------------------------------
-      // Step 1: 渲染五要素選擇器 (三層成就本質差異化)
+      // Step 1: 渲染五要素選擇器 (三層成就本質差異化 + 轉之島雙狀況先選分流)
       // ----------------------------------------------------
-      renderStep1Pickers(data) {
+      renderStep1Pickers(rawData) {
         const list = document.getElementById("elementPickersList");
-        if (!list || !data.elementOptions) return;
+        if (!list || !rawData || !rawData.elementOptions) return;
         list.innerHTML = "";
 
         const islandIdx = this.currentIsland;
+
+        // 轉之島專屬：先給學生選擇這次發考卷結果是「比想像中好」還是「比想像中壞」
+        if (islandIdx === 2) {
+          const outcome = state.twistOutcome;
+          const selectorCard = document.createElement("div");
+          selectorCard.id = "twistOutcomeCard";
+          selectorCard.className = "twist-outcome-card";
+          selectorCard.innerHTML = `
+            <div class="twist-outcome-title">
+              <span>🎯 先選一選：這次發考卷的結果是哪一種？（必選）</span>
+            </div>
+            <div style="font-size: 15.5px; color: #7c2d12; font-weight: 700; line-height: 1.65;">
+              考試結果可能出乎意料地好，也可能不如預期。請先點選你的情況，系統會為你切換成對應的寫作引導！
+            </div>
+            <div class="twist-outcome-grid">
+              <button type="button" class="twist-outcome-btn ${outcome === 'better' ? 'active-better' : ''}" onclick="window.islandApp.setTwistOutcome('better')">
+                <span style="font-size: 18px; font-weight: 900; color: #15803d;">🌟 比想像中好</span>
+                <span style="font-size: 14.5px; color: #334155; font-weight: 700; line-height: 1.5;">分數高得驚喜、老師微笑稱讚、家人開懷歡呼</span>
+              </button>
+              <button type="button" class="twist-outcome-btn ${outcome === 'worse' ? 'active-worse' : ''}" onclick="window.islandApp.setTwistOutcome('worse')">
+                <span style="font-size: 18px; font-weight: 900; color: #b91c1c;">⛈️ 比想像中壞</span>
+                <span style="font-size: 14.5px; color: #334155; font-weight: 700; line-height: 1.5;">分數退步滿江紅、心驚膽戰領考卷、回家遇到風暴</span>
+              </button>
+            </div>
+          `;
+          list.appendChild(selectorCard);
+
+          if (outcome !== "better" && outcome !== "worse") {
+            const waitCard = document.createElement("div");
+            waitCard.className = "twist-outcome-wait";
+            waitCard.innerHTML = `👆 請先點選上方其中一種考試結果，系統就會立刻切換並顯示專屬的五要素思考引導！`;
+            list.appendChild(waitCard);
+            return;
+          }
+        }
+
+        const data = this.getEffectiveIslandData(rawData);
         const curSelections = state.elementSelections[islandIdx] || { time: 0, place: 0, person: 0, object: 0, event: 0 };
 
         const elemKeys = [
@@ -10803,7 +11994,7 @@ puzzleSentences: [
 
               <!-- 大師輸入框 -->
               <div style="margin-top: 8px;">
-                <input class="element-custom-input" id="masterInput_${key}" style="padding: 12px 16px; font-weight: 700; font-size: 18px; width: 100%; border: 1.5px solid #e2e8f0; border-radius: 10px;" placeholder="${promptInfo.placeholder}" value="${curVal}" onfocus="window.islandApp.lastFocusedElement='${key}'" oninput="window.islandApp.setElementCustomText('${key}', this.value)">
+                <input class="element-custom-input" required id="masterInput_${key}" style="padding: 12px 16px; font-weight: 700; font-size: 18px; width: 100%; border: 1.5px solid #e2e8f0; border-radius: 10px;" placeholder="${promptInfo.placeholder}（必填）" value="${curVal}" onfocus="window.islandApp.lastFocusedElement='${key}'" oninput="window.islandApp.setElementCustomText('${key}', this.value)">
               </div>
             `;
             list.appendChild(card);
@@ -10887,7 +12078,7 @@ puzzleSentences: [
                     <span style="font-size: 18px; font-weight: 900; color: #1e293b;">【${b.label}】</span>
                     ${posBadge}
                   </div>
-                  ${currentVal ? '<span style="font-size: 15.5px; color: #16a34a; font-weight: 800;">✓ 已親自填寫</span>' : '<span style="font-size: 15px; color: #dc2626; font-weight: 800;">待輸入自己的詞語</span>'}
+                  <span id="guidedStatus_${key}_${b.key}" style="font-size: 15px; color: ${currentVal.trim() ? '#16a34a' : '#dc2626'}; font-weight: 800;">${currentVal.trim() ? '✓ 已親自填寫' : '* 必填，待輸入'}</span>
                 </div>
 
                 <!-- 🧠 大腦想一想思考導引問句 (激發內在聯想，非被動點選) -->
@@ -10895,12 +12086,13 @@ puzzleSentences: [
                   ${promptText}
                 </div>
 
-                <!-- 學生親手輸入框 (預設鼓勵親自打字) -->
+                <!-- 學生親手輸入框 (預設鼓勵親自打字，必填) -->
                 <div style="margin-top: 10px;">
                   <input class="element-custom-input" 
+                         required
                          id="guidedInput_${key}_${b.key}"
                          value="${currentVal.replace(/"/g, '&quot;')}" 
-                         placeholder="${b.placeholder || '請親手輸入你想到的詞語（試著用自己的話寫出來）...'}" 
+                         placeholder="${b.placeholder || '請親手輸入你想到的詞語（必填）...'}" 
                          style="padding: 12px 16px; font-size: 18px; font-weight: 700; width: 100%; border: 1.5px solid #94a3b8; border-radius: 12px; box-sizing: border-box; background: #ffffff;"
                          oninput="window.islandApp.setGuidedBlankText('${key}', '${b.key}', this.value)">
                 </div>
@@ -10991,11 +12183,21 @@ puzzleSentences: [
         if (!state.guidedSelections[islandIdx][key]) state.guidedSelections[islandIdx][key] = { patternIdx: 0, blanks: {} };
         if (!state.guidedSelections[islandIdx][key].blanks) state.guidedSelections[islandIdx][key].blanks = {};
 
-        state.guidedSelections[islandIdx][key].blanks[blankKey] = text.trim();
+        const trimmed = text.trim();
+        state.guidedSelections[islandIdx][key].blanks[blankKey] = trimmed;
         state.saveState();
 
+        // 即時清除未填紅框並更新必填狀態標籤
+        const inputEl = document.getElementById(`guidedInput_${key}_${blankKey}`);
+        if (inputEl && trimmed) inputEl.classList.remove("input-required-error");
+        const statusEl = document.getElementById(`guidedStatus_${key}_${blankKey}`);
+        if (statusEl) {
+          statusEl.style.color = trimmed ? '#16a34a' : '#dc2626';
+          statusEl.textContent = trimmed ? '✓ 已親自填寫' : '* 必填，待輸入';
+        }
+
         // 即時刷新組裝文字
-        const data = CURRICULUM_DATA[islandIdx];
+        const data = this.getEffectiveIslandData(CURRICULUM_DATA[islandIdx]);
         if (data.guidedFrames && data.guidedFrames[key]) {
           const frameInfo = data.guidedFrames[key];
           const pIdx = state.guidedSelections[islandIdx][key].patternIdx || 0;
@@ -11044,8 +12246,8 @@ puzzleSentences: [
         delete state.elementSelections[islandIdx][`${key}_custom`];
         state.saveState();
 
-        const data = CURRICULUM_DATA[islandIdx];
-        this.renderStep1Pickers(data);
+        const data = this.getEffectiveIslandData(CURRICULUM_DATA[islandIdx]);
+        this.renderStep1Pickers(CURRICULUM_DATA[islandIdx]);
         this.showToast(`已選取【${data.elementOptions[key].options[optIdx]}】`, 1500);
       }
 
@@ -11058,16 +12260,19 @@ puzzleSentences: [
         if (!state.elementSelections[islandIdx]) {
           state.elementSelections[islandIdx] = { time: 0, place: 0, person: 0, object: 0, event: 0 };
         }
-        state.elementSelections[islandIdx][`${key}_custom`] = text.trim();
+        const trimmed = text.trim();
+        state.elementSelections[islandIdx][`${key}_custom`] = trimmed;
         state.saveState();
-        this.showToast(`已記錄自訂${key}！`, 1500);
+        const inputEl = document.getElementById(`masterInput_${key}`);
+        if (inputEl && trimmed) inputEl.classList.remove("input-required-error");
       }
 
       // ====================================================
       // 【五要素血脈承接與連貫閉環系統】
       // 100% 串接 Step 1 (選五要素) ➔ Step 2 (組段落句) ➔ Step 3 (潤飾檢驗)
       // ====================================================
-      getSelectedElements(data) {
+      getSelectedElements(rawData) {
+        const data = this.getEffectiveIslandData(rawData);
         const islandIdx = this.currentIsland;
         const sel = state.elementSelections[islandIdx] || { time: 0, place: 0, person: 0, object: 0, event: 0 };
         const eo = data.elementOptions || {};
@@ -11224,7 +12429,60 @@ puzzleSentences: [
             }
           ];
         } else if (islandIdx === 2) {
-          // 轉之島・驚天動地發考卷
+          // 轉之島・驚天動地發考卷（共用 4 句骨架構，依考試結果比想像中好/壞切換句子表現）
+          const placePhrase = e.place && e.place.startsWith("在") ? e.place : `在${e.place}`;
+          if (state.twistOutcome === "better") {
+            return [
+              {
+                index: 1,
+                title: "① 開頭句（時空定錨・反轉驚喜）",
+                elementTag: "時",
+                elementText: e.time,
+                template: (tail) => `${e.time}，迎接我們的是${tail}！`,
+                options: [
+                  "像坐雲霄飛車般大逆轉的「發考卷」時刻",
+                  "讓人既緊張又期待的成績大揭曉",
+                  "一場出乎意料的驚喜時刻"
+                ]
+              },
+              {
+                index: 2,
+                title: "② 發展句（景物考卷驚喜）",
+                elementTag: "地＋物",
+                elementText: `${e.place} ＋ ${e.object}`,
+                template: (tail) => `${placePhrase}，我雙手微顫接過${e.object}，${tail}。`,
+                options: [
+                  "那亮眼的數字像一道溫暖的陽光灑進心房",
+                  "驚人的進步分數讓我差點開心到跳起來",
+                  "滿紙紅勾勾彷彿在對我眨眼睛微笑"
+                ]
+              },
+              {
+                index: 3,
+                title: "③ 轉折句（人物歡喜互動）",
+                elementTag: "人",
+                elementText: e.person,
+                template: (tail) => `回到家交出成績單，${e.person}頓時${tail}。`,
+                options: [
+                  "露出驚訝又燦爛的笑容，豎起大拇指大大稱讚",
+                  "開心地拍手叫好，直呼我的努力沒有白費",
+                  "給了我一個大大的溫暖擁抱"
+                ]
+              },
+              {
+                index: 4,
+                title: "④ 結尾句（事件感動與信心）",
+                elementTag: "事",
+                elementText: e.event,
+                template: (tail) => `看著努力換來的考卷，我${e.event}，${tail}！`,
+                options: [
+                  "覺得這陣子的辛苦挑燈夜戰全都值得了",
+                  "心裡像喝了蜂蜜一樣甜滋滋的",
+                  "對自己的實力更加充滿信心"
+                ]
+              }
+            ];
+          }
           return [
             {
               index: 1,
@@ -11243,7 +12501,7 @@ puzzleSentences: [
               title: "② 發展句（景物考卷震撼）",
               elementTag: "地＋物",
               elementText: `${e.place} ＋ ${e.object}`,
-              template: (tail) => `在${e.place}，我雙手顫抖接過${e.object}，${tail}。`,
+              template: (tail) => `${placePhrase}，我雙手顫抖接過${e.object}，${tail}。`,
               options: [
                 "那鮮紅刺眼的數字像一道閃電劈進胸口",
                 "慘不忍睹的分數讓我雙腿直發軟",
@@ -11479,7 +12737,7 @@ puzzleSentences: [
         const personMatched = checkMatch(e.person);
         const objectMatched = checkMatch(e.object);
         const eventMatched = checkMatch(e.event);
-        const rhetoricMatched = currentText.includes("比") || currentText.includes("像") || currentText.includes("如") || currentText.includes("堆積如山") || currentText.includes("風雲變色") || currentText.includes("草木皆兵") || currentText.includes("包青天") || currentText.includes("火山");
+        const rhetoricMatched = currentText.includes("比") || currentText.includes("像") || currentText.includes("如") || currentText.includes("堆積如山") || currentText.includes("風雲變色") || currentText.includes("草木皆兵") || currentText.includes("包青天") || currentText.includes("火山") || currentText.includes("陽光") || currentText.includes("蜂蜜") || currentText.includes("煙火");
 
         checkerContainer.innerHTML = `
           <div class="continuity-checker-card">
@@ -11553,7 +12811,9 @@ puzzleSentences: [
       }
 
       onTextChange() {
-        const val = document.getElementById("paragraphInput").value;
+        const textarea = document.getElementById("paragraphInput");
+        const val = textarea.value;
+        if (val.trim()) textarea.classList.remove("input-required-error");
         state.paragraphs[this.currentIsland] = val;
         state.saveState();
 
@@ -11639,8 +12899,8 @@ puzzleSentences: [
       approveParagraph() {
         if (!state.teacherMode) {
           const pwd = document.getElementById("teacherPwdInput").value;
-          if (pwd !== "888") {
-            this.showToast("❌ 教師密碼錯誤！請輸入預設密碼 888，或由右上角切換免密碼巡堂模式。");
+          if (pwd !== "40329") {
+            this.showToast("❌ 教師密碼錯誤！請重新輸入教師通關密碼。");
             return;
           }
         }
@@ -11655,6 +12915,16 @@ puzzleSentences: [
         this.updateTeacherUI(idx);
         this.updateNavStepDots();
         this.sceneDirector.createMarkers();
+        if (this.sceneDirector?.updateAllIslandFogs) {
+          // 僅對非 nextIdx 的島嶼同步，nextIdx 保留給下方散霧動畫
+          const nextToDissolve = idx + 1;
+          const nextFg = this.sceneDirector.islandFogGroups?.[nextToDissolve];
+          const wasVisible = nextFg ? nextFg.visible : false;
+          this.sceneDirector.updateAllIslandFogs();
+          if (nextFg && wasVisible && (nextToDissolve < 4 || [0, 1, 2, 3].every(k => state.teacherApprovals[k]))) {
+            nextFg.visible = true;
+          }
+        }
 
         // 點亮島嶼燈塔為青綠色自發光
         const beacon = this.sceneDirector.islands[idx].getObjectByName(`beacon_${idx}`);
@@ -11676,15 +12946,15 @@ puzzleSentences: [
           this.closeDrawer();
           this.showToast(`✨ 賀！下一座島嶼【${CURRICULUM_DATA[nextIdx].shortName}】探索迷霧破除散開！`, 3000);
 
-          // 先觸發下一座島嶼的迷霧散開動畫，散開後小飛機在跑道助跑起飛！
-          if (this.sceneDirector && this.sceneDirector.dissolveIslandFog) {
-            this.sceneDirector.dissolveIslandFog(nextIdx, () => {
-              this.playAirplaneFlight(idx, nextIdx);
-            });
-          } else {
+          // 若下一站已解鎖，立即在起飛同時吹散該島迷霧並載著學生飛往下一島
+          const canEnterNext = state.teacherMode || nextIdx < 4 || [0, 1, 2, 3].every(k => state.teacherApprovals[k]);
+          if (canEnterNext) {
+            if (this.sceneDirector?.dissolveIslandFog) {
+              this.sceneDirector.dissolveIslandFog(nextIdx);
+            }
             setTimeout(() => {
               this.playAirplaneFlight(idx, nextIdx);
-            }, 800);
+            }, 450);
           }
         }
       }
@@ -11692,7 +12962,7 @@ puzzleSentences: [
       rejectParagraph() {
         if (!state.teacherMode) {
           const pwd = document.getElementById("teacherPwdInput").value;
-          if (pwd !== "888") {
+          if (pwd !== "40329") {
             this.showToast("❌ 教師密碼錯誤！");
             return;
           }
@@ -11707,6 +12977,9 @@ puzzleSentences: [
         this.updateTeacherUI(idx);
         this.updateNavStepDots();
         this.sceneDirector.createMarkers();
+        if (this.sceneDirector?.updateAllIslandFogs) {
+          this.sceneDirector.updateAllIslandFogs();
+        }
 
         this.showToast("✏️ 已退件要求修改，學生畫面已標註紅筆指導！");
       }
