@@ -1,5 +1,20 @@
 # handoff.md - 多 Agent 交接紀錄
 
+## 2026-11-12 材質與書本升級、海霧重構、全格必填、教師密碼 40329、轉之島雙引導與首次全螢幕 100% 比例鎖定
+- **執行人**：Antigravity Agent
+- **已推送 Commit**：
+  - `bd7020f`：平滑阻尼縮放（`three@0.161.0` + `setupSmoothZoom`）、移除 12 位島民灰色底盤並射線貼地、移除島民機械跳動。
+  - `d8d780c`：以下全域功能一併驗證通過並推送至 `origin/main`。
+- **今日完成重點（Commit `d8d780c`）**：
+  1. **建築與書本材質微縮繪本升級**：新增 `miniatureRoofTileTex`、`miniatureStuccoTex`、`miniatureStoneTex`、`miniatureBookPagesTex`、`miniatureBookCoverTex`、`clockFaceTex` 並修正 `gableRoof` UV，套用至全 5 島屋頂、牆面、地基、起之島大鐘樓錶盤、燈塔、機場航廈、校舍、洋房、神殿與風車；新增 `createDetailedBook` 立體精裝書本與合之島書本天梯。
+  2. **柔和飄渺海霧與散霧同步**：重構 `buildIslandFogCanopies` / `getMistTexture` 為 3 層柔和 `THREE.Sprite` 海霧，`approveParagraph` / `toggleTeacherMode` / `playAirplaneFlight` / `updateAllIslandFogs` 同步消散。
+  3. **作答防呆強制必填與教師密碼變更**：`validateStep1Required`、`validateStep3Required`、`goToStep` 阻擋空白推進並標紅提示；教師密碼改為 `40329`，全面刪除預設密碼提示與介面明碼顯示。
+  4. **轉之島雙狀況切換引導（「比想像中好」／「比想像中壞」）**：新增 `.twist-outcome-card` 先選分支後載入對應詞庫與引導，兩分支共用句型結構；並透過 `placePhrase` 去重避免「在在……」重複字詞。
+  5. **首次互動自動全螢幕與 100% 畫面比例鎖定**：於 `setupAutoFullscreenAndScaleLock` / `enterFullscreen` 支援啟動靜默嘗試與首次點擊／觸控／按鍵即時進入全螢幕、頂部/底部雙切換鈕，並加入 `viewport` 鎖定、誤觸縮放攔截、`onResize` 像素比同步、`1280px` 響應式適配與偏離 100% 縮放提醒（`checkBrowserZoomRatio`）。
+- **待接續事項**：
+  - 切換回 Mac 環境時，補同步本段紀錄至 Obsidian 駕駛艙（`創作庫/115四上作文專案駕駛艙.md`）。
+  - 教師端實測確認 GitHub Pages（`https://asc103138.github.io/g4-writing-island/`）最新部署版面與學生平板操作流暢度。
+
 ## 2026-11-11 起之島機場跑道至書房前廊田園鵝卵石踏腳石曲徑與花草點綴
 - **執行人**：Antigravity Agent
 - **使用者核心要求**：「為 115四上作文 index.html 起之島鋪設從『起之島機場跑道』通往『書房苦讀大書桌』的田園鵝卵石踏腳石曲徑」
