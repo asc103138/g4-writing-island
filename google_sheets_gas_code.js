@@ -287,12 +287,8 @@ function syncTeacherReviewSheet(ss, mainSheet) {
     "最後更新時間"
   ];
 
-  reviewSheet.clearContents();
-  reviewSheet.clearFormats();
-  reviewSheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-
   var hRange = reviewSheet.getRange(1, 1, 1, headers.length);
-  hRange
+  hRange.setValues([headers])
     .setFontWeight("bold")
     .setBackground("#dbeafe")
     .setFontColor("#1e3a8a")
@@ -307,9 +303,14 @@ function syncTeacherReviewSheet(ss, mainSheet) {
     reviewSheet.setColumnWidth(c + 1, colWidths[c]);
   }
 
-  if (mainData.length <= 1) return;
+  var prevLastRow = reviewSheet.getLastRow();
+  if (mainData.length <= 1) {
+    if (prevLastRow > 1) {
+      reviewSheet.getRange(2, 1, prevLastRow - 1, headers.length).clearContent();
+    }
+    return;
+  }
 
-  var ss = mainSheet.getParent();
   var rowsOut = [];
   for (var i = 1; i < mainData.length; i++) {
     var r = mainData[i];
@@ -330,39 +331,90 @@ function syncTeacherReviewSheet(ss, mainSheet) {
   if (sortedVals.length > 0) {
     var bodyRange = reviewSheet.getRange(2, 1, sortedVals.length, 5);
     bodyRange.setValues(sortedVals);
+
+    var bgMatrix = [];
+    for (var j = 0; j < sortedVals.length; j++) {
+      var bg = (j % 2 === 0) ? "#ffffff" : "#f8fafc";
+      bgMatrix.push([bg, bg, bg, bg, bg]);
+    }
+
     bodyRange
       .setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP)
       .setVerticalAlignment("top")
       .setFontSize(11)
+      .setFontWeight("normal")
+      .setBackgrounds(bgMatrix)
       .setBorder(true, true, true, true, true, true, "#cbd5e1", SpreadsheetApp.BorderStyle.SOLID);
 
-    for (var j = 0; j < sortedVals.length; j++) {
-      var bg = (j % 2 === 0) ? "#ffffff" : "#f8fafc";
-      reviewSheet.getRange(j + 2, 1, 1, 5).setBackground(bg);
-    }
+    reviewSheet.getRange(2, 2, sortedVals.length, 1).setHorizontalAlignment("left");
     reviewSheet.getRange(2, 5, sortedVals.length, 1).setNumberFormat("yyyy/mm/dd hh:mm");
     reviewSheet.autoResizeRows(2, sortedVals.length);
+  }
+
+  var newLastRow = 1 + sortedVals.length;
+  if (prevLastRow > newLastRow) {
+    reviewSheet.getRange(newLastRow + 1, 1, prevLastRow - newLastRow, 5).clearContent().clearFormat();
   }
 }
 
 /**
  * 教師可於試算表選單「🏝️ 作文試算表工具」➔「✨ 一鍵整理所有排版與批閱分頁」手動執行，
- * 立即為所有既有資料自動對應座號、套用換行、欄寬、自動列高，並依座號排序更新「教師批閱閱讀版」。
+ * 使用批次 Range 操作一次套用所有格式與列高，避免畫面跳動閃爍。
  */
 function formatAllRowsForGrading() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = getOrCreateSheet(ss);
   applyMainSheetLayout(sheet);
+
   var lastRow = sheet.getLastRow();
-  for (var r = 2; r <= lastRow; r++) {
-    var uid = sheet.getRange(r, 1).getValue();
-    var curLabel = sheet.getRange(r, 2).getValue();
-    if (uid) {
-      sheet.getRange(r, 2).setValue(resolveStudentSeatLabel(ss, uid, curLabel));
+  if (lastRow >= 2) {
+    var rowCount = lastRow - 1;
+    var idAndName = sheet.getRange(2, 1, rowCount, 2).getValues();
+    var updatedNames = [];
+    var bgMatrix = [];
+
+    for (var i = 0; i < rowCount; i++) {
+      var uid = idAndName[i][0];
+      var curLabel = idAndName[i][1];
+      var nextLabel = uid ? resolveStudentSeatLabel(ss, uid, curLabel) : curLabel;
+      updatedNames.push([nextLabel]);
+
+      var bg = (i % 2 === 0) ? "#ffffff" : "#f8fafc";
+      bgMatrix.push([bg, bg, bg, bg, bg, bg, bg, bg, bg, bg, bg, bg]);
     }
-    formatMainRowRange(sheet, r);
+
+    sheet.getRange(2, 2, rowCount, 1).setValues(updatedNames);
+
+    var allBody = sheet.getRange(2, 1, rowCount, 12);
+    allBody
+      .setBackgrounds(bgMatrix)
+      .setVerticalAlignment("top")
+      .setFontSize(10.5)
+      .setBorder(true, true, true, true, true, true, "#cbd5e1", SpreadsheetApp.BorderStyle.SOLID);
+
+    sheet.getRange(2, 1, rowCount, 4).setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
+    sheet.getRange(2, 3, rowCount, 1).setNumberFormat("yyyy/mm/dd hh:mm");
+    sheet.getRange(2, 4, rowCount, 1).setHorizontalAlignment("center");
+    sheet.getRange(2, 5, rowCount, 4)
+      .setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP)
+      .setHorizontalAlignment("left");
+    sheet.getRange(2, 9, rowCount, 1)
+      .setHorizontalAlignment("center")
+      .setFontWeight("bold");
+    sheet.getRange(2, 10, rowCount, 2).setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
+    sheet.getRange(2, 12, rowCount, 1)
+      .setWrapStrategy(SpreadsheetApp.WrapStrategy.CLIP)
+      .setFontColor("#94a3b8")
+      .setFontSize(9);
+
+    sheet.autoResizeRows(2, rowCount);
   }
+
   syncTeacherReviewSheet(ss, sheet);
+  SpreadsheetApp.flush();
+  try {
+    ss.toast("✅ 已完成排版與「教師批閱閱讀版」更新！", "🏝️ 作文試算表工具", 4);
+  } catch (e) {}
 }
 
 /**
@@ -518,9 +570,7 @@ function saveUserData(sheet, userId, payload) {
   } else {
     sheet.appendRow(rowData);
     targetRow = sheet.getLastRow();
+    // 僅在新增學生列時套用該列基礎格式，避免學生自動存檔期間整表重繪跳動
+    formatMainRowRange(sheet, targetRow);
   }
-
-  applyMainSheetLayout(sheet);
-  formatMainRowRange(sheet, targetRow);
-  syncTeacherReviewSheet(sheet.getParent(), sheet);
 }

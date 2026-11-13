@@ -1,5 +1,26 @@
 # handoff.md - 多 Agent 交接紀錄
 
+## 2026-11-13 4-3 帳號座號對應、試算表防跳動、合之島跑道／樹木貼地修復與挑燈夜戰星空月雲
+- **執行人**：Antigravity Agent
+- **已推送 Commit**：
+  - `a5a8632`：新增 4 年 3 班 28 位學生帳號對應座號、`學生帳號密碼/` 與 `*.xlsx` 版控隔離、GAS 批閱排版與全班登入檢查工具、晴朗天空與雲朵、海中漂浮食人魚。
+  - 本次收工 Commit：GAS 防跳動與 1 人 1 列排版還原、合之島跑道淨空、挑燈夜戰星空明月夜雲、樹木射線貼地修復。
+- **今日完成重點**：
+  1. **隱私隔離與 4-3 學生帳號座號對應（[.gitignore](file:///g:/我的雲端硬碟/115四上作文/.gitignore)、[google_sheets_gas_code.js](file:///g:/我的雲端硬碟/115四上作文/google_sheets_gas_code.js)、[index.html](file:///g:/我的雲端硬碟/115四上作文/index.html)）**：
+     - `.gitignore` 加入 `學生帳號密碼/` 與 `*.xlsx`，確保含姓名與密碼的 `4-3.xlsx` 不進入公開版控。
+     - 程式碼僅存「校內帳號 / Google 學習帳號 ↔ `4年3班 XX號 (403XX)`」無真名對照（`ACCOUNT_SEAT_MAP` 與 `resolveStudentSeatLabel` / `resolveStudentLabel`，含前導零補齊備援與數字型別防呆）。
+  2. **Google 試算表批閱排版與防跳動（[google_sheets_gas_code.js](file:///g:/我的雲端硬碟/115四上作文/google_sheets_gas_code.js)）**：
+     - 修正儲存格為純數字時 `seatLabel.match is not a function` 之錯誤，改以批次 Range API 與「不清空重繪」更新 `教師批閱閱讀版`（維持 1 人 1 列完整四段，依 `40301`～`40328` 排序）。
+     - 移除 `saveUserData` 背景同步時重洗整張試算表與重設欄寬的行為，避免學生自動存檔期間導致教師試算表畫面跳動；新增 `📋 檢查全班 28 人登入狀態`（產生 `全班登入狀態檢核` 分頁）。
+  3. **晴朗／挑燈夜戰雙天象、海面食人魚、合之島跑道與樹木貼地修復（[index.html](file:///g:/我的雲端硬碟/115四上作文/index.html)）**：
+     - 日間為晴朗藍天、遠景柔和日光暈與 16 朵立體白雲；「挑燈夜戰」模式新增 `initNightSky()`（深夜星空天穹、420 顆星星、柔和奶油圓月與銀白月暈、月光銀藍夜雲）。
+     - 四座島嶼外側深藍海面加入 6 隻漂浮卡通食人魚（`y ≈ 0.08`＋白色浮水波紋圈），顯示台詞「不認真的話，分心10秒會發出警報給老師。」。
+     - 修正合之島（`id: 3`）跑道被草地蓋住問題（旋轉矩形平坦化、`AIRPORT_CONFIGS[3]` 高度微調至 `3.58`、花草灌木 `isNearRunway` 淨空過濾）。
+     - 修正島嶼樹木懸空問題（`getRenderedGroundY` 對 `grassMesh` 射線取樣真實渲染高度，讓 `addTreeAt` 紮根貼地）。
+- **待接續事項**：
+  - 教師端將最新版 [google_sheets_gas_code.js](file:///g:/我的雲端硬碟/115四上作文/google_sheets_gas_code.js) 貼回 Google Apps Script 並執行「管理部署作業 ➔ 編輯 ➔ 新版本 ➔ 部署」，回到試算表執行一鍵整理與全班 28 人登入狀態檢查。
+  - 切換回 Mac 環境時，補同步 `2026-11-12` 與 `2026-11-13` 紀錄至 Obsidian 駕駛艙（`創作庫/115四上作文專案駕駛艙.md`）。
+
 ## 2026-11-12 材質與書本升級、海霧重構、全格必填、教師密碼 40329、轉之島雙引導與首次全螢幕 100% 比例鎖定
 - **執行人**：Antigravity Agent
 - **已推送 Commit**：

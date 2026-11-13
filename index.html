@@ -5750,7 +5750,7 @@ puzzleSentences: [
       { code: "01", name: "起之島機場", localPos: [5.0, 3.2, 11.5], angle: -0.18 },
       { code: "02", name: "承之島機場", localPos: [-2.5, 3.2, 12.0], angle: 0.18 },
       { code: "03", name: "轉之島機場", localPos: [-2.2, 3.2, 12.0], angle: -0.15 },
-      { code: "04", name: "合之島機場", localPos: [-2.8, 3.2, 12.0], angle: 0.18 },
+      { code: "04", name: "合之島機場", localPos: [-2.8, 3.58, 12.0], angle: 0.18 },
       { code: "05", name: "守門神殿空港", localPos: [4.2, 3.4, 12.5], angle: -0.25 }
     ];
 
@@ -7078,6 +7078,7 @@ puzzleSentences: [
         this.initSea();
         this.initSkyDome();
         this.initSunAndRays();
+        this.initNightSky();
         this.initSkyClouds();
         this.buildAllIslands();
         this.buildGuardianSanctuary();
@@ -7308,6 +7309,97 @@ puzzleSentences: [
         this.scene.add(sunGroup);
         this.sunGroup = sunGroup;
         this.sunGlowSprite = glowSprite;
+      }
+
+      // 挑燈夜戰：深夜漸層星空天穹、點點繁星與柔和明月光暈
+      initNightSky() {
+        const nightGroup = new THREE.Group();
+
+        // 1. 夜晚星空漸層天穹
+        const nightGeo = new THREE.SphereGeometry(610, 32, 16);
+        const canvas = document.createElement("canvas");
+        canvas.width = 32;
+        canvas.height = 512;
+        const ctx = canvas.getContext("2d");
+        const grad = ctx.createLinearGradient(0, 0, 0, 512);
+        grad.addColorStop(0.0, "#090d1f");
+        grad.addColorStop(0.42, "#131c38");
+        grad.addColorStop(0.78, "#1e294d");
+        grad.addColorStop(1.0, "#293a66");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 32, 512);
+
+        const nightTex = new THREE.CanvasTexture(canvas);
+        nightTex.colorSpace = THREE.SRGBColorSpace;
+        const nightDome = new THREE.Mesh(
+          nightGeo,
+          new THREE.MeshBasicMaterial({ map: nightTex, side: THREE.BackSide, depthWrite: false, fog: false })
+        );
+        nightGroup.add(nightDome);
+
+        // 2. 童話夜空閃耀繁星
+        const starCount = 420;
+        const starPos = new Float32Array(starCount * 3);
+        for (let s = 0; s < starCount; s++) {
+          const theta = Math.random() * Math.PI * 2;
+          const phi = Math.acos(0.15 + Math.random() * 0.85); // 分布於地平線上方天穹
+          const r = 480 + Math.random() * 70;
+          starPos[s * 3] = r * Math.sin(phi) * Math.cos(theta);
+          starPos[s * 3 + 1] = r * Math.cos(phi);
+          starPos[s * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+        }
+        const starGeo = new THREE.BufferGeometry();
+        starGeo.setAttribute("position", new THREE.BufferAttribute(starPos, 3));
+        const starMat = new THREE.PointsMaterial({
+          color: 0xfef9c3,
+          size: 3.2,
+          transparent: true,
+          opacity: 0.9,
+          sizeAttenuation: true,
+          fog: false
+        });
+        const stars = new THREE.Points(starGeo, starMat);
+        nightGroup.add(stars);
+
+        // 3. 柔和奶油圓月與銀白月光暈影（置於斜上方天際，俯瞰與平視皆可映照）
+        const moonPos = new THREE.Vector3(110, 78, -145);
+        const moonMesh = new THREE.Mesh(
+          new THREE.SphereGeometry(12, 24, 18),
+          new THREE.MeshBasicMaterial({ color: 0xfef3c7, fog: false })
+        );
+        moonMesh.position.copy(moonPos);
+        nightGroup.add(moonMesh);
+
+        const moonGlowCanvas = document.createElement("canvas");
+        moonGlowCanvas.width = 256;
+        moonGlowCanvas.height = 256;
+        const mctx = moonGlowCanvas.getContext("2d");
+        const mGrad = mctx.createRadialGradient(128, 128, 12, 128, 128, 128);
+        mGrad.addColorStop(0.0, "rgba(254, 249, 195, 0.85)");
+        mGrad.addColorStop(0.32, "rgba(191, 219, 254, 0.35)");
+        mGrad.addColorStop(0.7, "rgba(147, 197, 253, 0.1)");
+        mGrad.addColorStop(1.0, "rgba(147, 197, 253, 0.0)");
+        mctx.fillStyle = mGrad;
+        mctx.fillRect(0, 0, 256, 256);
+
+        const moonGlowTex = new THREE.CanvasTexture(moonGlowCanvas);
+        moonGlowTex.colorSpace = THREE.SRGBColorSpace;
+        const moonHalo = new THREE.Sprite(
+          new THREE.SpriteMaterial({
+            map: moonGlowTex,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            fog: false
+          })
+        );
+        moonHalo.position.copy(moonPos);
+        moonHalo.scale.set(96, 96, 1);
+        nightGroup.add(moonHalo);
+
+        nightGroup.visible = false;
+        this.scene.add(nightGroup);
+        this.nightSkyGroup = nightGroup;
       }
 
       // 晴空萬里：中景與天際線悠揚漂浮的片片立體棉花糖白雲群
@@ -7660,10 +7752,18 @@ puzzleSentences: [
             const distToHouse = Math.hypot(lx - (-2.0), lz - (-2.8));
             const houseWeight = Math.max(0, Math.min(1, 1 - distToHouse / 5.2));
 
-            // ② 機場跑道海灣平整錨定 (海濱開闊平原，半徑 7.5，平滑三次樣條平坦化徹底杜絕地表突起破圖)
+            // ② 機場跑道海灣平整錨定 (依跑道實際長寬與旋轉角度做矩形 100% 平坦化，外擴安全淨空區杜絕草地穿過跑道)
             const airportCfg = AIRPORT_CONFIGS[i];
-            const distToAirport = Math.hypot(lx - airportCfg.localPos[0], lz - airportCfg.localPos[2]);
-            const tAir = Math.min(1, distToAirport / 7.5);
+            const adx = lx - airportCfg.localPos[0];
+            const adz = lz - airportCfg.localPos[2];
+            const cosA = Math.cos(-airportCfg.angle);
+            const sinA = Math.sin(-airportCfg.angle);
+            const arx = adx * cosA - adz * sinA;
+            const arz = adx * sinA + adz * cosA;
+            const rectDistX = Math.max(0, Math.abs(arx) - 3.8);
+            const rectDistZ = Math.max(0, Math.abs(arz) - 7.6);
+            const rectDist = Math.hypot(rectDistX, rectDistZ);
+            const tAir = Math.min(1, rectDist / 3.2);
             const airportWeight = 1 - tAir * tAir * (3 - 2 * tAir);
 
             // 各島專屬地形要素 (在 18.5 廣闊空間中大氣舒展)
@@ -7731,9 +7831,10 @@ puzzleSentences: [
             if (houseWeight > 0) {
               terrainH = terrainH * (1 - houseWeight) + targetHouseH * houseWeight;
             }
-            // 機場跑道平坦混合 (高度契約 3.2)
+            // 機場跑道平坦混合 (略低於跑道基座，確保草地絕不穿過柏油路面)
             if (airportWeight > 0) {
-              terrainH = terrainH * (1 - airportWeight) + 3.2 * airportWeight;
+              const targetAirportGround = airportCfg.localPos[1] - 0.12;
+              terrainH = terrainH * (1 - airportWeight) + targetAirportGround * airportWeight;
             }
 
             // 邊緣沙灘斜坡自然緩降過渡
@@ -7902,6 +8003,24 @@ puzzleSentences: [
           grassMesh.castShadow = true;
           grassMesh.receiveShadow = true;
           islandGroup.add(grassMesh);
+          grassMesh.updateMatrixWorld(true);
+
+          // 實體草地網格射線取樣高度（避免 CylinderGeometry 頂蓋三角形插值造成樹木／裝飾懸空）
+          const groundRay = new THREE.Raycaster();
+          const treeRayDownDir = new THREE.Vector3(0, -1, 0);
+          const getRenderedGroundY = (lx, lz) => {
+            const worldOrigin = new THREE.Vector3(
+              islandGroup.position.x + lx,
+              islandGroup.position.y + 25,
+              islandGroup.position.z + lz
+            );
+            groundRay.set(worldOrigin, treeRayDownDir);
+            const hits = groundRay.intersectObject(grassMesh, false);
+            if (hits.length > 0) {
+              return hits[0].point.y - islandGroup.position.y;
+            }
+            return getTerrainHeight(lx, lz);
+          };
 
           // 若為第三島（轉之島），在開闊凹陷暴雨盆地安放巨大積水大湖 (Grand Rainwater Lake)
           if (i === 2) {
@@ -7973,11 +8092,25 @@ puzzleSentences: [
             islandGroup.add(rMesh);
           });
 
+          // 跑道安全淨空區判定（避免花草灌木長在跑道上）
+          const isNearRunway = (lx, lz) => {
+            const cfg = AIRPORT_CONFIGS[i];
+            if (!cfg) return false;
+            const dx = lx - cfg.localPos[0];
+            const dz = lz - cfg.localPos[2];
+            const c = Math.cos(-cfg.angle);
+            const s = Math.sin(-cfg.angle);
+            const rx = dx * c - dz * s;
+            const rz = dx * s + dz * c;
+            return Math.abs(rx) <= 4.0 && Math.abs(rz) <= 7.6;
+          };
+
           // ⑩ 自然灌木叢與繁花花圃 (動森繽紛花圃)
           const bushCoords = [
             [-6.5, 8.5], [8.0, -8.0], [-12.0, 2.5], [6.5, 12.0], [11.0, 3.5], [-9.5, -8.5]
           ];
           bushCoords.forEach(([bx, bz], bIdx) => {
+            if (isNearRunway(bx, bz)) return;
             const bush = createBushPatch(1.0 + (bIdx % 3) * 0.25, palette.bushColor);
             bush.position.set(bx, getTerrainHeight(bx, bz), bz);
             islandGroup.add(bush);
@@ -8002,6 +8135,7 @@ puzzleSentences: [
             [10.0, -6.5], [-11.0, 5.0]
           ];
           grassPositions.forEach(([gx, gz], gIdx) => {
+            if (isNearRunway(gx, gz)) return;
             const clump = createWindyGrassClump(1.0 + (gIdx % 3) * 0.25, palette.grassClumpColor);
             const gy = getTerrainHeight(gx, gz);
             clump.position.set(gx, gy, gz);
@@ -8033,7 +8167,7 @@ puzzleSentences: [
           // ⑫ 【全新自然綠樹森林群】：採用自然真實樹幹分叉、板根與立體葉冠
           // 疏密有致分佈在廣袤島嶼各處 (平原、山腳、丘陵、林道、海灣)，絕不密集擠壓！
           const addTreeAt = (treeObj, px, pz) => {
-            const py = getTerrainHeight(px, pz);
+            const py = getRenderedGroundY(px, pz) - 0.12;
             treeObj.position.set(px, py, pz);
             islandGroup.add(treeObj);
           };
@@ -9813,6 +9947,13 @@ puzzleSentences: [
             this.stormIslandMaterials.forEach(m => { m.roughness = 0.22; });
           }
           if (this.rainParticles) this.rainParticles.visible = true;
+        } else if (state.isNightMode && window.islandApp && window.islandApp.applyDayNightMode) {
+          if (this.stormIslandMaterials) {
+            this.stormIslandMaterials.forEach(m => { m.roughness = 0.75; });
+          }
+          if (this.rainParticles) this.rainParticles.visible = false;
+          if (this.lightningLight) this.lightningLight.intensity = 0;
+          window.islandApp.applyDayNightMode();
         } else {
           // 晴朗日間模式：清澈藍天、片片白雲與微微日光映照
           this.scene.background = this.clearSkyColor;
@@ -10580,26 +10721,55 @@ puzzleSentences: [
         if (this.sceneDirector) {
           const sd = this.sceneDirector;
           if (isNight) {
-            sd.scene.background = new THREE.Color(0x0c1222);
+            sd.scene.background = new THREE.Color(0x0f172a);
             if (sd.skyDome) sd.skyDome.visible = false;
             if (sd.sunGroup) sd.sunGroup.visible = false;
-            if (sd.scene.fog) sd.scene.fog.color.setHex(0x0a101d);
-            if (sd.sea) sd.sea.material.color.setHex(0x1e293b);
+            if (sd.nightSkyGroup) sd.nightSkyGroup.visible = true;
+            if (sd.skyCloudGroup) sd.skyCloudGroup.visible = true;
+            if (typeof softCloudMat !== "undefined") {
+              softCloudMat.color.setHex(0xcbd5e1);
+              softCloudMat.emissive.setHex(0x475569);
+              softCloudMat.emissiveIntensity = 0.42;
+            }
+            if (typeof softCloudBaseMat !== "undefined") {
+              softCloudBaseMat.color.setHex(0x94a3b8);
+              softCloudBaseMat.emissive.setHex(0x1e293b);
+              softCloudBaseMat.emissiveIntensity = 0.35;
+            }
+            if (sd.scene.fog) {
+              sd.scene.fog.color.setHex(0x131c38);
+              sd.scene.fog.density = 0.0028;
+            }
+            if (sd.sea) sd.sea.material.color.setHex(0x1e3a5f);
             if (sd.ambientLight) {
-              sd.ambientLight.color.setHex(0x38bdf8);
-              sd.ambientLight.intensity = 0.22;
+              sd.ambientLight.color.setHex(0x93c5fd);
+              sd.ambientLight.intensity = 0.44;
             }
             if (sd.hemiLight) {
-              sd.hemiLight.color.setHex(0x1e1b4b);
-              sd.hemiLight.groundColor.setHex(0x022c22);
-              sd.hemiLight.intensity = 0.22;
+              sd.hemiLight.color.setHex(0x3b82f6);
+              sd.hemiLight.groundColor.setHex(0x064e3b);
+              sd.hemiLight.intensity = 0.36;
             }
-            if (sd.sun) sd.sun.intensity = 0.45;
+            if (sd.sun) {
+              sd.sun.color.setHex(0xbfdbfe);
+              sd.sun.intensity = 0.78;
+            }
           } else {
             sd.scene.background = sd.clearSkyColor || new THREE.Color(0x9bd7ff);
             if (sd.skyDome) sd.skyDome.visible = true;
             if (sd.sunGroup) sd.sunGroup.visible = true;
+            if (sd.nightSkyGroup) sd.nightSkyGroup.visible = false;
             if (sd.skyCloudGroup) sd.skyCloudGroup.visible = true;
+            if (typeof softCloudMat !== "undefined") {
+              softCloudMat.color.setHex(0xffffff);
+              softCloudMat.emissive.setHex(0xffffff);
+              softCloudMat.emissiveIntensity = 0.85;
+            }
+            if (typeof softCloudBaseMat !== "undefined") {
+              softCloudBaseMat.color.setHex(0xf0f9ff);
+              softCloudBaseMat.emissive.setHex(0xe0f2fe);
+              softCloudBaseMat.emissiveIntensity = 0.78;
+            }
             if (sd.scene.fog) {
               sd.scene.fog.color.setHex(0xdbf2ff);
               sd.scene.fog.density = 0.0022;
