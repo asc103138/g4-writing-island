@@ -8003,9 +8003,9 @@ puzzleSentences: [
           grassMesh.castShadow = true;
           grassMesh.receiveShadow = true;
           islandGroup.add(grassMesh);
-          grassMesh.updateMatrixWorld(true);
+          islandGroup.updateMatrixWorld(true);
 
-          // 實體草地網格射線取樣高度（避免 CylinderGeometry 頂蓋三角形插值造成樹木／裝飾懸空）
+          // 實體地面（草地＋土壤）射線取樣高度（先更新 islandGroup 世界矩陣，避免首次 render 前矩陣在原點導致 miss）
           const groundRay = new THREE.Raycaster();
           const treeRayDownDir = new THREE.Vector3(0, -1, 0);
           const getRenderedGroundY = (lx, lz) => {
@@ -8015,7 +8015,7 @@ puzzleSentences: [
               islandGroup.position.z + lz
             );
             groundRay.set(worldOrigin, treeRayDownDir);
-            const hits = groundRay.intersectObject(grassMesh, false);
+            const hits = groundRay.intersectObjects([grassMesh, soilMesh], false);
             if (hits.length > 0) {
               return hits[0].point.y - islandGroup.position.y;
             }
@@ -8068,12 +8068,12 @@ puzzleSentences: [
 
           // ⑧ 邊緣鄉村手作木柵欄 (分佈於海岬與觀景台，寬敞自然)
           const fence = createWoodenFence(5, 1.1);
-          fence.position.set(7.5, getTerrainHeight(7.5, 6.5), 6.5);
+          fence.position.set(7.5, getRenderedGroundY(7.5, 6.5) - 0.08, 6.5);
           fence.rotation.y = -0.45;
           islandGroup.add(fence);
 
           const fence2 = createWoodenFence(4, 1.0);
-          fence2.position.set(-10.5, getTerrainHeight(-10.5, -5.5), -5.5);
+          fence2.position.set(-10.5, getRenderedGroundY(-10.5, -5.5) - 0.08, -5.5);
           fence2.rotation.y = 0.75;
           islandGroup.add(fence2);
 
@@ -8087,7 +8087,7 @@ puzzleSentences: [
           ];
           rockConfigs.forEach(rc => {
             const rMesh = rock(rc.s, rc.c, true);
-            rMesh.position.set(rc.x, getTerrainHeight(rc.x, rc.z), rc.z);
+            rMesh.position.set(rc.x, getRenderedGroundY(rc.x, rc.z) - 0.06, rc.z);
             rMesh.rotation.y = rc.x * 0.5;
             islandGroup.add(rMesh);
           });
@@ -8112,20 +8112,20 @@ puzzleSentences: [
           bushCoords.forEach(([bx, bz], bIdx) => {
             if (isNearRunway(bx, bz)) return;
             const bush = createBushPatch(1.0 + (bIdx % 3) * 0.25, palette.bushColor);
-            bush.position.set(bx, getTerrainHeight(bx, bz), bz);
+            bush.position.set(bx, getRenderedGroundY(bx, bz) - 0.05, bz);
             islandGroup.add(bush);
           });
 
           const fl1 = createFlowerPatch(palette.flowerColors);
-          fl1.position.set(-7.5, getTerrainHeight(-7.5, 4.5) + 0.05, 4.5);
+          fl1.position.set(-7.5, getRenderedGroundY(-7.5, 4.5), 4.5);
           islandGroup.add(fl1);
 
           const fl2 = createFlowerPatch(palette.flowerColors);
-          fl2.position.set(6.5, getTerrainHeight(6.5, -4.5) + 0.05, -4.5);
+          fl2.position.set(6.5, getRenderedGroundY(6.5, -4.5), -4.5);
           islandGroup.add(fl2);
 
           const fl3 = createFlowerPatch(palette.flowerColors);
-          fl3.position.set(2.5, getTerrainHeight(2.5, 8.5) + 0.05, 8.5);
+          fl3.position.set(2.5, getRenderedGroundY(2.5, 8.5), 8.5);
           islandGroup.add(fl3);
 
           // 微風草簇 (動森清爽草簇)
@@ -8137,7 +8137,7 @@ puzzleSentences: [
           grassPositions.forEach(([gx, gz], gIdx) => {
             if (isNearRunway(gx, gz)) return;
             const clump = createWindyGrassClump(1.0 + (gIdx % 3) * 0.25, palette.grassClumpColor);
-            const gy = getTerrainHeight(gx, gz);
+            const gy = getRenderedGroundY(gx, gz) - 0.03;
             clump.position.set(gx, gy, gz);
             islandGroup.add(clump);
             this.windyGrassList.push(clump);
@@ -8167,7 +8167,7 @@ puzzleSentences: [
           // ⑫ 【全新自然綠樹森林群】：採用自然真實樹幹分叉、板根與立體葉冠
           // 疏密有致分佈在廣袤島嶼各處 (平原、山腳、丘陵、林道、海灣)，絕不密集擠壓！
           const addTreeAt = (treeObj, px, pz) => {
-            const py = getRenderedGroundY(px, pz) - 0.12;
+            const py = getRenderedGroundY(px, pz) - 0.22;
             treeObj.position.set(px, py, pz);
             islandGroup.add(treeObj);
           };
