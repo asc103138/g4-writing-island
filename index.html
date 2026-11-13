@@ -516,6 +516,47 @@
       border-color: #ffffff transparent transparent transparent;
       z-index: 1;
     }
+    /* 海中巡邏食人魚警示對話氣泡 */
+    .screen-piranha-bubble {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      background: rgba(255, 251, 235, 0.96);
+      border: 2px solid #f97316;
+      border-radius: 16px;
+      padding: 6px 12px;
+      box-shadow: 0 6px 18px rgba(249, 115, 22, 0.25);
+      z-index: 95;
+      pointer-events: auto;
+      cursor: pointer;
+      max-width: 240px;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .screen-piranha-bubble::after {
+      content: "";
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 8px 7px 0 7px;
+      border-style: solid;
+      border-color: #f97316 transparent transparent transparent;
+    }
+    .piranha-bubble-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: #c2410c;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .piranha-bubble-text {
+      font-size: 12px;
+      font-weight: 700;
+      color: #7c2d12;
+      line-height: 1.35;
+    }
     .npc-bubble-header {
       display: flex;
       align-items: center;
@@ -1568,6 +1609,8 @@
   <div class="screen-label-layer" id="labels-layer"></div>
   <!-- 3D 常駐島民懸浮對話氣泡層 -->
   <div class="screen-label-layer" id="npcBubbleLayer"></div>
+  <!-- 海中食人魚警示對話氣泡層 -->
+  <div class="screen-label-layer" id="piranhaBubbleLayer"></div>
 
 
   <!-- 頂部功能列 -->
@@ -6972,10 +7015,10 @@ puzzleSentences: [
         this.labelsContainer = document.getElementById("labels-layer");
         this.scene = new THREE.Scene();
 
-        // 【新技能規範 Pass 2】：色彩管理與柔和微縮景深霧 (Tone Mapping & Atmosphere)
-        this.clearSkyColor = new THREE.Color(0xbfe6fb);
+        // 【新技能規範 Pass 2】：晴朗天空色彩管理與清透微縮大氣霧 (Clear Sky & Gentle Fog)
+        this.clearSkyColor = new THREE.Color(0x9bd7ff);
         this.scene.background = this.clearSkyColor;
-        this.scene.fog = new THREE.FogExp2(0xddeeff, 0.007);
+        this.scene.fog = new THREE.FogExp2(0xdbf2ff, 0.0022);
 
         // 【規格任務 3：微縮長焦鏡頭配置 (Tilt-Shift Telephoto Feeling)】
         this.camera = new THREE.PerspectiveCamera(32, window.innerWidth / window.innerHeight, 1, 1000);
@@ -7034,6 +7077,7 @@ puzzleSentences: [
         this.initLights();
         this.initSea();
         this.initSkyDome();
+        this.initSunAndRays();
         this.initSkyClouds();
         this.buildAllIslands();
         this.buildGuardianSanctuary();
@@ -7132,29 +7176,47 @@ puzzleSentences: [
                 }
               }
             }
+            return;
+          }
+
+          // 偵測是否點擊海中食人魚
+          const piranhaMeshes = (this.piranhas || []).map(item => item.mesh);
+          const pIntersects = this.raycaster.intersectObjects(piranhaMeshes, true);
+          if (pIntersects.length > 0) {
+            let pHit = pIntersects[0].object;
+            while (pHit && (!pHit.userData || !pHit.userData.isPiranha)) {
+              pHit = pHit.parent;
+            }
+            if (pHit && pHit.userData) {
+              pHit.userData.jumpVelocity = 4.5;
+              if (window.islandApp) {
+                window.islandApp.activePiranhaIndex = pHit.userData.piranhaIndex;
+                window.islandApp.updatePiranhaBubble();
+              }
+            }
           }
         });
       }
 
-      // 【規格任務 2：攝影棚三點光照與柔和接地陰影 (Studio Lighting)】
+      // 【規格任務 2：晴朗日光與立體繪本柔和光照 (Playful Sunny Lighting)】
       initLights() {
-        // ① 環境光 (AmbientLight) 降低至 0.35 避免洗白微縮陰影
-        const ambient = new THREE.AmbientLight(0xfff8ee, 0.35);
+        // ① 環境光 (AmbientLight) 維持 >= 0.6，確保場景明亮溫潤不昏暗
+        const ambient = new THREE.AmbientLight(0xfff9eb, 0.62);
         this.scene.add(ambient);
         this.ambientLight = ambient;
 
-        // ② 半球光 (HemisphereLight)：天空淡藍 0xddeeff，地面自然綠 0x556644，強度 0.35
-        const hemiLight = new THREE.HemisphereLight(0xddeeff, 0x556644, 0.35);
+        // ② 半球光 (HemisphereLight)：天空淡藍 0xcceeff，地面淡綠 0x86efac，自然反光
+        const hemiLight = new THREE.HemisphereLight(0xcceeff, 0x86efac, 0.55);
         hemiLight.position.set(0, 50, 0);
         this.scene.add(hemiLight);
         this.hemiLight = hemiLight;
 
-        // ③ 方向主光 (Sun / Key Light)：攝影棚 45 度主光 1.45，高精度 2048 柔和陰影
-        const sun = new THREE.DirectionalLight(0xfffaed, 1.45);
+        // ③ 方向主光 (Sun / Key Light)：斜上方 45 度微微暖陽日光，輕量化 1024x1024 柔和陰影
+        const sun = new THREE.DirectionalLight(0xfff3d6, 1.35);
         sun.position.set(45, 60, 45);
         sun.castShadow = true;
-        sun.shadow.mapSize.width = 2048;
-        sun.shadow.mapSize.height = 2048;
+        sun.shadow.mapSize.width = 1024;
+        sun.shadow.mapSize.height = 1024;
         sun.shadow.camera.near = 5;
         sun.shadow.camera.far = 280;
         const d = 80;
@@ -7166,8 +7228,8 @@ puzzleSentences: [
         this.scene.add(sun);
         this.sun = sun;
 
-        // ④ 輪廓光 (Rim Light)：斜後方冷白光勾勒微縮模型邊緣立體高光
-        const rimLight = new THREE.DirectionalLight(0xbae6fd, 0.95);
+        // ④ 輪廓光 (Rim Light)：斜後方清透冷白光勾勒微縮模型邊緣立體高光
+        const rimLight = new THREE.DirectionalLight(0xbae6fd, 0.85);
         rimLight.position.set(-50, 40, -50);
         this.scene.add(rimLight);
         this.rimLight = rimLight;
@@ -7180,7 +7242,7 @@ puzzleSentences: [
         this.lightningLight = lightning;
       }
 
-      // 晴空萬里：大型天空漸層天穹 (Sky Dome)
+      // 晴空萬里：清澈藍天漸層天穹 (Clear Sky Dome)
       initSkyDome() {
         const skyGeo = new THREE.SphereGeometry(620, 32, 16);
         
@@ -7189,10 +7251,11 @@ puzzleSentences: [
         canvas.height = 512;
         const ctx = canvas.getContext("2d");
         const grad = ctx.createLinearGradient(0, 0, 0, 512);
-        grad.addColorStop(0.0, "#0284c7"); // 天頂湛藍
-        grad.addColorStop(0.3, "#38bdf8"); // 晴空高陽
-        grad.addColorStop(0.65, "#bae6fd"); // 清透天青
-        grad.addColorStop(1.0, "#f0f9ff"); // 地平線水天晨白
+        grad.addColorStop(0.0, "#0ea5e9"); // 晴朗湛藍天頂
+        grad.addColorStop(0.32, "#38bdf8"); // 清澈天空藍
+        grad.addColorStop(0.68, "#bae6fd"); // 柔和天青
+        grad.addColorStop(0.92, "#e0f2fe"); // 地平線亮白水氣
+        grad.addColorStop(1.0, "#fef9c3"); // 極淡日光暖映地平線
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, 32, 512);
 
@@ -7202,31 +7265,75 @@ puzzleSentences: [
         const skyMat = new THREE.MeshBasicMaterial({
           map: skyTexture,
           side: THREE.BackSide,
-          depthWrite: false
+          depthWrite: false,
+          fog: false
         });
         const skyDome = new THREE.Mesh(skyGeo, skyMat);
         this.scene.add(skyDome);
         this.skyDome = skyDome;
       }
 
-      // 晴空萬里：天空中悠揚漂浮的立體棉花糖卡通白雲群
+      // 晴朗日光：極遠天穹柔和陽光暈影，由方向光自然映照島嶼與海面（無生硬幾何光束）
+      initSunAndRays() {
+        const sunGroup = new THREE.Group();
+        const sunPos = new THREE.Vector3(260, 210, 240);
+
+        const glowCanvas = document.createElement("canvas");
+        glowCanvas.width = 256;
+        glowCanvas.height = 256;
+        const gctx = glowCanvas.getContext("2d");
+        const rGrad = gctx.createRadialGradient(128, 128, 6, 128, 128, 128);
+        rGrad.addColorStop(0.0, "rgba(255, 253, 240, 0.85)");
+        rGrad.addColorStop(0.22, "rgba(254, 243, 199, 0.42)");
+        rGrad.addColorStop(0.55, "rgba(253, 230, 138, 0.12)");
+        rGrad.addColorStop(1.0, "rgba(253, 230, 138, 0.0)");
+        gctx.fillStyle = rGrad;
+        gctx.fillRect(0, 0, 256, 256);
+
+        const glowTex = new THREE.CanvasTexture(glowCanvas);
+        glowTex.colorSpace = THREE.SRGBColorSpace;
+        const glowSprite = new THREE.Sprite(
+          new THREE.SpriteMaterial({
+            map: glowTex,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            fog: false
+          })
+        );
+        glowSprite.position.copy(sunPos);
+        glowSprite.scale.set(160, 160, 1);
+        sunGroup.add(glowSprite);
+
+        this.scene.add(sunGroup);
+        this.sunGroup = sunGroup;
+        this.sunGlowSprite = glowSprite;
+      }
+
+      // 晴空萬里：中景與天際線悠揚漂浮的片片立體棉花糖白雲群
       initSkyClouds() {
         this.skyClouds = [];
         const cloudGroup = new THREE.Group();
 
         const cloudConfigs = [
-          { r: 160, theta: 0.3, y: 65, scale: 1.8, speed: 0.05 },
-          { r: 185, theta: 0.8, y: 72, scale: 2.2, speed: 0.04 },
-          { r: 210, theta: 1.4, y: 78, scale: 2.5, speed: 0.035 },
-          { r: 170, theta: 2.0, y: 68, scale: 1.7, speed: 0.05 },
-          { r: 195, theta: 2.6, y: 75, scale: 2.1, speed: 0.04 },
-          { r: 220, theta: 3.2, y: 80, scale: 2.4, speed: 0.03 },
-          { r: 180, theta: 3.8, y: 70, scale: 2.0, speed: 0.045 },
-          { r: 205, theta: 4.4, y: 74, scale: 2.3, speed: 0.035 },
-          { r: 230, theta: 4.9, y: 79, scale: 2.6, speed: 0.03 },
-          { r: 175, theta: 5.3, y: 64, scale: 1.6, speed: 0.055 },
-          { r: 190, theta: 5.7, y: 72, scale: 2.1, speed: 0.04 },
-          { r: 215, theta: 6.1, y: 76, scale: 2.0, speed: 0.038 }
+          // 中景島嶼上方與周圍片片雲朵（轉動視角即清楚可見）
+          { r: 58, theta: 0.25, y: 24, scale: 1.05, speed: 0.055 },
+          { r: 72, theta: 1.05, y: 28, scale: 1.25, speed: 0.045 },
+          { r: 64, theta: 1.85, y: 22, scale: 0.95, speed: 0.06 },
+          { r: 80, theta: 2.55, y: 31, scale: 1.35, speed: 0.042 },
+          { r: 68, theta: 3.35, y: 25, scale: 1.15, speed: 0.05 },
+          { r: 78, theta: 4.15, y: 29, scale: 1.3, speed: 0.046 },
+          { r: 62, theta: 4.95, y: 23, scale: 1.0, speed: 0.058 },
+          { r: 74, theta: 5.65, y: 27, scale: 1.2, speed: 0.048 },
+          // 遠景天際線層層漂浮白雲
+          { r: 120, theta: 0.6, y: 38, scale: 1.75, speed: 0.036 },
+          { r: 145, theta: 1.4, y: 44, scale: 2.1, speed: 0.032 },
+          { r: 130, theta: 2.2, y: 40, scale: 1.85, speed: 0.038 },
+          { r: 155, theta: 3.0, y: 48, scale: 2.25, speed: 0.028 },
+          { r: 135, theta: 3.8, y: 42, scale: 1.9, speed: 0.035 },
+          { r: 165, theta: 4.6, y: 50, scale: 2.35, speed: 0.026 },
+          { r: 128, theta: 5.3, y: 37, scale: 1.65, speed: 0.04 },
+          { r: 150, theta: 6.0, y: 45, scale: 2.05, speed: 0.03 }
         ];
 
         cloudConfigs.forEach(cfg => {
@@ -7247,6 +7354,7 @@ puzzleSentences: [
         });
 
         this.scene.add(cloudGroup);
+        this.skyCloudGroup = cloudGroup;
       }
 
       // 【新技能規範 Pass 3】：透光黏土水體材質 (Water Optics)
@@ -7288,6 +7396,130 @@ puzzleSentences: [
           this.scene.add(boat);
           this.animatedObjects.push({ obj: boat, type: 'bob', speed: 1.5 + i * 0.4 });
         }
+
+        this.initPiranhas();
+      }
+
+      // 海面漂浮的少量卡通食人魚（共 6 隻，悠閒漂浮於各島嶼近海）
+      initPiranhas() {
+        this.piranhas = [];
+        const piranhaSpeech = "不認真的話，分心10秒會發出警報給老師。";
+        const bodyMat = new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.65, metalness: 0.08 });
+        const bellyMat = new THREE.MeshStandardMaterial({ color: 0xfef3c7, roughness: 0.72, metalness: 0.05 });
+        const finMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.62, metalness: 0.08 });
+        const eyeWhiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5, metalness: 0.05 });
+        const eyePupilMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4, metalness: 0.1 });
+        const toothMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.45, metalness: 0.05 });
+
+        const configs = [
+          { islandIndex: 0, rx: 30.0, rz: 28.5, angle: 3.25, speed: 0.055 },
+          { islandIndex: 0, rx: 31.5, rz: 29.0, angle: 0.15, speed: 0.048 },
+          { islandIndex: 1, rx: 30.5, rz: 28.8, angle: 1.75, speed: 0.052 },
+          { islandIndex: 2, rx: 31.0, rz: 29.5, angle: 3.85, speed: 0.05 },
+          { islandIndex: 2, rx: 29.5, rz: 30.0, angle: 0.55, speed: 0.045 },
+          { islandIndex: 3, rx: 30.5, rz: 29.0, angle: 5.05, speed: 0.056 }
+        ];
+
+        configs.forEach((cfg, idx) => {
+          const fish = new THREE.Group();
+
+          // 圓潤卡通魚身（Z 軸為前進方向）
+          const body = new THREE.Mesh(new THREE.SphereGeometry(0.62, 16, 12), bodyMat);
+          body.scale.set(0.65, 0.85, 1.32);
+          body.castShadow = true;
+          fish.add(body);
+
+          // 奶油白肚皮
+          const belly = new THREE.Mesh(new THREE.SphereGeometry(0.5, 14, 10), bellyMat);
+          belly.scale.set(0.58, 0.55, 1.05);
+          belly.position.set(0, -0.22, 0.05);
+          fish.add(belly);
+
+          // 亮黃三角背鰭（露出海面時一眼就能認出）
+          const dorsalFin = new THREE.Mesh(new THREE.ConeGeometry(0.32, 0.72, 4), finMat);
+          dorsalFin.scale.set(0.28, 1.0, 1.15);
+          dorsalFin.position.set(0, 0.62, -0.08);
+          dorsalFin.rotation.x = -0.22;
+          fish.add(dorsalFin);
+
+          // 左右胸鰭
+          [-1, 1].forEach(side => {
+            const sideFin = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.45, 4), finMat);
+            sideFin.scale.set(0.25, 1.0, 0.9);
+            sideFin.position.set(side * 0.42, -0.08, 0.12);
+            sideFin.rotation.z = side * -1.1;
+            sideFin.rotation.x = -0.3;
+            fish.add(sideFin);
+          });
+
+          // 可愛大圓眼
+          [-1, 1].forEach(side => {
+            const eye = new THREE.Mesh(new THREE.SphereGeometry(0.14, 10, 8), eyeWhiteMat);
+            eye.position.set(side * 0.3, 0.18, 0.46);
+            fish.add(eye);
+            const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.075, 8, 8), eyePupilMat);
+            pupil.position.set(side * 0.36, 0.19, 0.54);
+            fish.add(pupil);
+          });
+
+          // 小白鋸齒牙（3 顆）
+          [-0.14, 0, 0.14].forEach(tx => {
+            const tooth = new THREE.Mesh(new THREE.ConeGeometry(0.055, 0.14, 4), toothMat);
+            tooth.position.set(tx, -0.1, 0.76);
+            tooth.rotation.x = Math.PI * 0.85;
+            fish.add(tooth);
+          });
+
+          // 獨立尾鰭（左右擺動）
+          const tailGroup = new THREE.Group();
+          tailGroup.position.set(0, 0, -0.78);
+          const tailFin = new THREE.Mesh(new THREE.ConeGeometry(0.38, 0.65, 4), finMat);
+          tailFin.scale.set(0.22, 1.0, 1.0);
+          tailFin.rotation.x = Math.PI / 2;
+          tailFin.position.set(0, 0, -0.25);
+          tailGroup.add(tailFin);
+          fish.add(tailGroup);
+
+          // 海面白色浮水波紋圈，讓俯瞰時一眼就能看見漂浮的小魚
+          const rippleMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.55,
+            depthWrite: false
+          });
+          const ripple = new THREE.Mesh(new THREE.TorusGeometry(0.88, 0.045, 8, 24), rippleMat);
+          ripple.rotation.x = Math.PI / 2;
+          ripple.position.set(0, -0.22, 0);
+          fish.add(ripple);
+
+          fish.scale.setScalar(2.35);
+          const islandPos = CURRICULUM_DATA[cfg.islandIndex].position;
+          const x = islandPos[0] + Math.cos(cfg.angle) * cfg.rx;
+          const z = islandPos[2] + Math.sin(cfg.angle) * cfg.rz;
+          fish.position.set(x, 0.08, z);
+
+          fish.userData = {
+            isPiranha: true,
+            piranhaIndex: idx,
+            islandIndex: cfg.islandIndex,
+            speech: piranhaSpeech,
+            jumpVelocity: 0
+          };
+
+          this.scene.add(fish);
+          this.piranhas.push({
+            mesh: fish,
+            tailGroup,
+            islandIndex: cfg.islandIndex,
+            centerX: islandPos[0],
+            centerZ: islandPos[2],
+            rx: cfg.rx,
+            rz: cfg.rz,
+            angle: cfg.angle,
+            speed: cfg.speed,
+            phase: idx * 1.7
+          });
+        });
       }
 
       // 【新技能規範 Pass 6】：轉之島暴雨粒子落雨系統 (Rain Particle System)
@@ -9560,6 +9792,8 @@ puzzleSentences: [
           // 家庭風暴雷陣雨模式：暗紫陰雲、冷色微光、濕潤積水地表
           this.scene.background = new THREE.Color(0x1e1b2e);
           if (this.skyDome) this.skyDome.visible = false;
+          if (this.sunGroup) this.sunGroup.visible = false;
+          if (this.skyCloudGroup) this.skyCloudGroup.visible = false;
           if (this.scene.fog) {
             this.scene.fog.color.setHex(0x2a2838);
             this.scene.fog.density = 0.012;
@@ -9580,23 +9814,28 @@ puzzleSentences: [
           }
           if (this.rainParticles) this.rainParticles.visible = true;
         } else {
-          // 晴朗日間模式：微縮攝影棚溫暖柔光
+          // 晴朗日間模式：清澈藍天、片片白雲與微微日光映照
           this.scene.background = this.clearSkyColor;
           if (this.skyDome) this.skyDome.visible = !state.isNightMode;
+          if (this.sunGroup) this.sunGroup.visible = !state.isNightMode;
+          if (this.skyCloudGroup) this.skyCloudGroup.visible = true;
           if (this.scene.fog) {
-            this.scene.fog.color.setHex(0xddeeff);
-            this.scene.fog.density = 0.007;
+            this.scene.fog.color.setHex(0xdbf2ff);
+            this.scene.fog.density = 0.0022;
           }
           if (this.ambientLight) {
-            this.ambientLight.color.setHex(0xfff8ee);
-            this.ambientLight.intensity = 0.35;
+            this.ambientLight.color.setHex(0xfff9eb);
+            this.ambientLight.intensity = 0.62;
           }
           if (this.hemiLight) {
-            this.hemiLight.color.setHex(0xddeeff);
-            this.hemiLight.groundColor.setHex(0x556644);
-            this.hemiLight.intensity = 0.35;
+            this.hemiLight.color.setHex(0xcceeff);
+            this.hemiLight.groundColor.setHex(0x86efac);
+            this.hemiLight.intensity = 0.55;
           }
-          if (this.sun) this.sun.intensity = 1.45;
+          if (this.sun) {
+            this.sun.color.setHex(0xfff3d6);
+            this.sun.intensity = 1.35;
+          }
           if (this.stormIslandMaterials) {
             this.stormIslandMaterials.forEach(m => { m.roughness = 0.75; });
           }
@@ -10043,6 +10282,40 @@ puzzleSentences: [
           pos.needsUpdate = true;
         }
 
+        // ⑥-2 海中食人魚巡邏游動與尾鰭擺動動畫
+        if (this.piranhas && this.piranhas.length > 0) {
+          const pDt = Math.min(dt, 0.05);
+          this.piranhas.forEach(p => {
+            p.angle += p.speed * pDt;
+            const nx = p.centerX + Math.cos(p.angle) * p.rx;
+            const nz = p.centerZ + Math.sin(p.angle) * p.rz;
+            const dx = -Math.sin(p.angle) * p.rx;
+            const dz = Math.cos(p.angle) * p.rz;
+
+            p.mesh.position.x = nx;
+            p.mesh.position.z = nz;
+            p.mesh.rotation.y = Math.atan2(dx, dz);
+
+            // 隨海浪穩穩漂浮於海面之上（含點擊彈跳）
+            const baseSwimY = 0.08 + Math.sin(now * 2.1 + p.phase) * 0.08;
+            if (p.mesh.userData.jumpVelocity > 0 || p.mesh.position.y > baseSwimY + 0.05) {
+              p.mesh.position.y += p.mesh.userData.jumpVelocity * pDt;
+              p.mesh.userData.jumpVelocity -= 15.0 * pDt;
+              if (p.mesh.position.y <= baseSwimY) {
+                p.mesh.position.y = baseSwimY;
+                p.mesh.userData.jumpVelocity = 0;
+              }
+            } else {
+              p.mesh.position.y = baseSwimY;
+            }
+            p.mesh.rotation.z = Math.sin(now * 1.8 + p.phase) * 0.08;
+
+            if (p.tailGroup) {
+              p.tailGroup.rotation.y = Math.sin(now * 5.2 + p.phase) * 0.28;
+            }
+          });
+        }
+
         // ⑦ 飛行煙霧粒子生命週期與機場風向袋擺動
         if (this.smokeParticles && this.smokeParticles.length > 0) {
           const nowMs = performance.now();
@@ -10121,6 +10394,9 @@ puzzleSentences: [
         }
         if (window.islandApp && window.islandApp.updateNPCBubbles) {
           window.islandApp.updateNPCBubbles();
+        }
+        if (window.islandApp && window.islandApp.updatePiranhaBubble) {
+          window.islandApp.updatePiranhaBubble();
         }
 
         this.renderer.render(this.scene, this.camera);
@@ -10306,6 +10582,7 @@ puzzleSentences: [
           if (isNight) {
             sd.scene.background = new THREE.Color(0x0c1222);
             if (sd.skyDome) sd.skyDome.visible = false;
+            if (sd.sunGroup) sd.sunGroup.visible = false;
             if (sd.scene.fog) sd.scene.fog.color.setHex(0x0a101d);
             if (sd.sea) sd.sea.material.color.setHex(0x1e293b);
             if (sd.ambientLight) {
@@ -10319,20 +10596,28 @@ puzzleSentences: [
             }
             if (sd.sun) sd.sun.intensity = 0.45;
           } else {
-            sd.scene.background = sd.clearSkyColor || new THREE.Color(0xbfe6fb);
+            sd.scene.background = sd.clearSkyColor || new THREE.Color(0x9bd7ff);
             if (sd.skyDome) sd.skyDome.visible = true;
-            if (sd.scene.fog) sd.scene.fog.color.setHex(0xddeeff);
+            if (sd.sunGroup) sd.sunGroup.visible = true;
+            if (sd.skyCloudGroup) sd.skyCloudGroup.visible = true;
+            if (sd.scene.fog) {
+              sd.scene.fog.color.setHex(0xdbf2ff);
+              sd.scene.fog.density = 0.0022;
+            }
             if (sd.sea) sd.sea.material.color.setHex(0x38bdf8);
             if (sd.ambientLight) {
-              sd.ambientLight.color.setHex(0xfff8ee);
-              sd.ambientLight.intensity = 0.35;
+              sd.ambientLight.color.setHex(0xfff9eb);
+              sd.ambientLight.intensity = 0.62;
             }
             if (sd.hemiLight) {
-              sd.hemiLight.color.setHex(0xddeeff);
-              sd.hemiLight.groundColor.setHex(0x556644);
-              sd.hemiLight.intensity = 0.35;
+              sd.hemiLight.color.setHex(0xcceeff);
+              sd.hemiLight.groundColor.setHex(0x86efac);
+              sd.hemiLight.intensity = 0.55;
             }
-            if (sd.sun) sd.sun.intensity = 1.45;
+            if (sd.sun) {
+              sd.sun.color.setHex(0xfff3d6);
+              sd.sun.intensity = 1.35;
+            }
           }
         }
       }
@@ -11805,6 +12090,71 @@ puzzleSentences: [
             <div class="npc-bubble-hint">👉 點擊深入聆聽大綱</div>
           </div>
         `;
+      }
+
+      updatePiranhaBubble() {
+        const bubbleLayer = document.getElementById("piranhaBubbleLayer");
+        if (!bubbleLayer || !this.sceneDirector || !this.sceneDirector.camera) return;
+
+        const isOutlineOpen = document.getElementById("outlineModalBackdrop")?.classList.contains("open");
+        const isGuardianOpen = document.getElementById("guardianModalBackdrop")?.classList.contains("open");
+        if (this.isFlyingAirplane || isOutlineOpen || isGuardianOpen) {
+          bubbleLayer.style.display = "none";
+          return;
+        }
+
+        const piranhas = this.sceneDirector.piranhas || [];
+        if (piranhas.length === 0) {
+          bubbleLayer.style.display = "none";
+          return;
+        }
+
+        const curIsland = this.currentIsland ?? 0;
+        let target = (typeof this.activePiranhaIndex === "number")
+          ? piranhas.find(p => p.mesh?.userData?.piranhaIndex === this.activePiranhaIndex)
+          : null;
+        if (!target || target.islandIndex !== curIsland) {
+          target = piranhas.find(p => p.islandIndex === curIsland) || piranhas[0];
+        }
+
+        if (!target || !target.mesh) {
+          bubbleLayer.style.display = "none";
+          return;
+        }
+
+        const worldPos = new THREE.Vector3();
+        target.mesh.getWorldPosition(worldPos);
+        worldPos.y += 1.45;
+
+        const tempV = worldPos.clone();
+        tempV.project(this.sceneDirector.camera);
+
+        if (tempV.z > 1 || tempV.x < -0.95 || tempV.x > 0.95 || tempV.y < -0.9 || tempV.y > 0.95) {
+          bubbleLayer.style.display = "none";
+          return;
+        }
+
+        const halfW = window.innerWidth / 2;
+        const halfH = window.innerHeight / 2;
+        const screenX = (tempV.x * halfW) + halfW;
+        const screenY = -(tempV.y * halfH) + halfH;
+
+        const speechText = target.mesh.userData?.speech || "不認真的話，分心10秒會發出警報給老師。";
+        bubbleLayer.style.display = "block";
+        bubbleLayer.innerHTML = `
+          <div class="screen-piranha-bubble" style="left: ${screenX}px; top: ${screenY}px;" onclick="window.islandApp.pokePiranha(${target.mesh.userData.piranhaIndex})">
+            <div class="piranha-bubble-title">🐟 巡邏食人魚</div>
+            <div class="piranha-bubble-text">${speechText}</div>
+          </div>
+        `;
+      }
+
+      pokePiranha(idx) {
+        const piranhas = this.sceneDirector?.piranhas || [];
+        const target = piranhas.find(p => p.mesh?.userData?.piranhaIndex === idx);
+        if (target && target.mesh && target.mesh.userData) {
+          target.mesh.userData.jumpVelocity = 4.6;
+        }
       }
 
       openNPCDialog(npcData) {
@@ -13377,7 +13727,8 @@ puzzleSentences: [
           if (parts.length === 3) {
             const payload = JSON.parse(decodeURIComponent(escape(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))));
             const email = payload.email || payload.sub;
-            const name = payload.name || payload.given_name || email.split('@')[0];
+            const seatLabel = this.resolveStudentLabel(email);
+            const name = seatLabel || payload.name || payload.given_name || email.split('@')[0];
             const picture = payload.picture || '';
 
             state.currentUser = email;
@@ -13387,12 +13738,49 @@ puzzleSentences: [
             localStorage.setItem("g4_writing_current_user_name", name);
             if (picture) localStorage.setItem("g4_writing_current_user_avatar", picture);
 
-            this.showToast(`🎉 歡迎！已成功以 Google 帳號【${name}】登入！`, 3000);
+            this.showToast(`🎉 歡迎！已成功以【${name}】登入！`, 3000);
             this.afterUserLoggedIn();
           }
         } catch (e) {
           console.error("JWT 解析失敗:", e);
         }
+      }
+
+      resolveStudentLabel(rawAccount) {
+        const clean = String(rawAccount || "").trim().toLowerCase();
+        const prefix = clean.replace(/@st\.tc\.edu\.tw$/i, "");
+        // 4年3班 帳號 ↔ 班級座號對照（僅記錄班級座號，絕不儲存真名與密碼）
+        const seatMap = {
+          "359991": "4年3班 01號 (40301)", "112-112003": "4年3班 01號 (40301)",
+          "344351": "4年3班 02號 (40302)", "112-112029": "4年3班 02號 (40302)",
+          "976225": "4年3班 03號 (40303)", "112-112111": "4年3班 03號 (40303)",
+          "548271": "4年3班 04號 (40304)", "112-112191": "4年3班 04號 (40304)",
+          "735831": "4年3班 05號 (40305)", "112-112084": "4年3班 05號 (40305)",
+          "588430": "4年3班 06號 (40306)", "112-112085": "4年3班 06號 (40306)",
+          "854580": "4年3班 07號 (40307)", "112-112224": "4年3班 07號 (40307)",
+          "533272": "4年3班 08號 (40308)", "112-112033": "4年3班 08號 (40308)",
+          "086025": "4年3班 09號 (40309)", "112-112088": "4年3班 09號 (40309)",
+          "553023": "4年3班 10號 (40310)", "112-112060": "4年3班 10號 (40310)",
+          "972137": "4年3班 11號 (40311)", "112-112115": "4年3班 11號 (40311)",
+          "585099": "4年3班 12號 (40312)", "112-112169": "4年3班 12號 (40312)",
+          "189573": "4年3班 13號 (40313)", "112-112037": "4年3班 13號 (40313)",
+          "786339": "4年3班 14號 (40314)", "112-112146": "4年3班 14號 (40314)",
+          "799530": "4年3班 15號 (40315)", "112-112015": "4年3班 15號 (40315)",
+          "593180": "4年3班 16號 (40316)", "112-112016": "4年3班 16號 (40316)",
+          "356249": "4年3班 17號 (40317)", "112-112097": "4年3班 17號 (40317)",
+          "577547": "4年3班 18號 (40318)", "112-112204": "4年3班 18號 (40318)",
+          "561382": "4年3班 19號 (40319)", "112-112125": "4年3班 19號 (40319)",
+          "890861": "4年3班 20號 (40320)", "112-112205": "4年3班 20號 (40320)",
+          "365962": "4年3班 21號 (40321)", "112-112070": "4年3班 21號 (40321)",
+          "372424": "4年3班 22號 (40322)", "112-112050": "4年3班 22號 (40322)",
+          "194665": "4年3班 23號 (40323)", "112-112078": "4年3班 23號 (40323)",
+          "098586": "4年3班 24號 (40324)", "112-112025": "4年3班 24號 (40324)",
+          "394375": "4年3班 25號 (40325)", "112-112185": "4年3班 25號 (40325)",
+          "532259": "4年3班 26號 (40326)", "112-112187": "4年3班 26號 (40326)",
+          "339489": "4年3班 27號 (40327)", "112-112214": "4年3班 27號 (40327)",
+          "276252": "4年3班 28號 (40328)", "112-112237": "4年3班 28號 (40328)"
+        };
+        return seatMap[clean] || seatMap[prefix] || "";
       }
 
       normalizeSchoolAccount(raw) {
@@ -13412,26 +13800,30 @@ puzzleSentences: [
         if (suffix) suffix.style.display = raw.includes("@") ? "none" : "inline-flex";
         const normalized = this.normalizeSchoolAccount(raw);
         if (preview) {
-          preview.textContent = normalized ? `📌 將記錄與同步為：${normalized}` : "";
+          const seatLabel = normalized ? this.resolveStudentLabel(normalized) : "";
+          preview.textContent = normalized
+            ? (seatLabel ? `📌 將記錄為：${seatLabel} ｜ ${normalized}` : `📌 將記錄與同步為：${normalized}`)
+            : "";
         }
       }
 
       promptFastGoogleLogin() {
         const defaultPrefix = (state.currentUser || "").replace(/@st\.tc\.edu\.tw$/i, "");
-        const rawInput = prompt("請輸入學校 Google 帳號前面部分（免打 @st.tc.edu.tw，例：s110301；若用個人信箱請輸入完整信箱）：", defaultPrefix);
+        const rawInput = prompt("請輸入學校 Google 帳號前面部分（免打 @st.tc.edu.tw，例：359991；若用個人信箱請輸入完整信箱）：", defaultPrefix);
         if (rawInput && rawInput.trim()) {
           const cleanEmail = this.normalizeSchoolAccount(rawInput);
           if (!cleanEmail) {
             this.showToast("⚠️ 請輸入有效的帳號前綴（不用只輸入 @st.tc.edu.tw）！", 3000);
             return;
           }
+          const seatLabel = this.resolveStudentLabel(cleanEmail);
           const prefixName = cleanEmail.split("@")[0];
-          const codeName = prompt("請輸入班級座號代號（例：40125，請勿填寫真實姓名）：", state.currentUserName || prefixName);
+          const codeName = seatLabel || prompt("請輸入班級座號代號（例：40301，請勿填寫真實姓名）：", state.currentUserName || prefixName);
           state.currentUser = cleanEmail;
           state.currentUserName = (codeName && codeName.trim()) ? codeName.trim() : prefixName;
           localStorage.setItem("g4_writing_current_user", state.currentUser);
           localStorage.setItem("g4_writing_current_user_name", state.currentUserName);
-          this.showToast(`🎉 歡迎！已登入帳號【${state.currentUser}】！`, 3000);
+          this.showToast(`🎉 歡迎！已登入【${state.currentUserName}】！`, 3000);
           this.afterUserLoggedIn();
         }
       }
@@ -13441,15 +13833,15 @@ puzzleSentences: [
         const rawVal = input ? input.value.trim() : "";
         const cleanEmail = this.normalizeSchoolAccount(rawVal);
         if (!cleanEmail) {
-          alert("請輸入 @st.tc.edu.tw 前面的學生帳號部分（例如：s110301）！");
+          alert("請輸入 @st.tc.edu.tw 前面的學生帳號部分（例如：359991）！");
           input?.focus();
           return;
         }
         state.currentUser = cleanEmail;
-        state.currentUserName = cleanEmail.split("@")[0];
+        state.currentUserName = this.resolveStudentLabel(cleanEmail) || cleanEmail.split("@")[0];
         localStorage.setItem("g4_writing_current_user", state.currentUser);
         localStorage.setItem("g4_writing_current_user_name", state.currentUserName);
-        this.showToast(`🎉 成功連線學生帳號【${state.currentUser}】！`, 3000);
+        this.showToast(`🎉 成功連線【${state.currentUserName}】！`, 3000);
         this.afterUserLoggedIn();
       }
 
