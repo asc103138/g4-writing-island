@@ -2488,6 +2488,7 @@
       return t;
     })();
 
+
     // === 2. 程序化童話紅磚與石階地磚紋理 ===
     const miniatureBrickTex = (() => {
       const c = document.createElement('canvas');
@@ -2515,6 +2516,7 @@
       t.colorSpace = THREE.SRGBColorSpace;
       return t;
     })();
+
 
     // === 3. 程序化溫暖玩具木紋貼圖 ===
     const miniatureWoodTex = (() => {
@@ -2548,6 +2550,7 @@
       return t;
     })();
 
+
     // === 4. 程序化方格作文稿紙/試卷貼圖 ===
     const miniaturePaperTex = (() => {
       const c = document.createElement('canvas');
@@ -2576,6 +2579,7 @@
       t.colorSpace = THREE.SRGBColorSpace;
       return t;
     })();
+
 
     // === 4B. 程序化童話魚鱗瓦片屋頂紋理（白灰基底，可完美乘上紅/藍/青各色屋頂） ===
     const miniatureRoofTileTex = (() => {
@@ -2627,6 +2631,7 @@
       return t;
     })();
 
+
     // === 4C. 程序化溫潤抹灰泥牆紋理 (Storybook Plaster / Stucco) ===
     const miniatureStuccoTex = (() => {
       const c = document.createElement('canvas');
@@ -2659,6 +2664,74 @@
       return t;
     })();
 
+    // === 4D. 程序化海龜龜甲六角紋理 & 海龜皮膚斑紋 ===
+    const turtleShellTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 256;
+      c.height = 256;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#15803d';
+      ctx.fillRect(0, 0, 256, 256);
+      const r = 32;
+      const dx = r * 1.5;
+      const dy = r * Math.sqrt(3);
+      for (let col = -1; col < 8; col++) {
+        for (let row = -1; row < 7; row++) {
+          const cx = col * dx;
+          const cy = row * dy + (col % 2 === 0 ? 0 : dy / 2);
+          ctx.beginPath();
+          for (let k = 0; k < 6; k++) {
+            const ang = (Math.PI / 3) * k;
+            const px = cx + (r - 2) * Math.cos(ang);
+            const py = cy + (r - 2) * Math.sin(ang);
+            if (k === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+          const g = ctx.createRadialGradient(cx - 4, cy - 4, 2, cx, cy, r);
+          g.addColorStop(0, '#4ade80');
+          g.addColorStop(0.55, '#16a34a');
+          g.addColorStop(1, '#14532d');
+          ctx.fillStyle = g;
+          ctx.fill();
+          ctx.lineWidth = 3.5;
+          ctx.strokeStyle = '#fef08a';
+          ctx.stroke();
+        }
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(2, 1.5);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+
+    const turtleSkinTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 128;
+      c.height = 128;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#22c55e';
+      ctx.fillRect(0, 0, 128, 128);
+      for (let i = 0; i < 42; i++) {
+        const x = (i * 47 + 13) % 128;
+        const y = (i * 83 + 7) % 128;
+        const rad = 4 + (i % 4) * 2.5;
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(134, 239, 172, 0.55)' : 'rgba(20, 83, 45, 0.35)';
+        ctx.beginPath();
+        ctx.arc(x, y, rad, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(2, 2);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+
+
     // === 4D. 程序化砌石地基紋理 (Cobblestone / Ashlar Masonry) ===
     const miniatureStoneTex = (() => {
       const c = document.createElement('canvas');
@@ -2688,6 +2761,7 @@
       return t;
     })();
 
+
     // === 4E. 程序化精裝書頁側面與布紋封面貼圖 ===
     const miniatureBookPagesTex = (() => {
       const c = document.createElement('canvas');
@@ -2709,6 +2783,7 @@
       return t;
     })();
 
+
     const miniatureBookCoverTex = (() => {
       const c = document.createElement('canvas');
       c.width = 128;
@@ -2729,6 +2804,7 @@
       t.colorSpace = THREE.SRGBColorSpace;
       return t;
     })();
+
 
     // === 5. 材質快取系統（修復紋理 UUID 快取防衝突） ===
     const matCache = new Map();
@@ -6127,7 +6203,121 @@ puzzleSentences: [
         ],
         words: ["痛定思痛", "按部就班", "不勞而獲", "努力不懈", "超越自我", "征服考試", "良藥苦口", "腳踏實地"],
         syntax: ["改掉平時不燒香的毛病", "不再成為月考的大魔王俘虜", "征服考試並超越自我", "唯有努力不懈方能成功"],
-        peer: "「經過這次月考的慘痛教訓，我一定要改掉臨渴掘井的壞習慣，每天按部就班複習，下次一定能征服月考、超越自己！」"
+        peer: "「經過這次月考的慘痛教訓，我一定要改掉臨渴掘井的壞習慣，每天按部就班複習，下次一定能征服月考、超越自己！」",
+        // 🎯 依第 3 段「比想像中好」自動切換的合之島引導（考得好帶給我的影響、信心與繼續精進）
+        betterVariant: {
+          prompt: "這次月考拿到了比想像中還要好的亮眼成績！考得好帶給你什麼樣的影響與收穫？你要如何維持好方法、不驕傲自滿，繼續朝下一個目標前進？",
+          words: ["一分耕耘", "刮目相看", "自信滿滿", "戒驕戒躁", "精益求精", "更上一層樓", "再接再厲", "腳踏實地"],
+          masterPrompts: {
+            time: {
+              title: "⏰ 【時・喜悅沉澱審題】",
+              question: "拿到比想像中還要好的成績後，你是在什麼時候靜下心來回想這次考好的原因與影響？",
+              hint: "提示：寫出收到高分、開心又感動的時刻（例：在考出亮眼成績、聽見老師與家人讚美的這天晚上）",
+              placeholder: "例：在考出亮眼成績、收到老師與家人讚美的這天晚上"
+            },
+            place: {
+              title: "🏠 【地・更上層樓審題】",
+              question: "你坐在哪裡重新翻開筆記本，準備把這份好方法延續到未來的學習道路上？",
+              hint: "提示：描繪充滿成就感的書桌與未來目標（例：在充滿成就感的書桌前，與更上一層樓的求學道路上）",
+              placeholder: "例：在充滿成就感的書桌前，以及更上一層樓的求學道路上"
+            },
+            person: {
+              title: "👤 【人・謙虛自信審題】",
+              question: "考得好之後，身邊的家人或老師給了你什麼鼓勵？你自己又展現出什麼樣不驕傲、繼續努力的態度？",
+              hint: "提示：描寫家人欣慰鼓掌與自己戒驕戒躁的態度（例：替我開心鼓掌的家人，與自信滿滿卻不驕傲自滿的我）",
+              placeholder: "例：替我開心鼓掌的家人，與自信滿滿卻不驕傲自滿的我"
+            },
+            object: {
+              title: "📖 【物・成功秘訣審題】",
+              question: "書桌上哪一樣陪伴你複習的法寶（筆記本、計畫表、亮眼考卷），見證了你考得好的努力過程？",
+              hint: "提示：具體寫出見證努力的物品（例：寫滿心血與重點的筆記本，和貼在桌前的進階學習計畫表）",
+              placeholder: "例：寫滿心血與重點的筆記本，和貼在桌前的進階學習計畫表"
+            },
+            event: {
+              title: "⚡ 【事・考好影響與期許審題】",
+              question: "這次考得比想像中好，帶給你什麼樣的影響（例如更有信心、找到讀書方法）？你期許自己未來怎麼做？",
+              hint: "提示：總結努力開花結果的體會與戒驕戒躁的期許（例：體會到努力終於開花結果，決定保持好習慣、精益求精更上一層樓）",
+              placeholder: "例：體會到平日努力終於開花結果，決定保持好方法、戒驕戒躁繼續更上一層樓"
+            }
+          },
+          elementOptions: {
+            time: { label: "⏰ 【時】何時發生？", options: ["拿到這張出乎意料的好成績之後", "在受到師長與家人鼓勵的這一天"] },
+            place: { label: "🏠 【地】在什麼地方？", options: ["在充滿成就感的書桌前", "在更上一層樓的求學道路上"] },
+            person: { label: "👤 【人】身邊有誰？", options: ["自信滿滿卻不驕傲自滿的我", "替我開心鼓掌的家人與我"] },
+            object: { label: "📖 【物】看到什麼景物？", options: ["寫滿重點與心血的筆記本", "繼續精進的每日學習計畫表"] },
+            event: { label: "⚡ 【事】考得好帶來的影響？", options: ["體會到努力終有甜美收穫，更有信心面對學習", "決定保持好方法、戒驕戒躁更上一層樓"] }
+          },
+          guidedGuidance: {
+            time: {
+              label: "⏰ 【時】考後欣喜沉澱時刻引導",
+              p1: [{ label: "考好的收穫體驗", thinkingPrompt: "想一想：拿到這份比想像中好的成績後，帶給你什麼樣的鼓舞與體驗？", ideaAngles: "思考方向：回想發考卷那一刻的驚喜、師長的稱讚和家人的歡呼！", placeholder: "例：這次驚喜的好成績", chips: ["這次驚喜的好成績", "考得比預期更好的突破", "師長與家人的肯定鼓勵"] }],
+              p2: [{ thinkingPrompt: "想一想：拿到好成績後，你打算從什麼時候開始朝更高的目標邁進？", ideaAngles: "思考方向：回想下定決心保持好習慣的那一刻，比如「今天」、「收到好成績的這一刻」！", placeholder: "例：今天", chips: ["今天", "收到好成績的這一刻", "迎接新挑戰的第一天"] }]
+            },
+            place: {
+              label: "🏠 【地】繼續精進環境引導",
+              p1: [{ thinkingPrompt: "想一想：考得好之後，你在家裡哪個地方更有幹勁地打開書本？", ideaAngles: "思考方向：回想陪伴自己複習功課的書桌或小房間！", placeholder: "例：充滿成就感的書桌", chips: ["充滿成就感的書桌", "窗明几淨的房間", "陪伴我努力的小天地"] }],
+              p2: [{ thinkingPrompt: "想一想：未來的學習道路上，你希望自己在哪裡繼續穩步向前？", ideaAngles: "思考方向：運用譬喻，想想更上一層樓的求學道路！", placeholder: "例：更上一層樓的求學道路", chips: ["更上一層樓的求學道路", "不斷突破自我的起跑線", "往目標邁進的每一步"] }]
+            },
+            person: {
+              label: "👤 【人】自信謙虛自我引導",
+              p1: [{ label: "自信謙虛狀態", thinkingPrompt: "想一想：拿到好成績後，現在的你展現出什麼樣的自信與謙虛態度？", ideaAngles: "思考方向：用四年級成語形容不驕傲自滿、懂得繼續努力的自己！", placeholder: "例：自信滿滿卻不驕傲自滿", chips: ["自信滿滿卻不驕傲自滿", "懂得肯定自己、繼續努力", "滿懷信心、腳踏實地"] }],
+              p2: [{ label: "家人鼓勵神態", thinkingPrompt: "想一想：考出好成績後，家人或老師看著你的神情有什麼開心的轉變？", ideaAngles: "思考方向：回想爸媽露出欣慰笑容、為你拍手鼓掌的畫面！", placeholder: "例：露出了欣慰又驕傲的笑容", chips: ["露出了欣慰又驕傲的笑容", "開心地為我拍手鼓掌", "給了我一個大大的擁抱"] }]
+            },
+            object: {
+              label: "📖 【物】成功學習法寶引導",
+              p1: [{ label: "進階計畫特質", thinkingPrompt: "想一想：考得好之後，你為自己安排了什麼樣的學習計畫繼續保持實力？", ideaAngles: "思考方向：想想循序漸進、更加扎實的學習態度！", placeholder: "例：循序漸進", chips: ["循序漸進", "更加扎實", "自我挑戰"] }],
+              p2: [{ label: "用心筆記態度", thinkingPrompt: "想一想：這次幫助你考好的筆記本有什麼特色？你打算怎麼繼續寫好它？", ideaAngles: "思考方向：回想用心整理、寫滿重點的筆記本！", placeholder: "例：寫滿重點與心血", chips: ["寫滿重點與心血", "用心整理、條理分明", "字跡工整又清楚"] }]
+            },
+            event: {
+              label: "⚡ 【事】考好帶來的影響與期許引導",
+              p1: [
+                { _patternOverride: { name: "句型 A：體會到……，保持……好習慣", template: "體會到{part1}，決定保持{part2}的好習慣" }, label: "考好帶來的體會", pos: "名言或感受", thinkingPrompt: "想一想：考得比想像中好，讓你深深體會到什麼道理或影響？", ideaAngles: "思考方向：想想「一分耕耘，一分收穫」的甜美滋味，以及平日累積帶來的自信！", placeholder: "例：一分耕耘、一分收穫的喜悅", chips: ["一分耕耘、一分收穫的喜悅", "努力付出終於開花結果", "平日累積帶來的自信與底氣"] },
+                { label: "要維持的好習慣", pos: "好習慣語詞", thinkingPrompt: "想一想：這次讓你考得這麼好的讀書方法或習慣是什麼，你要繼續保持下去？", ideaAngles: "思考方向：回想每日預習複習、專心聽講、整理錯題的好習慣！", placeholder: "例：每日預習複習、不拖延", chips: ["每日預習複習、不拖延", "專心聽講與整理錯題", "腳踏實地、按部就班"] }
+              ],
+              p2: [
+                { _patternOverride: { name: "句型 B：……，更上一層樓", template: "{part1}，讓自己更上一層樓" }, label: "自我期許行動", pos: "四字語詞", thinkingPrompt: "想一想：未來你想用什麼態度提醒自己不要驕傲，繼續進步？", ideaAngles: "思考方向：用四年級正向成語表達戒驕戒躁、精益求精的決心！", placeholder: "例：戒驕戒躁、精益求精", chips: ["戒驕戒躁、精益求精", "保持熱情、挑戰更高目標", "記住這份成就感、再接再厲"] }
+              ]
+            }
+          },
+          clozeSentences: [
+            {
+              index: 1,
+              title: "① 開頭句（考好帶來的深刻體悟引導）",
+              guide: "💡 引導提問：拿到比想像中還要好的成績後，你深深體會到了什麼？",
+              template: "這次月考考得比想像中還要好，我{part1}，深深體會到{part2}的道理。",
+              blanks: [
+                { key: "part1", label: "填空 ①【考後心情】", placeholder: "例：心裡既驚喜又充滿成就感", chips: ["心裡既驚喜又充滿成就感", "看著滿意分數會心一笑", "更加肯定自己的努力方向"] },
+                { key: "part2", label: "填空 ②【學習收穫】", placeholder: "例：「一分耕耘，一分收穫」", chips: ["「一分耕耘，一分收穫」", "「平日踏實累積，關鍵時刻就能發光」", "「找對讀書方法並堅持下去，真的能看見進步」"] }
+              ]
+            },
+            {
+              index: 2,
+              title: "② 發展句（好成績帶來的動力與行動引導）",
+              guide: "💡 引導提問：這份好成績帶給你什麼動力？你在書桌前決定繼續怎麼做？",
+              template: "這份好成績給了我很大的信心，在書桌前我{part1}，每天{part2}。",
+              blanks: [
+                { key: "part1", label: "填空 ①【延續好方法】", placeholder: "例：把寫滿重點的筆記本整理得更清楚", chips: ["把寫滿重點的筆記本整理得更清楚", "訂立了更有挑戰性的每日複習計畫", "笑著告訴自己絕不能因此驕傲鬆懈"] },
+                { key: "part2", label: "填空 ②【持續精進目標】", placeholder: "例：保持專注與好習慣，把基礎打得更穩固", chips: ["保持專注與好習慣，把基礎打得更穩固", "按部就班預習與複習，不怕遇到難題", "把少數粗心錯題再練習一遍，精益求精"] }
+              ]
+            },
+            {
+              index: 3,
+              title: "③ 結尾句（戒驕戒躁與更上一層樓引導）",
+              guide: "💡 引導提問：帶著這份考得好的自信與影響，你對下一次月考有什麼期許？",
+              template: "帶著這份美好的收穫，我相信只要{part1}，未來的我一定能{part2}！",
+              blanks: [
+                { key: "part1", label: "填空 ①【堅持態度】", placeholder: "例：戒驕戒躁、繼續腳踏實地努力", chips: ["戒驕戒躁、繼續腳踏實地努力", "保持對學習的熱情與好奇心", "維持穩定的複習節奏，不斷挑戰自己"] },
+                { key: "part2", label: "填空 ②【更進一步願景】", placeholder: "例：再接再厲、更上一層樓", chips: ["再接再厲、更上一層樓", "讓老師和家人繼續為我感到驕傲", "越來越喜歡學習，迎接每一次新挑戰"] }
+              ]
+            }
+          ],
+          puzzleSentences: [
+            { prefix: "這次月考考得比想像中好，讓我深深體會到", options: ["「一分耕耘，一分收穫」的甜美滋味", "平日的努力與累積，絕對不會背叛自己"], defaultIdx: 0, suffix: "。" },
+            { prefix: "這份好成績帶給我滿滿的信心，我也提醒自己", options: ["絕不能驕傲自滿，要繼續保持專心複習的好習慣", "要記住這次有效的讀書方法，把基礎打得更穩固"], defaultIdx: 0, suffix: "。" },
+            { prefix: "從今天起，我每天都要", options: ["戒驕戒躁、按部就班預習與複習功課", "用心整理筆記與錯題，讓自己更加進步"], defaultIdx: 0, suffix: "。" },
+            { prefix: "帶著這份努力開花結果的感動，我希望未來的自己", options: ["能精益求精、更上一層樓，勇敢迎向更大的挑戰", "越來越享受學習的樂趣，讓家人與老師為我驕傲"], defaultIdx: 0, suffix: "！" }
+          ]
+        }
       },
       {
         id: 4,
@@ -6986,39 +7176,41 @@ puzzleSentences: [
       const accentMat = getMat(accentColor, { roughness: 0.65, metalness: 0.08 });
       const goldMat = getMat(0xf59e0b, { roughness: 0.35, metalness: 0.25 });
 
-      // 角色核心身軀主群組 (直接雙腳站立於島嶼地面，方便動畫跳躍與轉向)
+      // 角色核心身軀主群組 (直接雙腳站立於島嶼地面，方便動畫跳躍與轉向；海龜採四肢伏地龜殼體態，略過直立雪人軀幹)
       const character = new THREE.Group();
       character.position.y = 0;
 
-      // 腳掌
-      const footGeo = new THREE.SphereGeometry(0.18, 10, 8);
-      const footL = new THREE.Mesh(footGeo, accentMat);
-      footL.scale.set(1.1, 0.6, 1.4);
-      footL.position.set(-0.25, 0.1, 0.05);
-      footL.castShadow = true;
-      character.add(footL);
+      if (type !== "turtle") {
+        // 腳掌
+        const footGeo = new THREE.SphereGeometry(0.18, 10, 8);
+        const footL = new THREE.Mesh(footGeo, accentMat);
+        footL.scale.set(1.1, 0.6, 1.4);
+        footL.position.set(-0.25, 0.1, 0.05);
+        footL.castShadow = true;
+        character.add(footL);
 
-      const footR = new THREE.Mesh(footGeo, accentMat);
-      footR.scale.set(1.1, 0.6, 1.4);
-      footR.position.set(0.25, 0.1, 0.05);
-      footR.castShadow = true;
-      character.add(footR);
+        const footR = new THREE.Mesh(footGeo, accentMat);
+        footR.scale.set(1.1, 0.6, 1.4);
+        footR.position.set(0.25, 0.1, 0.05);
+        footR.castShadow = true;
+        character.add(footR);
 
-      // 圓滾滾身軀 (Squashed Sphere)
-      const bodyGeo = new THREE.SphereGeometry(0.55, 16, 14);
-      const body = new THREE.Mesh(bodyGeo, bodyMat);
-      body.scale.set(1.0, 1.05, 0.92);
-      body.position.y = 0.65;
-      body.castShadow = true;
-      body.receiveShadow = true;
-      character.add(body);
+        // 圓滾滾身軀 (Squashed Sphere)
+        const bodyGeo = new THREE.SphereGeometry(0.55, 16, 14);
+        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        body.scale.set(1.0, 1.05, 0.92);
+        body.position.y = 0.65;
+        body.castShadow = true;
+        body.receiveShadow = true;
+        character.add(body);
 
-      // 淺色肚兜斑塊
-      const bellyGeo = new THREE.SphereGeometry(0.38, 14, 12);
-      const belly = new THREE.Mesh(bellyGeo, bellyMat);
-      belly.scale.set(0.9, 1.05, 0.45);
-      belly.position.set(0, 0.62, 0.32);
-      character.add(belly);
+        // 淺色肚兜斑塊
+        const bellyGeo = new THREE.SphereGeometry(0.38, 14, 12);
+        const belly = new THREE.Mesh(bellyGeo, bellyMat);
+        belly.scale.set(0.9, 1.05, 0.45);
+        belly.position.set(0, 0.62, 0.32);
+        character.add(belly);
+      }
 
       // 頭部群組 (可微幅左右微晃 tilt)
       const headGroup = new THREE.Group();
@@ -7356,19 +7548,150 @@ puzzleSentences: [
         character.add(pot);
 
       } else if (type === "turtle") {
-        // 智慧海龜：翡翠龜殼、殼邊紋路、身後背著古樸卷軸
-        const shellMat = getMat(0x166534, { roughness: 0.5 });
-        const shell = new THREE.Mesh(new THREE.SphereGeometry(0.52, 12, 10), shellMat);
-        shell.scale.set(0.9, 1.2, 0.65);
-        shell.position.set(0, 0.65, -0.32);
-        shell.rotation.x = 0.2;
+        // 智慧海龜爺爺：伏地海龜體態＋程序化六角龜甲紋理＋斑紋海龜皮膚＋立體背甲甲片＋四隻鰭狀槳肢＋老花眼鏡與白鬍鬚＋背負古樸卷軸
+        const shellMat = getMat(0xffffff, {
+          roughness: 0.58,
+          metalness: 0.06,
+          map: turtleShellTex,
+          bumpMap: turtleShellTex,
+          bumpScale: 0.038
+        });
+        const scuteMat = getMat(0x22c55e, { roughness: 0.64, metalness: 0.05 });
+        const rimMat = getMat(0xfde68a, { roughness: 0.72, metalness: 0.05 });
+        const turtleSkinMat = getMat(0xdcfce7, {
+          roughness: 0.68,
+          metalness: 0.05,
+          map: turtleSkinTex,
+          bumpMap: turtleSkinTex,
+          bumpScale: 0.015
+        });
+        const turtleFlipperMat = getMat(0x86efac, {
+          roughness: 0.65,
+          metalness: 0.06,
+          map: turtleSkinTex,
+          bumpMap: turtleSkinTex,
+          bumpScale: 0.014
+        });
+
+        // 換上海龜斑紋皮膚材質到頭部主球體
+        head.material = turtleSkinMat;
+
+        // 1. 寬扁奶油腹甲 (Plastron)
+        const plastron = new THREE.Mesh(new THREE.SphereGeometry(0.68, 16, 10), bellyMat);
+        plastron.scale.set(1.02, 0.24, 1.24);
+        plastron.position.set(0, 0.16, -0.04);
+        character.add(plastron);
+
+        // 2. 翡翠穹頂背甲 (Carapace - 套用六角龜甲紋理與凹凸貼圖)
+        const shell = new THREE.Mesh(
+          new THREE.SphereGeometry(0.68, 22, 16, 0, Math.PI * 2, 0, Math.PI * 0.56),
+          shellMat
+        );
+        shell.scale.set(1.06, 0.85, 1.26);
+        shell.position.set(0, 0.2, -0.05);
         character.add(shell);
 
-        // 書卷 (Scroll)
-        const scroll = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.65, 10), getMat(0xfef3c7));
-        scroll.rotation.z = Math.PI / 3;
-        scroll.position.set(0, 0.72, -0.58);
+        // 3. 奶油金黃殼緣裙邊 (Shell Rim)
+        const shellRim = new THREE.Mesh(new THREE.TorusGeometry(0.69, 0.085, 10, 24), rimMat);
+        shellRim.rotation.x = Math.PI / 2;
+        shellRim.scale.set(1.05, 1.24, 0.85);
+        shellRim.position.set(0, 0.22, -0.05);
+        character.add(shellRim);
+
+        // 4. 龜殼背甲立體甲片 (精準貼附於橢球背甲表面上方，不會被龜殼吞沒)
+        const scuteSpecs = [
+          [0, 0.79, -0.04, 0.23, 0.07, 0.26, 0, 0],
+          [0, 0.66, 0.42, 0.18, 0.065, 0.18, 0.58, 0],
+          [0, 0.65, -0.5, 0.18, 0.065, 0.2, -0.58, 0],
+          [-0.44, 0.61, -0.05, 0.17, 0.065, 0.22, 0, 0.62],
+          [0.44, 0.61, -0.05, 0.17, 0.065, 0.22, 0, -0.62]
+        ];
+        scuteSpecs.forEach(([sx, sy, sz, rx, ry, rz, rotX, rotZ]) => {
+          const scute = new THREE.Mesh(new THREE.CylinderGeometry(rx * 0.82, rx, ry, 6), scuteMat);
+          scute.scale.set(1, 1, rz / rx);
+          scute.position.set(sx, sy, sz);
+          scute.rotation.set(rotX, 0, rotZ);
+          character.add(scute);
+        });
+
+        // 5. 四隻海龜鰭狀槳肢 (套用海龜斑紋皮膚貼圖)
+        const frontFlipperGeo = new THREE.SphereGeometry(0.32, 12, 8);
+        const flipperFL = new THREE.Mesh(frontFlipperGeo, turtleFlipperMat);
+        flipperFL.scale.set(1.45, 0.26, 0.62);
+        flipperFL.position.set(-0.76, 0.14, 0.34);
+        flipperFL.rotation.y = 0.45;
+        flipperFL.rotation.z = 0.08;
+        character.add(flipperFL);
+
+        const flipperFR = new THREE.Mesh(frontFlipperGeo, turtleFlipperMat);
+        flipperFR.scale.set(1.45, 0.26, 0.62);
+        flipperFR.position.set(0.76, 0.14, 0.34);
+        flipperFR.rotation.y = -0.45;
+        flipperFR.rotation.z = -0.08;
+        character.add(flipperFR);
+
+        const backFlipperGeo = new THREE.SphereGeometry(0.24, 10, 8);
+        const flipperBL = new THREE.Mesh(backFlipperGeo, turtleFlipperMat);
+        flipperBL.scale.set(1.2, 0.24, 0.58);
+        flipperBL.position.set(-0.56, 0.12, -0.62);
+        flipperBL.rotation.y = -0.55;
+        character.add(flipperBL);
+
+        const flipperBR = new THREE.Mesh(backFlipperGeo, turtleFlipperMat);
+        flipperBR.scale.set(1.2, 0.24, 0.58);
+        flipperBR.position.set(0.56, 0.12, -0.62);
+        flipperBR.rotation.y = 0.55;
+        character.add(flipperBR);
+
+        // 6. 小尾巴與前伸龜頸
+        const tail = new THREE.Mesh(new THREE.ConeGeometry(0.11, 0.32, 8), turtleSkinMat);
+        tail.rotation.x = -Math.PI / 2 - 0.15;
+        tail.position.set(0, 0.16, -0.94);
+        character.add(tail);
+
+        const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.24, 0.42, 12), turtleSkinMat);
+        neck.rotation.x = Math.PI / 2 - 0.25;
+        neck.position.set(0, 0.34, 0.64);
+        character.add(neck);
+
+        // 7. 龜頭前伸定位 + 海龜爺爺圓框老花眼鏡 & 白鬍鬚
+        headGroup.scale.setScalar(0.75);
+        headGroup.position.set(0, 0.46, 0.86);
+
+        const glassesGeo = new THREE.TorusGeometry(0.11, 0.022, 8, 16);
+        const tGlassL = new THREE.Mesh(glassesGeo, goldMat);
+        tGlassL.position.set(-0.2, 0.05, 0.49);
+        headGroup.add(tGlassL);
+        const tGlassR = new THREE.Mesh(glassesGeo, goldMat);
+        tGlassR.position.set(0.2, 0.05, 0.49);
+        headGroup.add(tGlassR);
+        const tBridge = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.18, 6), goldMat);
+        tBridge.rotation.z = Math.PI / 2;
+        tBridge.position.set(0, 0.06, 0.5);
+        headGroup.add(tBridge);
+
+        const mustacheGeo = new THREE.ConeGeometry(0.07, 0.24, 8);
+        const mustL = new THREE.Mesh(mustacheGeo, whiteMat);
+        mustL.rotation.z = Math.PI / 2 + 0.25;
+        mustL.position.set(-0.14, -0.14, 0.48);
+        headGroup.add(mustL);
+        const mustR = new THREE.Mesh(mustacheGeo, whiteMat);
+        mustR.rotation.z = -Math.PI / 2 - 0.25;
+        mustR.position.set(0.14, -0.14, 0.48);
+        headGroup.add(mustR);
+
+        // 8. 背負古樸卷軸 (Scroll + 紅緞帶)
+        const scroll = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.82, 12), getMat(0xfef3c7, { roughness: 0.72 }));
+        scroll.rotation.z = Math.PI / 2;
+        scroll.rotation.y = 0.15;
+        scroll.position.set(0, 0.8, -0.22);
         character.add(scroll);
+
+        const scrollBand = new THREE.Mesh(new THREE.CylinderGeometry(0.112, 0.112, 0.12, 12), getMat(0xdc2626, { roughness: 0.6 }));
+        scrollBand.rotation.z = Math.PI / 2;
+        scrollBand.rotation.y = 0.15;
+        scrollBand.position.set(0, 0.8, -0.22);
+        character.add(scrollBand);
       }
 
       character.add(headGroup);
@@ -12786,11 +13109,16 @@ puzzleSentences: [
         this.showToast(message, 3200);
       }
 
-      // 轉之島考試結果兩種狀況切換：共用句型模板，依所選結果動態切換引導與參考詞庫
+      // 轉之島 & 合之島考試結果聯動切換：依第 3 段選擇「比想像中好 / 比想像中壞」動態切換引導與參考詞庫
       getEffectiveIslandData(data) {
-        if (!data || data.id !== 2 || !data.twistVariants) return data;
-        const outcome = state.twistOutcome === "better" ? "better" : "worse";
-        const variant = data.twistVariants[outcome];
+        if (!data) return data;
+        let variant = null;
+        if (data.id === 2 && data.twistVariants) {
+          const outcome = state.twistOutcome === "better" ? "better" : "worse";
+          variant = data.twistVariants[outcome];
+        } else if (data.id === 3 && state.twistOutcome === "better" && data.betterVariant) {
+          variant = data.betterVariant;
+        }
         if (!variant) return data;
 
         const mergedGuided = {};
@@ -12802,14 +13130,17 @@ puzzleSentences: [
               label: guideOverride.label || baseFrame.label,
               patterns: baseFrame.patterns.map((pat) => {
                 const patOverrides = guideOverride[pat.id] || [];
+                const patMeta = (patOverrides[0] && patOverrides[0]._patternOverride) || {};
                 return {
                   id: pat.id,
-                  name: pat.name,
-                  template: pat.template,
-                  blanks: pat.blanks.map((b, bIdx) => ({
-                    ...b,
-                    ...(patOverrides[bIdx] || {})
-                  }))
+                  name: patMeta.name || pat.name,
+                  template: patMeta.template || pat.template,
+                  blanks: pat.blanks.map((b, bIdx) => {
+                    const ov = patOverrides[bIdx];
+                    if (!ov) return { ...b };
+                    const { _patternOverride, ...cleanOv } = ov;
+                    return { ...b, ...cleanOv };
+                  })
                 };
               })
             };
@@ -12818,9 +13149,12 @@ puzzleSentences: [
 
         return {
           ...data,
+          prompt: variant.prompt || data.prompt,
           words: variant.words || data.words,
           masterPrompts: variant.masterPrompts || data.masterPrompts,
           elementOptions: variant.elementOptions || data.elementOptions,
+          clozeSentences: variant.clozeSentences || data.clozeSentences,
+          puzzleSentences: variant.puzzleSentences || data.puzzleSentences,
           guidedFrames: Object.keys(mergedGuided).length > 0 ? mergedGuided : data.guidedFrames
         };
       }
@@ -12830,11 +13164,20 @@ puzzleSentences: [
         const prev = state.twistOutcome;
         state.twistOutcome = outcome;
 
-        // 若從另一種結果切換過來，清空原本不相符的第 2 島作答與段落草稿
+        // 若從另一種結果切換過來，清空原本不相符的第 2 島與第 3 島連動選項
         if (prev && prev !== outcome) {
-          if (state.guidedSelections) state.guidedSelections[2] = {};
-          if (state.elementSelections) state.elementSelections[2] = { time: 0, place: 0, person: 0, object: 0, event: 0 };
-          if (state.puzzleSelections) state.puzzleSelections[2] = [0, 0, 0, 0];
+          if (state.guidedSelections) {
+            state.guidedSelections[2] = {};
+            state.guidedSelections[3] = {};
+          }
+          if (state.elementSelections) {
+            state.elementSelections[2] = { time: 0, place: 0, person: 0, object: 0, event: 0 };
+            state.elementSelections[3] = { time: 0, place: 0, person: 0, object: 0, event: 0 };
+          }
+          if (state.puzzleSelections) {
+            state.puzzleSelections[2] = [0, 0, 0, 0];
+            state.puzzleSelections[3] = [0, 0, 0, 0];
+          }
           if (state.paragraphs) state.paragraphs[2] = "";
         }
         state.saveState();
@@ -12843,9 +13186,9 @@ puzzleSentences: [
         this.renderStep1Pickers(CURRICULUM_DATA[2]);
         this.showToast(
           outcome === "better"
-            ? "🌟 已切換為【比想像中好・驚喜高分】寫作引導！"
-            : "⛈️ 已切換為【比想像中壞・震撼風暴】寫作引導！",
-          2600
+            ? "🌟 已切換為【比想像中好】寫作引導（合之島已同步連動為考得好影響）！"
+            : "⛈️ 已切換為【比想像中壞】寫作引導（合之島已同步連動為反省改進）！",
+          2800
         );
       }
 
@@ -13310,6 +13653,44 @@ puzzleSentences: [
             list.appendChild(waitCard);
             return;
           }
+        }
+
+        // 合之島專屬：顯示與第 3 段（轉之島）考試結果連動之寫作引導狀態橫幅
+        if (islandIdx === 3) {
+          const outcome = state.twistOutcome;
+          const linkBanner = document.createElement("div");
+          linkBanner.className = "twist-outcome-card";
+          if (outcome === "better") {
+            linkBanner.style.background = "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)";
+            linkBanner.style.borderColor = "#34d399";
+            linkBanner.innerHTML = `
+              <div class="twist-outcome-title" style="color: #065f46;">
+                <span>🌟 連動第三段【比想像中好】：考得好帶給我的影響</span>
+              </div>
+              <div style="font-size: 14.5px; color: #047857; font-weight: 700; line-height: 1.65;">
+                系統已自動將合之島切換為「肯定努力收穫、好成績帶來的信心與影響、戒驕戒躁更上一層樓」引導！
+              </div>
+            `;
+          } else if (outcome === "worse") {
+            linkBanner.innerHTML = `
+              <div class="twist-outcome-title">
+                <span>⛈️ 連動第三段【比想像中壞】：反省改進與超越自我</span>
+              </div>
+              <div style="font-size: 14.5px; color: #7c2d12; font-weight: 700; line-height: 1.65;">
+                系統已依據你第 3 段的選擇，維持「痛定思痛、改掉壞習慣與按部就班超越自我」引導！
+              </div>
+            `;
+          } else {
+            linkBanner.innerHTML = `
+              <div class="twist-outcome-title">
+                <span>💡 尚未選擇第三段（轉之島）考試結果</span>
+              </div>
+              <div style="font-size: 14.5px; color: #7c2d12; font-weight: 700; line-height: 1.65;">
+                目前先顯示反省改進版；若你在轉之島選擇「比想像中好」，合之島會自動切換為「考得好帶給我的影響」引導喔！
+              </div>
+            `;
+          }
+          list.appendChild(linkBanner);
         }
 
         const data = this.getEffectiveIslandData(rawData);
@@ -13994,7 +14375,60 @@ puzzleSentences: [
             }
           ];
         } else {
-          // 合之島・反思超越自我
+          // 合之島・依第 3 段選擇切換「考得好帶給我的影響」或「反思超越自我」
+          const placePhrase = e.place && e.place.startsWith("在") ? e.place : `在${e.place}`;
+          if (state.twistOutcome === "better") {
+            return [
+              {
+                index: 1,
+                title: "① 開頭句（肯定收穫與體悟）",
+                elementTag: "時",
+                elementText: e.time,
+                template: (tail) => `${e.time}，我深深體會到${tail}。`,
+                options: [
+                  "「一分耕耘，一分收穫」的甜美滋味",
+                  "平日的努力與累積絕對不會背叛自己",
+                  "只要找對方法並堅持下去，就能看見亮眼的進步"
+                ]
+              },
+              {
+                index: 2,
+                title: "② 發展句（好成績帶來的動力與行動）",
+                elementTag: "地＋物",
+                elementText: `${e.place} ＋ ${e.object}`,
+                template: (tail) => `這份好成績帶給我莫大的信心，每天${placePhrase}打開${e.object}，${tail}。`,
+                options: [
+                  "我都更有動力按部就班複習，把基礎打得更穩固",
+                  "我都提醒自己絕不能驕傲自滿，要繼續專心學習",
+                  "我都細心整理重點與錯題，讓自己更加進步"
+                ]
+              },
+              {
+                index: 3,
+                title: "③ 轉折句（正向回饋與自我期許）",
+                elementTag: "人",
+                elementText: e.person,
+                template: (tail) => `看見${e.person}，${tail}。`,
+                options: [
+                  "這份肯定成了我繼續前進的最大力量",
+                  "心裡充滿溫暖與成就感，更想成為讓大家驕傲的自己",
+                  "我期許自己戒驕戒躁，把這份喜悅化為下次挑戰的動力"
+                ]
+              },
+              {
+                index: 4,
+                title: "④ 結尾句（精益求精、更上一層樓）",
+                elementTag: "事",
+                elementText: e.event,
+                template: (tail) => `帶著這次考得比想像中好的自信，我${e.event}，${tail}！`,
+                options: [
+                  "下一次月考要繼續精益求精、更上一層樓",
+                  "不再害怕考試，要用更踏實的腳步迎接下一次勝利",
+                  "記住這份努力開花結果的感動，勇敢迎向更大的挑戰"
+                ]
+              }
+            ];
+          }
           return [
             {
               index: 1,
@@ -14013,7 +14447,7 @@ puzzleSentences: [
               title: "② 發展句（環境與行動改變）",
               elementTag: "地＋物",
               elementText: `${e.place} ＋ ${e.object}`,
-              template: (tail) => `我下定決心改掉壞毛病，每天在${e.place}捧起${e.object}，${tail}。`,
+              template: (tail) => `我下定決心改掉壞毛病，每天${placePhrase}捧起${e.object}，${tail}。`,
               options: [
                 "按部就班複習功課，腳踏實地完成習作練習",
                 "妥善安排每一分鐘，絕不再讓作業堆積如山",
