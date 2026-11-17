@@ -1,5 +1,25 @@
 # handoff.md - 多 Agent 交接紀錄
 
+## 2026-11-17 合之島第三段連動引導、海龜／獅子／蜜蜂 3D 重塑與程序化紋理
+- **執行人**：Antigravity Agent
+- **已推送 Commit**：
+  - `087b9c3`：`feat(island-3): redesign sea turtle with shell/skin textures and link guidance to twist outcome`
+  - `423cf47`：`feat(island-3): redesign lion and bee NPCs with custom 3D anatomy and procedural textures`
+- **今日完成重點（[index.html](file:///g:/我的雲端硬碟/115四上作文/index.html)）**：
+  1. **本機 Git 狀態修復**：移除 `.git/refs/heads/main.lock` 殘留鎖定檔並將本機 `main` 安全對齊追蹤 `origin/main`。
+  2. **合之島依第三段「比想像中好」連動引導**：
+     - 於 `CURRICULUM_DATA[3]` 新增 `betterVariant`（含 `prompt`、`words`、`masterPrompts`、`elementOptions`、`guidedGuidance`、`clozeSentences`、`puzzleSentences`），並擴充 `getEffectiveIslandData`、`setTwistOutcome`、Step 1 連動狀態橫幅與 Step 2 `getIslandSentenceSpecs(3, e)`，當第三段選擇「🌟 比想像中好」時，合之島自動切換為「考得好帶給我的影響、信心與戒驕戒躁精進」。
+  3. **合之島三位動物島民（海龜、獅子、蜜蜂）立體體態與程序化紋理升級**：
+     - 略過通用直立雪人軀幹，分別建構專屬體態與離線 Canvas 程序化貼圖（`map`＋`bumpMap`）：
+       - **智慧海龜爺爺（`turtle`）**：`turtleShellTex`（六角龜甲紋）＋ `turtleSkinTex`（斑紋皮膚）、浮貼背甲甲片、四隻鰭狀槳肢、金框老花眼鏡、白鬍鬚與背負卷軸。
+       - **金冠獅子（`lion`）**：`lionFurTex` ＋ `lionManeTex`、四足獅腿肉球腳掌、多層花瓣環狀蓬鬆獅鬃毛、貓科鼻吻、金皇冠、皇室紅披風與毛球長尾。
+       - **勤勉小蜜蜂（`bee`）**：`beeBodyTex`（橫向黃黑絨毛條紋）＋ `beeWingTex`（半透明翅脈）、小蜂針、雙觸角與懷抱金黃蜂蜜罐。
+- **雙軌驗證**：
+  - `node --check` 通過（0 錯誤）；Playwright 實機截圖確認海龜、獅子、蜜蜂外觀與紋理正常，合之島連動切換與 Console 均 0 Errors / 0 Warnings。
+- **待接續事項**：
+  - 切換回 Mac 環境時，補同步 `2026-11-12`～`2026-11-17` 紀錄至 Obsidian 駕駛艙（`創作庫/115四上作文專案駕駛艙.md`）。
+  - 教師端實測 GitHub Pages（`https://asc103138.github.io/g4-writing-island/`）最新部署畫面，並確認是否處理工作目錄內未追蹤檔案 `rdq/RDQ-spec-ocean-person-20261117.md`。
+
 ## 2026-11-15 守門神殿空港（終點試煉）1:1 概念設計圖重製：紋理、光影與構圖全面升級
 - **執行人**：Antigravity Agent
 - **使用者核心要求**：「守門神殿空港（終點試煉）與設計圖完全不像，紋理、光影、構圖重新製作」
