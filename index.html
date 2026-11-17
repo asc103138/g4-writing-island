@@ -2731,6 +2731,107 @@
       return t;
     })();
 
+    // === 4E. 程序化金冠獅子毛絨紋理 & 勤勉小蜜蜂條紋／翅脈紋理 ===
+    const lionFurTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 128;
+      c.height = 128;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillRect(0, 0, 128, 128);
+      for (let i = 0; i < 160; i++) {
+        const x = (i * 53 + 7) % 128;
+        const y = (i * 91 + 11) % 128;
+        ctx.strokeStyle = i % 2 === 0 ? 'rgba(254, 243, 199, 0.45)' : 'rgba(217, 119, 6, 0.32)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + (i % 3) - 1, y + 7);
+        ctx.stroke();
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(2, 2);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+
+    const lionManeTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 128;
+      c.height = 128;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#c2410c';
+      ctx.fillRect(0, 0, 128, 128);
+      for (let i = 0; i < 140; i++) {
+        const x = (i * 43 + 5) % 128;
+        const y = (i * 79 + 19) % 128;
+        ctx.strokeStyle = i % 2 === 0 ? 'rgba(251, 146, 60, 0.55)' : 'rgba(124, 45, 18, 0.45)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + ((i % 5) - 2), y + 10);
+        ctx.stroke();
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(2, 2);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+
+    const beeBodyTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 256;
+      c.height = 256;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#facc15';
+      ctx.fillRect(0, 0, 256, 256);
+      // 柔和絨毛條紋（黃黑相間）
+      const stripes = [28, 96, 164];
+      stripes.forEach((sy) => {
+        const g = ctx.createLinearGradient(0, sy, 0, sy + 36);
+        g.addColorStop(0, '#451a03');
+        g.addColorStop(0.5, '#1e293b');
+        g.addColorStop(1, '#451a03');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, sy, 256, 36);
+      });
+      for (let i = 0; i < 180; i++) {
+        const x = (i * 61 + 9) % 256;
+        const y = (i * 103 + 17) % 256;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.14)';
+        ctx.fillRect(x, y, 4, 2);
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.ClampToEdgeWrapping;
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+
+    const beeWingTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 128;
+      c.height = 128;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#e0f2fe';
+      ctx.fillRect(0, 0, 128, 128);
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.65)';
+      ctx.lineWidth = 2.5;
+      for (let i = 1; i <= 4; i++) {
+        ctx.beginPath();
+        ctx.moveTo(10, 64);
+        ctx.quadraticCurveTo(64, 16 * i, 120, 24 * i);
+        ctx.stroke();
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+
 
     // === 4D. 程序化砌石地基紋理 (Cobblestone / Ashlar Masonry) ===
     const miniatureStoneTex = (() => {
@@ -7176,11 +7277,11 @@ puzzleSentences: [
       const accentMat = getMat(accentColor, { roughness: 0.65, metalness: 0.08 });
       const goldMat = getMat(0xf59e0b, { roughness: 0.35, metalness: 0.25 });
 
-      // 角色核心身軀主群組 (直接雙腳站立於島嶼地面，方便動畫跳躍與轉向；海龜採四肢伏地龜殼體態，略過直立雪人軀幹)
+      // 角色核心身軀主群組 (直接雙腳站立於島嶼地面；海龜/獅子/蜜蜂各自建構專屬立體動物體態，略過直立雪人軀幹)
       const character = new THREE.Group();
       character.position.y = 0;
 
-      if (type !== "turtle") {
+      if (type !== "turtle" && type !== "lion" && type !== "bee") {
         // 腳掌
         const footGeo = new THREE.SphereGeometry(0.18, 10, 8);
         const footL = new THREE.Mesh(footGeo, accentMat);
@@ -7491,61 +7592,193 @@ puzzleSentences: [
         character.add(wingMemR);
 
       } else if (type === "lion") {
-        // 金冠獅子：蓬鬆橘紅鬃毛圓球環、頭頂金色小皇冠、背後紅色披風
-        const maneMat = getMat(0xd97706, { roughness: 0.8 });
-        const mane = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.18, 10, 20), maneMat);
-        mane.position.set(0, 0, -0.08);
-        headGroup.add(mane);
+        // 金冠獅子：四足威風小獅王體態＋毛絨紋理＋多層蓬鬆獅鬃毛＋立體貓科鼻吻圓耳＋金皇冠＋皇室紅披風＋毛球長尾巴
+        const lionFurMat = getMat(0xfffbeb, {
+          roughness: 0.72,
+          metalness: 0.05,
+          map: lionFurTex,
+          bumpMap: lionFurTex,
+          bumpScale: 0.022
+        });
+        const lionManeMat = getMat(0xffedd5, {
+          roughness: 0.82,
+          metalness: 0.04,
+          map: lionManeTex,
+          bumpMap: lionManeTex,
+          bumpScale: 0.032
+        });
+        const lionCapeMat = getMat(0xb91c1c, { roughness: 0.78, metalness: 0.05 });
 
-        // 金冠
-        const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.16, 0.2, 5), goldMat);
-        crown.position.set(0, 0.62, 0);
-        headGroup.add(crown);
+        head.material = lionFurMat;
+        headGroup.scale.setScalar(0.86);
+        headGroup.position.set(0, 0.94, 0.44);
 
-        // 紅色披風
-        const cape = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.82, 0.05), getMat(0xb91c1c));
-        cape.position.set(0, 0.58, -0.42);
-        cape.rotation.x = 0.15;
+        // 1. 獅子圓潤身軀 (橫向四足比例)
+        const lionBody = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 14), lionFurMat);
+        lionBody.scale.set(0.92, 0.88, 1.28);
+        lionBody.position.set(0, 0.52, -0.08);
+        character.add(lionBody);
+
+        // 奶油色胸毛肚腹
+        const lionChest = new THREE.Mesh(new THREE.SphereGeometry(0.36, 12, 10), bellyMat);
+        lionChest.scale.set(0.85, 0.92, 0.65);
+        lionChest.position.set(0, 0.56, 0.36);
+        character.add(lionChest);
+
+        // 2. 四隻圓潤小獅腿與肉球腳掌
+        const legGeo = new THREE.CylinderGeometry(0.14, 0.12, 0.42, 10);
+        const pawGeo = new THREE.SphereGeometry(0.16, 10, 8);
+        [
+          [-0.28, 0.24, 0.28],
+          [0.28, 0.24, 0.28],
+          [-0.28, 0.24, -0.44],
+          [0.28, 0.24, -0.44]
+        ].forEach(([lx, ly, lz]) => {
+          const leg = new THREE.Mesh(legGeo, lionFurMat);
+          leg.position.set(lx, ly, lz);
+          character.add(leg);
+
+          const paw = new THREE.Mesh(pawGeo, bellyMat);
+          paw.scale.set(1.05, 0.58, 1.22);
+          paw.position.set(lx, 0.08, lz + 0.04);
+          character.add(paw);
+        });
+
+        // 3. 翹起的長尾巴與尾端蓬鬆毛球
+        const tailStem = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.045, 0.66, 8), lionFurMat);
+        tailStem.position.set(0, 0.66, -0.78);
+        tailStem.rotation.x = -0.65;
+        character.add(tailStem);
+
+        const tailTuft = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 10), lionManeMat);
+        tailTuft.scale.set(1.0, 1.2, 1.0);
+        tailTuft.position.set(0, 0.92, -1.0);
+        character.add(tailTuft);
+
+        // 4. 皇室紅披風 (披於獅背)
+        const cape = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.06, 0.88), lionCapeMat);
+        cape.position.set(0, 0.9, -0.18);
+        cape.rotation.x = 0.22;
         character.add(cape);
 
+        // 5. 蓬鬆花瓣環狀大鬃毛 + 圓耳朵 + 立體貓科鼻吻 + 金色小皇冠
+        for (let m = 0; m < 10; m++) {
+          const ang = (m / 10) * Math.PI * 2;
+          const tuft = new THREE.Mesh(new THREE.SphereGeometry(0.24, 10, 8), lionManeMat);
+          tuft.position.set(Math.cos(ang) * 0.46, Math.sin(ang) * 0.46, -0.06);
+          headGroup.add(tuft);
+        }
+        const maneRing = new THREE.Mesh(new THREE.TorusGeometry(0.46, 0.16, 10, 20), lionManeMat);
+        maneRing.position.set(0, 0, -0.08);
+        headGroup.add(maneRing);
+
+        // 圓圓獅耳
+        const earL = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 8), lionFurMat);
+        earL.position.set(-0.38, 0.42, 0.06);
+        headGroup.add(earL);
+        const earR = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 8), lionFurMat);
+        earR.position.set(0.38, 0.42, 0.06);
+        headGroup.add(earR);
+
+        // 奶油鼻吻 + 粉紅小鼻頭
+        const muzzle = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 10), bellyMat);
+        muzzle.scale.set(1.2, 0.85, 0.72);
+        muzzle.position.set(0, -0.1, 0.45);
+        headGroup.add(muzzle);
+
+        const nose = new THREE.Mesh(new THREE.SphereGeometry(0.075, 8, 8), getMat(0x7c2d12, { roughness: 0.45 }));
+        nose.scale.set(1.25, 0.85, 0.7);
+        nose.position.set(0, -0.03, 0.58);
+        headGroup.add(nose);
+
+        // 閃亮金色小皇冠
+        const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.17, 0.22, 5), goldMat);
+        crown.position.set(0, 0.62, 0.02);
+        headGroup.add(crown);
+
       } else if (type === "bee") {
-        // 勤勉小蜜蜂：黃黑相間條紋身體、半透明藍色薄翅、懷抱蜂蜜罐
-        const stripeMat = getMat(0x1e293b);
-        const stripe1 = new THREE.Mesh(new THREE.TorusGeometry(0.54, 0.06, 8, 16), stripeMat);
-        stripe1.rotation.x = Math.PI / 2;
-        stripe1.position.set(0, 0.72, 0);
-        character.add(stripe1);
-
-        const stripe2 = new THREE.Mesh(new THREE.TorusGeometry(0.52, 0.06, 8, 16), stripeMat);
-        stripe2.rotation.x = Math.PI / 2;
-        stripe2.position.set(0, 0.52, 0);
-        character.add(stripe2);
-
-        // 半透明薄翅
-        const wingMat = new THREE.MeshStandardMaterial({
-          color: 0xbae6fd,
-          roughness: 0.2,
-          transparent: true,
-          opacity: 0.65
+        // 勤勉小蜜蜂：橫向飛翔橢圓條紋蜂腹＋程序化絨毛條紋＋觸角＋四片脈紋薄翅＋小蜂針＋懷抱金黃蜂蜜罐
+        const beeBodyMat = getMat(0xffffff, {
+          roughness: 0.65,
+          metalness: 0.06,
+          map: beeBodyTex,
+          bumpMap: beeBodyTex,
+          bumpScale: 0.02
         });
-        const beeWingL = new THREE.Mesh(new THREE.SphereGeometry(0.32, 8, 8), wingMat);
-        beeWingL.scale.set(0.15, 0.8, 0.4);
-        beeWingL.position.set(-0.35, 0.85, -0.38);
-        beeWingL.rotation.y = 0.4;
-        beeWingL.rotation.x = -0.4;
-        character.add(beeWingL);
+        const beeHeadMat = getMat(0xfde047, { roughness: 0.65, metalness: 0.06 });
+        const beeDarkMat = getMat(0x1e293b, { roughness: 0.55, metalness: 0.08 });
 
-        const beeWingR = new THREE.Mesh(new THREE.SphereGeometry(0.32, 8, 8), wingMat);
-        beeWingR.scale.set(0.15, 0.8, 0.4);
-        beeWingR.position.set(0.35, 0.85, -0.38);
-        beeWingR.rotation.y = -0.4;
-        beeWingR.rotation.x = -0.4;
-        character.add(beeWingR);
+        head.material = beeHeadMat;
+        headGroup.scale.setScalar(0.76);
+        headGroup.position.set(0, 0.92, 0.52);
 
-        // 蜂蜜罐
-        const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.14, 0.3, 12), getMat(0xd97706));
-        pot.position.set(0, 0.52, 0.42);
+        // 1. 橫向橢圓蜜蜂軀幹 (套用黃黑絨毛條紋貼圖，rotation.x=PI/2 讓環狀條紋繞 Z 軸前後排列，local Y 對應前後長軸)
+        const beeBody = new THREE.Mesh(new THREE.SphereGeometry(0.5, 20, 16), beeBodyMat);
+        beeBody.scale.set(0.86, 1.24, 0.82);
+        beeBody.rotation.x = Math.PI / 2;
+        beeBody.position.set(0, 0.72, -0.12);
+        character.add(beeBody);
+
+        // 2. 小蜂針 (緊貼蜂腹尾端)
+        const stinger = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.22, 8), beeDarkMat);
+        stinger.rotation.x = -Math.PI / 2;
+        stinger.position.set(0, 0.72, -0.78);
+        character.add(stinger);
+
+        // 3. 頭頂可愛黑色捲曲觸角
+        [-1, 1].forEach((side) => {
+          const antStem = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.36, 8), beeDarkMat);
+          antStem.position.set(side * 0.16, 0.58, 0.12);
+          antStem.rotation.z = -side * 0.3;
+          antStem.rotation.x = 0.25;
+          headGroup.add(antStem);
+
+          const antTip = new THREE.Mesh(new THREE.SphereGeometry(0.065, 8, 8), beeDarkMat);
+          antTip.position.set(side * 0.24, 0.75, 0.2);
+          headGroup.add(antTip);
+        });
+
+        // 4. 兩對半透明脈紋薄翅 (大前翅 + 小後翅)
+        const wingMat = new THREE.MeshStandardMaterial({
+          color: 0xe0f2fe,
+          roughness: 0.2,
+          metalness: 0.1,
+          map: beeWingTex,
+          transparent: true,
+          opacity: 0.78
+        });
+        [-1, 1].forEach((side) => {
+          const wingBig = new THREE.Mesh(new THREE.SphereGeometry(0.42, 12, 10), wingMat);
+          wingBig.scale.set(1.35, 0.08, 0.65);
+          wingBig.position.set(side * 0.58, 1.12, -0.12);
+          wingBig.rotation.z = side * 0.42;
+          wingBig.rotation.y = -side * 0.22;
+          character.add(wingBig);
+
+          const wingSmall = new THREE.Mesh(new THREE.SphereGeometry(0.28, 10, 8), wingMat);
+          wingSmall.scale.set(1.2, 0.08, 0.58);
+          wingSmall.position.set(side * 0.44, 0.98, -0.34);
+          wingSmall.rotation.z = side * 0.28;
+          wingSmall.rotation.y = -side * 0.35;
+          character.add(wingSmall);
+        });
+
+        // 5. 小手抱著金黃流蜜蜂蜜罐
+        const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.17, 0.34, 12), getMat(0xd97706, { roughness: 0.62 }));
+        pot.position.set(0, 0.36, 0.38);
         character.add(pot);
+
+        const honeyTop = new THREE.Mesh(new THREE.SphereGeometry(0.19, 10, 8), getMat(0xfacc15, { roughness: 0.25 }));
+        honeyTop.scale.set(1, 0.32, 1);
+        honeyTop.position.set(0, 0.52, 0.38);
+        character.add(honeyTop);
+
+        [-1, 1].forEach((side) => {
+          const arm = new THREE.Mesh(new THREE.SphereGeometry(0.11, 8, 8), beeDarkMat);
+          arm.scale.set(0.85, 0.85, 1.4);
+          arm.position.set(side * 0.22, 0.42, 0.28);
+          character.add(arm);
+        });
 
       } else if (type === "turtle") {
         // 智慧海龜爺爺：伏地海龜體態＋程序化六角龜甲紋理＋斑紋海龜皮膚＋立體背甲甲片＋四隻鰭狀槳肢＋老花眼鏡與白鬍鬚＋背負古樸卷軸
