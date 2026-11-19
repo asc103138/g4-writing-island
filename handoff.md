@@ -1,5 +1,31 @@
 # handoff.md - 多 Agent 交接紀錄
 
+## 2026-11-19 《我最○○的人》海底探險全 5 站 1:1 概念圖精雕、四站寫作引導重寫、深海全景峽谷與免驗證檢核副本
+- **執行人**：Antigravity Agent
+- **本次完成重點（[ocean-writing-adventure/index.html](file:///g:/我的雲端硬碟/115四上作文/ocean-writing-adventure/index.html)、[preview-dev.html](file:///g:/我的雲端硬碟/115四上作文/ocean-writing-adventure/preview-dev.html)、[sync_preview.py](file:///g:/我的雲端硬碟/115四上作文/ocean-writing-adventure/sync_preview.py)）**：
+  1. **全 5 站 1:1 概念設計圖重製與紋理精雕**：
+     - **第 1 站（起・珊瑚礁觀察艙，`station_0_origin.png`）**：暗灰玄武岩底座＋暖杏沙地＋玻璃圓頂肋骨、黃藍雙色圓頂觀察艙（腰環白燈珠＋潛望鏡＋天藍拱門舷窗）、管狀海綿與泡泡珊瑚、海帶、小丑魚／海馬／紫章魚與繫泊柱。
+     - **第 2 站（承・海龜外貌與優點站，`station_1_progress.png`）**：薄荷水藍綠沙地、雙層圓形大理石台階與翠綠海龜雕像、黃金放大鏡青藍微光、黃銅 L 型左右巡視潛望鏡（`swayY`）、薄荷綠＆粉紫管狀海綿與泡泡珊瑚、外圍防穿刺淨空。
+     - **第 3 站（轉・深海沉船回憶寶庫，`station_2_twist.png`）**：淘汰方磚船身與殘留暴風雨暗灰模式，1:1 重雕半橢球中空木質沉船（下凹甲板、船頭捲曲木首飾、船尾高台與旋轉舵輪、3 顆黃銅舷窗、瞭望台木桅與鼓風奶油白帆）、弧頂金框鎖扣發光寶藏箱、流線 S 型波浪海帶；並清除第 2～4 站與互動 NPC 重複的靜態小生物。
+     - **第 4 站（合・深海珍珠影響站，`station_3_harmony.png`）**：薰衣草淺紫沙地、雙層紫白石階、開闔粉紅波浪扇貝＋懸浮發光暖金大珍珠、藍白紅頂海底小燈塔與發光六角稜鏡水晶柱。
+     - **終點站（大白鯊水晶守門神殿，`station_4_shark_sanctuary.png`）**：離線程序化 Canvas 手繪 **粉白放射狀大理石拼花地磚**（`sanctuaryMarbleTex`）與 **珠光扇貝放射波浪紋**（`scallopShellTex`）；立體重雕 **大白鯊・波塞頓**（嘴吻輪廓、奶油肚皮切線、側身三道鰓裂、背鰭、五角金皇冠與呼吸揮動三叉戟 `tridentWave`）；城堡主塔補上深藍拱窗與腰線、6 根雙段發光鑽石水晶柱（保留 4 根印章契約）、弧頂金框寶箱與柔和夢幻補光。
+  2. **四站 Step 1～Step 3 寫作引導深度優化**：
+     - 徹底重寫 `getIslandSentenceSpecs()`，清除上一篇《考試前後》殘留考卷／誇飾模板，配置四站專屬修辭（起：譬喻定調、承：視覺摹寫與外貌比喻、轉：動作神態與對話引號、合：呼應題目《我最○○的人》與感恩譬喻），同步清理 Step 3 修辭診斷儀與教師退回標籤。
+     - 升級 Step 2 為 **雙軌語句修順**（可編輯 `.step2-edit-box`＋通順自檢小提示＋還原建議句），修改結果持久化至 `state.step2EditedSentences` 並即時反映至預覽與 Step 3。
+     - 於 `validateStep1Required()` 實作分難度「形容詞＋名詞／副詞＋動詞」防偷懶擴寫限制（大師級 ≥6 字且含修飾結構）與高頻偷懶短詞即時追問（`getLazyWordFeedback`）。
+  3. **高效能雙層全視野深海大峽谷與「🌌 深海全景」鳥瞰鈕**：
+     - 以 `THREE.InstancedMesh` 建置雙層 U 型階梯遞減六角玄武岩深海大峽谷（覆蓋至 `[-340..360] × [-280..250]`，拉到最遠零空洞邊界）、130 處發光珊瑚管簇、180 簇深海海草林、3 座跨航道發光岩石拱門、3 隻振翅滑翔魔鬼魚、發光魚群與熱泉氣泡柱；底部 HUD 新增「🌌 深海全景」鳥瞰鈕。
+  4. **教師／開發者快速檢核副本**：
+     - 新增 [ocean-writing-adventure/preview-dev.html](file:///g:/我的雲端硬碟/115四上作文/ocean-writing-adventure/preview-dev.html) 與一鍵同步腳本 [sync_preview.py](file:///g:/我的雲端硬碟/115四上作文/ocean-writing-adventure/sync_preview.py)（全站免驗證解鎖、⚡一鍵填示範、獨立本機儲存且停用雲端寫入）。
+  5. **RDQ 需求規格卡留存**：已歸檔 4 份確認版規格卡至 `rdq/` 目錄。
+- **雙軌驗證**：
+  - `node --check` 通過（0 錯誤）；Playwright 實機逐站截圖對比、Step 1 偷懶短詞攔截與 Step 2 編輯同步測試、全景鳥瞰與大白鯊神殿特寫皆通過，Console 0 Errors / 0 Warnings。
+- **待接續事項**：
+  - 教師端建立《我最○○的人》獨立 Google 試算表並部署 [ocean-writing-adventure/google_sheets_gas_code.js](file:///g:/我的雲端硬碟/115四上作文/ocean-writing-adventure/google_sheets_gas_code.js)，將 Web App URL 填入正式版 `DEFAULT_GAS_API_URL`（或網頁同步設定）。
+  - 決定是否將 `ocean-writing-adventure/` 推送至獨立 GitHub Repo 並啟用 GitHub Pages 供班級平板連線。
+  - 切換回 Mac 環境時，補同步 `2026-11-12`～`2026-11-19` 紀錄至 Obsidian 駕駛艙（`創作庫/115四上作文專案駕駛艙.md`）。
+
+
 ## 2026-11-17 合之島第三段連動引導、海龜／獅子／蜜蜂 3D 重塑與程序化紋理
 - **執行人**：Antigravity Agent
 - **已推送 Commit**：

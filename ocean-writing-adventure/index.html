@@ -1656,6 +1656,42 @@
       border-color: #fdba74;
     }
 
+
+    .step2-edit-box {
+      width: 100%;
+      min-height: 62px;
+      padding: 10px 12px;
+      margin: 8px 0 6px 0;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 15.5px;
+      line-height: 1.7;
+      color: #0f172a;
+      background: #ffffff;
+      font-family: inherit;
+      resize: vertical;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .step2-edit-box:focus {
+      outline: none;
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+    .step2-fluency-tip {
+      font-size: 12.5px;
+      color: #0369a1;
+      background: #f0f9ff;
+      border-left: 3px solid #38bdf8;
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
   </style>
 </head>
 <body>
@@ -1775,6 +1811,10 @@
       <button class="hud-dock-btn" onclick="window.islandApp.focusCurrentIsland()" title="鏡頭重新聚焦回目前正在進行的島嶼">
         <span class="hud-dock-icon">🎯</span>
         <span id="hudFocusBtnText">對焦潛水站</span>
+      </button>
+      <button class="hud-dock-btn" onclick="window.islandApp.viewAbyssalPanorama()" title="一鍵拉遠鳥瞰整條深海峽谷與五座潛水站全貌">
+        <span class="hud-dock-icon">🌌</span>
+        <span>深海全景</span>
       </button>
       <button class="hud-dock-btn" onclick="window.islandApp.openQuickNavModal()" title="快速查看全島任務與進度">
         <span class="hud-dock-icon">🗺️</span>
@@ -2011,7 +2051,7 @@
             <div style="font-size: 17px; color: #334155; line-height: 1.8;">
               <div style="font-weight: 900; color: #0f172a; font-size: 17.5px; margin-bottom: 6px;">🎒 你的寫作法寶：</div>
               • 危機事件登場（魔王題目攔路、鐘聲倒數三分鐘）<br>
-              • 誇飾修辭加持（心跳像大鼓狂敲、汗水像瀑布噴出）<br>
+              • 人物摹寫與譬喻加持（笑容像春風、眼神閃閃發光、對話引號生動呈現）<br>
               • 內心交戰時刻（該放棄還是堅持到底？最後一秒的掙扎）
             </div>
 
@@ -2187,7 +2227,7 @@
             <span>💡 第 2 步：組裝段落句子（開頭 ➔ 發展 ➔ 轉折 ➔ 結尾）</span>
           </div>
           <div class="step-header-desc" style="color: #1e3a8a;">
-            系統已將你剛剛在 Step 1 決定的【時、地、人、物、事】五要素完整融入四句骨架！請點選修辭與誇飾好詞來強化氣氛：
+            系統已將你在 Step 1 的【時、地、人、物、事】融入四句骨架！請點選該站專屬修辭，並可直接在句子框中「親手把不通順的地方修順」：
           </div>
         </div>
 
@@ -2390,7 +2430,7 @@
         <label style="font-size: 13px; font-weight: 700; color: #555;">快捷退件指導（若未達標請勾選）：</label>
         <div class="quick-reject-group">
           <span class="reject-tag" onclick="window.islandApp.toggleRejectTag(this, '字數不足50字')">字數不足</span>
-          <span class="reject-tag" onclick="window.islandApp.toggleRejectTag(this, '缺少誇飾修辭')">缺少誇飾法</span>
+          <span class="reject-tag" onclick="window.islandApp.toggleRejectTag(this, '缺少外貌摹寫或譬喻修辭')">缺少外貌摹寫／譬喻</span>
           <span class="reject-tag" onclick="window.islandApp.toggleRejectTag(this, '注意錯別字')">錯別字修正</span>
           <span class="reject-tag" onclick="window.islandApp.toggleRejectTag(this, '情節需更具體')">情節需豐富</span>
         </div>
@@ -2434,7 +2474,7 @@
         <button style="padding: 12px; border-radius: 10px; border: 2px solid #f4a261; background: #fff8f0; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="window.islandApp.setTier('master')">
           <div>
             <strong style="color: #b05a14; font-size: 15px;">🌟🌟🌟 大師級（高成就・修辭挑戰）</strong>
-            <div style="font-size: 12px; color: #555; margin-top: 2px;">深層審題思維定位，挑戰雙重誇飾法與同理心描摹！</div>
+            <div style="font-size: 12px; color: #555; margin-top: 2px;">深層人物審題，挑戰「形容詞＋名詞／副詞＋動詞」擴寫與生動摹寫！</div>
           </div>
           <span style="font-size: 20px;">👑</span>
         </button>
@@ -6001,6 +6041,7 @@
           { time: 0, place: 0, person: 0, object: 0, event: 0 }
         ];
         this.step2ClozeData = [ {}, {}, {}, {} ];
+        this.step2EditedSentences = [ {}, {}, {}, {} ];
         this.guidedSelections = [ {}, {}, {}, {} ];
         this.ooWord = "敬佩";
         this.manuscriptMode = "horizontal";
@@ -6053,6 +6094,7 @@
               { time: 0, place: 0, person: 0, object: 0, event: 0 }
             ];
             this.step2ClozeData = data.step2ClozeData || [ {}, {}, {}, {} ];
+            this.step2EditedSentences = data.step2EditedSentences || [ {}, {}, {}, {} ];
             this.guidedSelections = data.guidedSelections || [ {}, {}, {}, {} ];
             this.ooWord = data.ooWord || "敬佩";
             this.manuscriptMode = data.manuscriptMode || "horizontal";
@@ -6075,6 +6117,7 @@
             puzzleSelections: this.puzzleSelections,
             elementSelections: this.elementSelections,
             step2ClozeData: this.step2ClozeData,
+            step2EditedSentences: this.step2EditedSentences,
             guidedSelections: this.guidedSelections,
             ooWord: this.ooWord,
             manuscriptMode: this.manuscriptMode,
@@ -6115,6 +6158,7 @@
               elementSelections: this.elementSelections,
               puzzleSelections: this.puzzleSelections,
               step2ClozeData: this.step2ClozeData,
+            step2EditedSentences: this.step2EditedSentences,
               guidedSelections: this.guidedSelections
             };
 
@@ -6778,7 +6822,7 @@
         this.controls.dampingFactor = 0.06;
         this.controls.maxPolarAngle = Math.PI / 2 - 0.06;
         this.controls.minDistance = 8;
-        this.controls.maxDistance = 150;
+        this.controls.maxDistance = 325;
         this.controls.zoomSpeed = 1.0;
         this.controls.target.set(CURRICULUM_DATA[0].position[0] - 1.0, CURRICULUM_DATA[0].position[1] + 3.2, CURRICULUM_DATA[0].position[2]);
 
@@ -7132,7 +7176,7 @@
 
       initSea() {
         // ① 正上方海面波光天花板 (y = +46)
-        const seaSurfaceGeo = new THREE.PlaneGeometry(650, 650, 48, 48);
+        const seaSurfaceGeo = new THREE.PlaneGeometry(960, 960, 48, 48);
         const seaSurfaceMat = new THREE.MeshStandardMaterial({
           color: 0x38bdf8,
           emissive: 0x0284c7,
@@ -7162,7 +7206,7 @@
         floorSandTex.repeat.set(22, 22);
         floorSandTex.needsUpdate = true;
 
-        const floorGeo = new THREE.PlaneGeometry(650, 650, 32, 32);
+        const floorGeo = new THREE.PlaneGeometry(960, 960, 36, 36);
         const floorMat = new THREE.MeshStandardMaterial({
           color: 0x1e5c82,
           map: floorSandTex,
@@ -7202,241 +7246,313 @@
         this.scene.add(causticsFloor);
 
         // ③ 依據 ocean_canyon_environment.png 建構：兩側階梯式六角玄武岩柱峽谷峭壁、大量發光珊瑚叢與海帶、6 道圓錐光束與發光引導燈徑
-        this.buildCanyonEnvironment();
+        // consolidated into buildAbyssalCanyon()
+
+        // ④ 【1:1 對齊 ocean_canyon_environment.png】：六角玄武岩深海峽谷峭壁 ＋ 發光珊瑚管 ＋ 站間導引珍珠光點
+        this.buildAbyssalCanyon();
 
         this.initPiranhas();
       }
 
-      // 依據 ocean_canyon_environment.png 1:1 建造清透藍灰六角玄武岩峽谷峭壁、大量雙色珊瑚海帶、強化版 6 道神聖光束與引導燈徑
-      buildCanyonEnvironment() {
-        const canyonGroup = new THREE.Group();
-        const basaltMat1 = getMat(0x4e7599, { map: oceanBasaltRockTex, bumpMap: oceanBasaltRockTex, bumpScale: 0.08, roughness: 0.66, metalness: 0.08 });
-        const basaltMat2 = getMat(0x5d87ad, { map: oceanBasaltRockTex, bumpMap: oceanBasaltRockTex, bumpScale: 0.07, roughness: 0.62, metalness: 0.08 });
-        const basaltMat3 = getMat(0x3a5d7d, { map: oceanBasaltRockTex, bumpMap: oceanBasaltRockTex, bumpScale: 0.08, roughness: 0.7, metalness: 0.06 });
-        const basaltMats = [basaltMat1, basaltMat2, basaltMat3];
+      buildAbyssalCanyon() {
+        const stationPts = CURRICULUM_DATA.map(d => new THREE.Vector3(...d.position));
 
-        const glowPinkCoralMat = getMat(0xf472b6, { roughness: 0.36, emissive: 0xec4899, emissiveIntensity: 0.68 });
-        const glowCyanCoralMat = getMat(0x67e8f9, { roughness: 0.32, emissive: 0x06b6d4, emissiveIntensity: 0.72 });
-        const glowOrangeCoralMat = getMat(0xfb923c, { roughness: 0.38, emissive: 0xf97316, emissiveIntensity: 0.52 });
-        const glowYellowCoralMat = getMat(0xfde047, { roughness: 0.36, emissive: 0xfacc15, emissiveIntensity: 0.45 });
-        const glowMossMat = getMat(0x2dd4bf, { roughness: 0.48, emissive: 0x14b8a6, emissiveIntensity: 0.48 });
-        const glowTipMat = getMat(0xe0f2fe, { roughness: 0.18, emissive: 0x7dd3fc, emissiveIntensity: 1.2 });
-
-        // 輔助：在峭壁與階梯平台放置豐富的雙色管狀珊瑚、球簇珊瑚與圓潤海石
-        const addBioluminescentTubeCluster = (gx, gy, gz, variant = 0) => {
-          const cl = new THREE.Group();
-          cl.position.set(gx, gy, gz);
-          const mA = variant % 2 === 0 ? glowPinkCoralMat : glowOrangeCoralMat;
-          const mB = variant % 2 === 0 ? glowCyanCoralMat : glowYellowCoralMat;
-          const specs = [
-            [0, 0, 5.2, 0.48, mA],
-            [1.15, 0.65, 3.8, 0.38, mB],
-            [-0.95, 0.85, 2.7, 0.34, mA],
-            [0.35, -0.85, 3.1, 0.3, mB]
-          ];
-          specs.forEach(([ox, oz, h, r, mat]) => {
-            const tube = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 0.92, h, 14), mat);
-            tube.position.set(ox, h / 2, oz);
-            cl.add(tube);
-            const tip = ball(r * 1.16, glowTipMat, 12, 10);
-            tip.position.set(ox, h + r * 0.45, oz);
-            cl.add(tip);
-          });
-          // 底部點綴球狀珊瑚與海石
-          const pebble = ball(0.85, basaltMat2, 10, 8);
-          pebble.scale.set(1.3, 0.55, 1.1);
-          pebble.position.set(-1.3, 0.3, -0.4);
-          cl.add(pebble);
-          canyonGroup.add(cl);
+        // 判斷點 (x, z) 是否在任一潛水站或站間航道的安全淨空範圍內
+        const distToStationsAndPath = (x, z) => {
+          let minD = 9999;
+          for (let i = 0; i < stationPts.length; i++) {
+            const d = Math.hypot(x - stationPts[i].x, z - stationPts[i].z);
+            if (d < minD) minD = d;
+          }
+          for (let i = 0; i < stationPts.length - 1; i++) {
+            const a = stationPts[i], b = stationPts[i + 1];
+            const vx = b.x - a.x, vz = b.z - a.z;
+            const len2 = vx * vx + vz * vz || 1;
+            const t = Math.max(0, Math.min(1, ((x - a.x) * vx + (z - a.z) * vz) / len2));
+            const px = a.x + t * vx, pz = a.z + t * vz;
+            const dSeg = Math.hypot(x - px, z - pz);
+            if (dSeg < minD) minD = dSeg;
+          }
+          return minD;
         };
 
-        // 1A. 沿深海航道設置 5 座大型流線科技海底能量拱門 (Underwater Tech Portal Arches - 徹底取代垂直柱子)
-        const archTitaniumMat = getMat(0xcbd5e1, { roughness: 0.28, metalness: 0.62 });
-        const archDarkMat = getMat(0x334155, { roughness: 0.36, metalness: 0.56 });
-        const archCyanMat = getMat(0x38bdf8, { emissive: 0x06b6d4, emissiveIntensity: 1.35, roughness: 0.15 });
-        const archSpecs = [
-          { x: -62, z: -8,  r: 56, rotY: 0.15 },
-          { x: -16, z: -28, r: 58, rotY: 0.12 },
-          { x: 32,  z: -24, r: 58, rotY: -0.08 },
-          { x: 76,  z: -8,  r: 56, rotY: -0.18 },
-          { x: 118, z: 8,   r: 54, rotY: -0.25 }
-        ];
-        archSpecs.forEach((as) => {
-          const portal = new THREE.Group();
-          portal.position.set(as.x, -62, as.z);
-          portal.rotation.y = Math.PI / 2 + as.rotY;
+        // 偽隨機確定性函式（每次打開場景一致美觀）
+        let seed = 1150403;
+        const rand = () => {
+          seed = (seed * 1664525 + 1013904223) % 4294967296;
+          return seed / 4294967296;
+        };
 
-          // 銀白鈦合金流線主拱門
-          const mainArch = new THREE.Mesh(new THREE.TorusGeometry(as.r, 1.35, 14, 48, Math.PI), archTitaniumMat);
-          portal.add(mainArch);
-
-          // 內側青藍發光能量環帶
-          const innerGlow = new THREE.Mesh(new THREE.TorusGeometry(as.r - 1.55, 0.36, 10, 48, Math.PI), archCyanMat);
-          portal.add(innerGlow);
-
-          // 拱門兩端落地處的圓潤科技錨座
-          for (const side of [-1, 1]) {
-            const pod = cyl(3.2, 4.2, 4.5, 20, archDarkMat);
-            pod.position.set(side * as.r, 2.25, 0);
-            portal.add(pod);
-            const podRing = new THREE.Mesh(new THREE.TorusGeometry(3.45, 0.28, 10, 24), archCyanMat);
-            podRing.rotation.x = Math.PI / 2;
-            podRing.position.set(side * as.r, 4.1, 0);
-            portal.add(podRing);
-          }
-
-          canyonGroup.add(portal);
+        // ① InstancedMesh：220 根密集層疊的六角玄武岩深海大峽谷峭壁＋中景海床礁丘 (僅 1 Draw Call！)
+        const basaltGeo = new THREE.CylinderGeometry(1.0, 1.08, 1.0, 6);
+        const basaltMat = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          emissive: 0x0f2942,
+          emissiveIntensity: 0.42,
+          roughness: 0.72,
+          metalness: 0.14,
+          flatShading: true
         });
+        const colTransforms = [];
+        const coralAnchors = [];
 
-        // 1B. 海床兩側低矮圓潤珊瑚礁岩丘 (Organic Reef Mounds - 完全無垂直柱子)
-        for (let stepIdx = 0; stepIdx < 14; stepIdx++) {
-          const xBase = -108 + stepIdx * 18.5;
-          for (const side of [-1, 1]) {
-            const mz = side < 0 ? (-66 + Math.sin(stepIdx * 0.5) * 9) : (58 + Math.cos(stepIdx * 0.5) * 8);
-            if (side > 0 && xBase > 55) continue;
+        // 雙層全視野覆蓋：內圈精細峽谷梯田 + 外圈超廣角六角玄武岩深海山脈，拉到最遠也看不到空洞邊界！(依然僅 1 Draw Call)
+        // A. 內圈與中景峽谷梯田 [-190..215] x [-145..135]
+        for (let gx = -190; gx <= 215; gx += 14) {
+          for (let gz = -145; gz <= 135; gz += 14) {
+            const x = gx + (rand() - 0.5) * 8.5;
+            const z = gz + (rand() - 0.5) * 8.5;
+            const dSafe = distToStationsAndPath(x, z);
+            if (dSafe < 21.5) continue;
 
-            const rx = 8.5 + (stepIdx % 3) * 2.5;
-            const ry = 4.8 + (stepIdx % 4) * 1.4;
-            const rz = 7.5 + ((stepIdx + 1) % 3) * 2.0;
+            const isFrontSouth = z > 32 && x > -115 && x < 140;
+            const leftSlope = Math.max(0, (-95 - x) / 75);
+            const rightSlope = Math.max(0, (x - 122) / 75);
+            const backSlope = Math.max(0, (-56 - z) / 75);
+            const ridgeFactor = isFrontSouth ? 0 : Math.min(1.0, Math.max(leftSlope, rightSlope, backSlope * 0.9));
 
-            const moundGeo = new THREE.IcosahedronGeometry(1.0, 2);
-            const mPos = moundGeo.attributes.position;
-            for (let v = 0; v < mPos.count; v++) {
-              const vx = mPos.getX(v), vy = mPos.getY(v), vz = mPos.getZ(v);
-              const wave = 1.0 + 0.14 * Math.sin(vx * 3.5 + vy * 2.5) + 0.1 * Math.cos(vz * 4.0);
-              mPos.setXYZ(v, vx * rx * wave, Math.max(-0.2, vy) * ry * wave, vz * rz * wave);
-            }
-            moundGeo.computeVertexNormals();
-            const moundMat = basaltMats[(stepIdx + (side > 0 ? 1 : 0)) % basaltMats.length];
-            const mound = new THREE.Mesh(moundGeo, moundMat);
-            mound.position.set(xBase, -62.2, mz);
-            mound.receiveShadow = true;
-            canyonGroup.add(mound);
+            const keepProb = ridgeFactor > 0.1 ? 0.72 : (isFrontSouth ? 0.42 : 0.48);
+            if (rand() > keepProb) continue;
 
-            // 岩丘上方種植雙色管狀珊瑚、發光苔蘚與搖曳海帶
-            const topY = -62 + ry * 0.88;
-            if (stepIdx % 2 === 0) {
-              addBioluminescentTubeCluster(xBase, topY, mz, stepIdx + (side > 0 ? 1 : 0));
-            } else {
-              const mossCap = ball(2.2, glowMossMat, 12, 10);
-              mossCap.scale.set(1.6, 0.35, 1.4);
-              mossCap.position.set(xBase, topY + 0.1, mz);
-              canyonGroup.add(mossCap);
+            const radius = 3.8 + ridgeFactor * 3.8 + rand() * 2.0;
+            const baseFloorY = -60;
+            const rawH = isFrontSouth
+              ? (8 + rand() * 14)
+              : (14 + ridgeFactor * 78 + (rand() - 0.3) * 16);
+            const height = Math.max(8, Math.round(rawH / 6) * 6);
 
-              const canyonKelp = createWindyGrassClump(2.8, 0x10b981);
-              canyonKelp.position.set(xBase - side * 1.8, topY, mz);
-              canyonGroup.add(canyonKelp);
-              this.windyGrassList.push(canyonKelp);
-            }
+            colTransforms.push({ x, y: baseFloorY + height / 2, z, rx: radius, ry: height, rotY: rand() * Math.PI, isOuterWall: ridgeFactor > 0.1 });
+          }
+        }
+        // B. 外圈超廣角遠景六角玄武岩山脈 [-340..360] x [-280..250]，徹底填滿最大縮放視野邊緣！
+        for (let gx = -340; gx <= 360; gx += 26) {
+          for (let gz = -280; gz <= 250; gz += 26) {
+            if (gx > -185 && gx < 210 && gz > -140 && gz < 130) continue;
+            const x = gx + (rand() - 0.5) * 14;
+            const z = gz + (rand() - 0.5) * 14;
+            const isFarSouth = z > 125 && x > -180 && x < 210;
+            const radius = 8.5 + rand() * 6.5;
+            const rawH = isFarSouth ? (10 + rand() * 18) : (48 + rand() * 62);
+            const height = Math.max(12, Math.round(rawH / 8) * 8);
+            colTransforms.push({ x, y: -60 + height / 2, z, rx: radius, ry: height, rotY: rand() * Math.PI, isOuterWall: !isFarSouth });
           }
         }
 
-        // 2. 6 道穿透海面的強化版圓錐形水下藍光束 (含頂部海面波紋亮點光暈盤)
-        const rayMat = new THREE.MeshStandardMaterial({
-          color: 0x7dd3fc,
+        const basaltInst = new THREE.InstancedMesh(basaltGeo, basaltMat, colTransforms.length);
+        const dummy = new THREE.Object3D();
+        const tmpCol = new THREE.Color();
+        const basaltPalette = [0x263b54, 0x1c2e44, 0x2f4866, 0x1e334a];
+        colTransforms.forEach((c, idx) => {
+          dummy.position.set(c.x, c.y, c.z);
+          dummy.rotation.set(0, c.rotY, 0);
+          dummy.scale.set(c.rx, c.ry, c.rx);
+          dummy.updateMatrix();
+          basaltInst.setMatrixAt(idx, dummy.matrix);
+          tmpCol.setHex(basaltPalette[idx % basaltPalette.length]);
+          basaltInst.setColorAt(idx, tmpCol);
+
+          // 挑選約 70 根岩柱頂端作為發光粉藍珊瑚管簇基點
+          if (idx % 3 === 0 && coralAnchors.length < 130) {
+            coralAnchors.push({ x: c.x, y: c.y + c.ry / 2, z: c.z });
+          }
+        });
+        basaltInst.instanceMatrix.needsUpdate = true;
+        if (basaltInst.instanceColor) basaltInst.instanceColor.needsUpdate = true;
+        this.scene.add(basaltInst);
+
+        // ② InstancedMesh：峽谷岩壁與礁丘上的發光粉／青珊瑚管柱＋頂端發光珠 (僅 2 Draw Calls！)
+        const tubeGeo = new THREE.CylinderGeometry(0.42, 0.52, 1.0, 8);
+        const orbGeo = new THREE.SphereGeometry(0.58, 8, 6);
+        const glowMat = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
           emissive: 0x38bdf8,
-          emissiveIntensity: 1.25,
-          roughness: 0.15,
-          transparent: true,
-          opacity: 0.135,
-          side: THREE.DoubleSide,
-          depthWrite: false,
-          blending: THREE.AdditiveBlending
+          emissiveIntensity: 0.72,
+          roughness: 0.3
         });
-        const rayHaloMat = new THREE.MeshStandardMaterial({
-          color: 0xe0f2fe,
-          emissive: 0x7dd3fc,
-          emissiveIntensity: 1.6,
-          roughness: 0.1,
-          transparent: true,
-          opacity: 0.38,
-          side: THREE.DoubleSide,
-          depthWrite: false,
-          blending: THREE.AdditiveBlending
+        const tubeItems = [];
+        coralAnchors.forEach((a, idx) => {
+          const count = 2 + (idx % 2);
+          for (let k = 0; k < count; k++) {
+            const th = 2.8 + rand() * 3.6;
+            const ox = (k - 0.8) * 1.25;
+            const oz = ((k % 2) - 0.5) * 1.1;
+            tubeItems.push({ x: a.x + ox, y: a.y, z: a.z + oz, h: th, color: (idx + k) % 2 === 0 ? 0x67e8f9 : 0xf472b6 });
+          }
         });
-        const raySpecs = [
-          { x: -72, z: -28, rotZ: -0.22 },
-          { x: -36, z: -42, rotZ: -0.14 },
-          { x: 4,   z: -48, rotZ: -0.06 },
-          { x: 46,  z: -42, rotZ: 0.06 },
-          { x: 82,  z: -24, rotZ: 0.14 },
-          { x: 112, z: -8,  rotZ: 0.22 }
-        ];
-        raySpecs.forEach((rs) => {
-          const coneRay = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 15.5, 118, 24, 1, true), rayMat);
-          coneRay.position.set(rs.x, 10, rs.z);
-          coneRay.rotation.z = rs.rotZ;
-          canyonGroup.add(coneRay);
+        const tubeInst = new THREE.InstancedMesh(tubeGeo, glowMat, tubeItems.length);
+        const orbInst = new THREE.InstancedMesh(orbGeo, glowMat, tubeItems.length);
+        tubeItems.forEach((t, idx) => {
+          dummy.position.set(t.x, t.y + t.h / 2, t.z);
+          dummy.rotation.set(0, 0, 0);
+          dummy.scale.set(1, t.h, 1);
+          dummy.updateMatrix();
+          tubeInst.setMatrixAt(idx, dummy.matrix);
+          tmpCol.setHex(t.color);
+          tubeInst.setColorAt(idx, tmpCol);
 
-          // 頂部海面波紋亮點光暈盤
-          const topHalo = new THREE.Mesh(new THREE.CircleGeometry(5.5, 24), rayHaloMat);
-          topHalo.rotation.x = Math.PI / 2;
-          topHalo.position.set(rs.x - Math.sin(rs.rotZ) * 56, 68, rs.z);
-          canyonGroup.add(topHalo);
+          dummy.position.set(t.x, t.y + t.h + 0.35, t.z);
+          dummy.scale.set(1, 1, 1);
+          dummy.updateMatrix();
+          orbInst.setMatrixAt(idx, dummy.matrix);
+          orbInst.setColorAt(idx, tmpCol);
         });
+        tubeInst.instanceMatrix.needsUpdate = true;
+        orbInst.instanceMatrix.needsUpdate = true;
+        if (tubeInst.instanceColor) tubeInst.instanceColor.needsUpdate = true;
+        if (orbInst.instanceColor) orbInst.instanceColor.needsUpdate = true;
+        this.scene.add(tubeInst);
+        this.scene.add(orbInst);
 
-        // 3. 串連 5 座站台的六角玄武岩踏階與發光球體引導燈徑 (嚴格避開各站圓頂半徑，杜絕穿模)
-        const orbMat = getMat(0xe0f2fe, { emissive: 0x67e8f9, emissiveIntensity: 1.5, roughness: 0.15 });
-        const orbBaseMat = getMat(0x334155, { roughness: 0.6 });
-        for (let s = 0; s < 4; s++) {
-          const pA = new THREE.Vector3(...CURRICULUM_DATA[s].position);
-          const pB = new THREE.Vector3(...CURRICULUM_DATA[s + 1].position);
-          const steps = 7;
-          for (let k = 1; k < steps; k++) {
-            const t = k / steps;
-            const px = THREE.MathUtils.lerp(pA.x, pB.x, t);
-            const py = THREE.MathUtils.lerp(pA.y, pB.y, t) + 1.2;
-            const pz = THREE.MathUtils.lerp(pA.z, pB.z, t) + Math.sin(t * Math.PI) * 3.5;
+        // ③ InstancedMesh：海床深海巨型發光海草林 (110 簇，僅 1 Draw Call！)
+        const kelpGeo = new THREE.ConeGeometry(0.75, 1.0, 5);
+        const kelpMat = new THREE.MeshStandardMaterial({
+          color: 0x10b981,
+          emissive: 0x047857,
+          emissiveIntensity: 0.35,
+          roughness: 0.7
+        });
+        const kelpList = [];
+        for (let i = 0; i < 180; i++) {
+          const kx = -240 + rand() * 500;
+          const kz = -200 + rand() * 380;
+          if (distToStationsAndPath(kx, kz) < 20) continue;
+          kelpList.push({ x: kx, z: kz, h: 7 + rand() * 11, rotZ: (rand() - 0.5) * 0.25 });
+        }
+        const kelpInst = new THREE.InstancedMesh(kelpGeo, kelpMat, kelpList.length);
+        kelpList.forEach((k, idx) => {
+          dummy.position.set(k.x, -58 + k.h / 2, k.z);
+          dummy.rotation.set(0, rand() * Math.PI, k.rotZ);
+          dummy.scale.set(1.1, k.h, 0.35);
+          dummy.updateMatrix();
+          kelpInst.setMatrixAt(idx, dummy.matrix);
+        });
+        kelpInst.instanceMatrix.needsUpdate = true;
+        this.scene.add(kelpInst);
 
-            // 檢查與所有站台中心的水平距離，小於 16.5 單位則跳過，避免踏石穿入玻璃罩內
-            const tooClose = CURRICULUM_DATA.some((stData, idx) => {
-              const minR = idx === 4 ? 19.5 : 15.5;
-              return Math.hypot(px - stData.position[0], pz - stData.position[2]) < minR;
-            });
-            if (tooClose) continue;
+        // ④ 3 座跨航道「發光深海岩石拱門」＋ 連續「發光導航浮標鏈」(潛水艇優雅穿過不穿模！)
+        const archRockMat = getMat(0x1e3a5f, { roughness: 0.82, flatShading: true });
+        const archGlowMat = getMat(0x38bdf8, { emissive: 0x0ea5e9, emissiveIntensity: 1.2, roughness: 0.2 });
+        const pathDotMat = getMat(0x99f6e4, { emissive: 0x2dd4bf, emissiveIntensity: 1.5, roughness: 0.2 });
 
-            // 科技浮標信標（銀白鈦合金外環＋發光青藍能量核＋上下天線）
-            const beaconGroup = new THREE.Group();
-            beaconGroup.position.set(px, py, pz);
+        for (let i = 0; i < 4; i++) {
+          const pA = stationPts[i];
+          const pB = stationPts[i + 1];
+          const dir = new THREE.Vector3().subVectors(pB, pA);
+          const yaw = Math.atan2(dir.x, dir.z);
 
-            const titaniumMat = getMat(0xcbd5e1, { roughness: 0.28, metalness: 0.65 });
-            const techRingMat = getMat(0x38bdf8, { emissive: 0x06b6d4, emissiveIntensity: 1.1, roughness: 0.2 });
+          // 連續 8 顆發光導航浮標珍珠點
+          for (let step = 1; step <= 8; step++) {
+            const frac = step / 9;
+            const pt = new THREE.Vector3().lerpVectors(pA, pB, frac);
+            pt.y += 1.6;
+            const dot = ball(0.62, pathDotMat, 10, 8);
+            dot.position.copy(pt);
+            this.scene.add(dot);
+          }
 
-            const outerRing = new THREE.Mesh(new THREE.TorusGeometry(1.15, 0.14, 10, 24), titaniumMat);
-            outerRing.rotation.x = Math.PI / 2;
-            beaconGroup.add(outerRing);
+          // 在前三段航道中點架設巨大發光深海岩石拱門（寬敞半徑 14，確保潛水艇順利穿越）
+          if (i < 3) {
+            const mid = new THREE.Vector3().addVectors(pA, pB).multiplyScalar(0.5);
+            const archGrp = new THREE.Group();
+            archGrp.position.set(mid.x, mid.y - 3.0, mid.z);
+            archGrp.rotation.y = yaw;
 
-            const glowRing = new THREE.Mesh(new THREE.TorusGeometry(0.88, 0.07, 8, 24), techRingMat);
-            glowRing.rotation.x = Math.PI / 2;
-            beaconGroup.add(glowRing);
+            const outerArch = new THREE.Mesh(new THREE.TorusGeometry(14.5, 1.9, 8, 22, Math.PI), archRockMat);
+            archGrp.add(outerArch);
 
-            const coreOrb = ball(0.46, orbMat, 14, 12);
-            beaconGroup.add(coreOrb);
+            const innerGlow = new THREE.Mesh(new THREE.TorusGeometry(12.8, 0.35, 8, 24, Math.PI), archGlowMat);
+            archGrp.add(innerGlow);
 
-            const topPin = cyl(0.06, 0.14, 0.72, 8, titaniumMat);
-            topPin.position.y = 0.68;
-            beaconGroup.add(topPin);
-
-            const botCone = cone(0.42, 0.85, 12, titaniumMat);
-            botCone.rotation.x = Math.PI;
-            botCone.position.y = -0.68;
-            beaconGroup.add(botCone);
-
-            canyonGroup.add(beaconGroup);
-            this.animatedObjects.push({
-              obj: beaconGroup,
-              type: "float",
-              base: py,
-              baseY: py,
-              amp: 0.35,
-              speed: 1.4,
-              phase: s * 1.3 + k * 0.7
-            });
+            // 拱門雙腳直通深海床
+            for (const side of [-1, 1]) {
+              const legH = Math.max(12, (mid.y - 3.0) - (-60));
+              const leg = cyl(2.2, 3.0, legH, 7, archRockMat);
+              leg.position.set(side * 14.5, -legH / 2, 0);
+              archGrp.add(leg);
+            }
+            this.scene.add(archGrp);
           }
         }
 
-        this.scene.add(canyonGroup);
-        this.canyonGroup = canyonGroup;
+        // ⑤ 遠景動態海洋生物：3 隻優雅滑翔的深海魔鬼魚剪影 (Manta Rays) ＋ 2 群發光小魚群
+        const mantaMat = getMat(0x1e3a8a, { emissive: 0x0ea5e9, emissiveIntensity: 0.32, roughness: 0.5 });
+        const mantaConfigs = [
+          { cx: -20, cz: -10, rx: 72, rz: 48, baseY: 16, speed: 0.14, phase: 0.0, scale: 1.55 },
+          { cx: 35, cz: -25, rx: 68, rz: 44, baseY: -6, speed: -0.11, phase: 2.1, scale: 1.35 },
+          { cx: 15, cz: 10, rx: 85, rz: 52, baseY: -22, speed: 0.09, phase: 4.2, scale: 1.45 }
+        ];
+        mantaConfigs.forEach(mc => {
+          const mGrp = new THREE.Group();
+          const body = ball(1.5, mantaMat, 12, 8);
+          body.scale.set(1.2, 0.25, 1.8);
+          mGrp.add(body);
+          const wingGeo = new THREE.ConeGeometry(2.2, 4.2, 4);
+          const wingL = new THREE.Mesh(wingGeo, mantaMat);
+          wingL.rotation.z = Math.PI / 2;
+          wingL.scale.set(0.22, 1.0, 0.85);
+          wingL.position.set(-2.1, 0, 0.2);
+          mGrp.add(wingL);
+          const wingR = new THREE.Mesh(wingGeo, mantaMat);
+          wingR.rotation.z = -Math.PI / 2;
+          wingR.scale.set(0.22, 1.0, 0.85);
+          wingR.position.set(2.1, 0, 0.2);
+          mGrp.add(wingR);
+          const tail = cyl(0.06, 0.14, 4.2, 6, mantaMat);
+          tail.rotation.x = Math.PI / 2;
+          tail.position.set(0, 0, -3.5);
+          mGrp.add(tail);
+          mGrp.scale.setScalar(mc.scale);
+          this.scene.add(mGrp);
+          this.animatedObjects.push({
+            obj: mGrp,
+            type: "orbitCruise",
+            cx: mc.cx, cz: mc.cz, rx: mc.rx, rz: mc.rz,
+            baseY: mc.baseY, ampY: 2.6, speed: mc.speed, phase: mc.phase,
+            wings: [wingL, wingR]
+          });
+        });
+
+        // 2 群發光小魚群（各 6 隻繞行中景峽谷）
+        const glowFishMat = getMat(0x7dd3fc, { emissive: 0x38bdf8, emissiveIntensity: 0.9, roughness: 0.3 });
+        [
+          { cx: -55, cz: -5, rx: 32, rz: 26, baseY: 2, speed: 0.28, phase: 0.5 },
+          { cx: 55, cz: -10, rx: 38, rz: 28, baseY: -26, speed: -0.24, phase: 3.0 }
+        ].forEach(sc => {
+          const school = new THREE.Group();
+          for (let f = 0; f < 6; f++) {
+            const fish = ball(0.45, glowFishMat, 8, 6);
+            fish.scale.set(0.55, 0.7, 1.6);
+            fish.position.set((f - 2.5) * 1.4, Math.sin(f) * 1.1, (f % 2) * 1.5);
+            school.add(fish);
+          }
+          this.scene.add(school);
+          this.animatedObjects.push({
+            obj: school,
+            type: "orbitCruise",
+            cx: sc.cx, cz: sc.cz, rx: sc.rx, rz: sc.rz,
+            baseY: sc.baseY, ampY: 1.8, speed: sc.speed, phase: sc.phase
+          });
+        });
+
+        // ⑥ 6 處深海熱泉上升氣泡柱 (輕量 18 顆循環上升氣泡)
+        const ventBubMat = getMat(0xe0f2fe, { emissive: 0x7dd3fc, emissiveIntensity: 0.7, transparent: true, opacity: 0.65, roughness: 0.15 });
+        const ventSpots = [[-62, -52], [-18, -12], [28, -16], [78, -5], [-102, 2], [95, -48]];
+        ventSpots.forEach(([vx, vz], vIdx) => {
+          for (let b = 0; b < 3; b++) {
+            const bub = ball(0.42 + b * 0.16, ventBubMat, 8, 6);
+            bub.position.set(vx, -54, vz);
+            this.scene.add(bub);
+            this.animatedObjects.push({
+              obj: bub,
+              type: "riseLoop",
+              baseX: vx + (b - 1) * 0.7,
+              startY: -55,
+              span: 52,
+              speed: 3.4 + b * 0.7,
+              phase: vIdx * 7 + b * 16
+            });
+          }
+        });
       }
 
       // 海面漂浮的少量卡通食人魚（共 6 隻，悠閒漂浮於各島嶼近海）
@@ -8032,215 +8148,184 @@
         }
       }
 
-      // 第 0 站：起之站・珊瑚礁海底觀察艙（一體成型 Lathe 雕塑感＋溫潤霧面烤漆＋平順嵌合窗門＋彎管潛望鏡＋卵石過渡）
+      // 第 0 站：起之站・珊瑚礁海底觀察艙 (1:1 復刻 station_0_origin.png 概念設計圖)
       buildOceanStation0(group, getGroundY) {
-        const gy = getGroundY(0, -1.0);
+        const bx = -0.8, bz = -1.6;
+        const gy = getGroundY(bx, bz);
         const pod = new THREE.Group();
-        pod.position.set(0, gy, -1.0);
+        pod.position.set(bx, gy, bz);
 
-        // 溫潤霧面烤漆漸層＋極細微樹脂顆粒（移除變形方格線與生硬黑邊）
-        const hullYellowMat = getMat(0xfacc15, { roughness: 0.56, metalness: 0.06, bumpMap: miniatureNoiseTex, bumpScale: 0.008 });
-        const trimBlueMat = getMat(0x2563eb, { roughness: 0.54, metalness: 0.08, bumpMap: miniatureNoiseTex, bumpScale: 0.008 });
-        const skyBlueMat = getMat(0x38bdf8, { roughness: 0.48, metalness: 0.1, bumpMap: miniatureNoiseTex, bumpScale: 0.007 });
-        const silverMat = getMat(0xe2e8f0, { roughness: 0.28, metalness: 0.52 });
-        const glassWindowMat = new THREE.MeshStandardMaterial({
-          color: 0xbae6fd,
-          emissive: 0x38bdf8,
-          emissiveIntensity: 0.25,
-          transparent: true,
-          opacity: 0.44,
-          roughness: 0.06,
-          metalness: 0.22
+        const yellowMat = getMat(0xfacc15, { roughness: 0.45, metalness: 0.05, emissive: 0xeab308, emissiveIntensity: 0.16 });
+        const skyBlueMat = getMat(0x38bdf8, { roughness: 0.42, metalness: 0.12 });
+        const darkGlassMat = getMat(0x0f172a, { roughness: 0.2, metalness: 0.25 });
+        const whiteGlowMat = getMat(0xe0f2fe, { emissive: 0xbae6fd, emissiveIntensity: 1.6, roughness: 0.15 });
+        const silverMat = getMat(0xe2e8f0, { roughness: 0.3, metalness: 0.45 });
+
+        // ① 黃藍雙色圓頂潛水觀察艙主體
+        const lowerBase = cyl(3.2, 3.4, 0.9, 24, skyBlueMat);
+        lowerBase.position.y = 0.45;
+        addComicOutline(lowerBase, 0.035, 0x0f172a);
+        pod.add(lowerBase);
+
+        const mainDome = new THREE.Mesh(
+          new THREE.SphereGeometry(3.35, 28, 18, 0, Math.PI * 2, 0, Math.PI * 0.54),
+          yellowMat
+        );
+        mainDome.position.y = 0.75;
+        addComicOutline(mainDome, 0.04, 0x0f172a);
+        pod.add(mainDome);
+
+        // 突出黃色圓環腰帶 ＋ 兩側發光白燈珠
+        const waistRing = new THREE.Mesh(new THREE.TorusGeometry(3.45, 0.38, 12, 28), yellowMat);
+        waistRing.rotation.x = Math.PI / 2;
+        waistRing.position.y = 1.45;
+        addComicOutline(waistRing, 0.035, 0x0f172a);
+        pod.add(waistRing);
+
+        for (const side of [-1, 1]) {
+          const lamp = ball(0.28, whiteGlowMat, 10, 8);
+          lamp.position.set(side * 2.55, 1.45, 2.75);
+          pod.add(lamp);
+        }
+
+        // 頂端天藍色圓蓋 ＋ 黃色潛望鏡
+        const topBlueCap = new THREE.Mesh(
+          new THREE.SphereGeometry(1.75, 22, 14, 0, Math.PI * 2, 0, Math.PI * 0.42),
+          skyBlueMat
+        );
+        topBlueCap.position.y = 2.68;
+        pod.add(topBlueCap);
+
+        const periStem = cyl(0.24, 0.28, 1.15, 12, yellowMat);
+        periStem.position.set(0, 4.45, 0);
+        addComicOutline(periStem, 0.03, 0x0f172a);
+        pod.add(periStem);
+
+        const periHead = cyl(0.32, 0.32, 0.65, 12, yellowMat);
+        periHead.rotation.x = Math.PI / 2;
+        periHead.position.set(0, 4.95, 0.22);
+        addComicOutline(periHead, 0.03, 0x0f172a);
+        pod.add(periHead);
+
+        const periLens = cyl(0.22, 0.22, 0.1, 12, skyBlueMat);
+        periLens.rotation.x = Math.PI / 2;
+        periLens.position.set(0, 4.95, 0.56);
+        pod.add(periLens);
+
+        // 正前方天藍色拱形氣密門 ＋ 圓形小舷窗
+        const doorFrame = rbox(1.9, 2.2, 1.1, skyBlueMat, 0.48);
+        doorFrame.position.set(0, 1.25, 3.25);
+        addComicOutline(doorFrame, 0.035, 0x0f172a);
+        pod.add(doorFrame);
+
+        const doorInner = rbox(1.42, 1.85, 1.15, getMat(0x60a5fa, { roughness: 0.45 }), 0.38);
+        doorInner.position.set(0, 1.2, 3.27);
+        pod.add(doorInner);
+
+        const portRim = new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.09, 10, 18), silverMat);
+        portRim.position.set(0, 1.65, 3.86);
+        pod.add(portRim);
+
+        const portGlass = cyl(0.32, 0.32, 0.08, 14, darkGlassMat);
+        portGlass.rotation.x = Math.PI / 2;
+        portGlass.position.set(0, 1.65, 3.84);
+        pod.add(portGlass);
+
+        // ② 玻璃罩內部兩側：彩色管狀海綿珊瑚叢 (Tube Sponges) ＋ 泡泡球珊瑚
+        const tubeColors = [0xfb7185, 0xf97316, 0xfacc15, 0xf472b6, 0x34d399];
+        const spongeSpots = [
+          [-5.6, -0.5, 0], [-6.2, 0.6, 1], [-5.2, 1.3, 2],
+          [5.5, -0.4, 2], [6.1, 0.8, 3], [5.1, 1.5, 0]
+        ];
+        spongeSpots.forEach(([sx, sz, cIdx], idx) => {
+          const cMat = getMat(tubeColors[cIdx], { roughness: 0.58 });
+          for (let t = 0; t < 3; t++) {
+            const h = 1.1 + ((idx + t) % 3) * 0.55;
+            const sponge = cyl(0.32, 0.36, h, 12, cMat);
+            sponge.position.set(sx + (t - 1) * 0.55, h / 2, sz + (t % 2) * 0.45);
+            addComicOutline(sponge, 0.025, 0x0f172a);
+            pod.add(sponge);
+            const hole = cyl(0.18, 0.18, 0.06, 10, getMat(0x451a03, { roughness: 0.9 }));
+            hole.position.set(sx + (t - 1) * 0.55, h + 0.01, sz + (t % 2) * 0.45);
+            pod.add(hole);
+          }
         });
-        const dashboardMat = getMat(0x0f172a, { roughness: 0.55 });
-        const radarScreenMat = getMat(0x34d399, { emissive: 0x10b981, emissiveIntensity: 1.35, roughness: 0.2 });
-        const glowLightMat = getMat(0xe0f2fe, { emissive: 0x7dd3fc, emissiveIntensity: 1.65, roughness: 0.15 });
-        const ropeMat = getMat(0xd6b078, { map: miniatureWoodTex, roughness: 0.85 });
 
-        // 1. 一體成型深藍底座（平滑圓角過渡至黃色主艙，無積木接縫）
-        const skirtPts = [
-          new THREE.Vector2(4.05, 0),
-          new THREE.Vector2(4.08, 0.22),
-          new THREE.Vector2(3.85, 0.52),
-          new THREE.Vector2(3.45, 0.65)
-        ];
-        const baseSkirt = new THREE.Mesh(new THREE.LatheGeometry(skirtPts, 36), trimBlueMat);
-        baseSkirt.castShadow = true;
-        baseSkirt.receiveShadow = true;
-        pod.add(baseSkirt);
+        // 泡泡球球珊瑚叢
+        const puffSpots = [[-6.5, 2.2], [6.4, 2.4]];
+        puffSpots.forEach(([px, pz], sIdx) => {
+          for (let b = 0; b < 6; b++) {
+            const bMat = getMat(tubeColors[(b + sIdx) % tubeColors.length], { roughness: 0.55 });
+            const puff = ball(0.36 + (b % 2) * 0.12, bMat, 10, 8);
+            puff.position.set(px + Math.cos(b * 1.1) * 0.7, 0.45 + (b % 3) * 0.38, pz + Math.sin(b * 1.1) * 0.6);
+            addComicOutline(puff, 0.02, 0x0f172a);
+            pod.add(puff);
+          }
+        });
 
-        // 2. 一體成型黃色觀察艙流線主體（LatheGeometry 圓潤穹頂＋柔和赤道隆起）
-        const hullPts = [];
-        for (let s = 0; s <= 18; s++) {
-          const t = s / 18; // 0 (底座) -> 1 (頂部藍色蓋交界)
-          const ang = t * Math.PI * 0.35;
-          const r = Math.cos(ang) * 3.72 + Math.sin(t * Math.PI) * 0.16;
-          const y = 0.52 + Math.sin(ang) * 3.45;
-          hullPts.push(new THREE.Vector2(r, y));
+        // ③ 翠綠流線海帶葉片 (Kelp Leaves)
+        const kelpMat = getMat(0x16a34a, { roughness: 0.6 });
+        [[-4.2, -3.2], [4.3, -3.0], [-4.5, 4.2], [4.2, 4.5]].forEach(([kx, kz], kIdx) => {
+          for (let l = 0; l < 2; l++) {
+            const blade = rbox(0.45, 2.6 + l * 0.7, 0.12, kelpMat, 0.05);
+            blade.position.set(kx + l * 0.45, 1.3 + l * 0.25, kz);
+            blade.rotation.z = (l === 0 ? 0.18 : -0.18);
+            addComicOutline(blade, 0.02, 0x0f172a);
+            pod.add(blade);
+          }
+        });
+
+        // ④ 超萌海底小夥伴（橘白小丑魚、黃海馬、紫章魚）＋ 前方木質繫泊小柱
+        // 小丑魚
+        const clown = new THREE.Group();
+        clown.position.set(-2.4, 0.65, 5.1);
+        clown.rotation.y = 0.6;
+        const cBody = ball(0.42, getMat(0xf97316, { roughness: 0.5 }), 12, 10);
+        cBody.scale.set(0.85, 0.9, 1.35);
+        clown.add(cBody);
+        const cStripe = cyl(0.39, 0.39, 0.22, 12, getMat(0xffffff, { roughness: 0.5 }));
+        cStripe.rotation.x = Math.PI / 2;
+        clown.add(cStripe);
+        pod.add(clown);
+
+        // 黃色小海馬
+        const seahorse = new THREE.Group();
+        seahorse.position.set(1.2, 0.85, 5.2);
+        const shBody = ball(0.32, yellowMat, 10, 8);
+        shBody.scale.set(0.75, 1.4, 0.85);
+        seahorse.add(shBody);
+        const shHead = ball(0.24, yellowMat, 10, 8);
+        shHead.position.set(0, 0.48, 0.15);
+        seahorse.add(shHead);
+        pod.add(seahorse);
+
+        // 紫色小章魚
+        const octo = new THREE.Group();
+        octo.position.set(3.4, 0.65, 4.9);
+        const oMat = getMat(0xa855f7, { roughness: 0.52 });
+        const oHead = ball(0.48, oMat, 12, 10);
+        oHead.position.y = 0.35;
+        octo.add(oHead);
+        for (let t = 0; t < 6; t++) {
+          const ang = (t / 6) * Math.PI * 2;
+          const leg = cyl(0.11, 0.08, 0.45, 8, oMat);
+          leg.position.set(Math.cos(ang) * 0.38, 0.05, Math.sin(ang) * 0.38);
+          leg.rotation.z = Math.cos(ang) * 0.5;
+          octo.add(leg);
         }
-        const mainHull = new THREE.Mesh(new THREE.LatheGeometry(hullPts, 40), hullYellowMat);
-        mainHull.castShadow = true;
-        mainHull.receiveShadow = true;
-        pod.add(mainHull);
+        pod.add(octo);
 
-        // 頂部天藍圓頂蓋（平滑接續弧線，清楚呈現設計圖藍黃雙色帽蓋）
-        const capPts = [];
-        for (let s = 0; s <= 10; s++) {
-          const t = s / 10;
-          const ang = Math.PI * 0.35 + t * (Math.PI * 0.15);
-          const r = Math.max(0.01, Math.cos(ang) * 3.75);
-          const y = 0.52 + Math.sin(ang) * 3.48;
-          capPts.push(new THREE.Vector2(r, y));
-        }
-        capPts.push(new THREE.Vector2(0, 4.01));
-        const blueTopCap = new THREE.Mesh(new THREE.LatheGeometry(capPts, 36), skyBlueMat);
-        blueTopCap.castShadow = true;
-        pod.add(blueTopCap);
+        // 前方木質黃銅繫泊小柱
+        const bollardBase = cyl(0.55, 0.62, 0.22, 12, getMat(0xeab308, { roughness: 0.4, metalness: 0.2 }));
+        bollardBase.position.set(-0.2, 0.11, 5.7);
+        pod.add(bollardBase);
+        const bollardPost = cyl(0.3, 0.3, 0.65, 12, getMat(0x92400e, { map: miniatureWoodTex, roughness: 0.7 }));
+        bollardPost.position.set(-0.2, 0.5, 5.7);
+        pod.add(bollardPost);
 
-        // 3. 柔和一體化赤道防撞腰帶環與 4 顆內嵌發光燈
-        const bumper = new THREE.Mesh(new THREE.TorusGeometry(3.68, 0.36, 16, 40), hullYellowMat);
-        bumper.rotation.x = Math.PI / 2;
-        bumper.position.y = 1.48;
-        bumper.castShadow = true;
-        pod.add(bumper);
-
-        for (const ang of [-0.65, 0.65, Math.PI * 0.78, -Math.PI * 0.78]) {
-          const lx = Math.sin(ang) * 3.96;
-          const lz = Math.cos(ang) * 3.96;
-          const rim = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.055, 10, 18), silverMat);
-          rim.position.set(lx, 1.48, lz);
-          rim.lookAt(lx * 2, 1.48, lz * 2);
-          pod.add(rim);
-          const bulb = ball(0.24, glowLightMat, 12, 10);
-          bulb.position.set(lx * 0.99, 1.48, lz * 0.99);
-          pod.add(bulb);
-        }
-
-        // 右前方平順嵌合式觀景圓窗（完整露於黃色弧面外，內含發光儀表）
-        const obsWindowGroup = new THREE.Group();
-        obsWindowGroup.position.set(2.14, 2.38, 2.42);
-        obsWindowGroup.lookAt(4.28, 2.75, 4.84);
-
-        const obsFrame = new THREE.Mesh(new THREE.TorusGeometry(0.56, 0.09, 12, 24), silverMat);
-        obsWindowGroup.add(obsFrame);
-        const obsBacking = cyl(0.52, 0.52, 0.12, 18, dashboardMat);
-        obsBacking.rotation.x = Math.PI / 2;
-        obsBacking.position.z = -0.06;
-        obsWindowGroup.add(obsBacking);
-        const radarDial = cyl(0.22, 0.22, 0.06, 16, radarScreenMat);
-        radarDial.rotation.x = Math.PI / 2;
-        radarDial.position.set(-0.14, 0.06, 0.01);
-        obsWindowGroup.add(radarDial);
-        const gaugeBar = rbox(0.2, 0.28, 0.06, glowLightMat, 0.03);
-        gaugeBar.position.set(0.18, -0.04, 0.01);
-        obsWindowGroup.add(gaugeBar);
-        const obsGlass = cyl(0.53, 0.53, 0.06, 20, glassWindowMat);
-        obsGlass.rotation.x = Math.PI / 2;
-        obsGlass.position.z = 0.04;
-        obsWindowGroup.add(obsGlass);
-        pod.add(obsWindowGroup);
-
-        // 4. 前方平順嵌合的藍色圓拱氣密門（收斂突出厚度，溫潤圓角無黑邊）
-        const doorGroup = new THREE.Group();
-        doorGroup.position.set(-1.32, 1.52, 3.16);
-        doorGroup.rotation.y = -0.36;
-
-        const doorFrame = rbox(1.95, 2.45, 0.58, skyBlueMat, 0.42);
-        doorFrame.castShadow = true;
-        doorGroup.add(doorFrame);
-
-        const doorPanel = rbox(1.52, 2.05, 0.64, trimBlueMat, 0.32);
-        doorGroup.add(doorPanel);
-
-        const portholeRim = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.08, 10, 22), silverMat);
-        portholeRim.position.set(0, 0.36, 0.34);
-        doorGroup.add(portholeRim);
-
-        const doorInnerDash = cyl(0.35, 0.35, 0.05, 16, radarScreenMat);
-        doorInnerDash.rotation.x = Math.PI / 2;
-        doorInnerDash.position.set(0, 0.36, 0.3);
-        doorGroup.add(doorInnerDash);
-
-        const portholeGlass = cyl(0.39, 0.39, 0.06, 18, glassWindowMat);
-        portholeGlass.rotation.x = Math.PI / 2;
-        portholeGlass.position.set(0, 0.36, 0.35);
-        doorGroup.add(portholeGlass);
-
-        const wheelRim = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.035, 8, 14), silverMat);
-        wheelRim.position.set(0.42, -0.28, 0.36);
-        doorGroup.add(wheelRim);
-        const wheelHub = ball(0.055, silverMat, 8, 6);
-        wheelHub.position.set(0.42, -0.28, 0.37);
-        doorGroup.add(wheelHub);
-
-        pod.add(doorGroup);
-
-        // 5. 頂部平滑曲線彎管潛望鏡（Lathe 底座 + TubeGeometry 平滑 90 度彎管，完全非幾何拼湊）
-        const periBasePts = [
-          new THREE.Vector2(0.72, 3.92),
-          new THREE.Vector2(0.66, 4.08),
-          new THREE.Vector2(0.38, 4.28),
-          new THREE.Vector2(0.27, 4.45)
-        ];
-        const periBase = new THREE.Mesh(new THREE.LatheGeometry(periBasePts, 24), hullYellowMat);
-        pod.add(periBase);
-
-        const periCurve = new THREE.CatmullRomCurve3([
-          new THREE.Vector3(0, 4.4, 0),
-          new THREE.Vector3(0, 5.15, 0),
-          new THREE.Vector3(0, 5.52, 0.14),
-          new THREE.Vector3(0, 5.6, 0.62)
-        ]);
-        const periTubeGeo = new THREE.TubeGeometry(periCurve, 20, 0.25, 16, false);
-        const periTube = new THREE.Mesh(periTubeGeo, hullYellowMat);
-        periTube.castShadow = true;
-        pod.add(periTube);
-
-        const periRing = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.075, 10, 18), skyBlueMat);
-        periRing.position.set(0, 5.6, 0.63);
-        pod.add(periRing);
-
-        const periGlass = cyl(0.24, 0.24, 0.07, 14, glowLightMat);
-        periGlass.rotation.x = Math.PI / 2;
-        periGlass.position.set(0, 5.6, 0.62);
-        pod.add(periGlass);
-
-        // 6. 觀察艙底座與砂地交界處的圓潤卵石與粉彩貝殼過渡帶
-        const pebbleColors = [0x94a3b8, 0xcbd5e1, 0x64748b, 0xfbcfe8, 0xfde68a];
-        for (let pb = 0; pb < 16; pb++) {
-          const pAng = (pb / 16) * Math.PI * 2 + 0.18;
-          // 留出正門前方通道空隙
-          if (pAng > 1.75 && pAng < 2.25) continue;
-          const pr = 4.18 + (pb % 3) * 0.28;
-          const pSize = 0.26 + (pb % 4) * 0.09;
-          const pMesh = ball(pSize, getMat(pebbleColors[pb % pebbleColors.length], { roughness: 0.72, bumpMap: miniatureNoiseTex, bumpScale: 0.008 }), 10, 8);
-          pMesh.scale.set(1.25, 0.58, 1.05);
-          pMesh.position.set(Math.cos(pAng) * pr, pSize * 0.35, Math.sin(pAng) * pr);
-          pMesh.rotation.y = pAng;
-          pod.add(pMesh);
-        }
-
-        // 7. 縮小 40% 的精緻木質黃銅繫船柱（協調比例，不搶主角與 NPC 焦點）
-        const bollard = new THREE.Group();
-        bollard.position.set(-0.35, 0, 5.85);
-        bollard.scale.setScalar(0.6);
-        const bPlate = cyl(0.78, 0.85, 0.25, 16, getMat(0xd97706, { roughness: 0.38, metalness: 0.35 }));
-        bPlate.position.y = 0.12;
-        bollard.add(bPlate);
-        const bPost = cyl(0.46, 0.5, 0.95, 16, getMat(0x78350f, { map: miniatureWoodTex, roughness: 0.68 }));
-        bPost.position.y = 0.6;
-        bollard.add(bPost);
-        for (const ry of [0.36, 0.52]) {
-          const rope = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.075, 8, 20), ropeMat);
-          rope.rotation.x = Math.PI / 2;
-          rope.position.y = ry;
-          bollard.add(rope);
-        }
-        const bPin = cyl(0.09, 0.09, 1.25, 10, getMat(0xd97706, { roughness: 0.38, metalness: 0.35 }));
-        bPin.rotation.z = Math.PI / 2;
-        bPin.position.y = 0.72;
-        bollard.add(bPin);
-        pod.add(bollard);
+        const coreLight = new THREE.PointLight(0xfef08a, 2.0, 12, 1.6);
+        coreLight.position.set(0, 3.2, 2.5);
+        pod.add(coreLight);
 
         group.add(pod);
       }
@@ -8389,746 +8474,954 @@
 
         st.add(periGroup);
 
+        // 潛望鏡左右巡視轉動 + 放大鏡柔和青藍微光
+        this.animatedObjects.push({
+          obj: periGroup,
+          type: "swayY",
+          baseRotY: -0.55,
+          amp: 0.35,
+          speed: 0.9,
+          phase: 0.2
+        });
+        const magGlow = new THREE.PointLight(0x2dd4bf, 1.5, 9, 1.6);
+        magGlow.position.set(2.35, 4.45, 2.5);
+        st.add(magGlow);
+
+        // 5. 左側：薄荷綠 & 粉紫管狀海綿珊瑚叢 + 泡泡球珊瑚
+        const mintTubeMat = getMat(0x5eead4, { roughness: 0.55 });
+        const purpleTubeMat = getMat(0xc084fc, { roughness: 0.55 });
+        const holeDarkMat = getMat(0x1e293b, { roughness: 0.9 });
+
+        [[-5.8, 0.2, mintTubeMat, 1.8], [-5.2, 0.8, mintTubeMat, 2.3], [-4.8, 0.0, mintTubeMat, 1.4],
+         [-4.4, 0.6, purpleTubeMat, 1.6], [-5.6, -0.5, purpleTubeMat, 1.3]].forEach(([tx, tz, tMat, th]) => {
+          const tube = cyl(0.32, 0.36, th, 12, tMat);
+          tube.position.set(tx, th / 2, tz);
+          addComicOutline(tube, 0.025, 0x0f172a);
+          st.add(tube);
+          const hole = cyl(0.18, 0.18, 0.05, 10, holeDarkMat);
+          hole.position.set(tx, th + 0.01, tz);
+          st.add(hole);
+        });
+
+        // 右側粉紫管狀海綿珊瑚叢
+        [[4.8, 1.0, purpleTubeMat, 1.9], [5.4, 1.4, purpleTubeMat, 1.5], [4.4, 1.6, purpleTubeMat, 1.2]].forEach(([tx, tz, tMat, th]) => {
+          const tube = cyl(0.28, 0.32, th, 12, tMat);
+          tube.position.set(tx, th / 2, tz);
+          addComicOutline(tube, 0.025, 0x0f172a);
+          st.add(tube);
+          const hole = cyl(0.15, 0.15, 0.05, 10, holeDarkMat);
+          hole.position.set(tx, th + 0.01, tz);
+          st.add(hole);
+        });
+
+        // 左前方 & 中前方粉紫泡泡球珊瑚
+        [[-5.8, 2.4], [0.6, 4.4]].forEach(([px, pz]) => {
+          for (let b = 0; b < 5; b++) {
+            const puff = ball(0.34 + (b % 2) * 0.1, purpleTubeMat, 10, 8);
+            puff.position.set(px + Math.cos(b * 1.2) * 0.55, 0.35 + (b % 2) * 0.32, pz + Math.sin(b * 1.2) * 0.45);
+            addComicOutline(puff, 0.02, 0x0f172a);
+            st.add(puff);
+          }
+        });
+
+        // 6. 後方 & 前方薄荷綠波浪海帶葉片
+        const kelpMintMat = getMat(0x34d399, { roughness: 0.58 });
+        [[-3.6, -3.5], [-2.8, -3.9], [1.2, 4.2]].forEach(([kx, kz], kIdx) => {
+          for (let l = 0; l < 2; l++) {
+            const blade = rbox(0.42, 2.4 + l * 0.8, 0.12, kelpMintMat, 0.05);
+            blade.position.set(kx + l * 0.48, 1.2 + l * 0.3, kz);
+            blade.rotation.z = l === 0 ? 0.16 : -0.18;
+            addComicOutline(blade, 0.02, 0x0f172a);
+            st.add(blade);
+          }
+        });
+
         group.add(st);
       }
 
-      // 第 2 站：轉之站・深海沉船回憶寶庫（1:1 對應 station_2_twist.png）
+      // 第 2 站：轉之站・深海沉船回憶寶庫（1:1 精雕復刻 station_2_twist.png）
       buildOceanStation2(group, getGroundY) {
-        const gy = getGroundY(0, -1.0);
-        const wreck = new THREE.Group();
-        wreck.position.set(-0.4, gy, -1.2);
-        wreck.rotation.y = -0.45;
+        const bx = -0.3, bz = -1.2;
+        const gy = getGroundY(bx, bz);
+        const st = new THREE.Group();
+        st.position.set(bx, gy, bz);
 
-        const woodMat = getMat(0x78350f, { map: miniatureWoodTex, roughness: 0.68 });
-        const lightWoodMat = getMat(0x92400e, { map: miniatureWoodTex, roughness: 0.64 });
-        const sailMat = getMat(0xfef3c7, { roughness: 0.65 });
-        const goldMat = getMat(0xf59e0b, { roughness: 0.32, metalness: 0.38, emissive: 0xd97706, emissiveIntensity: 0.25 });
-        const pearlMat = getMat(0xfef9c3, { emissive: 0xfde047, emissiveIntensity: 0.85, roughness: 0.15 });
-        const darkGlassMat = getMat(0x0f172a, { roughness: 0.25 });
+        // 溫潤手作胡桃木與暖金材質（告別死暗巧克力色）
+        const hullWoodMat = getMat(0x8b4513, { map: miniatureWoodTex, roughness: 0.56, metalness: 0.05 });
+        const deckWoodMat = getMat(0xb87333, { map: miniatureWoodTex, roughness: 0.58, metalness: 0.04 });
+        const railWoodMat = getMat(0xa0522d, { map: miniatureWoodTex, roughness: 0.52, metalness: 0.05 });
+        const sailMat = getMat(0xfffbeb, { roughness: 0.58, side: THREE.DoubleSide });
+        const goldFrameMat = getMat(0xf59e0b, { roughness: 0.32, metalness: 0.38, emissive: 0xd97706, emissiveIntensity: 0.2 });
+        const goldCoinMat = getMat(0xfde047, { emissive: 0xfacc15, emissiveIntensity: 1.15, roughness: 0.22 });
+        const pearlGlowMat = getMat(0xffffff, { emissive: 0xfef3c7, emissiveIntensity: 0.95, roughness: 0.12 });
+        const darkGlassMat = getMat(0x1e293b, { roughness: 0.2 });
 
-        // 1. Q 版圓潤雙層木質古沉船船身 (Chunky Wooden Ship Hull)
-        const lowerHull = rbox(4.2, 1.45, 6.8, woodMat, 0.65);
-        lowerHull.position.y = 0.72;
-        lowerHull.castShadow = true;
-        addComicOutline(lowerHull, 0.04, 0x0f172a);
-        wreck.add(lowerHull);
-
-        const upperHull = rbox(4.5, 1.15, 7.2, lightWoodMat, 0.52);
-        upperHull.position.y = 1.75;
-        upperHull.castShadow = true;
-        addComicOutline(upperHull, 0.04, 0x0f172a);
-        wreck.add(upperHull);
-
-        // 船頭高聳護舷與船尾舵樓 (Raised Bow & Stern Quarterdeck)
-        const bowRail = rbox(4.3, 0.85, 2.2, woodMat, 0.38);
-        bowRail.position.set(0, 2.45, 2.45);
-        wreck.add(bowRail);
-
-        const sternDeck = rbox(4.3, 1.05, 2.4, woodMat, 0.38);
-        sternDeck.position.set(0, 2.55, -2.35);
-        wreck.add(sternDeck);
-
-        // 兩側 3 顆金框圓形舷窗 (3 Gold-Rimmed Portholes)
-        for (const side of [-1, 1]) {
-          for (const pz of [-1.6, 0, 1.6]) {
-            const pRim = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.075, 10, 18), goldMat);
-            pRim.rotation.y = Math.PI / 2;
-            pRim.position.set(side * 2.28, 1.55, pz);
-            wreck.add(pRim);
-            const pGlass = cyl(0.28, 0.28, 0.08, 14, darkGlassMat);
-            pGlass.rotation.z = Math.PI / 2;
-            pGlass.position.set(side * 2.26, 1.55, pz);
-            wreck.add(pGlass);
+        // 建立流線 S 型波浪海帶葉片輔助函式 (Wavy Organic Kelp)
+        const createWavyKelp = (h, w, colorHex) => {
+          const geo = new THREE.PlaneGeometry(w, h, 3, 12);
+          const pos = geo.attributes.position;
+          for (let i = 0; i < pos.count; i++) {
+            const x = pos.getX(i);
+            const y = pos.getY(i);
+            const t = (y + h / 2) / h; // 0 (bottom) -> 1 (top)
+            const taper = Math.sin(t * Math.PI * 0.92 + 0.12);
+            pos.setX(i, x * taper + Math.sin(t * Math.PI * 2.1) * 0.32);
+            pos.setZ(i, Math.cos(t * Math.PI * 1.8) * 0.14);
           }
-        }
-
-        // 2. 船尾方向舵輪 (Spoked Wooden Steering Wheel)
-        const wheelGroup = new THREE.Group();
-        wheelGroup.position.set(0, 3.55, -1.65);
-        const wStand = cyl(0.14, 0.18, 0.9, 10, woodMat);
-        wStand.position.y = -0.35;
-        wheelGroup.add(wStand);
-        const wRim = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.09, 10, 20), lightWoodMat);
-        wheelGroup.add(wRim);
-        for (let s = 0; s < 6; s++) {
-          const spoke = cyl(0.045, 0.045, 1.45, 8, lightWoodMat);
-          spoke.rotation.z = (s * Math.PI) / 3;
-          wheelGroup.add(spoke);
-        }
-        wreck.add(wheelGroup);
-
-        // 3. 中央高聳主桅杆、瞭望台圓盤、上下橫桁與微彎米白風帆 (Mast & Curved Cream Sail)
-        const mastBase = cyl(0.38, 0.44, 0.35, 14, lightWoodMat);
-        mastBase.position.set(0, 2.38, 0.35);
-        wreck.add(mastBase);
-
-        const mast = cyl(0.22, 0.28, 6.2, 14, lightWoodMat);
-        mast.position.set(0, 5.4, 0.35);
-        addComicOutline(mast, 0.03, 0x0f172a);
-        wreck.add(mast);
-
-        const crowsNest = cyl(0.62, 0.48, 0.36, 16, lightWoodMat);
-        crowsNest.position.set(0, 7.65, 0.35);
-        wreck.add(crowsNest);
-
-        for (const yy of [3.8, 6.8]) {
-          const yard = cyl(0.12, 0.12, 3.8, 12, lightWoodMat);
-          yard.rotation.z = Math.PI / 2;
-          yard.position.set(0, yy, 0.65);
-          wreck.add(yard);
-        }
-
-        // 弧面飽滿米白帆布
-        const sailGeo = new THREE.CylinderGeometry(1.85, 1.85, 3.6, 20, 1, true, -Math.PI * 0.28, Math.PI * 0.56);
-        const sailMesh = new THREE.Mesh(sailGeo, getMat(0xfef3c7, { roughness: 0.6, side: THREE.DoubleSide }));
-        sailMesh.rotation.z = Math.PI / 2;
-        sailMesh.rotation.y = Math.PI / 2;
-        sailMesh.position.set(0, 5.3, -0.75);
-        wreck.add(sailMesh);
-
-        group.add(wreck);
-
-        // 4. 沙地右前方開啟的發光黃金回憶寶箱与散落金幣 (Open Glowing Treasure Chest on Sand)
-        const chestGroup = new THREE.Group();
-        chestGroup.position.set(1.25, gy, 3.55);
-        chestGroup.rotation.y = -0.38;
-
-        const chestBase = rbox(2.15, 1.15, 1.45, woodMat, 0.08);
-        chestBase.position.y = 0.58;
-        addComicOutline(chestBase, 0.035, 0x0f172a);
-        chestGroup.add(chestBase);
-
-        // 寶箱金邊框與鎖頭
-        const frontTrim = rbox(2.22, 0.16, 1.52, goldMat, 0.04);
-        frontTrim.position.y = 1.12;
-        chestGroup.add(frontTrim);
-        const lockPlate = rbox(0.36, 0.42, 0.12, goldMat, 0.04);
-        lockPlate.position.set(0, 0.95, 0.74);
-        chestGroup.add(lockPlate);
-
-        // 掀開的圓弧寶箱蓋
-        const lidGroup = new THREE.Group();
-        lidGroup.position.set(0, 1.15, -0.72);
-        lidGroup.rotation.x = -0.82;
-        const lidCyl = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.72, 0.72, 2.16, 16, 1, false, 0, Math.PI),
-          woodMat
-        );
-        lidCyl.rotation.z = Math.PI / 2;
-        lidCyl.position.set(0, 0, 0.72);
-        lidGroup.add(lidCyl);
-        for (const lx of [-0.95, 0.95]) {
-          const lidBand = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.76, 0.76, 0.16, 16, 1, false, 0, Math.PI),
-            goldMat
-          );
-          lidBand.rotation.z = Math.PI / 2;
-          lidBand.position.set(lx, 0, 0.72);
-          lidGroup.add(lidBand);
-        }
-        chestGroup.add(lidGroup);
-
-        // 寶箱內滿溢的發光珍珠與金幣
-        for (let p = 0; p < 9; p++) {
-          const px = -0.68 + (p % 3) * 0.68 + (p % 2) * 0.12;
-          const pz = -0.32 + Math.floor(p / 3) * 0.34;
-          const prl = ball(0.24, pearlMat, 12, 10);
-          prl.position.set(px, 1.22 + (p % 2) * 0.12, pz);
-          chestGroup.add(prl);
-        }
-        const chestGlow = new THREE.PointLight(0xfef08a, 2.2, 8, 1.6);
-        chestGlow.position.set(0, 1.8, 0.2);
-        chestGroup.add(chestGlow);
-
-        // 沙地散落的 3 枚金幣
-        [[-0.9, 1.15], [-0.35, 1.38], [1.28, 0.95]].forEach(([cx, cz]) => {
-          const coin = cyl(0.26, 0.26, 0.08, 14, goldMat);
-          coin.position.set(cx, 0.05, cz);
-          chestGroup.add(coin);
-        });
-
-        group.add(chestGroup);
-      }
-
-      // 第 3 站：合之站・深海珍珠貝殼祭壇與引路燈塔（1:1 對應 station_3_harmony.png）
-      buildOceanStation3(group, getGroundY) {
-        const gy = getGroundY(0, -0.8);
-        const altar = new THREE.Group();
-        altar.position.set(0, gy, -0.8);
-
-        const step1Mat = getMat(0x7e22ce, { roughness: 0.55, bumpMap: miniatureStoneTex, bumpScale: 0.015 });
-        const step2Mat = getMat(0xa855f7, { roughness: 0.52, bumpMap: miniatureStoneTex, bumpScale: 0.012 });
-        const step3Mat = getMat(0xe2e8f0, { roughness: 0.45, bumpMap: miniatureStoneTex, bumpScale: 0.01 });
-        const shellMat = getMat(0xf9a8d4, { roughness: 0.42, metalness: 0.08, side: THREE.DoubleSide });
-        const innerShellMat = getMat(0xfdf2f8, { roughness: 0.35, metalness: 0.05, side: THREE.DoubleSide });
-        const pearlMat = getMat(0xfef08a, { emissive: 0xfacc15, emissiveIntensity: 0.85, roughness: 0.15, metalness: 0.1 });
-
-        // 1. 三層同心圓紫晶與大理石祭壇 (Three-Tiered Concentric Altar)
-        const s1 = cyl(4.4, 4.6, 0.72, 32, step1Mat);
-        s1.position.set(-0.3, 0.36, -0.4);
-        s1.receiveShadow = true;
-        altar.add(s1);
-
-        const s2 = cyl(3.6, 3.8, 0.72, 32, step2Mat);
-        s2.position.set(-0.3, 1.08, -0.4);
-        s2.receiveShadow = true;
-        altar.add(s2);
-
-        const s3 = cyl(2.9, 3.1, 0.72, 32, step3Mat);
-        s3.position.set(-0.3, 1.80, -0.4);
-        s3.receiveShadow = true;
-        altar.add(s3);
-
-        // 2. 巨型粉紅波浪開闔扇貝與中央發光金珍珠 (厚實扇形波浪立體貝殼，杜絕單面破圖)
-        const clamGroup = new THREE.Group();
-        clamGroup.position.set(-0.3, 2.25, -0.4);
-
-        const buildSolidScallopValve = (isTop) => {
-          const valve = new THREE.Group();
-          // 貝殼厚實圓盤基底
-          const pad = new THREE.Mesh(new THREE.SphereGeometry(2.35, 24, 14), shellMat);
-          pad.scale.set(1.18, 0.22, 1.02);
-          valve.add(pad);
-
-          const innerPad = new THREE.Mesh(new THREE.SphereGeometry(2.15, 20, 12), innerShellMat);
-          innerPad.scale.set(1.12, 0.18, 0.96);
-          innerPad.position.y = isTop ? -0.08 : 0.08;
-          valve.add(innerPad);
-
-          // 9 道飽滿扇貝放射狀波浪凸稜 (Radial Scallop Flutes)
-          for (let r = -4; r <= 4; r++) {
-            const ang = r * 0.22;
-            const rib = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.14, 2.55, 12), shellMat);
-            rib.scale.set(1.15, 1.0, 0.55);
-            rib.position.set(Math.sin(ang) * 1.15, isTop ? 0.14 : -0.14, Math.cos(ang) * 1.05 - 0.15);
-            rib.rotation.x = Math.PI / 2;
-            rib.rotation.z = -ang;
-            valve.add(rib);
-
-            // 扇貝外緣波浪圓球收邊
-            const tip = ball(0.32, shellMat, 10, 8);
-            tip.scale.set(1.1, 0.55, 1.0);
-            tip.position.set(Math.sin(ang) * 2.32, 0, Math.cos(ang) * 2.15 - 0.15);
-            valve.add(tip);
-          }
-          return valve;
+          geo.computeVertexNormals();
+          const mat = getMat(colorHex, { roughness: 0.58, side: THREE.DoubleSide });
+          const mesh = new THREE.Mesh(geo, mat);
+          mesh.position.y = h / 2;
+          return mesh;
         };
 
-        const botShell = buildSolidScallopValve(false);
-        botShell.position.set(0, 0.25, 0.15);
-        clamGroup.add(botShell);
+        // ① 1:1 圓潤中空木質沉船（船頭朝向左前，讓右側 3 顆黃銅圓舷窗與船舵正面迎向鏡頭）
+        const ship = new THREE.Group();
+        ship.position.set(0.2, 0.05, -0.5);
+        ship.rotation.y = 0.58; // 船頭朝左前 (-X, +Z)，完美對齊設計圖視角！
 
-        const topShell = buildSolidScallopValve(true);
-        topShell.position.set(0, 1.45, -1.05);
-        topShell.rotation.x = -0.68;
-        clamGroup.add(topShell);
+        // 1. 下層圓弧船腹（使用縮放半橢球體切出真正圓潤船底，非方塊！）
+        const lowerHullGeo = new THREE.SphereGeometry(2.65, 28, 16, 0, Math.PI * 2, Math.PI * 0.48, Math.PI * 0.52);
+        const lowerHull = new THREE.Mesh(lowerHullGeo, hullWoodMat);
+        lowerHull.scale.set(1.58, 0.78, 0.88); // X 軸為船長 (~8.4), Z 軸為船寬 (~4.6)
+        lowerHull.position.set(0, 1.55, 0);
+        lowerHull.castShadow = true;
+        addComicOutline(lowerHull, 0.04, 0x1e293b);
+        ship.add(lowerHull);
 
-        const pearl = ball(1.22, pearlMat, 24, 18);
-        pearl.position.set(0, 1.25, 0.25);
-        clamGroup.add(pearl);
+        // 2. 中空甲板底面（比船舷低一階，呈現真正凹陷船艙！）
+        const mainDeck = cyl(2.25, 2.25, 0.25, 24, deckWoodMat);
+        mainDeck.scale.set(1.52, 1.0, 0.82);
+        mainDeck.position.set(0, 1.48, 0);
+        ship.add(mainDeck);
 
-        const pearlLight = new THREE.PointLight(0xfef08a, 2.4, 12, 1.5);
-        pearlLight.position.set(0, 2.2, 0.6);
-        clamGroup.add(pearlLight);
+        // 3. 左右兩側圓潤加厚船舷圍牆 (Bulwarks - 圍出中空船艙感)
+        const railGeo = new THREE.TorusGeometry(2.35, 0.28, 12, 32);
+        const gunwale = new THREE.Mesh(railGeo, railWoodMat);
+        gunwale.rotation.x = Math.PI / 2;
+        gunwale.scale.set(1.58, 0.86, 1.25);
+        gunwale.position.set(0, 1.72, 0);
+        addComicOutline(gunwale, 0.035, 0x1e293b);
+        ship.add(gunwale);
+
+        // 4. 船尾抬高後甲板船樓 (+X 側) 與船頭微捲木飾 (-X 側)
+        const sternDeck = rbox(2.35, 0.95, 3.25, deckWoodMat, 0.36);
+        sternDeck.position.set(2.35, 2.02, 0);
+        addComicOutline(sternDeck, 0.035, 0x1e293b);
+        ship.add(sternDeck);
+
+        const sternRail = new THREE.Mesh(new THREE.TorusGeometry(1.52, 0.22, 10, 24, Math.PI), railWoodMat);
+        sternRail.rotation.x = Math.PI / 2;
+        sternRail.rotation.z = -Math.PI / 2;
+        sternRail.position.set(2.35, 2.52, 0);
+        ship.add(sternRail);
+
+        // 船頭彎曲船首柱 (Bow Scroll)
+        const bowCurve = new THREE.CatmullRomCurve3([
+          new THREE.Vector3(-3.8, 1.3, 0),
+          new THREE.Vector3(-4.25, 2.15, 0),
+          new THREE.Vector3(-4.05, 2.65, 0),
+          new THREE.Vector3(-3.65, 2.48, 0)
+        ]);
+        const bowScroll = new THREE.Mesh(new THREE.TubeGeometry(bowCurve, 14, 0.24, 10, false), railWoodMat);
+        addComicOutline(bowScroll, 0.03, 0x1e293b);
+        ship.add(bowScroll);
+
+        // 5. 船側正對鏡頭的 3 顆黃銅圓形舷窗 (+Z 面)
+        [-0.95, 0.35, 1.65].forEach((px, idx) => {
+          const zCurve = Math.sqrt(Math.max(0.2, 1 - Math.pow(px / 4.2, 2))) * 2.25;
+          const rim = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.08, 10, 18), goldFrameMat);
+          rim.position.set(px, 1.05, zCurve);
+          ship.add(rim);
+          const pane = cyl(0.26, 0.26, 0.08, 14, darkGlassMat);
+          pane.rotation.x = Math.PI / 2;
+          pane.position.set(px, 1.05, zCurve - 0.04);
+          ship.add(pane);
+        });
+
+        // 6. 船尾立體木質舵輪 (Ship Steering Wheel)
+        const wheelGrp = new THREE.Group();
+        wheelGrp.position.set(2.15, 3.05, -0.15);
+        wheelGrp.rotation.y = Math.PI / 2;
+        const wHub = cyl(0.16, 0.16, 0.32, 10, goldFrameMat);
+        wHub.rotation.x = Math.PI / 2;
+        wheelGrp.add(wHub);
+        const wRim = new THREE.Mesh(new THREE.TorusGeometry(0.56, 0.08, 10, 20), railWoodMat);
+        addComicOutline(wRim, 0.025, 0x1e293b);
+        wheelGrp.add(wRim);
+        for (let sp = 0; sp < 4; sp++) {
+          const spoke = cyl(0.055, 0.055, 1.48, 8, railWoodMat);
+          spoke.rotation.z = (sp * Math.PI) / 4;
+          wheelGrp.add(spoke);
+        }
+        ship.add(wheelGrp);
+        this.animatedObjects.push({ obj: wheelGrp, type: "spinZ", speed: 0.45 });
+
+        // 7. 中央高聳木桅杆 ＋ 頂端圓盤瞭望台 ＋ 飽滿鼓風弧形奶油白帆
+        const mast = cyl(0.18, 0.24, 5.8, 12, railWoodMat);
+        mast.position.set(-0.35, 4.15, 0);
+        addComicOutline(mast, 0.03, 0x1e293b);
+        ship.add(mast);
+
+        const crowsNest = cyl(0.52, 0.38, 0.45, 14, deckWoodMat);
+        crowsNest.position.set(-0.35, 6.25, 0);
+        addComicOutline(crowsNest, 0.025, 0x1e293b);
+        ship.add(crowsNest);
+
+        // 橫帆桁 (Top & Bottom Yardarms)
+        const topYard = cyl(0.12, 0.12, 3.85, 10, railWoodMat);
+        topYard.rotation.z = Math.PI / 2;
+        topYard.position.set(-0.35, 5.55, 0.38);
+        ship.add(topYard);
+        const botYard = cyl(0.1, 0.1, 3.65, 10, railWoodMat);
+        botYard.rotation.z = Math.PI / 2;
+        botYard.position.set(-0.35, 3.15, 0.38);
+        ship.add(botYard);
+
+        // 雙向平滑鼓起膨脹風帆 (真正有風吹鼓起的弧形曲面)
+        const sailGeo = new THREE.PlaneGeometry(3.45, 2.38, 16, 12);
+        const sPos = sailGeo.attributes.position;
+        for (let i = 0; i < sPos.count; i++) {
+          const sx = sPos.getX(i);
+          const sy = sPos.getY(i);
+          const nx = sx / 1.725;
+          const ny = sy / 1.19;
+          const bulge = (1 - ny * ny * 0.85) * (1 - nx * nx * 0.28) * 0.72;
+          sPos.setZ(i, bulge);
+        }
+        sailGeo.computeVertexNormals();
+        const sailMesh = new THREE.Mesh(sailGeo, sailMat);
+        sailMesh.position.set(-0.35, 4.35, 0.4);
+        ship.add(sailMesh);
+
+        st.add(ship);
+
+        // ② 1:1 弧頂金框發光黃金寶藏箱（置於船右前方，打開呈現耀眼暖金寶藏！）
+        const chest = new THREE.Group();
+        chest.position.set(1.9, 0.02, 3.35);
+        chest.rotation.y = -0.42;
+
+        // 木質箱身 + 四角與上下立體黃金包邊 + 金鎖扣
+        const cBox = rbox(2.1, 1.12, 1.42, hullWoodMat, 0.08);
+        cBox.position.y = 0.56;
+        addComicOutline(cBox, 0.03, 0x1e293b);
+        chest.add(cBox);
+
+        const cTopRim = rbox(2.22, 0.16, 1.52, goldFrameMat, 0.04);
+        cTopRim.position.y = 1.08;
+        chest.add(cTopRim);
+        const cBotRim = rbox(2.22, 0.16, 1.52, goldFrameMat, 0.04);
+        cBotRim.position.y = 0.08;
+        chest.add(cBotRim);
+        for (const sx of [-1.02, 1.02]) {
+          for (const sz of [-0.66, 0.66]) {
+            const corner = rbox(0.18, 1.14, 0.18, goldFrameMat, 0.03);
+            corner.position.set(sx, 0.58, sz);
+            chest.add(corner);
+          }
+        }
+        // 正面金鎖扣
+        const lockPlate = rbox(0.32, 0.38, 0.12, goldFrameMat, 0.05);
+        lockPlate.position.set(0, 0.82, 0.76);
+        chest.add(lockPlate);
+
+        // 真正半圓弧拱頂寶箱蓋 (Arched Lid pivoted at rear)
+        const lidPivot = new THREE.Group();
+        lidPivot.position.set(0, 1.12, -0.71);
+        lidPivot.rotation.x = -0.85;
+        const archLidGeo = new THREE.CylinderGeometry(0.72, 0.72, 2.12, 18, 1, false, 0, Math.PI);
+        const archLid = new THREE.Mesh(archLidGeo, hullWoodMat);
+        archLid.rotation.z = Math.PI / 2;
+        archLid.position.set(0, 0, 0.71);
+        addComicOutline(archLid, 0.03, 0x1e293b);
+        lidPivot.add(archLid);
+        for (const bxPos of [-0.98, 0.98]) {
+          const archBand = new THREE.Mesh(new THREE.TorusGeometry(0.74, 0.08, 8, 18, Math.PI), goldFrameMat);
+          archBand.rotation.y = Math.PI / 2;
+          archBand.position.set(bxPos, 0, 0.71);
+          lidPivot.add(archBand);
+        }
+        chest.add(lidPivot);
+
+        // 箱內滿滿發光金幣山與大白珍珠
+        const mound = ball(0.88, goldCoinMat, 14, 10);
+        mound.scale.set(1.05, 0.45, 0.65);
+        mound.position.set(0, 1.12, 0);
+        chest.add(mound);
+        [[-0.45, 1.38, 0.15], [0.35, 1.42, -0.05], [0.0, 1.48, 0.18], [-0.15, 1.36, -0.22]].forEach(([px, py, pz]) => {
+          const pearl = ball(0.22, pearlGlowMat, 12, 10);
+          pearl.position.set(px, py, pz);
+          chest.add(pearl);
+        });
+
+        // 強烈溫暖的寶藏盒金光 (照亮船側與暖杏沙地！)
+        const chestGlow = new THREE.PointLight(0xfde047, 4.2, 15, 1.4);
+        chestGlow.position.set(0, 1.95, 0.35);
+        chest.add(chestGlow);
+        st.add(chest);
+
+        // 散落沙地上的金幣
+        [[0.4, 4.35], [1.05, 4.65], [3.45, 4.05]].forEach(([cx, cz]) => {
+          const coin = cyl(0.26, 0.26, 0.08, 12, goldCoinMat);
+          coin.position.set(cx, 0.06, cz);
+          st.add(coin);
+        });
+
+        // ③ 兩側彩色管狀海綿珊瑚叢 + 流線 S 型波浪海帶
+        const holeDark = getMat(0x1e293b, { roughness: 0.9 });
+        const orangeSp = getMat(0xf59e0b, { roughness: 0.52 });
+        const purpleSp = getMat(0xa855f7, { roughness: 0.52 });
+        const blueSp = getMat(0x6366f1, { roughness: 0.52 });
+        [[-5.7, 0.3, orangeSp, 2.3], [-5.0, 0.8, orangeSp, 1.8], [-5.4, 1.5, purpleSp, 1.2], [-4.7, 1.7, purpleSp, 1.0],
+         [5.5, 0.8, purpleSp, 2.1], [6.1, 1.4, blueSp, 1.5], [4.9, 1.6, blueSp, 1.2]].forEach(([tx, tz, tMat, th]) => {
+          const tube = cyl(0.32, 0.36, th, 12, tMat);
+          tube.position.set(tx, th / 2, tz);
+          addComicOutline(tube, 0.025, 0x0f172a);
+          st.add(tube);
+          const hole = cyl(0.18, 0.18, 0.05, 10, holeDark);
+          hole.position.set(tx, th + 0.01, tz);
+          st.add(hole);
+        });
+
+        [[-4.2, -2.2, 3.6, 0.72, 0x65a30d], [-3.4, -2.6, 4.2, 0.82, 0x4d7c0f],
+         [4.8, -1.6, 3.8, 0.75, 0x65a30d], [5.4, -1.0, 3.0, 0.65, 0x84cc16]].forEach(([kx, kz, kh, kw, kc]) => {
+          const kelp = createWavyKelp(kh, kw, kc);
+          kelp.position.set(kx, 0, kz);
+          st.add(kelp);
+        });
+
+        // 站內溫暖主照明燈（徹底告別灰暗陰影，呈現設計圖暖金光澤！）
+        const stationWarmLight = new THREE.PointLight(0xfff3c4, 3.4, 24, 1.4);
+        stationWarmLight.position.set(0.5, 8.2, 3.5);
+        st.add(stationWarmLight);
+
+        group.add(st);
+      }
+
+      // 第 3 站：合之站・發光深海巨型珍珠貝殼壇（1:1 對應 station_3_harmony.png）
+      buildOceanStation3(group, getGroundY) {
+        const bx = -0.5, bz = -1.2;
+        const gy = getGroundY(bx, bz);
+        const altar = new THREE.Group();
+        altar.position.set(bx, gy, bz);
+
+        const marblePurpMat = getMat(0xa78bfa, { roughness: 0.55, bumpMap: miniatureStoneTex, bumpScale: 0.015 });
+        const marbleWhiteMat = getMat(0xe2e8f0, { roughness: 0.48, bumpMap: miniatureStoneTex, bumpScale: 0.012 });
+        const shellPinkMat = getMat(0xf9a8d4, { roughness: 0.42, metalness: 0.08 });
+        const shellOuterMat = getMat(0xf472b6, { roughness: 0.48, metalness: 0.08 });
+        const pearlGlowMat = getMat(0xfef08a, { emissive: 0xfde047, emissiveIntensity: 0.95, roughness: 0.12 });
+        const crystalMat = getMat(0xfbcfe8, { emissive: 0xf472b6, emissiveIntensity: 0.72, transparent: true, opacity: 0.88, roughness: 0.18 });
+        const darkEyeMat = getMat(0x0f172a, { roughness: 0.2 });
+
+        // ① 雙層紫白圓形大理石台階
+        const step1 = cyl(4.1, 4.4, 0.72, 28, marblePurpMat);
+        step1.position.set(-0.3, 0.36, -0.4);
+        step1.receiveShadow = true;
+        altar.add(step1);
+
+        const step2 = cyl(3.1, 3.3, 0.72, 28, marbleWhiteMat);
+        step2.position.set(-0.3, 1.08, -0.4);
+        step2.receiveShadow = true;
+        altar.add(step2);
+
+        // ② 巨型開闔粉紅波浪扇貝 ＋ 中央懸浮發光暖金大珍珠
+        const clamGrp = new THREE.Group();
+        clamGrp.position.set(-0.3, 1.65, -0.4);
+
+        const botShell = new THREE.Mesh(
+          new THREE.SphereGeometry(2.65, 24, 14, 0, Math.PI * 2, Math.PI * 0.5, Math.PI * 0.5),
+          shellPinkMat
+        );
+        botShell.scale.set(1.18, 0.48, 1.0);
+        botShell.position.y = 0.95;
+        addComicOutline(botShell, 0.04, 0x1e293b);
+        clamGrp.add(botShell);
+
+        const topShell = new THREE.Mesh(
+          new THREE.SphereGeometry(2.65, 24, 14, 0, Math.PI * 2, 0, Math.PI * 0.5),
+          shellOuterMat
+        );
+        topShell.scale.set(1.18, 0.48, 1.0);
+        topShell.position.set(0, 1.75, -1.65);
+        topShell.rotation.x = -0.82;
+        addComicOutline(topShell, 0.04, 0x1e293b);
+        clamGrp.add(topShell);
+
+        const pearl = ball(1.08, pearlGlowMat, 22, 18);
+        pearl.position.set(0, 1.68, 0.08);
+        clamGrp.add(pearl);
+        const pearlLight = new THREE.PointLight(0xfef08a, 2.8, 14, 1.5);
+        pearlLight.position.set(0, 2.4, 0.5);
+        clamGrp.add(pearlLight);
 
         this.animatedObjects.push({
           obj: pearl,
           type: "float",
-          base: 1.25,
-          baseY: 1.25,
-          amp: 0.20,
-          speed: 1.6,
+          baseY: 1.68,
+          amp: 0.24,
+          speed: 1.5,
           phase: 0.4
         });
+        altar.add(clamGrp);
 
-        altar.add(clamGroup);
-
-        // 3. 右後方藍白條紋紅頂迷你海底燈塔 (Blue-and-White Striped Mini Lighthouse)
-        const lhGroup = new THREE.Group();
-        lhGroup.position.set(3.85, 0, -1.65);
-        const blueBandMat = getMat(0x2563eb, { roughness: 0.52 });
-        const whiteBandMat = getMat(0xf8fafc, { roughness: 0.52 });
-        const redRoofMat = getMat(0xdc2626, { roughness: 0.48 });
-
+        // ③ 右後方：藍白條紋＋紅尖頂海底小燈塔 ＋ 兩根發光六角稜鏡水晶柱
+        const lh = new THREE.Group();
+        lh.position.set(4.5, 0, -1.5);
+        const blueBand = getMat(0x3b82f6, { roughness: 0.5 });
+        const whiteBand = getMat(0xf8fafc, { roughness: 0.5 });
+        const redRoof = getMat(0xef4444, { roughness: 0.48 });
         for (let b = 0; b < 5; b++) {
-          const rBot = 1.12 - b * 0.06;
-          const rTop = 1.12 - (b + 1) * 0.06;
-          const seg = cyl(rTop, rBot, 0.85, 20, b % 2 === 0 ? blueBandMat : whiteBandMat);
-          seg.position.y = 0.425 + b * 0.85;
-          lhGroup.add(seg);
+          const rB = 1.05 - b * 0.1;
+          const rT = 1.05 - (b + 1) * 0.1;
+          const seg = cyl(rT, rB, 0.72, 16, b % 2 === 0 ? blueBand : whiteBand);
+          seg.position.y = 0.36 + b * 0.72;
+          addComicOutline(seg, 0.025, 0x0f172a);
+          lh.add(seg);
         }
+        const lampRoom = cyl(0.55, 0.55, 0.65, 14, pearlGlowMat);
+        lampRoom.position.y = 3.95;
+        lh.add(lampRoom);
+        const lhRoof = cone(0.95, 1.25, 16, redRoof);
+        lhRoof.position.y = 4.88;
+        addComicOutline(lhRoof, 0.03, 0x0f172a);
+        lh.add(lhRoof);
+        altar.add(lh);
 
-        const gallery = cyl(1.02, 0.92, 0.28, 20, getMat(0x60a5fa, { roughness: 0.45 }));
-        gallery.position.y = 4.38;
-        lhGroup.add(gallery);
-
-        const lanternGlass = cyl(0.68, 0.68, 0.85, 16, getMat(0xe0f2fe, { transparent: true, opacity: 0.55, roughness: 0.1 }));
-        lanternGlass.position.y = 4.92;
-        lhGroup.add(lanternGlass);
-
-        const lanternCore = cyl(0.38, 0.38, 0.72, 12, getMat(0xfef9c3, { emissive: 0xfef08a, emissiveIntensity: 1.8 }));
-        lanternCore.position.y = 4.92;
-        lhGroup.add(lanternCore);
-
-        const roof = cone(0.98, 0.95, 20, redRoofMat);
-        roof.position.y = 5.82;
-        lhGroup.add(roof);
-
-        altar.add(lhGroup);
-
-        // 4. 右前方 2 根六角發光水晶柱 (2 Hexagonal Glowing Crystal Prisms)
-        const crystalMat = getMat(0xfde68a, {
-          roughness: 0.2,
-          metalness: 0.1,
-          transparent: true,
-          opacity: 0.88,
-          emissive: 0xfbbf24,
-          emissiveIntensity: 0.65
+        // 兩根發光六角稜鏡水晶柱
+        [[4.6, 2.2, 2.6], [5.7, 1.0, 3.4]].forEach(([cx, cz, ch]) => {
+          const crys = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.62, ch, 6), crystalMat);
+          crys.position.set(cx, ch / 2, cz);
+          altar.add(crys);
+          const tip = new THREE.Mesh(new THREE.ConeGeometry(0.58, 0.9, 6), crystalMat);
+          tip.position.set(cx, ch + 0.45, cz);
+          altar.add(tip);
         });
-        const crystalSpecs = [
-          [4.65, 1.15, 0.72, 2.8],
-          [3.35, 2.15, 0.62, 1.85]
-        ];
-        crystalSpecs.forEach(([cx, cz, cr, ch]) => {
-          const cGrp = new THREE.Group();
-          cGrp.position.set(cx, 0, cz);
-          const shaft = new THREE.Mesh(new THREE.CylinderGeometry(cr, cr, ch, 6), crystalMat);
-          shaft.position.y = ch / 2;
-          cGrp.add(shaft);
-          const tip = new THREE.Mesh(new THREE.ConeGeometry(cr, cr * 1.15, 6), crystalMat);
-          tip.position.y = ch + (cr * 1.15) / 2;
-          cGrp.add(tip);
-          altar.add(cGrp);
+
+        // ④ 兩側粉橘發光小海綿珊瑚管 + 翠綠海帶
+        const glowCoral = getMat(0xfda4af, { emissive: 0xfb7185, emissiveIntensity: 0.45, roughness: 0.45 });
+        [[-5.2, -0.2, 1.8], [-4.6, 0.4, 1.3], [2.4, 4.0, 1.5], [1.9, 4.3, 1.1]].forEach(([tx, tz, th]) => {
+          const tube = cyl(0.24, 0.28, th, 10, glowCoral);
+          tube.position.set(tx, th / 2, tz);
+          altar.add(tube);
+        });
+
+        const kelpMat = getMat(0x10b981, { roughness: 0.58 });
+        [[-3.6, -2.6], [3.4, -2.8], [3.2, 3.6]].forEach(([kx, kz]) => {
+          const blade = rbox(0.4, 2.6, 0.12, kelpMat, 0.05);
+          blade.position.set(kx, 1.3, kz);
+          blade.rotation.z = 0.14;
+          altar.add(blade);
         });
 
         group.add(altar);
       }
 
-      // 終點第 4 站：水晶珍珠聖殿與大白鯊守門神獸「波塞頓」（1:1 對應 station_4_shark_sanctuary.png）
+      // 終點站：大白鯊水晶守門神殿（1:1 紋理與細節精雕對齊 station_4_shark_sanctuary.png）
       buildGuardianSanctuary() {
         const d = CURRICULUM_DATA[4];
         const [sx, sy, sz] = d.position;
         const group = new THREE.Group();
 
-        const basaltMat = getMat(0x1e293b, { roughness: 0.75, bumpMap: miniatureStoneTex, bumpScale: 0.02 });
-        const whiteMarbleMat = getMat(0xf8fafc, { roughness: 0.42, metalness: 0.06, bumpMap: miniatureStoneTex, bumpScale: 0.008 });
-        const pinkMarbleMat = getMat(0xfce7f3, { roughness: 0.45, metalness: 0.05 });
-        const pearlTowerMat = getMat(0xf1f5f9, { roughness: 0.32, metalness: 0.12, emissive: 0xe2e8f0, emissiveIntensity: 0.12 });
-        const pastelRoofMat = getMat(0x93c5fd, { roughness: 0.38, metalness: 0.08 });
-        const goldTrimMat = getMat(0xfacc15, { roughness: 0.3, metalness: 0.35, emissive: 0xd97706, emissiveIntensity: 0.25 });
+        // ① 離線程序化 Canvas 貼圖：粉白放射狀大理石拼花地磚 (512x512，零 CORS)
+        const sanctuaryMarbleTex = canvasTexture(512, 512, (ctx, w, h) => {
+          const cx = w / 2, cy = h / 2, maxR = w / 2;
+          ctx.fillStyle = "#f8fafc";
+          ctx.fillRect(0, 0, w, h);
 
-        // ① 雙層粉白大理石圓形廣場平台與前方三級迎賓階梯 (Two-Tier Circular Pastel Marble Plaza & Steps)
-        const sharkPillarH = Math.max(10, (sy - (-62)));
-        const sharkSupport = cyl(16.8, 19.5, sharkPillarH, 28, basaltMat);
-        sharkSupport.position.set(sx, sy - sharkPillarH / 2 + 1.2, sz);
-        group.add(sharkSupport);
+          // 12 道粉白交錯放射狀大理石扇形拼花
+          const slices = 12;
+          for (let i = 0; i < slices; i++) {
+            const a0 = (i / slices) * Math.PI * 2;
+            const a1 = ((i + 1) / slices) * Math.PI * 2;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, maxR, a0, a1);
+            ctx.closePath();
+            ctx.fillStyle = i % 2 === 0 ? "#f8fafc" : "#fce7f3";
+            ctx.fill();
+            ctx.strokeStyle = "#cbd5e1";
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+          }
 
-        const outerPlaza = cyl(15.6, 16.0, 1.2, 36, pinkMarbleMat);
-        outerPlaza.position.set(sx, sy + 2.4, sz);
-        outerPlaza.receiveShadow = true;
-        group.add(outerPlaza);
+          // 同心圓石磚裝飾環（內圈粉白圓盤＋外圈淡粉邊帶）
+          ctx.beginPath();
+          ctx.arc(cx, cy, maxR * 0.44, 0, Math.PI * 2);
+          ctx.fillStyle = "#fdf2f8";
+          ctx.fill();
+          ctx.strokeStyle = "#f9a8d4";
+          ctx.lineWidth = 4;
+          ctx.stroke();
 
-        const innerPlaza = cyl(13.8, 14.1, 0.9, 36, whiteMarbleMat);
-        innerPlaza.position.set(sx, sy + 3.2, sz);
-        innerPlaza.receiveShadow = true;
-        group.add(innerPlaza);
+          ctx.beginPath();
+          ctx.arc(cx, cy, maxR * 0.37, 0, Math.PI * 2);
+          ctx.fillStyle = "#f8fafc";
+          ctx.fill();
+          ctx.strokeStyle = "#e2e8f0";
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
 
-        // 廣場中央粉白同心圓環飾
-        const centerRing = new THREE.Mesh(new THREE.TorusGeometry(5.6, 0.12, 10, 36), pinkMarbleMat);
-        centerRing.rotation.x = Math.PI / 2;
-        centerRing.position.set(sx, sy + 3.66, sz + 0.5);
-        group.add(centerRing);
+          ctx.beginPath();
+          ctx.arc(cx, cy, maxR * 0.88, 0, Math.PI * 2);
+          ctx.strokeStyle = "#f9a8d4";
+          ctx.lineWidth = 5;
+          ctx.stroke();
 
-        // 前方三級大理石階梯與兩側護欄 (Front Staircase)
-        const stairsGroup = new THREE.Group();
-        stairsGroup.position.set(sx, sy + 1.8, sz + 14.2);
-        for (let st = 0; st < 3; st++) {
-          const stepMesh = rbox(5.8, 0.45, 1.35, st % 2 === 0 ? whiteMarbleMat : pinkMarbleMat, 0.06);
-          stepMesh.position.set(0, st * 0.45 + 0.22, -st * 0.85);
-          stairsGroup.add(stepMesh);
-        }
-        for (const side of [-1, 1]) {
-          const rail = rbox(0.38, 0.65, 3.2, whiteMarbleMat, 0.08);
-          rail.position.set(side * 3.05, 0.95, -0.8);
-          rail.rotation.x = 0.42;
-          stairsGroup.add(rail);
-        }
-        group.add(stairsGroup);
-
-        // 兩側環抱廣場的階梯式六角玄武岩柱群 (Framing Hexagonal Basalt Columns)
-        const sideHexSpecs = [
-          [-16.8, -6.5, 16], [-18.5, -2.0, 22], [-17.2, 3.0, 14], [-15.8, 7.8, 10], [-14.2, 11.5, 6.5],
-          [16.8, -6.5, 16],  [18.5, -2.0, 22],  [17.2, 3.0, 14],  [15.8, 7.8, 10],  [14.2, 11.5, 6.5]
-        ];
-        sideHexSpecs.forEach(([hx, hz, hh]) => {
-          const hCol = new THREE.Mesh(new THREE.CylinderGeometry(2.1, 2.2, hh, 6), basaltMat);
-          hCol.position.set(sx + hx, sy + 1.5 + hh / 2, sz + hz);
-          hCol.castShadow = true;
-          hCol.receiveShadow = true;
-          group.add(hCol);
+          // 細膩大理石柔和脈紋
+          ctx.strokeStyle = "rgba(148, 163, 184, 0.22)";
+          ctx.lineWidth = 1.6;
+          for (let v = 0; v < 26; v++) {
+            ctx.beginPath();
+            let px = (v * 37) % w, py = (v * 53) % h;
+            ctx.moveTo(px, py);
+            for (let sStep = 0; sStep < 5; sStep++) {
+              px += Math.sin(v + sStep * 1.4) * 32;
+              py += Math.cos(v * 0.7 + sStep) * 28;
+              ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+          }
         });
 
-        // ② 背景「模組化水晶珍珠聖殿」(Modular Crystal Pearl Palace)
-        const palaceGroup = new THREE.Group();
-        palaceGroup.position.set(sx, sy + 3.65, sz - 6.2);
+        // ② 離線程序化 Canvas 貼圖：珍珠白漸層粉紅放射波浪扇貝紋理 (256x256)
+        const scallopShellTex = canvasTexture(256, 256, (ctx, w, h) => {
+          const grad = ctx.createLinearGradient(0, 0, 0, h);
+          grad.addColorStop(0.0, "#fff1f2");
+          grad.addColorStop(0.55, "#fce7f3");
+          grad.addColorStop(1.0, "#f9a8d4");
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, w, h);
 
-        // 中央高塔與兩側副塔 (Cylindrical Towers + Pastel Conical Roofs)
-        const mainTower = cyl(2.2, 2.35, 9.2, 24, pearlTowerMat);
-        mainTower.position.set(0, 4.6, -1.8);
-        palaceGroup.add(mainTower);
-
-        const midCollar = new THREE.Mesh(new THREE.TorusGeometry(2.35, 0.26, 12, 28), pearlTowerMat);
-        midCollar.rotation.x = Math.PI / 2;
-        midCollar.position.set(0, 6.2, -1.8);
-        palaceGroup.add(midCollar);
-
-        const topCollar = new THREE.Mesh(new THREE.TorusGeometry(2.3, 0.24, 12, 28), pearlTowerMat);
-        topCollar.rotation.x = Math.PI / 2;
-        topCollar.position.set(0, 9.1, -1.8);
-        palaceGroup.add(topCollar);
-
-        const archWin = rbox(0.95, 1.65, 0.35, pastelRoofMat, 0.35);
-        archWin.position.set(0, 7.6, 0.32);
-        palaceGroup.add(archWin);
-
-        const mainRoof = cone(2.65, 3.8, 24, pastelRoofMat);
-        mainRoof.position.set(0, 11.0, -1.8);
-        palaceGroup.add(mainRoof);
-
-        for (const side of [-1, 1]) {
-          // 兩側粉藍圓錐頂副塔
-          const subTower = cyl(1.55, 1.68, 6.4, 20, pearlTowerMat);
-          subTower.position.set(side * 5.8, 3.2, -0.6);
-          palaceGroup.add(subTower);
-
-          const subCollar = new THREE.Mesh(new THREE.TorusGeometry(1.68, 0.2, 10, 24), pearlTowerMat);
-          subCollar.rotation.x = Math.PI / 2;
-          subCollar.position.set(side * 5.8, 6.35, -0.6);
-          palaceGroup.add(subCollar);
-
-          const subRoof = cone(1.9, 2.9, 20, pastelRoofMat);
-          subRoof.position.set(side * 5.8, 7.85, -0.6);
-          palaceGroup.add(subRoof);
-
-          // 內側高聳水晶尖頂圓柱塔 (Octahedron Crystal Spire Towers)
-          const innerTower = cyl(1.35, 1.45, 8.2, 20, pearlTowerMat);
-          innerTower.position.set(side * 3.4, 4.1, -1.4);
-          palaceGroup.add(innerTower);
-
-          const innerCollar = new THREE.Mesh(new THREE.TorusGeometry(1.48, 0.2, 10, 24), pearlTowerMat);
-          innerCollar.rotation.x = Math.PI / 2;
-          innerCollar.position.set(side * 3.4, 8.2, -1.4);
-          palaceGroup.add(innerCollar);
-
-          const spireColor = side < 0 ? 0x67e8f9 : 0xfde047;
-          const spireMat = getMat(spireColor, { roughness: 0.15, emissive: spireColor, emissiveIntensity: 0.85, transparent: true, opacity: 0.92 });
-          const spireBot = new THREE.Mesh(new THREE.CylinderGeometry(1.35, 0.75, 1.1, 6), spireMat);
-          spireBot.position.set(side * 3.4, 8.85, -1.4);
-          palaceGroup.add(spireBot);
-          const spireTop = new THREE.Mesh(new THREE.ConeGeometry(1.35, 2.1, 6), spireMat);
-          spireTop.position.set(side * 3.4, 10.45, -1.4);
-          palaceGroup.add(spireTop);
-        }
-
-        // 中央珍珠白大圓環拱門 (Central Torus Arch Gateway)
-        const centralArch = new THREE.Mesh(new THREE.TorusGeometry(3.8, 0.78, 18, 36), pearlTowerMat);
-        centralArch.position.set(0, 3.8, 0.4);
-        palaceGroup.add(centralArch);
-
-        // 左右對稱 2 座巨型珍珠白厚實扇貝與發光大珍珠 (2 Giant Solid Open Clam Shells with Glowing Pearls)
-        const clamShellMat = getMat(0xfdf2f8, { roughness: 0.35, metalness: 0.08, side: THREE.DoubleSide });
-        const clamInnerMat = getMat(0xfce7f3, { roughness: 0.38, metalness: 0.05, side: THREE.DoubleSide });
-        const sanctuaryPearlMat = getMat(0xffffff, { emissive: 0xfef08a, emissiveIntensity: 0.95, roughness: 0.12 });
-        const buildSanctuaryValve = (isTop) => {
-          const v = new THREE.Group();
-          const pad = new THREE.Mesh(new THREE.SphereGeometry(2.05, 22, 12), clamShellMat);
-          pad.scale.set(1.18, 0.22, 1.0);
-          v.add(pad);
-          const inner = new THREE.Mesh(new THREE.SphereGeometry(1.88, 18, 10), clamInnerMat);
-          inner.scale.set(1.12, 0.18, 0.94);
-          inner.position.y = isTop ? -0.06 : 0.06;
-          v.add(inner);
-          for (let r = -4; r <= 4; r++) {
-            const ang = r * 0.22;
-            const rib = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.12, 2.2, 10), clamShellMat);
-            rib.scale.set(1.1, 1.0, 0.52);
-            rib.position.set(Math.sin(ang) * 1.0, isTop ? 0.12 : -0.12, Math.cos(ang) * 0.92 - 0.12);
-            rib.rotation.x = Math.PI / 2;
-            rib.rotation.z = -ang;
-            v.add(rib);
-            const tip = ball(0.28, clamShellMat, 10, 8);
-            tip.scale.set(1.1, 0.52, 1.0);
-            tip.position.set(Math.sin(ang) * 2.02, 0, Math.cos(ang) * 1.88 - 0.12);
-            v.add(tip);
+          // 14 道清晰扇貝放射凹凸肋紋
+          for (let i = 0; i < 14; i++) {
+            const x = (i / 14) * w;
+            ctx.fillStyle = i % 2 === 0 ? "rgba(255,255,255,0.45)" : "rgba(219,39,119,0.14)";
+            ctx.fillRect(x, 0, w / 14, h);
+            ctx.strokeStyle = "rgba(190,24,93,0.18)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, h);
+            ctx.stroke();
           }
-          return v;
-        };
+        });
+
+        const reefMat = getMat(0x1e293b, { roughness: 0.88, bumpMap: miniatureStoneTex, bumpScale: 0.02 });
+        const pinkMarbleMat = getMat(0xfbcfe8, { roughness: 0.45, bumpMap: miniatureStoneTex, bumpScale: 0.008 });
+        const whiteMarbleMat = getMat(0xf8fafc, { roughness: 0.38, bumpMap: miniatureStoneTex, bumpScale: 0.006 });
+        const floorTileMat = new THREE.MeshStandardMaterial({
+          map: sanctuaryMarbleTex,
+          bumpMap: miniatureStoneTex,
+          bumpScale: 0.008,
+          roughness: 0.36,
+          metalness: 0.08
+        });
+        const castleBlueMat = getMat(0x93c5fd, { roughness: 0.38, metalness: 0.12 });
+        const windowDarkMat = getMat(0x1e3a8a, { roughness: 0.25 });
+        const goldMat = getMat(0xfacc15, { roughness: 0.26, metalness: 0.42, emissive: 0xeab308, emissiveIntensity: 0.28 });
+        const goldCoinMat = getMat(0xfde047, { emissive: 0xfacc15, emissiveIntensity: 1.05, roughness: 0.2 });
+        const pearlGlowMat = getMat(0xffffff, { emissive: 0xfef9c3, emissiveIntensity: 0.95, roughness: 0.12 });
+        const scallopMat = new THREE.MeshStandardMaterial({
+          map: scallopShellTex,
+          bumpMap: scallopShellTex,
+          bumpScale: 0.025,
+          roughness: 0.34,
+          metalness: 0.1,
+          side: THREE.DoubleSide
+        });
+
+        // ③ 圓形粉白大理石放射拼花聖殿廣場 ＋ 正前方三階石階梯
+        const baseDeck = cyl(17.2, 18.0, 1.35, 40, pinkMarbleMat);
+        baseDeck.position.set(sx, sy + 2.55, sz);
+        baseDeck.receiveShadow = true;
+        group.add(baseDeck);
+
+        const topDeckGeo = new THREE.CylinderGeometry(15.6, 16.0, 0.72, 40);
+        const topDeck = new THREE.Mesh(topDeckGeo, [pinkMarbleMat, floorTileMat, pinkMarbleMat]);
+        topDeck.position.set(sx, sy + 3.45, sz);
+        topDeck.receiveShadow = true;
+        group.add(topDeck);
+
+        const outerTrimRing = new THREE.Mesh(new THREE.TorusGeometry(15.6, 0.28, 10, 44), whiteMarbleMat);
+        outerTrimRing.rotation.x = Math.PI / 2;
+        outerTrimRing.position.set(sx, sy + 3.82, sz);
+        group.add(outerTrimRing);
+
+        // 正前方三階白粉階梯＋兩側石扶手
+        for (let stp = 0; stp < 3; stp++) {
+          const stepMesh = rbox(7.4, 0.45, 1.25, stp % 2 === 0 ? whiteMarbleMat : pinkMarbleMat, 0.06);
+          stepMesh.position.set(sx, sy + 2.45 + stp * 0.45, sz + 17.2 - stp * 0.95);
+          group.add(stepMesh);
+        }
         for (const side of [-1, 1]) {
-          const cGrp = new THREE.Group();
-          cGrp.position.set(side * 5.6, 0.25, 2.4);
-          cGrp.rotation.y = side * -0.22;
-
-          const botS = buildSanctuaryValve(false);
-          botS.position.set(0, 0.22, 0.15);
-          cGrp.add(botS);
-
-          const topS = buildSanctuaryValve(true);
-          topS.position.set(0, 1.25, -0.95);
-          topS.rotation.x = -0.72;
-          cGrp.add(topS);
-
-          const sPearl = ball(1.02, sanctuaryPearlMat, 20, 16);
-          sPearl.position.set(0, 0.95, 0.2);
-          cGrp.add(sPearl);
-
-          const pLight = new THREE.PointLight(0xfef08a, 1.6, 9, 1.6);
-          pLight.position.set(0, 1.5, 0.5);
-          cGrp.add(pLight);
-
-          palaceGroup.add(cGrp);
+          const rail = rbox(0.55, 1.35, 3.3, whiteMarbleMat, 0.08);
+          rail.position.set(sx + side * 3.85, sy + 3.1, sz + 16.25);
+          rail.rotation.x = -0.35;
+          group.add(rail);
         }
 
-        // 左右兩翼 6 根高聳發光六角稜鏡水晶柱（保持青藍、薰衣草紫、暖金水晶原色）
+        // ④ 背景童話珍珠水晶城堡（主塔含拱形小窗＋環形腰線＋左右側塔＋中央珍珠白圓環拱門）
+        const mainTower = cyl(2.65, 2.95, 9.6, 22, whiteMarbleMat);
+        mainTower.position.set(sx, sy + 8.6, sz - 7.8);
+        addComicOutline(mainTower, 0.04, 0x0f172a);
+        group.add(mainTower);
+
+        // 主塔環形腰線與深藍拱形小窗
+        const towerBelt = cyl(3.12, 3.12, 0.58, 22, whiteMarbleMat);
+        towerBelt.position.set(sx, sy + 10.6, sz - 7.8);
+        group.add(towerBelt);
+
+        const archWinBox = rbox(1.1, 1.35, 0.32, windowDarkMat, 0.42);
+        archWinBox.position.set(sx, sy + 11.75, sz - 5.12);
+        group.add(archWinBox);
+        const archWinRim = rbox(1.34, 1.56, 0.22, castleBlueMat, 0.48);
+        archWinRim.position.set(sx, sy + 11.75, sz - 5.2);
+        group.add(archWinRim);
+
+        const mainRoof = cone(3.55, 4.6, 22, castleBlueMat);
+        mainRoof.position.set(sx, sy + 15.5, sz - 7.8);
+        addComicOutline(mainRoof, 0.04, 0x0f172a);
+        group.add(mainRoof);
+
+        for (const side of [-1, 1]) {
+          const sideTower = cyl(1.8, 2.0, 6.6, 18, whiteMarbleMat);
+          sideTower.position.set(sx + side * 6.5, sy + 7.1, sz - 6.8);
+          addComicOutline(sideTower, 0.035, 0x0f172a);
+          group.add(sideTower);
+
+          const sideBelt = cyl(2.08, 2.08, 0.42, 18, whiteMarbleMat);
+          sideBelt.position.set(sx + side * 6.5, sy + 9.4, sz - 6.8);
+          group.add(sideBelt);
+
+          const sideRoof = cone(2.38, 3.6, 18, castleBlueMat);
+          sideRoof.position.set(sx + side * 6.5, sy + 12.1, sz - 6.8);
+          addComicOutline(sideRoof, 0.035, 0x0f172a);
+          group.add(sideRoof);
+        }
+
+        // 中央巨大珍珠白圓環拱門
+        const pearlArch = new THREE.Mesh(new THREE.TorusGeometry(4.3, 0.92, 18, 38), whiteMarbleMat);
+        pearlArch.position.set(sx, sy + 7.6, sz - 4.4);
+        addComicOutline(pearlArch, 0.04, 0x0f172a);
+        group.add(pearlArch);
+
+        // ⑤ 6 根雙段發光六角水晶柱（下段漸層柱身 ＋ 上段發光鑽石多面體晶冠，保留 4 根印章契約）
         this.guardianSockets.badgePillars = [];
-        const crystalPrismSpecs = [
-          { x: -10.4, z: 4.2, h: 6.2, r: 1.12, color: 0x67e8f9, badgeIdx: 0 },
-          { x: -8.2,  z: 0.2, h: 8.2, r: 1.12, color: 0xd8b4fe, badgeIdx: 1 },
-          { x: 8.2,   z: 0.2, h: 8.2, r: 1.12, color: 0xd8b4fe, badgeIdx: 2 },
-          { x: 10.4,  z: 4.2, h: 6.2, r: 1.12, color: 0xfde047, badgeIdx: 3 }
+        const crystalPillars = [
+          { x: -11.6, z: 1.4, h: 6.8, col: 0x5eead4, em: 0x14b8a6, bindIdx: 0 },
+          { x: -9.8, z: -4.2, h: 8.6, col: 0xe879f9, em: 0xc026d3, bindIdx: 1 },
+          { x: 9.8, z: -4.2, h: 8.6, col: 0xe879f9, em: 0xc026d3, bindIdx: 2 },
+          { x: 11.6, z: 1.4, h: 6.8, col: 0xfde047, em: 0xf59e0b, bindIdx: 3 },
+          { x: -4.5, z: -8.6, h: 9.8, col: 0x67e8f9, em: 0x06b6d4, bindIdx: -1 },
+          { x: 4.5, z: -8.6, h: 9.8, col: 0xfde68a, em: 0xf59e0b, bindIdx: -1 }
         ];
-        crystalPrismSpecs.forEach((cp) => {
+        crystalPillars.forEach((cp) => {
           const pGrp = new THREE.Group();
-          pGrp.position.set(cp.x, 0, cp.z);
+          pGrp.position.set(sx + cp.x, sy + 3.8, sz + cp.z);
 
-          const basePed = cyl(cp.r * 1.32, cp.r * 1.4, 0.75, 20, pearlTowerMat);
-          basePed.position.y = 0.38;
-          pGrp.add(basePed);
+          const baseCapMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.38, metalness: 0.15 });
+          const baseCap = cyl(1.35, 1.52, 0.72, 18, baseCapMat);
+          baseCap.position.y = 0.36;
+          pGrp.add(baseCap);
 
-          const cMat = new THREE.MeshStandardMaterial({
-            color: cp.color,
-            emissive: cp.color,
-            emissiveIntensity: 0.65,
+          const shaftMat = new THREE.MeshStandardMaterial({
+            color: cp.col,
+            emissive: cp.em,
+            emissiveIntensity: 0.55,
             roughness: 0.18,
-            metalness: 0.08,
             transparent: true,
             opacity: 0.92
           });
-          const shaft = new THREE.Mesh(new THREE.CylinderGeometry(cp.r, cp.r, cp.h, 6), cMat);
-          shaft.position.y = 0.75 + cp.h / 2;
-          shaft.userData.origColor = cp.color;
+          const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.92, 0.98, cp.h, 6), shaftMat);
+          shaft.position.y = 0.72 + cp.h / 2;
           pGrp.add(shaft);
 
-          const tipMat = new THREE.MeshStandardMaterial({
-            color: cp.color,
-            emissive: cp.color,
-            emissiveIntensity: 0.85,
-            roughness: 0.15
-          });
-          const tip = new THREE.Mesh(new THREE.ConeGeometry(cp.r, cp.r * 1.45, 6), tipMat);
-          tip.position.y = 0.75 + cp.h + (cp.r * 1.45) / 2;
-          tip.userData.origColor = cp.color;
-          pGrp.add(tip);
+          // 上段雙段鑽石切面晶冠 (Glowing Faceted Diamond Crown)
+          const collar = cyl(1.06, 1.02, 0.35, 6, whiteMarbleMat);
+          collar.position.y = 0.72 + cp.h + 0.16;
+          pGrp.add(collar);
 
-          this.guardianSockets.badgePillars.push({ mesh: shaft, gem: tip, index: cp.badgeIdx, origColor: cp.color });
-          palaceGroup.add(pGrp);
+          const crownCrystal = new THREE.Mesh(
+            new THREE.OctahedronGeometry(1.18, 0),
+            new THREE.MeshStandardMaterial({
+              color: 0xffffff,
+              emissive: cp.em,
+              emissiveIntensity: 0.95,
+              roughness: 0.12,
+              transparent: true,
+              opacity: 0.94
+            })
+          );
+          crownCrystal.scale.set(0.95, 1.45, 0.95);
+          crownCrystal.position.y = 0.72 + cp.h + 1.45;
+          pGrp.add(crownCrystal);
+
+          if (cp.bindIdx >= 0) {
+            this.guardianSockets.badgePillars.push({ mesh: baseCap, gem: shaft, index: cp.bindIdx });
+          }
+          group.add(pGrp);
         });
 
-        group.add(palaceGroup);
+        // ⑥ 左右兩座波浪放射紋珍珠大扇貝 ＋ 發光大白珍珠
+        for (const side of [-1, 1]) {
+          const shellGrp = new THREE.Group();
+          shellGrp.position.set(sx + side * 6.9, sy + 3.85, sz - 0.8);
+          shellGrp.rotation.y = side * -0.35;
+          const bSh = new THREE.Mesh(new THREE.SphereGeometry(2.45, 22, 12, 0, Math.PI * 2, Math.PI * 0.5, Math.PI * 0.5), scallopMat);
+          bSh.scale.set(1.18, 0.46, 0.98);
+          bSh.position.y = 0.8;
+          shellGrp.add(bSh);
+          const tSh = new THREE.Mesh(new THREE.SphereGeometry(2.45, 22, 12, 0, Math.PI * 2, 0, Math.PI * 0.5), scallopMat);
+          tSh.scale.set(1.18, 0.46, 0.98);
+          tSh.position.set(0, 1.5, -1.48);
+          tSh.rotation.x = -0.82;
+          shellGrp.add(tSh);
+          const pOrb = ball(0.92, pearlGlowMat, 18, 16);
+          pOrb.position.set(0, 1.38, 0.08);
+          shellGrp.add(pOrb);
+          group.add(shellGrp);
+        }
 
-        // ③ 右前景：開啟的黃金寶藏箱（珍珠、金幣與發光青藍水晶卷軸）
+        // ⑦ 1:1 精雕超萌直立大白鯊・波塞頓（立體嘴吻、奶油肚皮、側身三道鰓裂、背鰭、厚金皇冠與三叉戟呼吸揮動！）
+        const shark = new THREE.Group();
+        shark.position.set(sx, sy + 6.45, sz + 1.9);
+        shark.userData.baseY = sy + 6.45;
+
+        const sharkBlueMat = getMat(0x5b8ec2, { roughness: 0.48, metalness: 0.06 });
+        const sharkBellyMat = getMat(0xfef9e7, { roughness: 0.58 });
+        const darkEyeMat = getMat(0x0f172a, { roughness: 0.18 });
+        const mouthRedMat = getMat(0xbe123c, { roughness: 0.45 });
+
+        // 圓潤流線梨形主軀幹（上窄頭吻、下飽滿圓肚）
+        const body = ball(2.1, sharkBlueMat, 26, 20);
+        body.scale.set(0.96, 1.38, 0.92);
+        addComicOutline(body, 0.045, 0x0f172a);
+        shark.add(body);
+
+        // 立體微凸鯊魚上吻部 (Sculpted Snout)
+        const snout = ball(1.38, sharkBlueMat, 20, 16);
+        snout.scale.set(1.06, 0.68, 0.95);
+        snout.position.set(0, 1.15, 0.88);
+        shark.add(snout);
+
+        // 貼合流線奶油白大肚皮與下顎
+        const belly = ball(1.88, sharkBellyMat, 22, 18);
+        belly.scale.set(0.84, 1.24, 0.68);
+        belly.position.set(0, -0.22, 0.72);
+        shark.add(belly);
+
+        const chin = ball(1.22, sharkBellyMat, 18, 14);
+        chin.scale.set(0.98, 0.56, 0.82);
+        chin.position.set(0, 0.62, 1.15);
+        shark.add(chin);
+
+        // 可愛微笑弧線嘴型 (Warm Friendly Smile)
+        const smile = new THREE.Mesh(new THREE.TorusGeometry(0.76, 0.085, 8, 22, Math.PI * 0.88), mouthRedMat);
+        smile.rotation.z = Math.PI * 1.06;
+        smile.position.set(0, 0.72, 1.88);
+        shark.add(smile);
+
+        // 水汪汪雙層高光大眼
+        for (const side of [-1, 1]) {
+          const eye = ball(0.24, darkEyeMat, 14, 12);
+          eye.position.set(side * 1.02, 1.12, 1.56);
+          shark.add(eye);
+          const hi1 = ball(0.08, pearlGlowMat, 8, 8);
+          hi1.position.set(side * 1.08, 1.2, 1.75);
+          shark.add(hi1);
+          const hi2 = ball(0.04, pearlGlowMat, 6, 6);
+          hi2.position.set(side * 0.95, 1.04, 1.74);
+          shark.add(hi2);
+        }
+
+        // 左右側身三道清晰斜鰓裂 (3 Shark Gill Slits per side)
+        for (const side of [-1, 1]) {
+          for (let g = 0; g < 3; g++) {
+            const gill = rbox(0.06, 0.44 - g * 0.04, 0.09, darkEyeMat, 0.02);
+            gill.position.set(side * 1.86, 0.42 - g * 0.14, 0.55 - g * 0.24);
+            gill.rotation.y = side * 0.45;
+            gill.rotation.z = side * 0.18;
+            shark.add(gill);
+          }
+        }
+
+        // 頭頂後傾可愛背鰭 + 左右流線胸鰭 + 後方分叉尾鰭
+        const dorsal = cone(0.62, 1.65, 12, sharkBlueMat);
+        dorsal.scale.set(0.32, 1.0, 0.9);
+        dorsal.position.set(0, 2.35, -0.95);
+        dorsal.rotation.x = -0.52;
+        addComicOutline(dorsal, 0.035, 0x0f172a);
+        shark.add(dorsal);
+
+        // 左胸鰭（畫面右側）自然下垂，右胸鰭（畫面左側）向前握住三叉戟！
+        const leftFin = cone(0.62, 1.85, 12, sharkBlueMat);
+        leftFin.scale.set(0.32, 1.0, 0.78);
+        leftFin.position.set(2.05, -0.35, 0.25);
+        leftFin.rotation.z = 0.85;
+        leftFin.rotation.x = 0.2;
+        addComicOutline(leftFin, 0.035, 0x0f172a);
+        shark.add(leftFin);
+
+        const rightFin = cone(0.58, 1.75, 12, sharkBlueMat);
+        rightFin.scale.set(0.32, 1.0, 0.78);
+        rightFin.position.set(-2.05, -0.15, 0.65);
+        rightFin.rotation.z = -1.1;
+        rightFin.rotation.x = 0.55;
+        addComicOutline(rightFin, 0.035, 0x0f172a);
+        shark.add(rightFin);
+
+        const tailPivot = new THREE.Group();
+        tailPivot.position.set(0, -1.25, -1.78);
+        const tailTop = cone(0.68, 2.1, 10, sharkBlueMat);
+        tailTop.scale.set(0.28, 1.0, 0.9);
+        tailTop.position.set(0, 0.55, -0.45);
+        tailTop.rotation.x = -0.65;
+        addComicOutline(tailTop, 0.035, 0x0f172a);
+        tailPivot.add(tailTop);
+        const tailBot = cone(0.48, 1.35, 10, sharkBlueMat);
+        tailBot.scale.set(0.28, 1.0, 0.85);
+        tailBot.position.set(0, -0.55, -0.35);
+        tailBot.rotation.x = Math.PI + 0.55;
+        addComicOutline(tailBot, 0.03, 0x0f172a);
+        tailPivot.add(tailBot);
+        shark.add(tailPivot);
+
+        // 厚實五角鋸齒黃金海王皇冠
+        const crown = cyl(0.84, 0.72, 0.58, 12, goldMat);
+        crown.position.set(0, 2.98, 0.35);
+        addComicOutline(crown, 0.03, 0x0f172a);
+        shark.add(crown);
+        for (let k = 0; k < 5; k++) {
+          const ang = (k / 5) * Math.PI * 2;
+          const sp = cone(0.22, 0.55, 6, goldMat);
+          sp.position.set(Math.cos(ang) * 0.62, 3.42, 0.35 + Math.sin(ang) * 0.62);
+          addComicOutline(sp, 0.02, 0x0f172a);
+          shark.add(sp);
+        }
+
+        // 右手（畫面左側）黃金海王三叉戟（註冊呼吸揮動動畫！）
+        const trident = new THREE.Group();
+        trident.position.set(-2.45, 0.1, 1.05);
+        trident.rotation.z = 0.06;
+        const tShaft = cyl(0.14, 0.14, 5.5, 12, goldMat);
+        tShaft.position.y = 0.25;
+        addComicOutline(tShaft, 0.025, 0x0f172a);
+        trident.add(tShaft);
+        const tCross = rbox(1.56, 0.24, 0.24, goldMat, 0.08);
+        tCross.position.y = 2.95;
+        trident.add(tCross);
+        for (const px of [-0.68, 0, 0.68]) {
+          const prong = cone(0.16, px === 0 ? 1.55 : 1.22, 8, goldMat);
+          prong.position.set(px, px === 0 ? 3.68 : 3.5, 0);
+          addComicOutline(prong, 0.02, 0x0f172a);
+          trident.add(prong);
+        }
+        shark.add(trident);
+        this.animatedObjects.push({ obj: trident, type: "tridentWave", baseZ: 0.06, baseY: 0.1, speed: 1.7 });
+
+        group.add(shark);
+        this.animatedObjects.push({
+          obj: shark,
+          type: "float",
+          baseY: sy + 6.45,
+          amp: 0.32,
+          speed: 1.35,
+          phase: 0
+        });
+
+        // ⑧ 右前方精雕弧頂金框黃金寶藏箱 ＋ 散落金幣與發光大白珍珠
         const chestGroup = new THREE.Group();
-        chestGroup.position.set(sx + 6.8, sy + 3.65, sz + 3.8);
-        chestGroup.rotation.y = -0.45;
-
-        const woodMat = getMat(0x92400e, { map: miniatureWoodTex, roughness: 0.62 });
-        const chestBox = rbox(3.1, 1.55, 2.05, woodMat, 0.08);
+        chestGroup.position.set(sx + 6.5, sy + 3.84, sz + 5.9);
+        chestGroup.rotation.y = -0.52;
+        const woodMat = getMat(0x8b4513, { map: miniatureWoodTex, roughness: 0.56 });
+        const chestBox = rbox(3.0, 1.55, 2.0, woodMat, 0.08);
         chestBox.position.y = 0.78;
-        chestBox.castShadow = true;
-        addComicOutline(chestBox, 0.04, 0x0f172a);
+        addComicOutline(chestBox, 0.035, 0x1e293b);
         chestGroup.add(chestBox);
+        const cTopRim = rbox(3.14, 0.2, 2.12, goldMat, 0.04);
+        cTopRim.position.y = 1.48;
+        chestGroup.add(cTopRim);
+        const cBotRim = rbox(3.14, 0.2, 2.12, goldMat, 0.04);
+        cBotRim.position.y = 0.1;
+        chestGroup.add(cBotRim);
+        const lockP = rbox(0.42, 0.48, 0.16, goldMat, 0.06);
+        lockP.position.set(0, 1.15, 1.06);
+        chestGroup.add(lockP);
 
-        for (const bx of [-1.25, 1.25]) {
-          const band = rbox(0.24, 1.6, 2.12, goldTrimMat, 0.04);
-          band.position.set(bx, 0.78, 0);
-          chestGroup.add(band);
+        const lidPivot = new THREE.Group();
+        lidPivot.position.set(0, 1.52, -1.0);
+        lidPivot.rotation.x = -0.82;
+        const archLid = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 3.04, 18, 1, false, 0, Math.PI), woodMat);
+        archLid.rotation.z = Math.PI / 2;
+        archLid.position.set(0, 0, 1.0);
+        addComicOutline(archLid, 0.035, 0x1e293b);
+        lidPivot.add(archLid);
+        for (const bxPos of [-1.42, 1.42]) {
+          const band = new THREE.Mesh(new THREE.TorusGeometry(1.02, 0.1, 8, 18, Math.PI), goldMat);
+          band.rotation.y = Math.PI / 2;
+          band.position.set(bxPos, 0, 1.0);
+          lidPivot.add(band);
         }
-        const lockPlate = rbox(0.45, 0.52, 0.14, goldTrimMat, 0.04);
-        lockPlate.position.set(0, 1.15, 1.04);
-        chestGroup.add(lockPlate);
+        chestGroup.add(lidPivot);
 
-        const lidGroup = new THREE.Group();
-        lidGroup.position.set(0, 1.55, -1.02);
-        lidGroup.rotation.x = -0.85;
-        const lidCyl = new THREE.Mesh(
-          new THREE.CylinderGeometry(1.02, 1.02, 3.12, 18, 1, false, 0, Math.PI),
-          woodMat
-        );
-        lidCyl.rotation.z = Math.PI / 2;
-        lidCyl.position.set(0, 0, 1.02);
-        lidGroup.add(lidCyl);
-        chestGroup.add(lidGroup);
-
-        // 寶箱內發光珍珠、金幣與青藍發光卷軸
-        const coinMat = getMat(0xfde047, { emissive: 0xfacc15, emissiveIntensity: 0.65, roughness: 0.25, metalness: 0.35 });
-        for (let c = 0; c < 10; c++) {
-          const coin = cyl(0.28, 0.28, 0.1, 12, coinMat);
-          coin.position.set(-0.95 + (c % 5) * 0.48, 1.58 + (c % 2) * 0.12, -0.35 + Math.floor(c / 5) * 0.65);
-          chestGroup.add(coin);
-        }
-        for (const [px, pz] of [[-0.85, 0.35], [-0.2, 0.48], [0.55, 0.38], [-1.95, 1.1]]) {
-          const prl = ball(0.36, sanctuaryPearlMat, 14, 12);
-          prl.position.set(px, px < -1.5 ? 0.36 : 1.72, pz);
-          chestGroup.add(prl);
-        }
-        const scrollPaper = cyl(0.26, 0.26, 1.65, 14, getMat(0x67e8f9, { emissive: 0x22d3ee, emissiveIntensity: 0.85, roughness: 0.2 }));
+        const coinMound = ball(1.18, goldCoinMat, 14, 10);
+        coinMound.scale.set(1.1, 0.45, 0.68);
+        coinMound.position.set(0, 1.55, 0);
+        chestGroup.add(coinMound);
+        const scrollPaper = cyl(0.24, 0.24, 1.75, 12, getMat(0x67e8f9, { emissive: 0x06b6d4, emissiveIntensity: 0.55, roughness: 0.35 }));
         scrollPaper.rotation.z = Math.PI / 2;
-        scrollPaper.rotation.y = 0.25;
-        scrollPaper.position.set(0.25, 1.92, 0.15);
+        scrollPaper.position.set(0.3, 1.92, 0.05);
         chestGroup.add(scrollPaper);
-
-        const chestLight = new THREE.PointLight(0xfef08a, 2.2, 11, 1.6);
-        chestLight.position.set(0, 2.6, 0.5);
+        [[-0.65, 1.82, 0.22], [0.55, 1.78, 0.32]].forEach(([px, py, pz]) => {
+          const p = ball(0.28, pearlGlowMat, 10, 8);
+          p.position.set(px, py, pz);
+          chestGroup.add(p);
+        });
+        const chestLight = new THREE.PointLight(0xfef08a, 3.4, 15, 1.5);
+        chestLight.position.set(0, 2.8, 0.8);
         chestGroup.add(chestLight);
         group.add(chestGroup);
 
-        // ④ 廣場中央主角：童趣 3D 大白鯊守門神獸「波塞頓」（1:1 對應 station_4_shark_sanctuary.png 直立流線造型）
-        const shark = new THREE.Group();
-        shark.position.set(sx, sy + 3.65, sz + 1.2);
-        shark.userData.baseY = sy + 3.65;
+        // 寶箱旁散落金幣與發光大白珍珠
+        const loosePearl = ball(0.42, pearlGlowMat, 12, 10);
+        loosePearl.position.set(sx + 4.4, sy + 4.22, sz + 7.2);
+        group.add(loosePearl);
+        [[4.9, 7.8], [5.6, 8.2], [7.2, 8.3]].forEach(([cx, cz]) => {
+          const c = cyl(0.28, 0.28, 0.1, 10, goldCoinMat);
+          c.position.set(sx + cx, sy + 3.88, sz + cz);
+          group.add(c);
+        });
 
-        const sharkBlueMat = getMat(0x5b7a9c, { roughness: 0.52, metalness: 0.08 });
-        const sharkBellyMat = getMat(0xfef9ee, { roughness: 0.58, metalness: 0.04 });
-        const darkEyeMat = getMat(0x0f172a, { roughness: 0.2 });
-        const whiteEyeMat = getMat(0xffffff, { roughness: 0.2 });
-        const mouthMat = getMat(0x7f1d1d, { roughness: 0.6 });
+        // ⑨ 柔和暖白主光 ＋ 左右青紫金水晶補光 ＋ 神殿後方發光小魚與上升氣泡點綴
+        const palaceWarmLight = new THREE.PointLight(0xfffbeb, 4.2, 42, 1.25);
+        palaceWarmLight.position.set(sx, sy + 16.5, sz + 9.0);
+        group.add(palaceWarmLight);
 
-        const headPivot = new THREE.Group();
-        headPivot.position.set(0, 2.85, 0);
+        const crystalCyanLight = new THREE.PointLight(0x67e8f9, 2.6, 26, 1.5);
+        crystalCyanLight.position.set(sx - 11.0, sy + 11.0, sz - 2.0);
+        group.add(crystalCyanLight);
 
-        // 直立圓潤膠囊流線鯊魚身軀 (Upright Chubby Capsule Shark Body)
-        const torso = ball(2.05, sharkBlueMat, 32, 24);
-        torso.scale.set(0.95, 1.35, 0.92);
-        torso.position.set(0, 0, 0);
-        addComicOutline(torso, 0.045, 0x0f172a);
-        headPivot.add(torso);
+        const crystalGoldLight = new THREE.PointLight(0xfde047, 2.6, 26, 1.5);
+        crystalGoldLight.position.set(sx + 11.0, sy + 11.0, sz - 2.0);
+        group.add(crystalGoldLight);
 
-        // 奶油白平滑圓肚皮面版（高細分球體完美貼合，消除交界鋸齒）
-        const belly = ball(1.82, sharkBellyMat, 32, 24);
-        belly.scale.set(0.76, 1.12, 0.78);
-        belly.position.set(0, -0.32, 0.56);
-        headPivot.add(belly);
+        // 後方左右輕量化發光小魚與氣泡點綴
+        const miniFishMat = getMat(0xbae6fd, { emissive: 0x38bdf8, emissiveIntensity: 0.8, roughness: 0.3 });
+        [[-13.5, 12.5, -5.0], [13.5, 11.8, -5.5]].forEach(([fx, fy, fz], idx) => {
+          const fObj = ball(0.55, miniFishMat, 10, 8);
+          fObj.scale.set(0.6, 0.72, 1.45);
+          fObj.position.set(sx + fx, sy + fy, sz + fz);
+          fObj.rotation.y = idx === 0 ? 1.2 : -1.2;
+          group.add(fObj);
+          this.animatedObjects.push({ obj: fObj, type: "float", baseY: sy + fy, amp: 0.65, speed: 1.4 + idx * 0.3, phase: idx });
+        });
 
-        // 友善微笑弧線嘴巴（完整浮出於白色肚皮與藍色身軀前方，無任何穿模截斷）
-        const smile = new THREE.Mesh(
-          new THREE.TorusGeometry(0.38, 0.072, 12, 24, Math.PI * 0.78),
-          mouthMat
-        );
-        smile.rotation.z = Math.PI * 1.11;
-        smile.position.set(0, 0.42, 2.02);
-        headPivot.add(smile);
+        this.guardianParts = { root: shark, tail: tailPivot, chest: chestGroup, trident };
 
-        // 背部後側大背鰭與小尾鰭
-        const dorsalFin = cone(0.75, 1.85, 12, sharkBlueMat);
-        dorsalFin.scale.set(0.32, 1.0, 0.95);
-        dorsalFin.position.set(0, 1.35, -1.65);
-        dorsalFin.rotation.x = -0.68;
-        headPivot.add(dorsalFin);
-
-        const tailPivot = new THREE.Group();
-        tailPivot.position.set(0, -1.65, -1.45);
-        const tailTop = cone(0.55, 1.45, 10, sharkBlueMat);
-        tailTop.scale.set(0.3, 1, 0.85);
-        tailTop.position.set(0, 0.45, -0.55);
-        tailTop.rotation.x = -0.65;
-        tailPivot.add(tailTop);
-        headPivot.add(tailPivot);
-
-        // 左右胸鰭手臂與兩側 3 道鰓裂
-        for (const side of [-1, 1]) {
-          const flipper = ball(0.65, sharkBlueMat, 14, 10);
-          flipper.scale.set(0.38, 1.55, 0.65);
-          flipper.position.set(side * 1.95, -0.25, 0.15);
-          flipper.rotation.z = side * 0.38;
-          addComicOutline(flipper, 0.03, 0x0f172a);
-          headPivot.add(flipper);
-
-          // 3 道立體鯊魚鰓線
-          for (let g = 0; g < 3; g++) {
-            const gill = rbox(0.06, 0.48, 0.08, darkEyeMat, 0.02);
-            gill.position.set(side * (1.72 - g * 0.04), 0.72 - g * 0.12, 0.68 - g * 0.24);
-            gill.rotation.z = side * 0.25;
-            gill.rotation.y = side * 0.42;
-            headPivot.add(gill);
-          }
-
-          // 可愛黑亮大圓眼
-          const pupil = ball(0.22, darkEyeMat, 12, 10);
-          pupil.position.set(side * 0.98, 1.05, 1.62);
-          headPivot.add(pupil);
-          const sparkle = ball(0.07, whiteEyeMat, 8, 8);
-          sparkle.position.set(side * 1.02, 1.13, 1.79);
-          headPivot.add(sparkle);
-        }
-
-        // 頭頂五角黃金皇冠 (5-Point Golden Crown)
-        const crownGroup = new THREE.Group();
-        crownGroup.position.set(0, 2.72, 0.25);
-        crownGroup.rotation.x = 0.12;
-        const crownBase = cyl(0.68, 0.58, 0.42, 16, goldTrimMat);
-        crownGroup.add(crownBase);
-        for (let k = 0; k < 5; k++) {
-          const ang = (k / 5) * Math.PI * 2;
-          const spike = cone(0.18, 0.48, 6, goldTrimMat);
-          spike.position.set(Math.cos(ang) * 0.54, 0.42, Math.sin(ang) * 0.54);
-          crownGroup.add(spike);
-          const tipBall = ball(0.08, goldTrimMat, 8, 8);
-          tipBall.position.set(Math.cos(ang) * 0.56, 0.68, Math.sin(ang) * 0.56);
-          crownGroup.add(tipBall);
-        }
-        headPivot.add(crownGroup);
-
-        // 右手（畫面左側）高舉的黃金海神三叉戟 (Golden Trident)
-        const tridentGroup = new THREE.Group();
-        tridentGroup.position.set(-2.35, -0.15, 0.55);
-        tridentGroup.rotation.z = 0.08;
-
-        const shaft = cyl(0.12, 0.12, 5.4, 14, goldTrimMat);
-        shaft.position.y = 0.2;
-        tridentGroup.add(shaft);
-
-        const forkArc = new THREE.Mesh(new THREE.TorusGeometry(0.68, 0.11, 10, 20, Math.PI), goldTrimMat);
-        forkArc.rotation.z = Math.PI;
-        forkArc.position.set(0, 2.85, 0);
-        tridentGroup.add(forkArc);
-
-        for (const px of [-0.68, 0, 0.68]) {
-          const prongStem = cyl(0.1, 0.1, px === 0 ? 1.15 : 0.85, 10, goldTrimMat);
-          prongStem.position.set(px, 3.25 + (px === 0 ? 0.15 : 0), 0);
-          tridentGroup.add(prongStem);
-
-          const barb = cone(0.22, 0.52, 8, goldTrimMat);
-          barb.position.set(px, 3.85 + (px === 0 ? 0.25 : 0), 0);
-          tridentGroup.add(barb);
-        }
-        headPivot.add(tridentGroup);
-
-        // 情緒汗珠（供 setKeeperExpression 切換使用）
-        const sweatDrop = cone(0.14, 0.35, 8, getMat(0x38bdf8, { roughness: 0.2 }));
-        sweatDrop.position.set(1.45, 1.65, 1.25);
-        sweatDrop.visible = false;
-        headPivot.add(sweatDrop);
-
-        shark.add(headPivot);
-        group.add(shark);
-        this.guardianMesh = shark;
-        this.guardianParts = {
-          root: shark,
-          head: headPivot,
-          tail: tailPivot,
-          chest: chestGroup,
-          crown: crownGroup,
-          sweat: sweatDrop
-        };
+        const sharkPillarH = Math.max(10, (sy - (-60)));
+        const sharkSupport = cyl(17.5, 22.0, sharkPillarH, 24, reefMat);
+        sharkSupport.position.set(sx, sy - sharkPillarH / 2 + 0.5, sz);
+        group.add(sharkSupport);
 
         this.scene.add(group);
         this.islands.push(group);
@@ -9703,6 +9996,29 @@
         // 驅動場景動畫物件 (旋轉、浮動、搖晃、鐘錶滴答急促微震)
         this.animatedObjects.forEach(item => {
           if (item.type === 'spin') item.obj.rotation.y += (item.speed || 1) * 0.01;
+          if (item.type === 'tridentWave') { item.obj.rotation.z = (item.baseZ || 0.06) + Math.sin(now * (item.speed || 1.8)) * 0.09; item.obj.position.y = (item.baseY || 0.1) + Math.sin(now * (item.speed || 1.8)) * 0.14; }
+          if (item.type === 'orbitCruise') {
+            const ang = now * (item.speed || 0.12) + (item.phase || 0);
+            const nx = item.cx + Math.cos(ang) * item.rx;
+            const nz = item.cz + Math.sin(ang) * item.rz;
+            const ny = item.baseY + Math.sin(now * 0.9 + (item.phase || 0)) * (item.ampY || 2.5);
+            const dx = -Math.sin(ang) * item.rx;
+            const dz = Math.cos(ang) * item.rz;
+            item.obj.position.set(nx, ny, nz);
+            item.obj.rotation.y = Math.atan2(dx, dz);
+            if (item.wings) {
+              const flap = Math.sin(now * 2.4 + (item.phase || 0)) * 0.24;
+              item.wings[0].rotation.z = flap;
+              item.wings[1].rotation.z = -flap;
+            }
+          }
+          if (item.type === 'riseLoop') {
+            const span = item.span || 28;
+            const offset = ((now * (item.speed || 2.8) + (item.phase || 0)) % span);
+            item.obj.position.y = item.startY + offset;
+            item.obj.position.x = item.baseX + Math.sin(now * 1.8 + (item.phase || 0)) * 0.65;
+          }
+          if (item.type === 'swayY') item.obj.rotation.y = (item.baseRotY || 0) + Math.sin(now * (item.speed || 1) + (item.phase || 0)) * (item.amp || 0.35);
           if (item.type === 'spinZ') item.obj.rotation.z += (item.speed || 1) * 0.01;
           if (item.type === 'bob') item.obj.position.y += Math.sin(now * (item.speed || 1)) * 0.005;
           if (item.type === 'float') {
@@ -10583,6 +10899,16 @@
       }
 
       // 聚焦在目前正在進行的島嶼 (取代原有的全景俯瞰功能)
+      viewAbyssalPanorama() {
+        this.closeDrawer();
+        if (!this.sceneDirector) return;
+        // 鳥瞰制高點：一覽兩側六角玄武岩深海大峽谷、發光拱門、五座潛水站與終點水晶城堡
+        const camPos = new THREE.Vector3(14, 145, 295);
+        const lookPos = new THREE.Vector3(14, -26, -12);
+        this.sceneDirector.flyTo(camPos, lookPos, () => {});
+        this.showToast("🌌 已切換至深海大峽谷全景鳥瞰視角！可自由旋轉縮放探索！");
+      }
+
       focusCurrentIsland() {
         const cur = (typeof this.currentIsland === 'number' && this.currentIsland >= 0 && this.currentIsland <= 4) ? this.currentIsland : 0;
         this.flyToIsland(cur);
@@ -10883,7 +11209,7 @@
         }
 
         // 配合新島嶼切換情境氣候與守門獸情緒
-        if (toIdx === 2) {
+        if (false) {
           sd.setWeather('storm');
         } else {
           sd.setWeather('sunny');
@@ -11147,7 +11473,7 @@
         }
 
         // 配合新島嶼切換情境氣候與守門獸情緒
-        if (toIdx === 2) {
+        if (false) {
           sd.setWeather('storm');
         } else {
           sd.setWeather('sunny');
@@ -11500,7 +11826,7 @@
 
         // 【新技能規範】：情境氣候與守門獸情緒動態切換
         if (this.sceneDirector) {
-          if (index === 2) {
+          if (false) {
             this.sceneDirector.setWeather('storm');
           } else {
             this.sceneDirector.setWeather('sunny');
@@ -11513,13 +11839,15 @@
 
         if (index === 4) {
           // 神殿近景特寫鏡頭：完整框入水晶珍珠聖殿、6根六角水晶柱、大白鯊波塞頓、黃金寶箱與左側停靠潛水艇
-          this.sceneDirector.flyTo(new THREE.Vector3(x + 0.2, y + 17.5, z + 35.5), new THREE.Vector3(x, y + 6.5, z - 1.0), () => {
+          this.sceneDirector.flyTo(new THREE.Vector3(x + 0.2, y + 16.5, z + 38.5), new THREE.Vector3(x, y + 7.5, z - 1.5), () => {
             this.openGuardianModal();
           });
         } else {
-          // 45度微縮模型特寫角度：對齊 station_0 ~ station_3 設計藍圖
-          const camTarget = new THREE.Vector3(x + 11.5, y + 16.5, z + 19.5);
-          const lookTarget = new THREE.Vector3(x, y + 4.8, z - 0.5);
+          // 45度微縮模型特寫角度：對齊 station_0 ~ station_3 設計藍圖（第 2 站微調為完整英雄構圖）
+          const camTarget = index === 1
+            ? new THREE.Vector3(x + 4.5, y + 15.5, z + 21.5)
+            : new THREE.Vector3(x + 11.5, y + 16.5, z + 19.5);
+          const lookTarget = new THREE.Vector3(x, y + 4.6, z - 0.6);
           this.sceneDirector.flyTo(camTarget, lookTarget, () => {
             this.openDrawer(index);
           });
@@ -11667,16 +11995,49 @@
         }
       }
 
+      // 國小常見偷懶短詞即時追問提示庫
+      getLazyWordFeedback(val) {
+        const clean = (val || "").trim();
+        const lazyMap = {
+          "教室": "什麼樣的教室？是「充滿笑聲的教室」還是「安靜明亮的教室」？請加上形容詞擴寫喔！",
+          "家裡": "什麼樣的家裡？試著寫成「溫暖明亮的家裡」或「充滿飯菜香的客廳」！",
+          "客廳": "客廳給人什麼感覺？例如「溫馨熱鬧的客廳」或「燈火通明的客廳」！",
+          "操場": "什麼樣的操場？例如「陽光灑落的操場」或「寬廣熱鬧的操場跑道」！",
+          "走廊": "走廊是什麼氣氛？例如「空無一人的走廊轉角」或「下課熱鬧的走廊」！",
+          "學校": "學校的哪個角落？加上環境形容詞，例如「書香滿溢的校園教室」！",
+          "房間": "什麼樣的房間？例如「安靜整潔的房間」或「堆滿故事書的書房」！",
+          "媽媽": "他是什麼樣的媽媽？請加上形容詞，例如「溫柔又堅強的媽媽」或「總是笑咪咪的媽媽」！",
+          "爸爸": "他是什麼樣的爸爸？例如「幽默風趣的爸爸」或「肩膀寬厚、充滿安全感的爸爸」！",
+          "老師": "他是什麼樣的老師？例如「認真負責又親切的自然老師」！",
+          "同學": "他是哪一位、什麼個性的同學？例如「熱心助人的同班好朋友」！",
+          "朋友": "什麼樣的朋友？例如「總是耐心傾聽我的好朋友」！",
+          "好人": "「好人」太籠統囉！請寫出具體優點，例如「溫柔體貼又熱心助人的榜樣」！",
+          "很好": "「很好」可以更生動！例如「十分親切和藹」或「耐心十足」！",
+          "很棒": "「很棒」可以更具體！例如「認真負責、令人敬佩」！",
+          "幫我": "他是「怎麼」幫你的？請加上副詞＋動詞，例如「熱心地向我伸出援手」或「耐心地一步步教導我」！",
+          "陪我": "他是「怎麼」陪你的？例如「溫柔地陪伴在我身邊」或「默默地陪我練習」！",
+          "照顧": "怎麼照顧？請加上副詞，例如「無微不至地照顧我的生活起居」！"
+        };
+        if (lazyMap[clean]) return lazyMap[clean];
+        return null;
+      }
+
+      // 檢驗是否符合「形容詞＋名詞／副詞＋動詞」修飾擴寫原則
+      hasModifierStructure(val) {
+        const clean = (val || "").trim();
+        if (clean.length >= 10) return true;
+        return /[的地得像如般又很極最常總默靜輕暖細認耐熱溫嚴笑]/.test(clean);
+      }
+
       validateStep1Required() {
         const islandIdx = this.currentIsland;
         const rawData = CURRICULUM_DATA[islandIdx];
         if (!rawData) return true;
 
-
-
         const data = this.getEffectiveIslandData(rawData);
         const elemKeys = ["time", "place", "person", "object", "event"];
 
+        // 挑戰者 / 初探者：結構雙格填空 + 防單字敷衍與偷懶短詞追問
         if (state.tier === "intermediate" && data.guidedFrames) {
           const gSel = (state.guidedSelections && state.guidedSelections[islandIdx]) || {};
           for (const key of elemKeys) {
@@ -11696,11 +12057,26 @@
                 );
                 return false;
               }
+              const posText = b.pos || "";
+              const isActionOrPhrase = /動詞|片語|短句|形容詞＋/.test(posText);
+              const lazyTip = this.getLazyWordFeedback(val);
+              if (lazyTip && (curPattern.blanks.length === 1 || isActionOrPhrase)) {
+                this.highlightMissingField(inputEl, `💡 ${lazyTip}`);
+                return false;
+              }
+              if (isActionOrPhrase && val.length < 4) {
+                this.highlightMissingField(
+                  inputEl,
+                  `💡【${frameInfo.label}】的「${b.label}」請用「副詞＋動詞」或完整片語寫清楚（至少 4 個字），例如：溫柔地陪伴我、耐心地講解！`
+                );
+                return false;
+              }
             }
           }
           return true;
         }
 
+        // 大師級：單框自由發揮，強制字數 >= 6 字且須包含「形容詞＋名詞／副詞＋動詞」修飾結構
         if (state.tier === "master") {
           if (!state.elementSelections[islandIdx]) {
             state.elementSelections[islandIdx] = { time: 0, place: 0, person: 0, object: 0, event: 0 };
@@ -11717,6 +12093,18 @@
               this.highlightMissingField(
                 inputEl,
                 `⚠️【${promptInfo.title}】為必填作答格！請先填寫所有格子再前往下一步。`
+              );
+              return false;
+            }
+            const lazyTip = this.getLazyWordFeedback(val);
+            if (lazyTip) {
+              this.highlightMissingField(inputEl, `💡 ${lazyTip}`);
+              return false;
+            }
+            if (val.length < 6 || !this.hasModifierStructure(val)) {
+              this.highlightMissingField(
+                inputEl,
+                `💡【${promptInfo.title}】請符合大師級「形容詞＋名詞」或「副詞＋動詞」擴寫目標（至少 6 字，如：在陽光灑落的教室裡、溫柔地鼓勵我）！`
               );
               return false;
             }
@@ -12618,326 +13006,220 @@
 
       // 取得各島嶼專屬的四步連貫句子規格 (100% 依據 Step 1 五要素組裝)
       getIslandSentenceSpecs(islandIdx, e) {
+        const oo = state.ooWord || "敬佩";
+        const placePhrase = e.place && (e.place.startsWith("在") || e.place.startsWith("無論")) ? e.place : `在${e.place}`;
+
         if (islandIdx === 0) {
-          // 起之島・考前準備
+          // 起之站：譬喻開頭＋主角定調
           return [
             {
-              index: 1,
-              title: "① 開頭句（時空定錨）",
-              elementTag: "時",
-              elementText: e.time,
-              template: (tail) => `${e.time}，我的生活就${tail}。`,
+              title: "① 開頭句（人生相遇與譬喻定調）",
+              elementTag: "時・地",
+              rhetoricLabel: "可微調開頭譬喻修辭：",
+              fluencyTip: "💡 默念檢查：時間與地點接起來順口嗎？若有重複的「在」可以直接在框內修掉喔！",
+              template: (tail) => `${e.time}，我們會遇見形形色色的人，而在${e.place.replace(/^在/, "")}，${tail}。`,
               options: [
-                "風雲變色，鬧得人仰馬翻",
-                "變得緊張萬分，草木皆兵",
-                "像被龍捲風席捲一樣手忙腳亂"
+                "總有一道像溫暖陽光般的身影深深印在我心裡",
+                "有一位像燈塔一樣照亮我成長道路的特別人物",
+                "最令我印象深刻的人每天都陪伴在我們身旁"
               ]
             },
             {
-              index: 2,
-              title: "② 發展句（環境與景物誇飾）",
-              elementTag: "地＋物",
-              elementText: `${e.place} ＋ ${e.object}`,
-              template: (tail) => `${e.place}，桌上擺滿了${e.object}，${tail}。`,
-              options: [
-                "堆得像一座隨時會倒塌的小山",
-                "厚重得像一塊塊沉重的磚頭",
-                "多得讓人快要窒息"
-              ]
-            },
-            {
-              index: 3,
-              title: "③ 轉折句（人物神態交鋒）",
+              title: "② 亮相句（介紹我最○○的人是誰）",
               elementTag: "人",
-              elementText: e.person,
-              template: (tail) => `看著平時笑咪咪的${e.person}，此時臉色${tail}。`,
+              rhetoricLabel: "可微調主角定調語句：",
+              fluencyTip: "💡 默念檢查：確認主角稱呼清楚，沒有缺少主詞或「就是」重複喔！",
+              template: (tail) => `這位令我最${oo}的人，就是${e.person.replace(/^我最.*就是/, "")}，${tail}。`,
               options: [
-                "比鐵面無私的包青天還要黑",
-                "氣得像隨時會爆發的活火山",
-                "陰沉得像暴風雨前的烏雲"
+                "也是我生命中最值得學習的好榜樣",
+                "更是我心目中無人能取代的良師益友",
+                "總能帶給身邊每個人滿滿的溫暖與安全感"
               ]
             },
             {
-              index: 4,
-              title: "④ 結尾句（事件抉擇與內心懊惱）",
-              elementTag: "事",
-              elementText: e.event,
-              template: (tail) => `面對令人窒息的考試壓力，我只能${e.event}，${tail}！`,
+              title: "③ 畫面句（招牌物品聯想）",
+              elementTag: "物",
+              rhetoricLabel: "可微調畫面聯想：",
+              fluencyTip: "💡 默念檢查：看板上的物品有加上形容詞嗎？念起來有沒有畫面感？",
+              template: (tail) => `每當看到${e.object.replace(/^每當看到/, "")}，我腦海中就會立刻浮現他${tail}。`,
               options: [
-                "誰叫我平時不燒香，臨時抱佛腳呢",
-                "恨不得一天有四十八個小時可以苦讀",
-                "為平日的貪玩散漫付出慘痛代價"
+                "忙碌卻從不喊苦的溫柔背影",
+                "專注認真、眼神閃閃發光的模樣",
+                "親切和藹、像春風一樣溫暖的笑容"
+              ]
+            },
+            {
+              title: "④ 結尾句（對我良好影響定調）",
+              elementTag: "事",
+              rhetoricLabel: "可微調結尾譬喻：",
+              fluencyTip: "💡 檢查「不僅……更……」前後主詞與動詞是否通順，不通順請直接在框內微調！",
+              template: (tail) => `${e.event}，${tail}。`,
+              options: [
+                "他就像黑夜裡的一盞明燈，溫柔地照亮我前行的方向",
+                "這份無私的陪伴與身教，在我心中留下了不可抹滅的印記",
+                "讓我在耳濡目染之中，一點一滴成為更好的自己"
               ]
             }
           ];
         } else if (islandIdx === 1) {
-          // 承之島・考場鐘聲與神態
+          // 承之站：視覺摹寫＋外貌比喻（臉型、五官、體型、髮型、表情）
           return [
             {
-              index: 1,
-              title: "① 開頭句（時空定錨）",
-              elementTag: "時",
-              elementText: e.time,
-              template: (tail) => `${e.time}，原本喧鬧的教室頓時${tail}。`,
+              title: "① 觀察引導句（觀察時機與場景）",
+              elementTag: "時・地",
+              rhetoricLabel: "可微調觀察視角：",
+              fluencyTip: "💡 默念檢查：時間和觀察位置接起來順不順？",
+              template: (tail) => `${e.time}，${placePhrase}，我總愛像小畫家一樣仔細觀察他，${tail}。`,
               options: [
-                "變得草木皆兵，人人自危",
-                "安靜得連一根針掉在地上都聽得見",
-                "籠罩在一片肅殺的戰鬥氣息中"
+                "發現他與眾不同的外貌神韻",
+                "把他的每一個可愛特徵都悄悄記在心裡",
+                "總能從他的神情中感受到滿滿的活力"
               ]
             },
             {
-              index: 2,
-              title: "② 發展句（考卷景物誇飾）",
-              elementTag: "地＋物",
-              elementText: `${e.place} ＋ ${e.object}`,
-              template: (tail) => `${e.place}，監考老師發下${e.object}，${tail}。`,
-              options: [
-                "雪白的試卷如漫天雪花飄落在桌上",
-                "密密麻麻的題目看得我眼花撩亂",
-                "黑白分明的試題像張牙舞爪的怪獸"
-              ]
-            },
-            {
-              index: 3,
-              title: "③ 轉折句（人物神態交鋒）",
+              title: "② 外貌摹寫句（臉型、五官、髮型、體型＋比喻）",
               elementTag: "人",
-              elementText: e.person,
-              template: (tail) => `身邊的${e.person}，個個${tail}。`,
+              rhetoricLabel: "可微調外貌比喻修辭：",
+              fluencyTip: "💡 檢查是否寫到「臉型、五官、髮型或體型」的形容詞描寫！",
+              template: (tail) => `${e.person}，${tail}。`,
               options: [
-                "眉頭深鎖、冷汗直流，握筆的手微微發抖",
-                "神情肅穆得像在面對生死決戰",
-                "雙眼緊盯著試卷，連大氣都不敢喘一口"
+                "一雙眼睛清澈明亮，笑起來就像天上彎彎的月牙",
+                "整個人看起來神采奕奕，彷彿渾身散發著溫暖的光芒",
+                "俐落的模樣讓人一眼就覺得格外親切又有精神"
               ]
             },
             {
-              index: 4,
-              title: "④ 結尾句（事件細節刻劃）",
-              elementTag: "事",
-              elementText: e.event,
-              template: (tail) => `「噹！噹！噹！」鐘聲敲響，我${e.event}，${tail}！`,
+              title: "③ 表情神態句（招牌笑容與反差）",
+              elementTag: "物",
+              rhetoricLabel: "可微調神態摹寫：",
+              fluencyTip: "💡 默念檢查：表情描寫有沒有生動？可直接在框內補充他生氣或開心時的細節！",
+              template: (tail) => `${e.object}，${tail}。`,
               options: [
-                "大腦頓時像斷電一樣刷的一聲變成空白",
-                "深吸一口氣，硬著頭皮提筆迎戰",
-                "心跳比奔馳的駿馬還要劇烈"
+                "平常溫柔得像和煦的春風，但該嚴肅時也讓人不敢造次",
+                "只要看見他微笑，大家原本緊繃的心情就會瞬間放鬆下來",
+                "那股專注的神情，總讓身旁的我們不知不覺跟著認真起來"
+              ]
+            },
+            {
+              title: "④ 優點讚賞句（外貌與內在優點並重）",
+              elementTag: "事",
+              rhetoricLabel: "可微調優點肯定：",
+              fluencyTip: "💡 檢查動詞前有沒有加上副詞（例：耐心地、認真地），念一次確認順口！",
+              template: (tail) => `除了鮮明的外貌特徵，他更令人敬佩的是${e.event}，${tail}。`,
+              options: [
+                "無論做什麼事都一絲不苟、從不輕言放棄",
+                "總是熱心地幫助身邊每一個人，是大家眼中的好榜樣",
+                "總能用最大的耐心傾聽並鼓勵我們勇敢嘗試"
               ]
             }
           ];
         } else if (islandIdx === 2) {
-          // 轉之站・難忘回憶發考卷（共用 4 句骨架構，依考試結果比想像中好/壞切換句子表現）
-          const placePhrase = e.place && e.place.startsWith("在") ? e.place : `在${e.place}`;
-          if (state.twistOutcome === "better") {
-            return [
-              {
-                index: 1,
-                title: "① 開頭句（時空定錨・反轉驚喜）",
-                elementTag: "時",
-                elementText: e.time,
-                template: (tail) => `${e.time}，迎接我們的是${tail}！`,
-                options: [
-                  "像坐雲霄飛車般大逆轉的「發考卷」時刻",
-                  "讓人既緊張又期待的成績大揭曉",
-                  "一場出乎意料的驚喜時刻"
-                ]
-              },
-              {
-                index: 2,
-                title: "② 發展句（景物考卷驚喜）",
-                elementTag: "地＋物",
-                elementText: `${e.place} ＋ ${e.object}`,
-                template: (tail) => `${placePhrase}，我雙手微顫接過${e.object}，${tail}。`,
-                options: [
-                  "那亮眼的數字像一道溫暖的陽光灑進心房",
-                  "驚人的進步分數讓我差點開心到跳起來",
-                  "滿紙紅勾勾彷彿在對我眨眼睛微笑"
-                ]
-              },
-              {
-                index: 3,
-                title: "③ 轉折句（人物歡喜互動）",
-                elementTag: "人",
-                elementText: e.person,
-                template: (tail) => `回到家交出成績單，${e.person}頓時${tail}。`,
-                options: [
-                  "露出驚訝又燦爛的笑容，豎起大拇指大大稱讚",
-                  "開心地拍手叫好，直呼我的努力沒有白費",
-                  "給了我一個大大的溫暖擁抱"
-                ]
-              },
-              {
-                index: 4,
-                title: "④ 結尾句（事件感動與信心）",
-                elementTag: "事",
-                elementText: e.event,
-                template: (tail) => `看著努力換來的考卷，我${e.event}，${tail}！`,
-                options: [
-                  "覺得這陣子的辛苦挑燈夜戰全都值得了",
-                  "心裡像喝了蜂蜜一樣甜滋滋的",
-                  "對自己的實力更加充滿信心"
-                ]
-              }
-            ];
-          }
+          // 轉之站：動作神態描寫＋對話引號
           return [
             {
-              index: 1,
-              title: "① 開頭句（時空定錨）",
-              elementTag: "時",
-              elementText: e.time,
-              template: (tail) => `${e.time}，迎接我們的是${tail}！`,
+              title: "① 回憶起點句（事件發生時空）",
+              elementTag: "時・地",
+              rhetoricLabel: "可微調回憶開場：",
+              fluencyTip: "💡 默念檢查：把鏡頭拉回那一天，時間與地點連接通順嗎？",
+              template: (tail) => `${e.time}，${placePhrase}，${tail}。`,
               options: [
-                "驚天地、泣鬼神的「發考卷」時刻",
-                "令人坐立難安、心驚肉跳的成績揭曉",
-                "一場決定命運的狂風暴雨"
+                "發生了一件令我至今依然刻骨銘心的難忘插曲",
+                "我遇見了一個突如其來、讓我手足無措的大難題",
+                "空氣中瀰漫著一股讓我緊張得直冒冷汗的氣氛"
               ]
             },
             {
-              index: 2,
-              title: "② 發展句（景物考卷震撼）",
-              elementTag: "地＋物",
-              elementText: `${e.place} ＋ ${e.object}`,
-              template: (tail) => `${placePhrase}，我雙手顫抖接過${e.object}，${tail}。`,
-              options: [
-                "那鮮紅刺眼的數字像一道閃電劈進胸口",
-                "慘不忍睹的分數讓我雙腿直發軟",
-                "鮮紅的墨水像一把尖刀刺痛雙眼"
-              ]
-            },
-            {
-              index: 3,
-              title: "③ 轉折句（人物神態交鋒）",
+              title: "② 動作神態句（焦急的我 vs 伸出援手的他）",
               elementTag: "人",
-              elementText: e.person,
-              template: (tail) => `回到家交出成績單，${e.person}頓時${tail}。`,
+              rhetoricLabel: "可微調動作神態：",
+              fluencyTip: "💡 默念檢查：有沒有把當時「你的慌張」和「他的熱心動作」對比出來？",
+              template: (tail) => `${e.person}，${tail}。`,
               options: [
-                "氣得火冒三丈，使出「降龍十八掌」把我打得眼冒金星",
-                "臉色比烏雲還陰沉，展開一場狂風暴雨般的訓斥",
-                "失望的眼神像冬天的寒風一樣刺骨"
+                "看見我急得像熱鍋上的螞蟻，他二話不說立刻快步走過來幫忙",
+                "他溫柔地拍了拍我的肩膀，用堅定又親切的眼神安撫我",
+                "原本快要急哭的我，一看到他的身影立刻看見了希望"
               ]
             },
             {
-              index: 4,
-              title: "④ 結尾句（事件悔恨與代價）",
-              elementTag: "事",
-              elementText: e.event,
-              template: (tail) => `看著滿是紅筆批改的考卷，我${e.event}，${tail}！`,
+              title: "③ 經典對話句（關鍵物品＋對話引號「……」！）",
+              elementTag: "物",
+              rhetoricLabel: "可微調對話引號神態：",
+              fluencyTip: "💡 檢查有沒有加上「……」對話引號，且語氣自然像真人在說話！",
+              template: (tail) => `${e.object}，${tail}。`,
               options: [
-                "流下了悔不當初的滾燙淚水",
-                "恨不得地上有一條縫可以鑽進去",
-                "深深嚐到了平日貪玩放縱的苦果"
+                "聲音溫柔得像冬日裡的暖陽，瞬間驅散了我心中的不安",
+                "簡簡單單的一句話，卻帶給我無比強大的勇氣",
+                "他還細心地一步步示範給我看，完全沒有一絲不耐煩"
+              ]
+            },
+            {
+              title: "④ 情感轉折句（從焦急到感動的暖流）",
+              elementTag: "事",
+              rhetoricLabel: "可微調感動譬喻：",
+              fluencyTip: "💡 默念檢查：心情有沒有從原本的緊張／難過，順利轉折到感動或如釋重負？",
+              template: (tail) => `${e.event}，${tail}。`,
+              options: [
+                "我頓時如釋重負、破涕為笑，心頭湧起一股甜甜的暖流",
+                "那一刻的溫暖畫面，就像深海裡閃亮的珍珠般永遠珍藏在我心底",
+                "讓我深深體會到什麼叫做雪中送炭的真摯情誼"
               ]
             }
           ];
         } else {
-          // 合之島・依第 3 段選擇切換「考得好帶給我的影響」或「反思超越自我」
-          const placePhrase = e.place && e.place.startsWith("在") ? e.place : `在${e.place}`;
-          if (state.twistOutcome === "better") {
-            return [
-              {
-                index: 1,
-                title: "① 開頭句（肯定收穫與體悟）",
-                elementTag: "時",
-                elementText: e.time,
-                template: (tail) => `${e.time}，我深深體會到${tail}。`,
-                options: [
-                  "「一分耕耘，一分收穫」的甜美滋味",
-                  "平日的努力與累積絕對不會背叛自己",
-                  "只要找對方法並堅持下去，就能看見亮眼的進步"
-                ]
-              },
-              {
-                index: 2,
-                title: "② 發展句（好成績帶來的動力與行動）",
-                elementTag: "地＋物",
-                elementText: `${e.place} ＋ ${e.object}`,
-                template: (tail) => `這份好成績帶給我莫大的信心，每天${placePhrase}打開${e.object}，${tail}。`,
-                options: [
-                  "我都更有動力按部就班複習，把基礎打得更穩固",
-                  "我都提醒自己絕不能驕傲自滿，要繼續專心學習",
-                  "我都細心整理重點與錯題，讓自己更加進步"
-                ]
-              },
-              {
-                index: 3,
-                title: "③ 轉折句（正向回饋與自我期許）",
-                elementTag: "人",
-                elementText: e.person,
-                template: (tail) => `看見${e.person}，${tail}。`,
-                options: [
-                  "這份肯定成了我繼續前進的最大力量",
-                  "心裡充滿溫暖與成就感，更想成為讓大家驕傲的自己",
-                  "我期許自己戒驕戒躁，把這份喜悅化為下次挑戰的動力"
-                ]
-              },
-              {
-                index: 4,
-                title: "④ 結尾句（精益求精、更上一層樓）",
-                elementTag: "事",
-                elementText: e.event,
-                template: (tail) => `帶著這次考得比想像中好的自信，我${e.event}，${tail}！`,
-                options: [
-                  "下一次月考要繼續精益求精、更上一層樓",
-                  "不再害怕考試，要用更踏實的腳步迎接下一次勝利",
-                  "記住這份努力開花結果的感動，勇敢迎向更大的挑戰"
-                ]
-              }
-            ];
-          }
+          // 合之站：呼應題目《我最○○的人》＋感恩譬喻與期許
           return [
             {
-              index: 1,
-              title: "① 開頭句（時空定錨與頓悟）",
+              title: "① 回望句（相處後的真誠感受）",
               elementTag: "時",
-              elementText: e.time,
-              template: (tail) => `${e.time}，我深深明白${tail}。`,
+              rhetoricLabel: "可微調回望語氣：",
+              fluencyTip: "💡 默念檢查：從上一站的事件自然銜接到現在的感受！",
+              template: (tail) => `${e.time}，回想起與他相處的點點滴滴，${tail}。`,
               options: [
-                "天下絕不可能不勞而獲，唯有努力不懈方能成功",
-                "凡事臨渴掘井必定會嚐到失敗的苦果",
-                "「一分耕耘，一分收穫」是不變的真理"
+                "我心中總是充滿了說不盡的感動與感謝",
+                "我才真正明白他的用心良苦對我有多重要",
+                "每一次的陪伴都成為我成長路上最珍貴的養分"
               ]
             },
             {
-              index: 2,
-              title: "② 發展句（環境與行動改變）",
-              elementTag: "地＋物",
-              elementText: `${e.place} ＋ ${e.object}`,
-              template: (tail) => `我下定決心改掉壞毛病，每天${placePhrase}捧起${e.object}，${tail}。`,
-              options: [
-                "按部就班複習功課，腳踏實地完成習作練習",
-                "妥善安排每一分鐘，絕不再讓作業堆積如山",
-                "認真訂正每一道錯題，不再臨渴掘井"
-              ]
-            },
-            {
-              index: 3,
-              title: "③ 轉折句（人際承諾與信任）",
+              title: "② 成長蛻變句（他帶給我的正面影響）",
               elementTag: "人",
-              elementText: e.person,
-              template: (tail) => `我希望未來的自己能讓${e.person}${tail}。`,
+              rhetoricLabel: "可微調成長對比：",
+              fluencyTip: "💡 默念檢查：有沒有寫出「以前」與「現在」的進步對比？",
+              template: (tail) => `${e.person}，${tail}。`,
               options: [
-                "笑逐顏開，看見我不斷進步的身影",
-                "放心微笑，看見我為自己學業負責任的態度",
-                "對我刮目相看，不再為我的成績提心吊膽"
+                "不再像以前那樣輕易退縮，反而學會用微笑迎接每一次挑戰",
+                "在他的耳濡目染下，我也養成了認真負責的好習慣",
+                "漸漸變得更加勇敢自信，也懂得主動關心身邊的同學"
               ]
             },
             {
-              index: 4,
-              title: "④ 結尾句（積極超越願景）",
-              elementTag: "事",
-              elementText: e.event,
-              template: (tail) => `經過這次慘痛的教訓，我${e.event}，${tail}！`,
+              title: "③ 寶藏收穫句（無形收穫譬喻）",
+              elementTag: "物",
+              rhetoricLabel: "可微調感恩譬喻：",
+              fluencyTip: "💡 默念檢查：把學到的好品格或友誼比喻成珍貴寶物，念起來更優美！",
+              template: (tail) => `${e.object}，${tail}。`,
               options: [
-                "不再成為月考大魔王的俘虜，我要征服考試、超越自己",
-                "擦乾眼淚抬起頭，下一次我一定能笑著迎接勝利",
-                "腳踏實地勇敢前行，下一次月考我絕不再留遺憾"
+                "這份受用一生的禮物，比深海裡最閃耀的珍珠還要珍貴",
+                "就像一顆溫暖的種子，在我心裡悄悄發芽、茁壯成長",
+                "是我這輩子最寶貴、也最值得珍惜的精神財富"
+              ]
+            },
+            {
+              title: "④ 呼應題目與感恩期許句",
+              elementTag: "地・事",
+              rhetoricLabel: "可微調呼應結尾：",
+              fluencyTip: "💡 檢查最後有沒有呼應題目《我最" + oo + "的人》並表達感謝或期許！",
+              template: (tail) => `${e.place}，${e.event}，${tail}！`,
+              options: [
+                `謝謝您，我最${oo}的人，未來我也要向您看齊，把這份溫暖傳遞下去`,
+                `能遇見您真是我最大的幸運，我永遠也不會忘記您這位最令我${oo}的好榜樣`,
+                `我會把您的教導銘記在心，努力成為一個像您一樣閃閃發亮的人`
               ]
             }
           ];
         }
       }
 
-      // ----------------------------------------------------
-      // Step 2: 渲染段落句子（100% 承接 Step 1 的五要素）
-      // ----------------------------------------------------
       renderStep2Sentences(data) {
         const islandIdx = this.currentIsland;
         const e = this.getSelectedElements(data);
@@ -12959,20 +13241,27 @@
                 <span class="inventory-chip inventory-chip-time" title="時間情境">⏰ 時：${e.time}</span>
                 <span class="inventory-chip inventory-chip-place" title="空間環境">🏠 地：${e.place}</span>
                 <span class="inventory-chip inventory-chip-person" title="人物神態">👤 人：${e.person}</span>
-                <span class="inventory-chip inventory-chip-object" title="景物考卷">📚 物：${e.object}</span>
+                <span class="inventory-chip inventory-chip-object" title="招牌物品與細節">📚 物：${e.object}</span>
                 <span class="inventory-chip inventory-chip-event" title="核心事件">⚡ 事：${e.event}</span>
               </div>
             </div>
           `;
         }
 
-        // ② 初始化 Step 2 句子替換狀態
+        // ② 初始化 Step 2 句子替換與手動修順狀態
         if (!state.puzzleSelections[islandIdx]) {
           state.puzzleSelections[islandIdx] = [0, 0, 0, 0];
         }
+        if (!state.step2EditedSentences) {
+          state.step2EditedSentences = [ {}, {}, {}, {} ];
+        }
+        if (!state.step2EditedSentences[islandIdx]) {
+          state.step2EditedSentences[islandIdx] = {};
+        }
         const curSelections = state.puzzleSelections[islandIdx];
+        const editedMap = state.step2EditedSentences[islandIdx];
 
-        // ③ 渲染四大段落句卡片
+        // ③ 渲染四大段落句卡片（每句皆可直接編輯修順＋專屬修辭選項鈕）
         const listContainer = document.getElementById("step2SentenceList");
         if (!listContainer) return;
         listContainer.innerHTML = "";
@@ -12985,28 +13274,33 @@
 
           const chosenOptIdx = curSelections[sIdx] || 0;
           const chosenTail = spec.options[chosenOptIdx] || spec.options[0];
-          const fullSentence = spec.template(chosenTail);
+          const generatedSentence = spec.template(chosenTail);
+          const displaySentence = (editedMap[sIdx] && editedMap[sIdx].trim()) ? editedMap[sIdx] : generatedSentence;
+          const isEdited = !!(editedMap[sIdx] && editedMap[sIdx].trim() && editedMap[sIdx] !== generatedSentence);
 
-          // 可替換誇飾修辭按鈕
           const optBtnsHtml = spec.options.map((opt, oIdx) => {
             const isActive = chosenOptIdx === oIdx;
             return `<button type="button" class="puzzle-opt-btn ${isActive ? 'active' : ''}" onclick="window.islandApp.selectStep2SentenceOption(${sIdx}, ${oIdx})">${opt}</button>`;
           }).join("");
 
           card.innerHTML = `
-            <div class="sentence-block-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="sentence-block-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
               <span>${spec.title}</span>
               <span class="linkage-badge">🔗 承接 Step 1【${spec.elementTag}】</span>
             </div>
-            <div class="sentence-block-text" style="margin: 8px 0; font-size: 15.5px; line-height: 1.75; color: #1e293b;">
-              ${fullSentence}
+            <textarea class="step2-edit-box" id="step2Edit_${sIdx}" rows="2" oninput="window.islandApp.onStep2SentenceEdit(${sIdx}, this.value)"></textarea>
+            <div class="step2-fluency-tip">
+              <span>${spec.fluencyTip || "💡 請默念一遍這句話，若語句卡卡的或重複字詞，請直接在上方輸入框修順！"}</span>
+              ${isEdited ? `<button type="button" style="border:none; background:#e0f2fe; color:#0369a1; font-size:11.5px; font-weight:800; padding:3px 8px; border-radius:6px; cursor:pointer; flex-shrink:0;" onclick="window.islandApp.resetStep2Sentence(${sIdx})">🔄 還原建議句</button>` : ""}
             </div>
-            <div class="puzzle-options-group" style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(0,0,0,0.08);">
-              <span style="font-size: 13.5px; font-weight: 800; color: #64748b; line-height: 26px;">可微調誇飾修辭：</span>
+            <div class="puzzle-options-group" style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(0,0,0,0.08);">
+              <span style="font-size: 13.5px; font-weight: 800; color: #64748b; line-height: 26px;">${spec.rhetoricLabel || "可微調修辭："}</span>
               ${optBtnsHtml}
             </div>
           `;
           listContainer.appendChild(card);
+          const ta = card.querySelector(`#step2Edit_${sIdx}`);
+          if (ta) ta.value = displaySentence;
         });
 
         // ④ 更新即時段落組合預覽
@@ -13016,24 +13310,54 @@
         }
       }
 
+      onStep2SentenceEdit(sIdx, val) {
+        const islandIdx = this.currentIsland;
+        if (!state.step2EditedSentences) state.step2EditedSentences = [ {}, {}, {}, {} ];
+        if (!state.step2EditedSentences[islandIdx]) state.step2EditedSentences[islandIdx] = {};
+        state.step2EditedSentences[islandIdx][sIdx] = val;
+        state.saveState();
+
+        const previewEl = document.getElementById("step2CombinedPreview");
+        if (previewEl) {
+          previewEl.textContent = this.getCombinedStep2Text(CURRICULUM_DATA[islandIdx]);
+        }
+      }
+
+      resetStep2Sentence(sIdx) {
+        const islandIdx = this.currentIsland;
+        if (state.step2EditedSentences && state.step2EditedSentences[islandIdx]) {
+          delete state.step2EditedSentences[islandIdx][sIdx];
+          state.saveState();
+        }
+        this.renderStep2Sentences(CURRICULUM_DATA[islandIdx]);
+      }
+
       selectStep2SentenceOption(sIdx, oIdx) {
         const islandIdx = this.currentIsland;
         if (!state.puzzleSelections[islandIdx]) state.puzzleSelections[islandIdx] = [0, 0, 0, 0];
         state.puzzleSelections[islandIdx][sIdx] = oIdx;
+        // 切換修辭按鈕時，同步更新該句為新修辭版本（讓學生可再繼續微調）
+        if (state.step2EditedSentences && state.step2EditedSentences[islandIdx]) {
+          delete state.step2EditedSentences[islandIdx][sIdx];
+        }
         state.saveState();
 
         const data = CURRICULUM_DATA[islandIdx];
         this.renderStep2Sentences(data);
       }
 
-      // 取得 Step 2 組裝好的乾淨純文字段落 (自動縮排空兩格)
+      // 取得 Step 2 組裝好的乾淨純文字段落（優先採用學生親手修順後的句子）
       getCombinedStep2Text(data) {
         const islandIdx = this.currentIsland;
         const e = this.getSelectedElements(data);
         const specs = this.getIslandSentenceSpecs(islandIdx, e);
         const curSelections = state.puzzleSelections[islandIdx] || [0, 0, 0, 0];
+        const editedMap = (state.step2EditedSentences && state.step2EditedSentences[islandIdx]) || {};
 
         const sentences = specs.map((spec, sIdx) => {
+          if (editedMap[sIdx] && editedMap[sIdx].trim()) {
+            return editedMap[sIdx].trim();
+          }
           const chosenOptIdx = curSelections[sIdx] || 0;
           const chosenTail = spec.options[chosenOptIdx] || spec.options[0];
           return spec.template(chosenTail);
@@ -13105,7 +13429,7 @@
                 <span class="continuity-icon">${personMatched ? '✓' : '👤'}</span>
                 <span>人：${personMatched ? '已連貫' : '待確認'}</span>
               </div>
-              <div class="continuity-item ${objectMatched ? 'checked' : ''}" title="景物考卷：${e.object}">
+              <div class="continuity-item ${objectMatched ? 'checked' : ''}" title="招牌物品與細節：${e.object}">
                 <span class="continuity-icon">${objectMatched ? '✓' : '📚'}</span>
                 <span>物：${objectMatched ? '已連貫' : '待確認'}</span>
               </div>
@@ -13113,9 +13437,9 @@
                 <span class="continuity-icon">${eventMatched ? '✓' : '⚡'}</span>
                 <span>事：${eventMatched ? '已連貫' : '待確認'}</span>
               </div>
-              <div class="continuity-item ${rhetoricMatched ? 'checked' : ''}" title="四年級教材誇飾修辭">
+              <div class="continuity-item ${rhetoricMatched ? 'checked' : ''}" title="本潛水站專屬修辭檢核（譬喻／外貌摹寫／對話引號／感恩呼應）">
                 <span class="continuity-icon">${rhetoricMatched ? '✓' : '✨'}</span>
-                <span>修辭：${rhetoricMatched ? '誇飾到位' : '待加強'}</span>
+                <span>修辭：${rhetoricMatched ? (['譬喻定調到位', '外貌摹寫到位', '互動對話到位', '感恩呼應到位'][this.currentIsland] || '修辭到位') : '待加強'}</span>
               </div>
             </div>
           </div>
