@@ -1692,6 +1692,260 @@
       gap: 8px;
     }
 
+
+    /* === PIRLS 四層次提問引導卡片系統 === */
+    .pirls-panel-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .pirls-card {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-left: 5px solid #0284c7;
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .pirls-card.level-1 { border-left-color: #0284c7; background: #f0f9ff; }
+    .pirls-card.level-2 { border-left-color: #059669; background: #ecfdf5; }
+    .pirls-card.level-3 { border-left-color: #d97706; background: #fffbeb; }
+    .pirls-card.level-4 { border-left-color: #7c3aed; background: #f5f3ff; }
+    .pirls-card.checked-done {
+      border-color: #22c55e;
+      border-left-color: #16a34a;
+      background: #f0fdf4;
+    }
+    .pirls-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .pirls-badge {
+      font-size: 12.5px;
+      font-weight: 900;
+      padding: 3px 10px;
+      border-radius: 999px;
+      color: #ffffff;
+      letter-spacing: 0.3px;
+    }
+    .pirls-badge.l1 { background: #0284c7; }
+    .pirls-badge.l2 { background: #059669; }
+    .pirls-badge.l3 { background: #d97706; }
+    .pirls-badge.l4 { background: #7c3aed; }
+    .pirls-q-text {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.65;
+    }
+    .pirls-sub-tip {
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.55;
+      font-weight: 600;
+    }
+    .pirls-check-btn {
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      font-size: 12.5px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+    }
+    .pirls-check-btn:hover { border-color: #16a34a; color: #15803d; }
+    .pirls-check-btn.done {
+      background: #16a34a;
+      border-color: #15803d;
+      color: #ffffff;
+    }
+    .pirls-mini-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .pirls-mini-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      background: #ffffff;
+      padding: 8px 11px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: #1e293b;
+      font-weight: 700;
+    }
+    .pirls-mini-tag {
+      flex-shrink: 0;
+      font-size: 12px;
+      font-weight: 900;
+      color: #ffffff;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-top: 2px;
+    }
+
+
+    /* === Step 2 修辭思考挑選強化樣式 === */
+    .sentence-block-card.needs-choice {
+      border: 2px solid #f59e0b;
+      background: #fffdf7;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.12);
+    }
+    .sentence-block-card.choice-done {
+      border: 2px solid #22c55e;
+      background: #ffffff;
+    }
+    .rhetoric-status-pill {
+      font-size: 12px;
+      font-weight: 900;
+      padding: 3px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .rhetoric-status-pill.pending {
+      background: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fcd34d;
+    }
+    .rhetoric-status-pill.done {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #86efac;
+    }
+    .rhetoric-choose-prompt {
+      font-size: 14px;
+      font-weight: 800;
+      color: #92400e;
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin: 8px 0 8px 0;
+      line-height: 1.55;
+    }
+    .rhetoric-choice-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .rhetoric-choice-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      width: 100%;
+      text-align: left;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1.5px solid #cbd5e1;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    }
+    .rhetoric-choice-btn:hover {
+      border-color: #0284c7;
+      background: #f0f9ff;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(2, 132, 199, 0.12);
+    }
+    .rhetoric-choice-btn.active {
+      border-color: #16a34a;
+      background: #f0fdf4;
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25);
+    }
+    .rhetoric-choice-tag {
+      font-size: 12px;
+      font-weight: 900;
+      color: #0369a1;
+      background: #e0f2fe;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .rhetoric-choice-btn.active .rhetoric-choice-tag {
+      background: #16a34a;
+      color: #ffffff;
+    }
+    .rhetoric-choice-text {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #1e293b;
+      line-height: 1.55;
+    }
+    .step2-progress-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: 800;
+      background: #fffbeb;
+      border: 1.5px solid #fcd34d;
+      color: #92400e;
+    }
+    .step2-progress-banner.all-done {
+      background: #f0fdf4;
+      border-color: #86efac;
+      color: #15803d;
+    }
+    .step2-placeholder-box {
+      padding: 12px 14px;
+      margin: 8px 0 6px 0;
+      border: 1.5px dashed #f59e0b;
+      border-radius: 10px;
+      background: #fffbeb;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #78350f;
+      font-weight: 700;
+    }
+    .step2-compare-hint {
+      font-size: 12.5px;
+      color: #15803d;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 6px 10px;
+      margin-top: 6px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+    .preview-rhetoric-hl {
+      background: #dcfce7;
+      color: #166534;
+      font-weight: 900;
+      padding: 1px 4px;
+      border-radius: 5px;
+      border-bottom: 2px solid #22c55e;
+    }
+    .preview-rhetoric-missing {
+      background: #fee2e2;
+      color: #b91c1c;
+      font-weight: 900;
+      padding: 1px 6px;
+      border-radius: 5px;
+      border: 1px dashed #ef4444;
+    }
+    .btn-step-next.step2-locked {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+    }
+
   </style>
 </head>
 <body>
@@ -2229,7 +2483,7 @@
             <span>💡 第 2 步：組裝段落句子（開頭 ➔ 發展 ➔ 轉折 ➔ 結尾）</span>
           </div>
           <div class="step-header-desc" style="color: #1e3a8a;">
-            系統已將你在 Step 1 的【時、地、人、物、事】融入四句骨架！請點選該站專屬修辭，並可直接在句子框中「親手把不通順的地方修順」：
+            系統已將你在 Step 1 的【時、地、人、物、事】做成四句「留白骨架」囉！每句都有 3 種不同風格的修辭句，請先讀思考提問、比較哪一句最貼近你的主角，全部親手挑完才能進入 Step 3：
           </div>
         </div>
 
@@ -2243,7 +2497,7 @@
         <div class="preview-box">
           <div class="preview-title" style="display: flex; justify-content: space-between; align-items: center;">
             <span>👁️ 目前段落組裝即時預覽：</span>
-            <span style="font-size: 13.5px; color: #0284c7; font-weight: 800;">（彩色標籤表示承接自 Step 1 的要素）</span>
+            <span style="font-size: 13.5px; color: #0284c7; font-weight: 800;">（綠色底線＝你挑選的修辭句；紅框＝尚未挑選）</span>
           </div>
           <div class="preview-text" id="step2CombinedPreview"></div>
         </div>
@@ -2252,8 +2506,8 @@
           <button class="btn-step-prev" onclick="window.islandApp.goToStep(1)">
             <span>← 上一步：重選要素</span>
           </button>
-          <button class="btn-step-next" onclick="window.islandApp.goToStep(3)">
-            <span>滿意句子，前往第 3 步潤飾段落 ➔</span>
+          <button class="btn-step-next step2-locked" id="btnStep2Next" onclick="window.islandApp.goToStep(3)">
+            <span>🔒 還有 4 句尚未挑選修辭（請先挑選）</span>
           </button>
         </div>
       </div>
@@ -2302,18 +2556,19 @@
           </div>
         </div>
 
-        <!-- 輔助好詞百寶箱與同儕佳作 -->
+        <!-- PIRLS 四層次提問引導與同儕佳作觀摩（已移除好詞參考） -->
         <div class="tools-accordion">
           <div class="tool-box">
-            <div class="tool-title">
-              <span>📚 四上翰林好詞庫（點擊直接插入）</span>
+            <div class="tool-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+              <span>🧭 PIRLS 四層次提問自我檢核（必勾！邊檢查上方段落邊打勾）</span>
+              <span style="font-size: 12px; color: #b45309; background: #fef3c7; border: 1px solid #fcd34d; padding: 2px 10px; border-radius: 999px; font-weight: 900;" id="pirlsProgressBadge">⏳ 必勾檢核：0 / 4 層</span>
             </div>
-            <div class="chips-group" id="wordChips"></div>
+            <div class="pirls-panel-wrap" id="pirlsGuideBox"></div>
           </div>
 
           <div class="tool-box">
             <div class="tool-title">
-              <span>👀 四年級同儕佳作觀摩</span>
+              <span>👀 四年級同儕佳作觀摩（欣賞寫法，請勿抄襲）</span>
             </div>
             <div style="font-size: 15px; line-height: 1.7; color: #334155; background: #f8fafc; padding: 12px 14px; border-radius: 10px; border: 1px solid #e2e8f0;" id="peerExemplar"></div>
           </div>
@@ -2323,8 +2578,8 @@
           <button class="btn-step-prev" onclick="window.islandApp.goToStep(2)">
             <span>← 上一步：修改句子</span>
           </button>
-          <button class="btn-step-next finish" onclick="window.islandApp.goToStep(4)">
-            <span>段落完成！請老師蓋章審查 ➔</span>
+          <button class="btn-step-next finish step2-locked" id="btnStep3Next" onclick="window.islandApp.goToStep(4)">
+            <span>🔒 還有 4 層 PIRLS 檢核未打勾（點我跳至待勾題）</span>
           </button>
         </div>
       </div>
@@ -6044,6 +6299,18 @@
         ];
         this.step2ClozeData = [ {}, {}, {}, {} ];
         this.step2EditedSentences = [ {}, {}, {}, {} ];
+        this.step2ExplicitChosen = [
+          [false, false, false, false],
+          [false, false, false, false],
+          [false, false, false, false],
+          [false, false, false, false]
+        ];
+        this.pirlsCheckedState = [
+          [false, false, false, false],
+          [false, false, false, false],
+          [false, false, false, false],
+          [false, false, false, false]
+        ];
         this.guidedSelections = [ {}, {}, {}, {} ];
         this.ooWord = "敬佩";
         this.manuscriptMode = "horizontal";
@@ -6097,6 +6364,18 @@
             ];
             this.step2ClozeData = data.step2ClozeData || [ {}, {}, {}, {} ];
             this.step2EditedSentences = data.step2EditedSentences || [ {}, {}, {}, {} ];
+            this.step2ExplicitChosen = data.step2ExplicitChosen || [
+              [false, false, false, false],
+              [false, false, false, false],
+              [false, false, false, false],
+              [false, false, false, false]
+            ];
+            this.pirlsCheckedState = data.pirlsCheckedState || [
+              [false, false, false, false],
+              [false, false, false, false],
+              [false, false, false, false],
+              [false, false, false, false]
+            ];
             this.guidedSelections = data.guidedSelections || [ {}, {}, {}, {} ];
             this.ooWord = data.ooWord || "敬佩";
             this.manuscriptMode = data.manuscriptMode || "horizontal";
@@ -6120,6 +6399,8 @@
             elementSelections: this.elementSelections,
             step2ClozeData: this.step2ClozeData,
             step2EditedSentences: this.step2EditedSentences,
+            step2ExplicitChosen: this.step2ExplicitChosen,
+            pirlsCheckedState: this.pirlsCheckedState,
             guidedSelections: this.guidedSelections,
             ooWord: this.ooWord,
             manuscriptMode: this.manuscriptMode,
@@ -11982,19 +12263,499 @@
         );
       }
 
-      renderWordChips(index) {
-        const effData = this.getEffectiveIslandData(CURRICULUM_DATA[index]);
-        const wordWrap = document.getElementById("wordChips");
-        if (wordWrap && effData && effData.words) {
-          wordWrap.innerHTML = "";
-          effData.words.forEach(w => {
-            const btn = document.createElement("button");
-            btn.className = "chip";
-            btn.textContent = w;
-            btn.onclick = () => this.insertText(w);
-            wordWrap.appendChild(btn);
-          });
+      // PIRLS 四層次提問資料庫（對應 115 四上《我最○○的人》四座潛水站）
+      getPirlsStationQuestions(index) {
+        const oo = state.ooWord || "敬佩";
+        const bank = [
+          // 0: 起之站（對象與相遇）
+          [
+            {
+              level: 1, tag: "L1 提取訊息", cls: "l1",
+              q: `這位讓你「最${oo}的人」是誰？你們是在什麼時間、哪一個生活場景（家庭、校園、社區）認識或最常相處的？`,
+              tip: "先把具體的人稱、時間和加上形容詞的地點寫進答題區（不要只寫「教室」或「媽媽」喔！）。"
+            },
+            {
+              level: 2, tag: "L2 推論訊息", cls: "l2",
+              q: `一想到他，你腦中會浮現哪一件「招牌物品」或畫面？為什麼這個物品能代表他平常的付出？`,
+              tip: "從他常用的物品（如圍裙、眼鏡、點名簿、球拍）推論出他背後辛苦或溫暖的原因。"
+            },
+            {
+              level: 3, tag: "L3 詮釋整合", cls: "l3",
+              q: `如果把他的角色比喻成生活中的一樣東西（例如：溫暖的太陽、照亮航道的燈塔），你會怎麼把「相遇背景＋主角＋譬喻」連成通順的開頭段？`,
+              tip: "試著運用「不僅……更……」或譬喻句，把人、地、物、事整合成有畫面感的開頭！"
+            },
+            {
+              level: 4, tag: "L4 比較評估", cls: "l4",
+              q: `把寫好的開頭默念一遍：跟平淡的「我最${oo}的人是○○，他對我很好」比起來，你的開頭夠吸引讀者往下看嗎？還有哪個詞可以換得更生動？`,
+              tip: "檢查每句話是否順口、不重複字詞，且能清楚點題《我最" + oo + "的人》。"
+            }
+          ],
+          // 1: 承之站（外貌與優點）
+          [
+            {
+              level: 1, tag: "L1 提取訊息", cls: "l1",
+              q: `拿起放大鏡觀察他！他的「臉型、眼睛、髮型、體型」各自有什麼最明顯的外貌特徵？`,
+              tip: "請至少提取 2～3 項真實外貌特徵寫進答題區，並為每個部位加上形容詞！"
+            },
+            {
+              level: 2, tag: "L2 推論訊息", cls: "l2",
+              q: `他平常最常露出什麼表情？生氣或專注時神情又有什麼不同？從這些表情可以看出他有什麼個性優點？`,
+              tip: "由外在的「表情與眼神」往內推論出他的「性格優點」（例如耐心、認真、熱心、有責任感）。"
+            },
+            {
+              level: 3, tag: "L3 詮釋整合", cls: "l3",
+              q: `試著把外貌加上比喻（例如眼睛像什麼？笑容像什麼？），再順暢地從「外貌描寫」銜接到「內在優點與拿手本領」！`,
+              tip: "整合視覺摹寫＋比喻＋副詞修飾動詞（例：耐心地指導、一絲不苟地完成）。"
+            },
+            {
+              level: 4, tag: "L4 比較評估", cls: "l4",
+              q: `閉上眼睛聽一次自己寫的第二段：一個從沒見過他的人，能靠你的文字在腦中畫出他的模樣嗎？有沒有哪裡寫得太像流水帳？`,
+              tip: "檢查外貌與優點是否兼具，避免只列出長相清單而忘了寫出他的好品格。"
+            }
+          ],
+          // 2: 轉之站（難忘回憶與互動）
+          [
+            {
+              level: 1, tag: "L1 提取訊息", cls: "l1",
+              q: `你挑選哪一件最難忘的互動事件？當時是哪一天、什麼天氣、在哪裡發生？當時你遇到了什麼困難？`,
+              tip: "把事件發生的時間、地點與你當時面臨的難題（人、事、時、地、物）具體寫出來。"
+            },
+            {
+              level: 2, tag: "L2 推論訊息", cls: "l2",
+              q: `當時遇到困難的你心裡有多著急？當他伸出援手、做出那個動作並說出那句話時，為什麼會讓你瞬間感動？`,
+              tip: "寫出你從「緊張／難過」轉變為「安心／感動」的內心原因與心理落差。"
+            },
+            {
+              level: 3, tag: "L3 詮釋整合", cls: "l3",
+              q: `請用「副詞＋動詞」寫出他的細微動作，並用對話引號「……」還原他說過最暖心的一句話，將整個互動過程連成電影般的畫面！`,
+              tip: "例如：他輕輕拍拍我的肩膀，溫柔地對我說：「……」——動作＋對話一起寫最感人！"
+            },
+            {
+              level: 4, tag: "L4 比較評估", cls: "l4",
+              q: `檢查這段故事的高潮：這件事有沒有真正證明為什麼他是我「最${oo}的人」？對話引號和標點符號都放對位置了嗎？`,
+              tip: "評估事件張力是否足夠，確保沒有口語詞彙（如超扯、GG）且前後語意連貫。"
+            }
+          ],
+          // 3: 合之站（影響與感謝）
+          [
+            {
+              level: 1, tag: "L1 提取訊息", cls: "l1",
+              q: `在與他相處之後，現在的你有了哪一項具體的好改變？（例如以前不敢發言／容易放棄，現在變得如何？）`,
+              tip: "先提取「過去的自己」與「現在進步後的自己」兩項具體事實。"
+            },
+            {
+              level: 2, tag: "L2 推論訊息", cls: "l2",
+              q: `為什麼他的言行舉止能夠帶給你這麼正面的影響？你從他身上領悟到什麼受用一生的道理？`,
+              tip: "說明他的好榜樣如何一步步影響你的想法與行為習慣。"
+            },
+            {
+              level: 3, tag: "L3 詮釋整合", cls: "l3",
+              q: `如果把你收穫到的友誼、勇氣或好習慣比喻成一種「珍貴寶藏」，你會怎麼整合「成長改變＋感恩譬喻＋未來期許」來收尾？`,
+              tip: "結合開頭的呼應，寫出想對他說的感謝話語以及對自己未來的期許！"
+            },
+            {
+              level: 4, tag: "L4 比較評估", cls: "l4",
+              q: `大聲朗讀結尾段：是否已清楚呼應題目《我最${oo}的人》？有沒有跳脫平淡的「謝謝你，我喜歡你」，留下真誠動人的餘韻？`,
+              tip: "最後檢查全段標點、錯別字與情感真誠度，準備前往大白鯊神殿領取寶藏！"
+            }
+          ]
+        ];
+        return bank[index] || bank[0];
+      }
+
+      // 依「潛水站 × 要素 × 句型 × 空格」量身打造專屬 PIRLS 四層次提問（全 46 格 100% 獨立對應，絕不重複）
+      buildPirlsBlankQuestions(islandIdx, key, patternId, b, curPattern) {
+        const oo = state.ooWord || "敬佩";
+        const lookupKey = `${islandIdx}_${key}_${patternId}_${b.key}`;
+        const EXACT_PIRLS = {
+          // ==================== STATION 0：起之站・珊瑚礁觀察艙 ====================
+          "0_time_p1_part1": [
+            "回想你升上四年級之前的成長歷程，這段歲月裡讓你印象最深刻的是快樂、忙碌、精彩還是漫長？",
+            "為什麼你會用這種感覺來形容這段成長時間？背後是不是發生過許多有笑有淚的事？",
+            "請選一個生動的形容詞填進「在【＿＿】的……中」，讓讀者一開頭就感受到時間的氣氛！",
+            "念一遍「在【你的答案】的……中」：這個形容詞會不會太籠統（如「很好」）？換成更有畫面感的詞會不會更吸引人？"
+          ],
+          "0_time_p1_part2": [
+            "你要介紹的這段時間有多長？是整個童年、求學階段，還是每天的校園生活？",
+            "把一段時間比喻成「旅途、時光、歲月」，和只寫「日子」給讀者的感覺有什麼不同？",
+            "將剛想好的時間名詞接在前面的形容詞後面，組成「在……的【＿＿】中」的流暢開頭！",
+            "檢查整個句型「在……的……中」：前後詞語搭配自然嗎？有沒有重複出現相同的字？"
+          ],
+          "0_time_p2_part1": [
+            "閉上眼回想你「第一次認識他」或「開始天天相處」的那一天，當時發生了什麼事？",
+            "那天是什麼契機讓你們開始變熟的？（例如分班進教室、搬來當鄰居、參加社團、還是出生開始？）",
+            "請用一個完整的短句寫出那天的關鍵畫面，套進「從【＿＿】的那天起」！",
+            "默念「從【你的答案】的那天起」：只寫「開學」太短了，有沒有加上動作或細節讓讀者看到當天的場景？"
+          ],
+          "0_place_p1_part1": [
+            "你和這位主角最常一起待的地方，走進去時聽得到什麼聲音、看得到什麼光線或擺設？",
+            "這些聲音和畫面，讓這個空間帶給你什麼樣的整體氣氛？（溫暖、書香、熱鬧、充滿陽光？）",
+            "把空間的氣氛濃縮成一個具體的形容詞，填入「在【＿＿】的……裡」！",
+            "對照檢查：你填的形容詞真的能形容這個地點嗎？（避免只寫「大大的」「好玩的」這種空泛詞喔！）"
+          ],
+          "0_place_p1_part2": [
+            "你們最常碰面的具體場所是哪裡？（廚房、客廳、自然教室、操場跑道還是社區公園？）",
+            "為什麼你們總會在這個地點一起相處？他在那裡通常都在忙些什麼？",
+            "把地點名稱接在形容詞後面，完成「在【形容詞】的【＿＿】裡」，不要只丟一個兩字名詞！",
+            "整句念一遍：讀者能立刻透過「形容詞＋地點」在腦中看見你們相處的舞台嗎？"
+          ],
+          "0_place_p2_part1": [
+            "想想一天當中，你最常在「哪一個」地方看見他忙碌或陪伴你的身影？",
+            "這個地方通常是在什麼時候出現的？（例如清晨起床時、上課時、還是放學後？）",
+            "請在地點前面加上一個修飾語（形容詞＋地點），填入「無論是在【＿＿】，還是在……」的第一個場景！",
+            "檢查一下：不要只寫「家裡」或「教室」，加上「忙碌的」「充滿笑聲的」是不是立刻有畫面多了？"
+          ],
+          "0_place_p2_part2": [
+            "除了第一個地點之外，還有哪「另一個」不同的場所也常常能看見他？",
+            "這兩個地方（地點一與地點二）擺在一起，是不是能展現出他「無時無刻、到處都在用心」的感覺？",
+            "同樣用「形容詞＋地點名詞」填入「還是在【＿＿】」，與前一個場景形成對稱呼應！",
+            "連起來念「無論是在……，還是在……」：兩個地點有沒有太重複？對比起來夠不夠鮮明？"
+          ],
+          "0_person_p1_part1": [
+            "提起這位令你最" + oo + "的人，他平常待人處事最鮮明的個性特徵是什麼？",
+            "從你觀察到他的互動中，你推論出他內心最棒的特質是什麼？（溫柔、堅強、幽默、負責、熱心？）",
+            "用 2～6 字的個性形容詞填入「就是【＿＿】的……」，讓主角未見其人先聞其性！",
+            "評估你的用詞：如果只寫「很好的」，讀者看不出特色；改成兩個特質並排（如「溫柔又堅強」）是不是更立體？"
+          ],
+          "0_person_p1_part2": [
+            "你決定寫的主角究竟是誰？（家人、老師、同學、校工阿姨、鄰居，還是某位激勵你的名人？）",
+            "他和你的關係有多親近？用哪一種稱呼最能表現出你對他的" + oo + "之情？",
+            "將準確的人物稱謂填入「就是……的【＿＿】」，正式向讀者揭曉主角！",
+            "檢視全句「我最敬重與喜愛的人，就是……的……」：主角身分清楚明確、沒有語病或漏字嗎？"
+          ],
+          "0_person_p2_part1": [
+            "這位主角是屬於你生活圈中的哪一個群體？（身邊的家人、教過我的師長、班上同學，還是鄰居？）",
+            "為什麼先提到「整個群體」，再引出「其中最特別的他」，能讓主角顯得更突出？",
+            "填入包含修飾語的群體名詞，完成「在眾多【＿＿】中，最令我難忘的是……」！",
+            "念一次「在眾多【你的答案】中」：這個群體範圍有比主角本人更大、邏輯合理嗎？"
+          ],
+          "0_person_p2_part2": [
+            "在剛剛那個群體裡，你最想拉到聚光燈下的「那一位」主角是誰？",
+            "可以在稱呼前面加上一個他最讓人印象深刻的短特徵（如笑口常開、熱心助人）嗎？",
+            "把「特徵形容詞＋人物稱謂」填入「最令我難忘的是【＿＿】」，讓主角閃亮出場！",
+            "把「在眾多……中，最令我難忘的是……」連念一次：前後範圍有完美對應、語氣順暢嗎？"
+          ],
+          "0_object_p1_part1": [
+            "一提到他，你腦海裡會立刻浮現哪一樣「他天天用、最常帶在身邊」的招牌物品？",
+            "為什麼這個物品只會讓你想到他，而不是別人？（上面有沒有使用痕跡、特別的顏色或氣味？）",
+            "請用「形容詞／細節＋物品名詞」填入「每當看到【＿＿】」，讓物品像特寫鏡頭一樣清晰！",
+            "檢查一下：只寫「眼鏡」或「圍裙」太普通，加上「洗得發白的」「厚厚的黑框」是不是更有感情？"
+          ],
+          "0_object_p1_part2": [
+            "當你盯著那個招牌物品時，腦海裡重播的是他正在做什麼動作的畫面？",
+            "從那個背影或神情裡，你能感受到他當下有多專注、辛苦或溫柔？",
+            "用「他的＋形容詞＋模樣／背影／笑臉」填入「我總會想起【＿＿】」，把物品和人物連結起來！",
+            "連念「每當看到……，我總會想起……」：物品和後面的畫面有合理關聯嗎？（例：圍裙➔廚房忙碌背影）"
+          ],
+          "0_event_p1_part1": [
+            "平常日子裡，他為你、家人或班上同學做過最多、最常做的具體事情是什麼？",
+            "他做這些事時都是用什麼態度？（細心地、耐心地、默默地、熱心地？）",
+            "請用「副詞＋動詞＋受詞」的完整動作片語，填入「他不僅【＿＿】，更……」的前半段！",
+            "關鍵檢查：句型是「他不僅……」，主詞是「他」，所以空格開頭要是「他做的動作」，不要漏掉動詞喔！"
+          ],
+          "0_event_p1_part2": [
+            "除了前面寫的日常付出，他對你還有哪一層「更深、更重要」的正面影響或精神示範？",
+            "「不僅……，更……」是遞進句型，後半段應該要比前半段的影響更上一層樓，你想強調哪一點？",
+            "用「動詞開頭的片語」（如「成為我……」「教會我……」「像燈塔一樣指引我……」）填入「更【＿＿】」！",
+            "一定要大聲念一遍「他不僅……，更……」：主詞都是「他」嗎？有沒有不小心寫成「更做一個被尊重的人」這種主詞跳掉、語句卡頓的狀況？"
+          ],
+
+          // ==================== STATION 1：承之站・海龜外貌與優點站 ====================
+          "1_time_p1_part1": [
+            "平常沒有突發狀況時，他大多數時候的脾氣、說話語氣或表情看起來是怎樣的？",
+            "他平時的這個樣子，讓身邊的人（或班上同學）覺得好親近嗎？",
+            "填入一個「描述他平時狀態的動詞／形容詞片語」，完成「平常他總是【＿＿】」！",
+            "默念檢查：「平常他總是……」後面不要再重複寫「總是」或「平常」，語氣才會乾淨利落！"
+          ],
+          "1_time_p1_part2": [
+            "跟平常相反，在什麼「特殊時刻」（例如大家吵鬧、要比賽、你犯錯或他專注工作）他的神態會突然轉變？",
+            "為什麼偏偏在這個時刻，他會收起平時的模樣、露出特別專注或威嚴的神情？",
+            "用一個具體情境短句填入「但當【＿＿】的時候」，製造戲劇反差感！",
+            "前後對照念一次「平常他總是……，但當……的時候」：有沒有明顯的對比張力，引出後面的外貌神態？"
+          ],
+          "1_place_p1_part1": [
+            "你仔細觀察他外貌的時候，他正站在或坐在哪一個光線清楚的位置？（講臺上、燈光下、操場中央？）",
+            "那個位置的光線（陽光灑落、明亮檯燈、微風吹拂）會讓他的身影看起來更有精神嗎？",
+            "用「環境描寫＋位置名詞」填入「站在【＿＿】的他」，幫人物打上一盞聚光燈！",
+            "檢查是否過短：如果只寫「講臺上」略顯單薄，加上「陽光灑落的」「燈光明亮的」會不會更像電影畫面？"
+          ],
+          "1_person_p1_part1": [
+            "先看課本人物觀察第一項【臉型】：他的臉看起來像國字、圓圓的蘋果、瓜子，還是瘦長清秀？",
+            "他的臉色和氣色如何？（紅潤、慈祥、曬得黝黑、白皙？）這反映了他什麼樣的生活型態？",
+            "把氣色形容詞＋臉型形狀填入「在他【＿＿】的臉上」，不要只填一個字！",
+            "念一遍「在他【你的答案】的臉上」：如果已經有「的臉上」，格子裡最後就不要再多寫一個「臉」字重複喔！"
+          ],
+          "1_person_p1_part2": [
+            "接著看人物觀察第二項【五官—眼睛】：他的眼睛是大大的、圓圓的、細長的，還是戴著眼鏡？",
+            "當他專注、開心或溫柔看著你時，他的眼神會散發出什麼感覺？（像星星發亮、像彎月、充滿智慧？）",
+            "運用具體形容詞或譬喻，填入「有著一雙【＿＿】的眼睛」，讓靈魂之窗活起來！",
+            "閉眼想像一下：讀者讀到「一雙【你的答案】的眼睛」，腦中能立刻閃出他的眼神特寫嗎？"
+          ],
+          "1_person_p1_part3": [
+            "再看人物觀察第三項【髮型】：他的頭髮是短髮、長髮、捲髮、馬尾，顏色是烏黑還是夾雜幾絲銀白？",
+            "這個髮型讓他整個人看起來是俐落有精神、溫柔優雅，還是歷經歲月的辛勞？",
+            "用「質感形容詞＋頭髮長度／造型」填入「配上一頭【＿＿】」（例：烏黑亮麗的長髮、俐落整齊的短髮）！",
+            "檢查搭配：「一頭」後面一定要有「髮」或「頭髮」結尾，念念看順不順口！"
+          ],
+          "1_person_p1_part4": [
+            "最後看人物觀察第四項【體型】：他的身高與體格看起來是高大健壯、高挑挺拔、嬌小靈活，還是結實有力？",
+            "他的身材體型帶給你什麼感受？（像巨人一樣有安全感？動作敏捷像小鳥？）",
+            "填入生動的體型形容詞完成「身材【＿＿】」，把整個人物從頭到腳立體勾勒出來！",
+            "整句連起來大聲讀一遍（臉型➔眼睛➔髮型➔體型）：這四格之間有沒有互相矛盾或語氣卡住的地方？"
+          ],
+          "1_object_p1_part1": [
+            "看人物觀察第五項【表情】：他臉上出現頻率最高、最招牌的表情是什麼？（微笑、大笑、專注皺眉？）",
+            "這種笑容或神情像大自然裡的什麼東西？（例如和煦的春風、冬天的暖陽、慈祥的月光？）",
+            "用「形容詞／譬喻＋表情名詞」填入「他的臉上總是掛著【＿＿】」！",
+            "評估畫面感：不要只寫「笑容」二字，加上比喻或形容詞後是不是溫暖生動十倍？"
+          ],
+          "1_object_p1_part2": [
+            "當你看到他露出前面那種招牌表情時，你的身體或心裡第一個反應是什麼？",
+            "為什麼只要他這樣笑（或擺出這個表情），就能立刻改變你或大家的氣氛？",
+            "填入描寫內心感受的成語或形容詞，完成「讓人覺得【＿＿】」！",
+            "連讀「他的臉上總是掛著……，讓人覺得……」：前因（表情）和後果（感受）有緊密呼應嗎？"
+          ],
+          "1_event_p1_part1": [
+            "看完外貌，來想他的內在【第一個大優點】：他對待工作、課業或家事最讓人佩服的態度是什麼？",
+            "從哪些生活小細節，讓你確定他真的具備這項優點？",
+            "填入一個精準的優點形容詞（建議四字成語或雙詞），填入「更是既【＿＿】又……」的第一格！",
+            "檢查一下：不要只寫「很好」「很棒」這種萬用空話，換成具體品格詞才顯得有觀察力！"
+          ],
+          "1_event_p1_part2": [
+            "再想他的【第二個大優點】：除了第一項優點外，他在對待「別人」或面對「困難」時還有什麼好特質？",
+            "這兩項優點（第一格與第二格）加在一起，是不是正好解釋了為什麼你這麼" + oo + "他？",
+            "填入第二個與前格不重複的優點詞，完成「既……又【＿＿】」！",
+            "連念整句「他不只外表令人印象深刻，在個性與能力上更是既……又……」：兩個優點有互補且念起來鏗鏘有力嗎？"
+          ],
+
+          // ==================== STATION 2：轉之站・沉船回憶互動站 ====================
+          "2_time_p1_part1": [
+            "選出你和他之間「最難忘的那一件事」，回想那一天是什麼特別的日子，或當時的天氣如何？",
+            "那天發生的事情或天氣（傾盆大雨、剛開學、成績公布、半夜發燒）如何襯托出當時緊張或低落的心情？",
+            "用具體的「事件／天氣形容片語」填入「記得在【＿＿】的那一天」，一秒把讀者拉回現場！",
+            "默念「記得在【你的答案】的那一天」：有沒有把時間點與當天的氛圍都定格下來？"
+          ],
+          "2_time_p2_part1": [
+            "直接切入衝突瞬間！有一次，你正好碰到什麼讓你措手不及、心急如焚的突發狀況？",
+            "當時為什麼會發生這個小危機？（不小心走錯路、忘帶雨傘、題目卡住、跌倒受傷？）",
+            "用「我＋動作／困境」的短句填入「有一次，正當【＿＿】時」，營造故事張力！",
+            "檢查句型銜接：「正當……時」裡面不需要再重複寫「的時候」，念起來才俐落順口！"
+          ],
+          "2_place_p1_part1": [
+            "事件發生的那一刻，你站著的地方周遭氣氛是安靜冷清、陌生空蕩、昏暗陰沉，還是人來人往卻沒人幫你？",
+            "這種環境氣氛怎麼放大了你當時的緊張、害怕或無助感？",
+            "選一個能烘托心情的環境形容詞填入「在【＿＿】的……」！",
+            "反思一下：這個環境形容詞跟你當時慌張的心情搭得起來嗎？"
+          ],
+          "2_place_p1_part2": [
+            "這場最難忘的互動，精確來說是發生在什麼具體位置？（走廊轉角、校門口屋簷下、教室座位旁、書桌前？）",
+            "把地點縮得越具體（不是只寫「學校」，而是寫「走廊轉角」），鏡頭是不是越有電影感？",
+            "把精確的現場地點填入「在……的【＿＿】」，完成事件發生的舞台！",
+            "連念「在【氣氛】的【地點】」：讀者能不能一秒想像出當時的光線、距離和場景？"
+          ],
+          "2_person_p1_part1": [
+            "當時被困在難題裡的你，身體有什麼反應、表情看起來多著急？（冒汗、快哭出來、呆站原地、抓頭？）",
+            "你那時候心裡在擔心什麼，讓你急得像什麼一樣？（例：熱鍋上的螞蟻？）",
+            "用生動的成語或動作神態片語填入「正當我【＿＿】時」，把焦急的畫面寫活！",
+            "檢查看看：不要只寫「很緊張」三個字，換成看得出動作或比喻的描寫是不是更有張力？"
+          ],
+          "2_person_p1_part2": [
+            "就在最無助的時刻，他出現了！你第一眼看到他走過來時，臉上帶著什麼神情或手裡拿著什麼？",
+            "他登場的樣子，為什麼能瞬間給你一種「救星來了」的安心感？",
+            "用「神情／動作形容詞＋他」填入「幸好【＿＿】及時出現」！",
+            "前後連讀「正當我……時，幸好……及時出現」：有沒有寫出「慌張的我」與「從容溫暖的他」的強烈對比？"
+          ],
+          "2_object_p1_part1": [
+            "他走過來之後，第一時間做了什麼具體動作，或遞給你哪一樣關鍵物品？（牽手、撐傘、遞毛巾、在紙上畫圖？）",
+            "這個細微的動作（例：把大傘往我這邊傾斜、輕輕拍肩膀），藏著他什麼樣的體貼？",
+            "請用「副詞＋動詞＋關鍵物品」填入「他【＿＿】，並溫柔地對我說」，讓動作有溫度！",
+            "檢查詞組結構：有沒有加上「輕輕」「溫柔地」「二話不說」等副詞，避免只寫乾巴巴的「幫我」？"
+          ],
+          "2_object_p1_part2": [
+            "當時他看著你，親口對你說了哪一句最讓你安心、至今依然忘不了的話？",
+            "這句話的語氣是鼓勵、安慰、開玩笑逗你笑，還是耐心地教你怎麼做？",
+            "直接寫出他當時說的原話，填入「『【＿＿】』」對話引號中（記得在句尾加上合適的標點如！或。）！",
+            "大聲把這句對話念出來：像不像真人現場說的話？有沒有因為多了引號對話，整段瞬間活了起來？"
+          ],
+          "2_event_p1_part1": [
+            "回顧整個幫忙的過程，他最打動你的核心舉動是什麼？（耐心陪伴、及時援手、不厭其煩的教導？）",
+            "如果那時候沒有他這樣做，結果可能會變得很糟，這讓你多麼慶幸？",
+            "把他的暖心行為濃縮成一個名詞片語，填入「他的【＿＿】讓我頓時……」！",
+            "檢查詞性：「他的【＿＿】」後面要接名詞或名詞化動作（如「耐心陪伴」「及時幫助」），念起來才通順！"
+          ],
+          "2_event_p1_part2": [
+            "聽完他的話、接受他的幫助之後，你的心情從原本的慌張／難過，立刻發生了什麼 180 度大轉變？",
+            "你的表情或身體有什麼放鬆的表現？（鬆了一口氣、破涕為笑、重拾自信？）",
+            "用一個精準的成語或心情轉變動詞填入「讓我頓時【＿＿】」！",
+            "確認因果：這個轉變有沒有和前面「焦急無助」的狀態形成明顯的反差？"
+          ],
+          "2_event_p1_part3": [
+            "那一刻你的心裡一定非常溫暖感動，這種看不見的感受像什麼具體事物？（冬日陽光、甜甜暖流、微風？）",
+            "為什麼用「一股【比喻物】」來形容內心的感動，會比只寫「我很感動」更動人？",
+            "發揮想像力填入一個溫暖的名詞比喻，完成「心中湧起一股【＿＿】」！",
+            "連讀整句「他的……讓我頓時……，心中湧起一股……」：是不是三步遞進、情感飽滿又順口？"
+          ],
+
+          // ==================== STATION 3：合之站・深海珍珠影響站 ====================
+          "3_time_p1_part1": [
+            "你和這位主角一路相處下來，這段日子有多久、包含了哪些日常片段？（春夏秋冬、這幾年、點點滴滴？）",
+            "回頭望向這段相處的時間，對你而言它是充實、珍貴還是充滿回憶的？",
+            "填入「形容詞＋時間名詞」完成「在與他相處的【＿＿】裡」，自然開啟結尾回望！",
+            "默念「在與他相處的【你的答案】裡」：語氣是否溫柔真誠、適合用來收束整篇文章？"
+          ],
+          "3_place_p1_part1": [
+            "現在日常生活中，當你看到什麼紀念物或熟悉場景（合照、卡片、課本、操場），思念和敬意就會立刻湧上心頭？",
+            "這個物品或場景和你前面寫的故事有什麼美好的連結？",
+            "填入一個帶有細節形容的紀念物品或場景，完成「每當我看著【＿＿】」！",
+            "檢查畫面感：加上形容詞（如「書架上那張快樂的合照」「夕陽照耀的操場」），讓結尾像電影淡出畫面一樣有餘韻！"
+          ],
+          "3_place_p1_part2": [
+            "文章快結束了！別忘了要再次「呼應題目」《我最" + oo + "的人》，你會怎麼尊稱或形容他？",
+            "經過前三段的介紹、外貌與回憶鋪陳，現在再次點題是不是更有說服力？",
+            "填入能呼應題目的稱呼（例：最令我" + oo + "的好榜樣、我最" + oo + "的貴人），完成「我就會不禁想起這位【＿＿】」！",
+            "確認點題：你的答案裡有沒有把題目的核心感受（「" + oo + "」）自然地呼應出來？"
+          ],
+          "3_person_p1_part1": [
+            "坦白回想還沒受到他影響之前的自己：你以前有什麼小缺點或不擅長的地方？（害羞、容易放棄、粗心、怕生？）",
+            "那時候的你遇到困難時通常會怎麼反應？為什麼這個缺點以前困擾著你？",
+            "用具體的形容詞寫出「過去的自己」，填入「原本【＿＿】的我」！",
+            "檢查前後對照：把過去的弱點寫真實，待會寫出「蛻變後的自己」時成長感才會強烈！"
+          ],
+          "3_person_p1_part2": [
+            "受到他的陪伴與身教影響後，現在的你進步成什麼模樣？開始會主動做哪些以前不敢做的事？",
+            "這種好改變具體體現在你日常的哪個行動上？（敢舉手發言、冷靜解題、主動幫同學？）",
+            "用「動詞片語」具體寫出你的進步，完成「開始【＿＿】」！",
+            "連念「因為他的影響，原本……的我，開始……」：前後是不是清楚展現出「過去 ➔ 現在」的正向蛻變？"
+          ],
+          "3_object_p1_part1": [
+            "從他身上，你學到最重要的一項「本領、處事態度或做人道理」是什麼？",
+            "這項道理或習慣，為什麼對你未來的生活和學習都非常有幫助？",
+            "用明確的「名詞／名詞片語」填入「他不僅教會了我【＿＿】」！",
+            "語順檢查：句型前面已經有動詞「教會了我」，所以格子裡要填「學到的道理或態度」（名詞片語），不要再重複寫「教會我」喔！"
+          ],
+          "3_object_p1_part2": [
+            "除了學會道理，這段相處還送給你哪一份看不見卻超珍貴的「心靈寶藏」？（真摯友誼、滿滿勇氣、溫暖回憶？）",
+            "為什麼你會覺得這份無形的收穫比金錢或玩具還要寶貴？",
+            "填入「形容詞＋收穫名詞」，完成「更讓我得到了【＿＿】」！",
+            "大聲連讀「他不僅教會了我……，更讓我得到了……」：兩格都是名詞收穫，接起來是不是極度順口、絕不卡頓？"
+          ],
+          "3_event_p1_part1": [
+            "既然這麼" + oo + "他，除了口頭說謝謝之外，未來你打算用什麼「實際行動」向他看齊？",
+            "你最想把從他身上得到的哪一份溫暖或好習慣，也傳遞給身邊的其他人？",
+            "用「動詞開頭的行動期許片語」填入「未來我也要【＿＿】」！",
+            "檢查行動力：比起空泛的「更努力」，具體寫出「把這份愛傳遞下去」「認真對待每一天」是不是更真誠動人？"
+          ],
+          "3_event_p1_part2": [
+            "閉上眼描繪長大後的自己：你期許自己未來能「成為」一個什麼樣的人？",
+            "如果能用一個溫暖的比喻（如小太陽、指引別人的燈塔、值得信賴的好榜樣）來形容未來的自己，會是什麼？",
+            "用「一個＋形容詞＋人物角色／比喻」填入「成為【＿＿】」，為整篇作文畫下閃亮句點！",
+            "整句大聲朗讀一遍：「我想真誠地對您說聲：『謝謝您！』未來我也要……，成為……。」——情感真摯、沒有錯字或漏字就滿分過關囉！"
+          ]
+        };
+
+        const exact = EXACT_PIRLS[lookupKey];
+        if (exact) {
+          return [
+            { tag: "L1 提取訊息", bg: "#0284c7", text: exact[0] },
+            { tag: "L2 推論訊息", bg: "#059669", text: exact[1] },
+            { tag: "L3 詮釋整合", bg: "#d97706", text: exact[2] },
+            { tag: "L4 比較評估", bg: "#7c3aed", text: exact[3] }
+          ];
         }
+
+        // 安全備援（若日後新增其他句型也能依句型名稱與空格詞性動態生成）
+        const patName = (curPattern && curPattern.name) || "";
+        const label = b.label || "這個空格";
+        const pos = b.pos || "詞語";
+        return [
+          { tag: "L1 提取訊息", bg: "#0284c7", text: b.thinkingPrompt || `配合「${patName}」，回想生活中關於【${label}】的具體事實線索。` },
+          { tag: "L2 推論訊息", bg: "#059669", text: `想想為什麼在「${patName}」裡要寫到【${label}】？它背後傳達了什麼感受或原因？` },
+          { tag: "L3 詮釋整合", bg: "#d97706", text: `請依照【${pos}】的要求，加上修飾語把答案完整套進「${(curPattern && curPattern.template) || patName}」中！` },
+          { tag: "L4 比較評估", bg: "#7c3aed", text: `把你填好的【${label}】放進整句默念一次：語句順口、沒有重複字或過短敷衍嗎？` }
+        ];
+      }
+
+      renderWordChips(index) {
+        const box = document.getElementById("pirlsGuideBox");
+        if (!box) return;
+        const questions = this.getPirlsStationQuestions(index);
+        if (!state.pirlsCheckedState) {
+          state.pirlsCheckedState = [
+            [false, false, false, false],
+            [false, false, false, false],
+            [false, false, false, false],
+            [false, false, false, false]
+          ];
+        }
+        if (!state.pirlsCheckedState[index]) {
+          state.pirlsCheckedState[index] = [false, false, false, false];
+        }
+        const checkedArr = state.pirlsCheckedState[index];
+
+        box.innerHTML = "";
+        questions.forEach((item, qIdx) => {
+          const isDone = !!checkedArr[qIdx];
+          const card = document.createElement("div");
+          card.id = `pirlsCard_${qIdx}`;
+          card.tabIndex = -1;
+          card.className = `pirls-card level-${item.level} ${isDone ? "checked-done" : ""}`;
+          card.innerHTML = `
+            <div class="pirls-card-head">
+              <span class="pirls-badge ${item.cls}">${item.tag}</span>
+              <button type="button" class="pirls-check-btn ${isDone ? "done" : ""}" onclick="window.islandApp.togglePirlsCheck(${index}, ${qIdx})">
+                ${isDone ? "✅ 已檢查並打勾" : "⬜ 必勾・檢查後打勾"}
+              </button>
+            </div>
+            <div class="pirls-q-text">${item.q}</div>
+            <div class="pirls-sub-tip">💡 寫作提示：${item.tip}</div>
+          `;
+          box.appendChild(card);
+        });
+
+        const doneCount = checkedArr.filter(Boolean).length;
+        const remaining = questions.length - doneCount;
+        const badge = document.getElementById("pirlsProgressBadge");
+        if (badge) {
+          if (remaining === 0) {
+            badge.textContent = `✅ 已完成 4 / 4 層 PIRLS 檢核！`;
+            badge.style.color = "#15803d";
+            badge.style.background = "#dcfce7";
+            badge.style.borderColor = "#86efac";
+          } else {
+            badge.textContent = `⏳ 必勾檢核：${doneCount} / 4 層（尚缺 ${remaining} 層）`;
+            badge.style.color = "#b45309";
+            badge.style.background = "#fef3c7";
+            badge.style.borderColor = "#fcd34d";
+          }
+        }
+
+        const nextBtn = document.getElementById("btnStep3Next");
+        if (nextBtn) {
+          if (remaining === 0) {
+            nextBtn.classList.remove("step2-locked");
+            nextBtn.innerHTML = `<span>✅ 段落與四層檢核完成！請老師蓋章審查 ➔</span>`;
+          } else {
+            nextBtn.classList.add("step2-locked");
+            nextBtn.innerHTML = `<span>🔒 還有 ${remaining} 層 PIRLS 檢核未打勾（點我跳至待勾題）</span>`;
+          }
+        }
+      }
+
+      togglePirlsCheck(islandIdx, qIdx) {
+        if (!state.pirlsCheckedState) {
+          state.pirlsCheckedState = [
+            [false, false, false, false],
+            [false, false, false, false],
+            [false, false, false, false],
+            [false, false, false, false]
+          ];
+        }
+        if (!state.pirlsCheckedState[islandIdx]) {
+          state.pirlsCheckedState[islandIdx] = [false, false, false, false];
+        }
+        state.pirlsCheckedState[islandIdx][qIdx] = !state.pirlsCheckedState[islandIdx][qIdx];
+        state.saveState();
+        this.renderWordChips(islandIdx);
       }
 
       // 國小常見偷懶短詞即時追問提示庫
@@ -12122,6 +12883,49 @@
         return true;
       }
 
+      validateStep2Required() {
+        return true; // 🧪 檢核副本：略過 Step 2 修辭必選限制，自由切換步驟檢查
+      }
+      _origValidateStep2Required() {
+        const islandIdx = this.currentIsland;
+        const data = CURRICULUM_DATA[islandIdx];
+        if (!data || islandIdx >= 4) return true;
+        if (!state.step2ExplicitChosen || !state.step2ExplicitChosen[islandIdx]) {
+          state.step2ExplicitChosen = [
+            [false, false, false, false],
+            [false, false, false, false],
+            [false, false, false, false],
+            [false, false, false, false]
+          ];
+        }
+        const chosenFlags = state.step2ExplicitChosen[islandIdx];
+        const editedMap = (state.step2EditedSentences && state.step2EditedSentences[islandIdx]) || {};
+        const missingIndices = [];
+        for (let sIdx = 0; sIdx < 4; sIdx++) {
+          const isPicked = !!chosenFlags[sIdx] || !!(editedMap[sIdx] && editedMap[sIdx].trim());
+          if (!isPicked) missingIndices.push(sIdx);
+        }
+        if (missingIndices.length > 0) {
+          const firstMissing = missingIndices[0];
+          if ((this.currentStep || 1) < 2) {
+            this.goToStep(2, { skipValidation: true });
+            const cardEl = document.getElementById(`step2Card_${firstMissing}`);
+            this.highlightMissingField(
+              cardEl,
+              `🧭 請先在 Step 2 思考比較並挑選 4 句修辭（還有 ${missingIndices.length} 句未選），才能前往 Step 3 潤飾喔！`
+            );
+            return false;
+          }
+          const cardEl = document.getElementById(`step2Card_${firstMissing}`);
+          this.highlightMissingField(
+            cardEl,
+            `⚠️ 第 ${firstMissing + 1} 句還沒挑選修辭句喔！請先閱讀思考提問並點選最適合你主角的修辭（尚缺 ${missingIndices.length} 句）！`
+          );
+          return false;
+        }
+        return true;
+      }
+
       validateStep3Required() {
         return true; // 🧪 檢核副本：略過段落必填限制
       }
@@ -12136,11 +12940,16 @@
           const el = document.getElementById(`masterInput_${k}`);
           if (el) el.value = opt;
         });
+        if (!state.step2ExplicitChosen) state.step2ExplicitChosen = [[false,false,false,false],[false,false,false,false],[false,false,false,false],[false,false,false,false]];
+        state.step2ExplicitChosen[idx] = [true, true, true, true];
+        if (!state.pirlsCheckedState) state.pirlsCheckedState = [[false,false,false,false],[false,false,false,false],[false,false,false,false],[false,false,false,false]];
+        state.pirlsCheckedState[idx] = [true, true, true, true];
+        if (state.step2EditedSentences) state.step2EditedSentences[idx] = {};
         if (d.peer) state.paragraphs[idx] = d.peer.replace(/^[「」]|[「」]$/g, '');
         state.saveState(true);
         this.renderStep2Sentences(d);
         this.renderStep3Editor(d);
-        this.showToast(`⚡ 已一鍵填入【${d.shortName}】示範作答，可直接檢視 Step 2 與大白鯊神殿！`);
+        this.showToast(`⚡ 已一鍵填入【${d.shortName}】示範作答、修辭挑選與 PIRLS 檢核！`);
       }
       _origValidateStep3Required() {
         const islandIdx = this.currentIsland;
@@ -12160,6 +12969,31 @@
           );
           return false;
         }
+        // 強制檢核：PIRLS 四層次自我檢核必須 4 層全部打勾，才能送出給老師蓋章！
+        if (!state.pirlsCheckedState) {
+          state.pirlsCheckedState = [
+            [false, false, false, false],
+            [false, false, false, false],
+            [false, false, false, false],
+            [false, false, false, false]
+          ];
+        }
+        const checkedArr = state.pirlsCheckedState[islandIdx] || [false, false, false, false];
+        const questions = this.getPirlsStationQuestions(islandIdx);
+        const missingIdx = [];
+        for (let qIdx = 0; qIdx < questions.length; qIdx++) {
+          if (!checkedArr[qIdx]) missingIdx.push(qIdx);
+        }
+        if (missingIdx.length > 0) {
+          const firstMissing = missingIdx[0];
+          const levelTag = (questions[firstMissing] && questions[firstMissing].tag) || `第 ${firstMissing + 1} 層`;
+          const cardEl = document.getElementById(`pirlsCard_${firstMissing}`);
+          this.highlightMissingField(
+            cardEl,
+            `⚠️ 請先完成【${levelTag}】自我檢核並點選「必勾・檢查後打勾」（還有 ${missingIdx.length} 層未勾選），才能前往老師蓋章喔！`
+          );
+          return false;
+        }
         return true;
       }
 
@@ -12170,6 +13004,9 @@
         const { skipValidation = false } = opts;
         if (!skipValidation && step > (this.currentStep || 1)) {
           if (step >= 2 && !this.validateStep1Required()) {
+            return false;
+          }
+          if (step >= 3 && !this.validateStep2Required()) {
             return false;
           }
           if (step >= 4) {
@@ -12642,11 +13479,15 @@
             <div style="font-size: 17px; font-weight: 700; color: #78350f; line-height: 1.75;">
               真正的寫作大師在動筆前必先「沉思審題」！請閉上雙眼回想當時的情境，依據每一欄的「審題啟發問題」填入鮮活生動的詞句，為後續段落注入文學張力：
             </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; background: rgba(255,255,255,0.7); padding: 12px 16px; border-radius: 12px;" oncopy="window.islandApp.blockCopy(event)" oncut="window.islandApp.blockCopy(event)" oncontextmenu="window.islandApp.blockCopy(event)" ondragstart="window.islandApp.blockCopy(event)">
-              <span style="font-size: 16px; color: #b45309; font-weight: 900;">💎 推薦四上高級成語（僅供閱讀激發靈感，請自己動腦親手打字）：</span>
-              ${data.words.map(w => `<span class="reference-word-badge" style="font-size: 16px; padding: 6px 14px; font-weight: 800;" onclick="window.islandApp.onReferenceChipClick('${w}')">📖 ${w}</span>`).join("")}
-              <div class="no-copy-notice" style="width: 100%;">
-                <span>🔒 提示：高級成語僅供閱讀思考，不可點擊貼上或複製，請親自動腦輸入！</span>
+            <div style="margin-top: 10px; background: rgba(255,255,255,0.85); padding: 12px 16px; border-radius: 12px; border: 1px solid #fde68a;">
+              <div style="font-size: 16px; color: #92400e; font-weight: 900; margin-bottom: 8px;">🧭 PIRLS 四層次深層審題羅盤（請依序思考，自己寫出最獨特的答案）：</div>
+              <div class="pirls-mini-list">
+                ${this.getPirlsStationQuestions(this.currentIsland).map(item => `
+                  <div class="pirls-mini-row">
+                    <span class="pirls-mini-tag" style="background:${item.level === 1 ? '#0284c7' : item.level === 2 ? '#059669' : item.level === 3 ? '#d97706' : '#7c3aed'};">${item.tag}</span>
+                    <span>${item.q}</span>
+                  </div>
+                `).join("")}
               </div>
             </div>
           `;
@@ -12709,10 +13550,10 @@
         tipCard.className = "intermediate-guided-banner";
         tipCard.innerHTML = `
           <div style="font-size: 18px; font-weight: 900; color: #1e40af; display: flex; align-items: center; gap: 8px;">
-            <span>⚔️ 挑戰者句型鷹架：為各要素選句型，依詞性填入好詞！</span>
+            <span>⚔️ 挑戰者句型鷹架：搭配 PIRLS 四層次提問，親手寫出答案！</span>
           </div>
           <div style="font-size: 16px; color: #1e3a8a; margin-top: 6px; line-height: 1.7; font-weight: 600;">
-            💡 <strong>拒絕偷懶挑現成句子！</strong>請為每個要素選擇句型，依據<strong>【詞性提示】</strong>親手打字或閱讀推薦的<strong>好詞積木</strong>填入底線，親手組裝出鮮活生動的作文要素！
+            💡 <strong>不給現成好詞偷抄！</strong>請為每個要素選擇句型，遇到卡關時點開<strong>【🧭 PIRLS 四層次提問】</strong>，順著問題一步步想出屬於自己的精彩答案！
           </div>
         `;
         list.appendChild(tipCard);
@@ -12753,10 +13594,12 @@
           let blanksHtml = "";
           curPattern.blanks.forEach(b => {
             const currentVal = (curKeyData.blanks && curKeyData.blanks[b.key]) || "";
-            const chipsHtml = (b.chips || []).map(chip => {
-              const safeChip = chip.replace(/'/g, "\\'");
-              return `<span class="reference-word-badge" title="僅供閱讀思考，不可點擊貼上或複製" onclick="window.islandApp.onReferenceChipClick('${safeChip}')">📖 ${chip}</span>`;
-            }).join("");
+            const pirlsRowsHtml = this.buildPirlsBlankQuestions(islandIdx, key, curPattern.id, b, curPattern).map(pq => `
+              <div class="pirls-mini-row">
+                <span class="pirls-mini-tag" style="background: ${pq.bg};">${pq.tag}</span>
+                <span>${pq.text}</span>
+              </div>
+            `).join("");
 
             const posBadge = b.pos ? `<span class="guided-pos-tag">🏷️ 詞性：${b.pos}</span>` : '';
             const promptText = b.thinkingPrompt || b.label;
@@ -12788,21 +13631,17 @@
                          oninput="window.islandApp.setGuidedBlankText('${key}', '${b.key}', this.value)">
                 </div>
 
-                <!-- 💡 思考卡住時的按需展開靈感錦囊 (預設折疊，絕不直接攤開現成答案) -->
+                <!-- 🧭 思考卡住時開啟：PIRLS 四層次思考提問引導（已全面移除好詞參考） -->
                 <div style="margin-top: 8px;">
                   <button type="button" class="guided-hint-toggle" id="guidedHintBtn_${key}_${b.key}" onclick="window.islandApp.toggleGuidedHint('${key}', '${b.key}')">
-                    💡 思考不出來嗎？點我看靈感提點
+                    🧭 思考卡關嗎？點我開啟 PIRLS 四層次提問引導
                   </button>
-                  <div class="guided-hint-box" id="guidedHint_${key}_${b.key}" oncopy="window.islandApp.blockCopy(event)" oncut="window.islandApp.blockCopy(event)" oncontextmenu="window.islandApp.blockCopy(event)" ondragstart="window.islandApp.blockCopy(event)">
-                    <div class="guided-idea-text">
-                      ${ideaText}
+                  <div class="guided-hint-box" id="guidedHint_${key}_${b.key}">
+                    <div style="font-size: 14.5px; color: #0369a1; font-weight: 900; margin-bottom: 6px;">
+                      🧭 跟著 PIRLS 四層次提問想一想，自己就能寫出最棒的答案：
                     </div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px;">
-                      <span style="font-size: 16px; color: #92400e; font-weight: 900;">📚 四上教材參考好詞（僅供眼睛閱讀激發靈感）：</span>
-                      ${chipsHtml}
-                    </div>
-                    <div class="no-copy-notice">
-                      <span>🔒 提示：好詞僅供閱讀思考，不可點擊貼上或複製，請親自動腦打字輸入！</span>
+                    <div class="pirls-mini-list">
+                      ${pirlsRowsHtml}
                     </div>
                   </div>
                 </div>
@@ -12849,10 +13688,10 @@
         const isOpen = box.classList.contains("is-open");
         if (isOpen) {
           box.classList.remove("is-open");
-          if (btn) btn.innerHTML = `💡 思考不出來嗎？點我看靈感提點`;
+          if (btn) btn.innerHTML = `🧭 思考卡關嗎？點我開啟 PIRLS 四層次提問引導`;
         } else {
           box.classList.add("is-open");
-          if (btn) btn.innerHTML = `🔼 收起靈感提點`;
+          if (btn) btn.innerHTML = `🔼 收起 PIRLS 四層次提問`;
         }
       }
 
@@ -13030,6 +13869,14 @@
       }
 
       // 取得各島嶼專屬的四步連貫句子規格 (100% 依據 Step 1 五要素組裝)
+      escapeHtmlText(str) {
+        return String(str || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
       getIslandSentenceSpecs(islandIdx, e) {
         const oo = state.ooWord || "敬佩";
         const placePhrase = e.place && (e.place.startsWith("在") || e.place.startsWith("無論")) ? e.place : `在${e.place}`;
@@ -13040,9 +13887,11 @@
             {
               title: "① 開頭句（人生相遇與譬喻定調）",
               elementTag: "時・地",
-              rhetoricLabel: "可微調開頭譬喻修辭：",
+              choosePrompt: "🤔 思考比較：這位主角帶給你的感覺，比較像「溫暖的陽光」、「指引方向的燈塔」，還是「每天的溫馨陪伴」？請挑選最貼切的一句：",
               fluencyTip: "💡 默念檢查：時間與地點接起來順口嗎？若有重複的「在」可以直接在框內修掉喔！",
+              previewPrefix: `${e.time}，我們會遇見形形色色的人，而在${e.place.replace(/^在/, "")}，`,
               template: (tail) => `${e.time}，我們會遇見形形色色的人，而在${e.place.replace(/^在/, "")}，${tail}。`,
+              optionTags: ["☀️ 溫暖陽光譬喻｜適合溫柔照顧型", "🗼 指引燈塔譬喻｜適合教導啟發型", "💛 真摯陪伴寫實｜適合天天相處型"],
               options: [
                 "總有一道像溫暖陽光般的身影深深印在我心裡",
                 "有一位像燈塔一樣照亮我成長道路的特別人物",
@@ -13052,9 +13901,11 @@
             {
               title: "② 亮相句（介紹我最○○的人是誰）",
               elementTag: "人",
-              rhetoricLabel: "可微調主角定調語句：",
+              choosePrompt: "🤔 思考比較：在你心中，他扮演的是「值得效法的榜樣」、「一起成長的良師益友」，還是「帶來安全感的守護者」？",
               fluencyTip: "💡 默念檢查：確認主角稱呼清楚，沒有缺少主詞或「就是」重複喔！",
+              previewPrefix: `這位令我最${oo}的人，就是${e.person.replace(/^我最.*就是/, "")}，`,
               template: (tail) => `這位令我最${oo}的人，就是${e.person.replace(/^我最.*就是/, "")}，${tail}。`,
+              optionTags: ["🏆 榜樣典範定調｜適合敬佩學習型", "🤝 良師益友定調｜適合亦師亦友型", "🛡️ 溫暖守護定調｜適合溫馨照顧型"],
               options: [
                 "也是我生命中最值得學習的好榜樣",
                 "更是我心目中無人能取代的良師益友",
@@ -13064,9 +13915,11 @@
             {
               title: "③ 畫面句（招牌物品聯想）",
               elementTag: "物",
-              rhetoricLabel: "可微調畫面聯想：",
-              fluencyTip: "💡 默念檢查：看板上的物品有加上形容詞嗎？念起來有沒有畫面感？",
+              choosePrompt: "🤔 思考比較：看著你寫的招牌物品，腦中浮現的比較是他的「辛苦背影」、「專注眼神」，還是「親切笑容」？",
+              fluencyTip: "💡 默念檢查：物品和後面的身影畫面有合理連結嗎？念念看是否順口！",
+              previewPrefix: `每當看到${e.object.replace(/^每當看到/, "")}，我腦海中就會立刻浮現他`,
               template: (tail) => `每當看到${e.object.replace(/^每當看到/, "")}，我腦海中就會立刻浮現他${tail}。`,
+              optionTags: ["💪 辛勞背影特寫｜適合默默付出型", "✨ 專注眼神特寫｜適合認真專業型", "🌸 春風笑容譬喻｜適合親切開朗型"],
               options: [
                 "忙碌卻從不喊苦的溫柔背影",
                 "專注認真、眼神閃閃發光的模樣",
@@ -13076,9 +13929,11 @@
             {
               title: "④ 結尾句（對我良好影響定調）",
               elementTag: "事",
-              rhetoricLabel: "可微調結尾譬喻：",
+              choosePrompt: "🤔 思考比較：你想用哪一種修辭幫第一段收尾——「明燈譬喻」、「深刻印記」，還是「耳濡目染的成長」？",
               fluencyTip: "💡 檢查「不僅……更……」前後主詞與動詞是否通順，不通順請直接在框內微調！",
+              previewPrefix: `${e.event}，`,
               template: (tail) => `${e.event}，${tail}。`,
+              optionTags: ["🏮 黑夜明燈譬喻｜適合指引方向型", "💎 深刻印記收束｜適合無私身教型", "🌱 耳濡目染成長｜適合陪伴進步型"],
               options: [
                 "他就像黑夜裡的一盞明燈，溫柔地照亮我前行的方向",
                 "這份無私的陪伴與身教，在我心中留下了不可抹滅的印記",
@@ -13087,14 +13942,16 @@
             }
           ];
         } else if (islandIdx === 1) {
-          // 承之站：視覺摹寫＋外貌比喻（臉型、五官、體型、髮型、表情）
+          // 承之站：視覺摹寫＋外貌比喻
           return [
             {
               title: "① 觀察引導句（觀察時機與場景）",
               elementTag: "時・地",
-              rhetoricLabel: "可微調觀察視角：",
+              choosePrompt: "🤔 思考比較：當你像小畫家一樣觀察他時，最先吸引你的是「與眾不同的神韻」、「可愛細節」，還是「滿滿的活力」？",
               fluencyTip: "💡 默念檢查：時間和觀察位置接起來順不順？",
+              previewPrefix: `${e.time}，${placePhrase}，我總愛像小畫家一樣仔細觀察他，`,
               template: (tail) => `${e.time}，${placePhrase}，我總愛像小畫家一樣仔細觀察他，${tail}。`,
+              optionTags: ["🎨 神韻觀察視角｜適合氣質鮮明型", "🔍 細節記憶視角｜適合溫馨細膩型", "⚡ 活力感受視角｜適合開朗元氣型"],
               options: [
                 "發現他與眾不同的外貌神韻",
                 "把他的每一個可愛特徵都悄悄記在心裡",
@@ -13104,9 +13961,11 @@
             {
               title: "② 外貌摹寫句（臉型、五官、髮型、體型＋比喻）",
               elementTag: "人",
-              rhetoricLabel: "可微調外貌比喻修辭：",
+              choosePrompt: "🤔 思考比較：哪一種外貌比喻最像你筆下的主角——「月牙笑眼」、「發光神采」，還是「俐落精神」？",
               fluencyTip: "💡 檢查是否寫到「臉型、五官、髮型或體型」的形容詞描寫！",
+              previewPrefix: `${e.person}，`,
               template: (tail) => `${e.person}，${tail}。`,
+              optionTags: ["🌙 月牙笑眼譬喻｜適合愛笑親切型", "🌟 神采發光譬喻｜適合自信亮眼型", "✨ 俐落親切印象｜適合幹練有精神型"],
               options: [
                 "一雙眼睛清澈明亮，笑起來就像天上彎彎的月牙",
                 "整個人看起來神采奕奕，彷彿渾身散發著溫暖的光芒",
@@ -13116,9 +13975,11 @@
             {
               title: "③ 表情神態句（招牌笑容與反差）",
               elementTag: "物",
-              rhetoricLabel: "可微調神態摹寫：",
+              choosePrompt: "🤔 思考比較：他的表情特色偏向「溫柔與威嚴的反差」、「療癒微笑」，還是「帶動大家的專注感」？",
               fluencyTip: "💡 默念檢查：表情描寫有沒有生動？可直接在框內補充他生氣或開心時的細節！",
+              previewPrefix: `${e.object}，`,
               template: (tail) => `${e.object}，${tail}。`,
+              optionTags: ["🌤️ 溫柔威嚴反差｜適合老師／家長", "😊 微笑安撫氛圍｜適合溫柔治癒型", "🎯 專注感染力｜適合認真投入型"],
               options: [
                 "平常溫柔得像和煦的春風，但該嚴肅時也讓人不敢造次",
                 "只要看見他微笑，大家原本緊繃的心情就會瞬間放鬆下來",
@@ -13128,9 +13989,11 @@
             {
               title: "④ 優點讚賞句（外貌與內在優點並重）",
               elementTag: "事",
-              rhetoricLabel: "可微調優點肯定：",
+              choosePrompt: "🤔 思考比較：你想特別讚美他的哪一項核心優點——「一絲不苟不放棄」、「熱心助人」，還是「耐心鼓勵」？",
               fluencyTip: "💡 檢查動詞前有沒有加上副詞（例：耐心地、認真地），念一次確認順口！",
+              previewPrefix: `除了鮮明的外貌特徵，他更令人敬佩的是${e.event}，`,
               template: (tail) => `除了鮮明的外貌特徵，他更令人敬佩的是${e.event}，${tail}。`,
+              optionTags: ["📏 認真負責型｜一絲不苟不放棄", "❤️ 熱心助人型｜大家的好榜樣", "🌱 耐心鼓勵型｜傾聽陪伴嘗試"],
               options: [
                 "無論做什麼事都一絲不苟、從不輕言放棄",
                 "總是熱心地幫助身邊每一個人，是大家眼中的好榜樣",
@@ -13144,9 +14007,11 @@
             {
               title: "① 回憶起點句（事件發生時空）",
               elementTag: "時・地",
-              rhetoricLabel: "可微調回憶開場：",
+              choosePrompt: "🤔 思考比較：你挑的這段回憶開場比較適合哪種氣氛——「刻骨銘心的溫馨插曲」、「突如其來的難題」，還是「緊張冒汗的氣氛」？",
               fluencyTip: "💡 默念檢查：把鏡頭拉回那一天，時間與地點連接通順嗎？",
+              previewPrefix: `${e.time}，${placePhrase}，`,
               template: (tail) => `${e.time}，${placePhrase}，${tail}。`,
+              optionTags: ["📖 刻骨銘心回憶｜適合溫馨故事", "❗ 突發難題開場｜適合困難挫折", "💦 緊張氣氛烘托｜適合比賽／考試"],
               options: [
                 "發生了一件令我至今依然刻骨銘心的難忘插曲",
                 "我遇見了一個突如其來、讓我手足無措的大難題",
@@ -13156,9 +14021,11 @@
             {
               title: "② 動作神態句（焦急的我 vs 伸出援手的他）",
               elementTag: "人",
-              rhetoricLabel: "可微調動作神態：",
+              choosePrompt: "🤔 思考比較：他出現幫忙的那一刻，最令你印象深刻的是「快步前來救援」、「拍肩安撫眼神」，還是「看見希望的心情」？",
               fluencyTip: "💡 默念檢查：有沒有把當時「你的慌張」和「他的熱心動作」對比出來？",
+              previewPrefix: `${e.person}，`,
               template: (tail) => `${e.person}，${tail}。`,
+              optionTags: ["🏃 急忙救援譬喻｜熱鍋上的螞蟻", "🤗 拍肩安撫神態｜溫柔堅定眼神", "✨ 看見希望心境｜心情瞬間轉折"],
               options: [
                 "看見我急得像熱鍋上的螞蟻，他二話不說立刻快步走過來幫忙",
                 "他溫柔地拍了拍我的肩膀，用堅定又親切的眼神安撫我",
@@ -13168,9 +14035,11 @@
             {
               title: "③ 經典對話句（關鍵物品＋對話引號「……」！）",
               elementTag: "物",
-              rhetoricLabel: "可微調對話引號神態：",
+              choosePrompt: "🤔 思考比較：他說完這句話之後，你覺得哪一種接續最能突顯感動——「暖陽聲音譬喻」、「充滿勇氣」，還是「細心示範動作」？",
               fluencyTip: "💡 檢查有沒有加上「……」對話引號，且語氣自然像真人在說話！",
+              previewPrefix: `${e.object}，`,
               template: (tail) => `${e.object}，${tail}。`,
+              optionTags: ["☀️ 冬日暖陽譬喻｜驅散心中不安", "💪 話語力量強調｜帶來強大勇氣", "✍️ 細心陪伴動作｜一步步耐心示範"],
               options: [
                 "聲音溫柔得像冬日裡的暖陽，瞬間驅散了我心中的不安",
                 "簡簡單單的一句話，卻帶給我無比強大的勇氣",
@@ -13180,9 +14049,11 @@
             {
               title: "④ 情感轉折句（從焦急到感動的暖流）",
               elementTag: "事",
-              rhetoricLabel: "可微調感動譬喻：",
+              choosePrompt: "🤔 思考比較：故事結尾你想留下哪一種情感畫面——「破涕為笑湧暖流」、「深海珍珠譬喻」，還是「雪中送炭的情誼」？",
               fluencyTip: "💡 默念檢查：心情有沒有從原本的緊張／難過，順利轉折到感動或如釋重負？",
+              previewPrefix: `${e.event}，`,
               template: (tail) => `${e.event}，${tail}。`,
+              optionTags: ["💧 破涕為笑＋暖流｜適合委屈轉開心", "🦪 深海珍珠譬喻｜適合永藏心底畫面", "❄️ 雪中送炭成語｜適合危急伸出援手"],
               options: [
                 "我頓時如釋重負、破涕為笑，心頭湧起一股甜甜的暖流",
                 "那一刻的溫暖畫面，就像深海裡閃亮的珍珠般永遠珍藏在我心底",
@@ -13196,9 +14067,11 @@
             {
               title: "① 回望句（相處後的真誠感受）",
               elementTag: "時",
-              rhetoricLabel: "可微調回望語氣：",
+              choosePrompt: "🤔 思考比較：回頭看與他相處的點點滴滴，你最想表達的是「滿滿感謝」、「明白他的用心」，還是「成長養分」？",
               fluencyTip: "💡 默念檢查：從上一站的事件自然銜接到現在的感受！",
+              previewPrefix: `${e.time}，回想起與他相處的點點滴滴，`,
               template: (tail) => `${e.time}，回想起與他相處的點點滴滴，${tail}。`,
+              optionTags: ["💖 真摯感動感謝｜適合直抒胸臆", "💡 體會用心良苦｜適合長輩／老師", "🌱 成長養分譬喻｜適合一路陪伴"],
               options: [
                 "我心中總是充滿了說不盡的感動與感謝",
                 "我才真正明白他的用心良苦對我有多重要",
@@ -13208,9 +14081,11 @@
             {
               title: "② 成長蛻變句（他帶給我的正面影響）",
               elementTag: "人",
-              rhetoricLabel: "可微調成長對比：",
+              choosePrompt: "🤔 思考比較：受到他的影響後，你覺得自己最大的進步偏向「勇敢迎戰困難」、「養成好習慣」，還是「變得自信助人」？",
               fluencyTip: "💡 默念檢查：有沒有寫出「以前」與「現在」的進步對比？",
+              previewPrefix: `${e.person}，`,
               template: (tail) => `${e.person}，${tail}。`,
+              optionTags: ["🔥 勇敢面對挑戰｜從退縮到迎戰", "📚 養成認真習慣｜耳濡目染自律", "🌟 自信關心別人｜學會把愛傳出"],
               options: [
                 "不再像以前那樣輕易退縮，反而學會用微笑迎接每一次挑戰",
                 "在他的耳濡目染下，我也養成了認真負責的好習慣",
@@ -13220,9 +14095,11 @@
             {
               title: "③ 寶藏收穫句（無形收穫譬喻）",
               elementTag: "物",
-              rhetoricLabel: "可微調感恩譬喻：",
+              choosePrompt: "🤔 思考比較：你想把這份無形收穫比喻成「深海珍珠」、「發芽的種子」，還是「珍貴的精神財富」？",
               fluencyTip: "💡 默念檢查：把學到的好品格或友誼比喻成珍貴寶物，念起來更優美！",
+              previewPrefix: `${e.object}，`,
               template: (tail) => `${e.object}，${tail}。`,
+              optionTags: ["🦪 深海珍珠譬喻｜比喻珍貴無比", "🌱 溫暖種子譬喻｜比喻持續成長", "💎 精神財富定調｜莊重感人收束"],
               options: [
                 "這份受用一生的禮物，比深海裡最閃耀的珍珠還要珍貴",
                 "就像一顆溫暖的種子，在我心裡悄悄發芽、茁壯成長",
@@ -13232,9 +14109,11 @@
             {
               title: "④ 呼應題目與感恩期許句",
               elementTag: "地・事",
-              rhetoricLabel: "可微調呼應結尾：",
-              fluencyTip: "💡 檢查最後有沒有呼應題目《我最" + oo + "的人》並表達感謝或期許！",
+              choosePrompt: `🤔 思考比較：最後一句要呼應題目《我最${oo}的人》，你想用「傳遞溫暖」、「永誌不忘」還是「自我期許發光」畫下句點？`,
+              fluencyTip: `💡 檢查最後有沒有呼應題目《我最${oo}的人》並表達感謝或期許！`,
+              previewPrefix: `${e.place}，${e.event}，`,
               template: (tail) => `${e.place}，${e.event}，${tail}！`,
+              optionTags: ["💌 傳遞溫暖期許｜向他看齊傳愛", "🌟 永誌不忘點題｜最幸運的相遇", "✨ 成為閃亮的人｜銘記教導前行"],
               options: [
                 `謝謝您，我最${oo}的人，未來我也要向您看齊，把這份溫暖傳遞下去`,
                 `能遇見您真是我最大的幸運，我永遠也不會忘記您這位最令我${oo}的好榜樣`,
@@ -13263,17 +14142,17 @@
                 </button>
               </div>
               <div class="element-inventory-chips">
-                <span class="inventory-chip inventory-chip-time" title="時間情境">⏰ 時：${e.time}</span>
-                <span class="inventory-chip inventory-chip-place" title="空間環境">🏠 地：${e.place}</span>
-                <span class="inventory-chip inventory-chip-person" title="人物神態">👤 人：${e.person}</span>
-                <span class="inventory-chip inventory-chip-object" title="招牌物品與細節">📚 物：${e.object}</span>
-                <span class="inventory-chip inventory-chip-event" title="核心事件">⚡ 事：${e.event}</span>
+                <span class="inventory-chip inventory-chip-time" title="時間情境">⏰ 時：${this.escapeHtmlText(e.time)}</span>
+                <span class="inventory-chip inventory-chip-place" title="空間環境">🏠 地：${this.escapeHtmlText(e.place)}</span>
+                <span class="inventory-chip inventory-chip-person" title="人物神態">👤 人：${this.escapeHtmlText(e.person)}</span>
+                <span class="inventory-chip inventory-chip-object" title="招牌物品與細節">📚 物：${this.escapeHtmlText(e.object)}</span>
+                <span class="inventory-chip inventory-chip-event" title="核心事件">⚡ 事：${this.escapeHtmlText(e.event)}</span>
               </div>
             </div>
           `;
         }
 
-        // ② 初始化 Step 2 句子替換與手動修順狀態
+        // ② 初始化 Step 2 選擇與手動修順狀態（預設未選，強制學生思考挑選！）
         if (!state.puzzleSelections[islandIdx]) {
           state.puzzleSelections[islandIdx] = [0, 0, 0, 0];
         }
@@ -13283,55 +14162,117 @@
         if (!state.step2EditedSentences[islandIdx]) {
           state.step2EditedSentences[islandIdx] = {};
         }
+        if (!state.step2ExplicitChosen) {
+          state.step2ExplicitChosen = [
+            [false, false, false, false],
+            [false, false, false, false],
+            [false, false, false, false],
+            [false, false, false, false]
+          ];
+        }
+        if (!state.step2ExplicitChosen[islandIdx]) {
+          state.step2ExplicitChosen[islandIdx] = [false, false, false, false];
+        }
+
         const curSelections = state.puzzleSelections[islandIdx];
         const editedMap = state.step2EditedSentences[islandIdx];
+        const chosenFlags = state.step2ExplicitChosen[islandIdx];
 
-        // ③ 渲染四大段落句卡片（每句皆可直接編輯修順＋專屬修辭選項鈕）
+        // ③ 渲染進度橫幅與四大段落句卡片
         const listContainer = document.getElementById("step2SentenceList");
         if (!listContainer) return;
         listContainer.innerHTML = "";
 
         const specs = this.getIslandSentenceSpecs(islandIdx, e);
+        const pickedCount = specs.filter((_, idx) => !!chosenFlags[idx] || !!(editedMap[idx] && editedMap[idx].trim())).length;
+        const remainingCount = specs.length - pickedCount;
+
+        const progressBanner = document.createElement("div");
+        progressBanner.className = `step2-progress-banner ${remainingCount === 0 ? 'all-done' : ''}`;
+        progressBanner.innerHTML = remainingCount === 0
+          ? `<span>🎉 太棒了！你已完成全部 ${specs.length} / ${specs.length} 句修辭思考挑選，默念檢查通順後就能前往 Step 3！</span>`
+          : `<span>🎯 修辭挑選進度：已親手挑選 ${pickedCount} / ${specs.length} 句（還差 ${remainingCount} 句，請先思考比較再點選喔！）</span>`;
+        listContainer.appendChild(progressBanner);
+
+        // 同步更新底部前往 Step 3 按鈕文字與樣式
+        const nextBtn = document.getElementById("btnStep2Next");
+        if (nextBtn) {
+          if (remainingCount === 0) {
+            nextBtn.classList.remove("step2-locked");
+            nextBtn.innerHTML = `<span>✅ 4 句修辭都挑好了！前往第 3 步潤飾段落 ➔</span>`;
+          } else {
+            nextBtn.classList.add("step2-locked");
+            nextBtn.innerHTML = `<span>🔒 還有 ${remainingCount} 句尚未挑選修辭（點我跳至待選句）</span>`;
+          }
+        }
 
         specs.forEach((spec, sIdx) => {
+          const isPicked = !!chosenFlags[sIdx] || !!(editedMap[sIdx] && editedMap[sIdx].trim());
           const card = document.createElement("div");
-          card.className = "sentence-block-card";
+          card.id = `step2Card_${sIdx}`;
+          card.tabIndex = -1;
+          card.className = `sentence-block-card ${isPicked ? 'choice-done' : 'needs-choice'}`;
 
           const chosenOptIdx = curSelections[sIdx] || 0;
           const chosenTail = spec.options[chosenOptIdx] || spec.options[0];
+          const chosenTag = (spec.optionTags && spec.optionTags[chosenOptIdx]) || `修辭選項 ${chosenOptIdx + 1}`;
           const generatedSentence = spec.template(chosenTail);
           const displaySentence = (editedMap[sIdx] && editedMap[sIdx].trim()) ? editedMap[sIdx] : generatedSentence;
           const isEdited = !!(editedMap[sIdx] && editedMap[sIdx].trim() && editedMap[sIdx] !== generatedSentence);
 
           const optBtnsHtml = spec.options.map((opt, oIdx) => {
-            const isActive = chosenOptIdx === oIdx;
-            return `<button type="button" class="puzzle-opt-btn ${isActive ? 'active' : ''}" onclick="window.islandApp.selectStep2SentenceOption(${sIdx}, ${oIdx})">${opt}</button>`;
+            const isActive = isPicked && chosenOptIdx === oIdx;
+            const tagText = (spec.optionTags && spec.optionTags[oIdx]) || `✨ 修辭選項 ${oIdx + 1}`;
+            return `
+              <button type="button" class="rhetoric-choice-btn ${isActive ? 'active' : ''}" onclick="window.islandApp.selectStep2SentenceOption(${sIdx}, ${oIdx})">
+                <span class="rhetoric-choice-tag">${isActive ? '✓ 目前選擇｜' : ''}${this.escapeHtmlText(tagText)}</span>
+                <span class="rhetoric-choice-text">${this.escapeHtmlText(opt)}</span>
+              </button>
+            `;
           }).join("");
+
+          const editorAreaHtml = isPicked
+            ? `
+              <textarea class="step2-edit-box" id="step2Edit_${sIdx}" rows="2" oninput="window.islandApp.onStep2SentenceEdit(${sIdx}, this.value)"></textarea>
+              <div class="step2-compare-hint">
+                ✨ 已套用【${this.escapeHtmlText(chosenTag.split("｜")[0])}】！如果不夠像你心中的主角，隨時可以點下方其他修辭卡切換比較，或直接在上方框內微調字句。
+              </div>
+              <div class="step2-fluency-tip">
+                <span>${this.escapeHtmlText(spec.fluencyTip || "💡 請默念一遍這句話，若語句卡卡的或重複字詞，請直接在上方輸入框修順！")}</span>
+                ${isEdited ? `<button type="button" style="border:none; background:#e0f2fe; color:#0369a1; font-size:11.5px; font-weight:800; padding:3px 8px; border-radius:6px; cursor:pointer; flex-shrink:0;" onclick="window.islandApp.resetStep2Sentence(${sIdx})">🔄 還原原選修辭</button>` : ""}
+              </div>
+            `
+            : `
+              <div class="step2-placeholder-box">
+                ${this.escapeHtmlText(spec.previewPrefix || "")}<span style="color:#dc2626; background:#fee2e2; padding:2px 8px; border-radius:6px;">【❓ 這裡該放入哪一句修辭，最符合你寫的主角？】</span>。
+              </div>
+            `;
 
           card.innerHTML = `
             <div class="sentence-block-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
-              <span>${spec.title}</span>
-              <span class="linkage-badge">🔗 承接 Step 1【${spec.elementTag}】</span>
+              <span>${this.escapeHtmlText(spec.title)}</span>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span class="linkage-badge">🔗 承接 Step 1【${this.escapeHtmlText(spec.elementTag)}】</span>
+                <span class="rhetoric-status-pill ${isPicked ? 'done' : 'pending'}">${isPicked ? '✅ 已挑選修辭' : '⏳ 必選・待挑選'}</span>
+              </div>
             </div>
-            <textarea class="step2-edit-box" id="step2Edit_${sIdx}" rows="2" oninput="window.islandApp.onStep2SentenceEdit(${sIdx}, this.value)"></textarea>
-            <div class="step2-fluency-tip">
-              <span>${spec.fluencyTip || "💡 請默念一遍這句話，若語句卡卡的或重複字詞，請直接在上方輸入框修順！"}</span>
-              ${isEdited ? `<button type="button" style="border:none; background:#e0f2fe; color:#0369a1; font-size:11.5px; font-weight:800; padding:3px 8px; border-radius:6px; cursor:pointer; flex-shrink:0;" onclick="window.islandApp.resetStep2Sentence(${sIdx})">🔄 還原建議句</button>` : ""}
-            </div>
-            <div class="puzzle-options-group" style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(0,0,0,0.08);">
-              <span style="font-size: 13.5px; font-weight: 800; color: #64748b; line-height: 26px;">${spec.rhetoricLabel || "可微調修辭："}</span>
+            ${editorAreaHtml}
+            <div class="rhetoric-choose-prompt">${this.escapeHtmlText(spec.choosePrompt || "🤔 請比較下方三種不同風格的修辭句，點選最符合你主角特色的一句：")}</div>
+            <div class="rhetoric-choice-grid">
               ${optBtnsHtml}
             </div>
           `;
           listContainer.appendChild(card);
-          const ta = card.querySelector(`#step2Edit_${sIdx}`);
-          if (ta) ta.value = displaySentence;
+          if (isPicked) {
+            const ta = card.querySelector(`#step2Edit_${sIdx}`);
+            if (ta) ta.value = displaySentence;
+          }
         });
 
-        // ④ 更新即時段落組合預覽
+        // ④ 更新即時段落組合預覽（高光標示已挑選的修辭句與待選缺口）
         const previewEl = document.getElementById("step2CombinedPreview");
         if (previewEl) {
-          previewEl.textContent = this.getCombinedStep2Text(data);
+          previewEl.innerHTML = this.getCombinedStep2PreviewHtml(data);
         }
       }
 
@@ -13339,12 +14280,16 @@
         const islandIdx = this.currentIsland;
         if (!state.step2EditedSentences) state.step2EditedSentences = [ {}, {}, {}, {} ];
         if (!state.step2EditedSentences[islandIdx]) state.step2EditedSentences[islandIdx] = {};
+        if (!state.step2ExplicitChosen) state.step2ExplicitChosen = [[false,false,false,false],[false,false,false,false],[false,false,false,false],[false,false,false,false]];
         state.step2EditedSentences[islandIdx][sIdx] = val;
+        state.step2ExplicitChosen[islandIdx][sIdx] = true;
+        if (!this._step2ChangedSinceSync) this._step2ChangedSinceSync = {};
+        this._step2ChangedSinceSync[islandIdx] = true;
         state.saveState();
 
         const previewEl = document.getElementById("step2CombinedPreview");
         if (previewEl) {
-          previewEl.textContent = this.getCombinedStep2Text(CURRICULUM_DATA[islandIdx]);
+          previewEl.innerHTML = this.getCombinedStep2PreviewHtml(CURRICULUM_DATA[islandIdx]);
         }
       }
 
@@ -13352,6 +14297,8 @@
         const islandIdx = this.currentIsland;
         if (state.step2EditedSentences && state.step2EditedSentences[islandIdx]) {
           delete state.step2EditedSentences[islandIdx][sIdx];
+          if (!this._step2ChangedSinceSync) this._step2ChangedSinceSync = {};
+          this._step2ChangedSinceSync[islandIdx] = true;
           state.saveState();
         }
         this.renderStep2Sentences(CURRICULUM_DATA[islandIdx]);
@@ -13360,28 +14307,73 @@
       selectStep2SentenceOption(sIdx, oIdx) {
         const islandIdx = this.currentIsland;
         if (!state.puzzleSelections[islandIdx]) state.puzzleSelections[islandIdx] = [0, 0, 0, 0];
+        if (!state.step2ExplicitChosen) {
+          state.step2ExplicitChosen = [
+            [false, false, false, false],
+            [false, false, false, false],
+            [false, false, false, false],
+            [false, false, false, false]
+          ];
+        }
         state.puzzleSelections[islandIdx][sIdx] = oIdx;
-        // 切換修辭按鈕時，同步更新該句為新修辭版本（讓學生可再繼續微調）
+        state.step2ExplicitChosen[islandIdx][sIdx] = true;
         if (state.step2EditedSentences && state.step2EditedSentences[islandIdx]) {
           delete state.step2EditedSentences[islandIdx][sIdx];
         }
+        if (!this._step2ChangedSinceSync) this._step2ChangedSinceSync = {};
+        this._step2ChangedSinceSync[islandIdx] = true;
         state.saveState();
 
         const data = CURRICULUM_DATA[islandIdx];
         this.renderStep2Sentences(data);
       }
 
-      // 取得 Step 2 組裝好的乾淨純文字段落（優先採用學生親手修順後的句子）
+      // 取得 Step 2 即時預覽 HTML（將挑選的修辭以綠色底線凸顯，未選以紅框提示）
+      getCombinedStep2PreviewHtml(data) {
+        const islandIdx = this.currentIsland;
+        const e = this.getSelectedElements(data);
+        const specs = this.getIslandSentenceSpecs(islandIdx, e);
+        const curSelections = state.puzzleSelections[islandIdx] || [0, 0, 0, 0];
+        const editedMap = (state.step2EditedSentences && state.step2EditedSentences[islandIdx]) || {};
+        const chosenFlags = (state.step2ExplicitChosen && state.step2ExplicitChosen[islandIdx]) || [false, false, false, false];
+
+        const htmlParts = specs.map((spec, sIdx) => {
+          if (editedMap[sIdx] && editedMap[sIdx].trim()) {
+            return `<span class="preview-rhetoric-hl" title="第 ${sIdx + 1} 句（你已親自修順）">${this.escapeHtmlText(editedMap[sIdx].trim())}</span>`;
+          }
+          if (!chosenFlags[sIdx]) {
+            return `${this.escapeHtmlText(spec.previewPrefix || "")}<span class="preview-rhetoric-missing">【❓ 第 ${sIdx + 1} 句待挑選修辭】</span>。`;
+          }
+          const chosenOptIdx = curSelections[sIdx] || 0;
+          const chosenTail = spec.options[chosenOptIdx] || spec.options[0];
+          const full = spec.template(chosenTail);
+          const idxTail = full.indexOf(chosenTail);
+          if (idxTail !== -1) {
+            const before = full.slice(0, idxTail);
+            const after = full.slice(idxTail + chosenTail.length);
+            return `${this.escapeHtmlText(before)}<span class="preview-rhetoric-hl" title="你挑選的修辭句">${this.escapeHtmlText(chosenTail)}</span>${this.escapeHtmlText(after)}`;
+          }
+          return this.escapeHtmlText(full);
+        });
+
+        return "　　" + htmlParts.join("");
+      }
+
+      // 取得 Step 2 組裝好的純文字段落（供 Step 3 文字框帶入；未挑選修辭以【______】標示）
       getCombinedStep2Text(data) {
         const islandIdx = this.currentIsland;
         const e = this.getSelectedElements(data);
         const specs = this.getIslandSentenceSpecs(islandIdx, e);
         const curSelections = state.puzzleSelections[islandIdx] || [0, 0, 0, 0];
         const editedMap = (state.step2EditedSentences && state.step2EditedSentences[islandIdx]) || {};
+        const chosenFlags = (state.step2ExplicitChosen && state.step2ExplicitChosen[islandIdx]) || [false, false, false, false];
 
         const sentences = specs.map((spec, sIdx) => {
           if (editedMap[sIdx] && editedMap[sIdx].trim()) {
             return editedMap[sIdx].trim();
+          }
+          if (!chosenFlags[sIdx]) {
+            return `${spec.previewPrefix || ""}【______】。`;
           }
           const chosenOptIdx = curSelections[sIdx] || 0;
           const chosenTail = spec.options[chosenOptIdx] || spec.options[0];
@@ -13395,17 +14387,29 @@
       // Step 3: 渲染編輯器與【五要素連貫閉環檢驗儀】
       // ----------------------------------------------------
       renderStep3Editor(data) {
+        const islandIdx = this.currentIsland;
         const textarea = document.getElementById("paragraphInput");
+        const combined = this.getCombinedStep2Text(data);
+        if (!this._lastAutoStep2Text) this._lastAutoStep2Text = {};
+        if (!this._step2ChangedSinceSync) this._step2ChangedSinceSync = {};
 
-        // 若文字框尚無文字，自動無損帶入 Step 2 的連貫成果
-        if (!state.paragraphs[this.currentIsland] || state.paragraphs[this.currentIsland].trim() === "") {
-          const combined = this.getCombinedStep2Text(data);
-          state.paragraphs[this.currentIsland] = combined;
+        const curPara = (state.paragraphs[islandIdx] || "").trim();
+        const lastAuto = (this._lastAutoStep2Text[islandIdx] || "").trim();
+
+        // 若文字框為空、或仍等於上次自動帶入的 Step 2 內容（且本輪剛換過修辭），直接同步最新修辭成果
+        if (!curPara || (this._step2ChangedSinceSync[islandIdx] && curPara === lastAuto)) {
+          state.paragraphs[islandIdx] = combined;
+          this._lastAutoStep2Text[islandIdx] = combined;
+          this._step2ChangedSinceSync[islandIdx] = false;
           state.saveState();
+        } else if (this._step2ChangedSinceSync[islandIdx] && curPara !== combined.trim()) {
+          this._step2ChangedSinceSync[islandIdx] = false;
+          this.showToast("💡 你剛在 Step 2 換了修辭句！想套用新句子可點上方「📋 重新匯入 Step 2 句子」喔～", 3600);
         }
 
-        textarea.value = state.paragraphs[this.currentIsland] || "";
+        textarea.value = state.paragraphs[islandIdx] || "";
         this.onTextChange();
+        this.renderWordChips(islandIdx);
       }
 
       // 【Step 3 五要素連貫閉環檢驗儀動態比對】
@@ -13433,7 +14437,7 @@
         const personMatched = checkMatch(e.person);
         const objectMatched = checkMatch(e.object);
         const eventMatched = checkMatch(e.event);
-        const rhetoricMatched = currentText.includes("比") || currentText.includes("像") || currentText.includes("如") || currentText.includes("堆積如山") || currentText.includes("風雲變色") || currentText.includes("草木皆兵") || currentText.includes("包青天") || currentText.includes("火山") || currentText.includes("陽光") || currentText.includes("蜂蜜") || currentText.includes("煙火");
+        const rhetoricMatched = /(像|彷彿|宛如|如同|比|明燈|燈塔|陽光|春風|月牙|神采奕奕|一絲不苟|熱鍋上的螞蟻|暖陽|「|『|破涕為笑|雪中送炭|珍珠|種子|耳濡目染|精神財富|好榜樣|銘記在心|謝謝您)/.test(currentText);
 
         checkerContainer.innerHTML = `
           <div class="continuity-checker-card">
@@ -13723,8 +14727,9 @@
       selectOoPreset(word) {
         document.getElementById("ooCustomInput").value = word;
         document.getElementById("ooInputError").style.display = "none";
-        this.refreshOoTopicPreview(word);
         state.ooWord = word;
+        this.refreshOoTopicPreview(word);
+        if (this.currentIsland !== undefined && this.currentIsland < 4) this.renderWordChips(this.currentIsland);
         state.saveState();
         this.showToast(`✅ 題目已設定為《我最${word}的人》！`);
         this.closeOoTopicModal();
@@ -13763,6 +14768,7 @@
         state.ooWord = raw;
         state.saveState();
         this.refreshOoTopicPreview(raw);
+        if (this.currentIsland !== undefined && this.currentIsland < 4) this.renderWordChips(this.currentIsland);
         this.showToast(`✅ 題目已更新為《我最${raw}的人》！`);
         this.closeOoTopicModal();
       }

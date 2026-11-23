@@ -41,14 +41,18 @@ s = s.replace(
     "this.teacherMode = true;"
 )
 
-# 4. Step 1 與 Step 3 全面免驗證直通，並新增 devAutoFillCurrent() 一鍵示範填寫
+# 4. Step 1、Step 2 與 Step 3 全面免驗證直通，並新增 devAutoFillCurrent() 一鍵示範填寫
 s = s.replace(
     "      validateStep1Required() {",
     "      validateStep1Required() {\n        return true; // 🧪 檢核副本：略過必填與詞組限制，自由切換各步驟檢查\n      }\n      _origValidateStep1Required() {"
 )
 s = s.replace(
+    "      validateStep2Required() {",
+    "      validateStep2Required() {\n        return true; // 🧪 檢核副本：略過 Step 2 修辭必選限制，自由切換步驟檢查\n      }\n      _origValidateStep2Required() {"
+)
+s = s.replace(
     "      validateStep3Required() {",
-    "      validateStep3Required() {\n        return true; // 🧪 檢核副本：略過段落必填限制\n      }\n      devAutoFillCurrent() {\n        const idx = this.currentIsland ?? 0;\n        const d = CURRICULUM_DATA[idx];\n        if (!d || idx >= 4) return;\n        if (!state.elementSelections[idx]) state.elementSelections[idx] = { time: 0, place: 0, person: 0, object: 0, event: 0 };\n        ['time', 'place', 'person', 'object', 'event'].forEach(k => {\n          const opt = (d.elementOptions && d.elementOptions[k] && d.elementOptions[k].options && d.elementOptions[k].options[0]) || '示範內容';\n          state.elementSelections[idx][`${k}_custom`] = opt;\n          const el = document.getElementById(`masterInput_${k}`);\n          if (el) el.value = opt;\n        });\n        if (d.peer) state.paragraphs[idx] = d.peer.replace(/^[「」]|[「」]$/g, '');\n        state.saveState(true);\n        this.renderStep2Sentences(d);\n        this.renderStep3Editor(d);\n        this.showToast(`⚡ 已一鍵填入【${d.shortName}】示範作答，可直接檢視 Step 2 與大白鯊神殿！`);\n      }\n      _origValidateStep3Required() {"
+    "      validateStep3Required() {\n        return true; // 🧪 檢核副本：略過段落必填限制\n      }\n      devAutoFillCurrent() {\n        const idx = this.currentIsland ?? 0;\n        const d = CURRICULUM_DATA[idx];\n        if (!d || idx >= 4) return;\n        if (!state.elementSelections[idx]) state.elementSelections[idx] = { time: 0, place: 0, person: 0, object: 0, event: 0 };\n        ['time', 'place', 'person', 'object', 'event'].forEach(k => {\n          const opt = (d.elementOptions && d.elementOptions[k] && d.elementOptions[k].options && d.elementOptions[k].options[0]) || '示範內容';\n          state.elementSelections[idx][`${k}_custom`] = opt;\n          const el = document.getElementById(`masterInput_${k}`);\n          if (el) el.value = opt;\n        });\n        if (!state.step2ExplicitChosen) state.step2ExplicitChosen = [[false,false,false,false],[false,false,false,false],[false,false,false,false],[false,false,false,false]];\n        state.step2ExplicitChosen[idx] = [true, true, true, true];\n        if (!state.pirlsCheckedState) state.pirlsCheckedState = [[false,false,false,false],[false,false,false,false],[false,false,false,false],[false,false,false,false]];\n        state.pirlsCheckedState[idx] = [true, true, true, true];\n        if (state.step2EditedSentences) state.step2EditedSentences[idx] = {};\n        if (d.peer) state.paragraphs[idx] = d.peer.replace(/^[「」]|[「」]$/g, '');\n        state.saveState(true);\n        this.renderStep2Sentences(d);\n        this.renderStep3Editor(d);\n        this.showToast(`⚡ 已一鍵填入【${d.shortName}】示範作答、修辭挑選與 PIRLS 檢核！`);\n      }\n      _origValidateStep3Required() {"
 )
 
 # 5. 關閉啟動自動彈出大綱視窗與首次點擊強制全螢幕（方便檢核切換視窗）
