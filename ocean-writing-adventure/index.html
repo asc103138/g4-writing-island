@@ -1946,6 +1946,101 @@
       box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
     }
 
+    /* 🔍 寫作小偵探・動態追問小卡與原創比例儀表板 */
+    .followup-card {
+      margin-top: 8px;
+      background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+      border: 1.5px solid #fb923c;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13.5px;
+      color: #9a3412;
+      line-height: 1.55;
+      display: none;
+    }
+    .followup-card.is-visible { display: block; animation: fadeInUp 0.2s ease; }
+    .followup-card.is-ok {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border-color: #4ade80;
+      color: #166534;
+    }
+    .followup-title { font-weight: 900; font-size: 14px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+    .followup-questions { margin: 4px 0 6px 16px; padding: 0; font-weight: 700; }
+    .followup-formula {
+      background: rgba(255,255,255,0.75);
+      border: 1px dashed #f97316;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #c2410c;
+    }
+    .step2-half-builder {
+      background: #f8fafc;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+    .step2-prefix-chip {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      background: #e0f2fe;
+      border: 1px solid #7dd3fc;
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+    .step2-tail-input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1.5px solid #38bdf8;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 15.5px;
+      font-weight: 700;
+      color: #0f172a;
+      background: #ffffff;
+      resize: vertical;
+      font-family: inherit;
+    }
+    .originality-dashboard {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border: 1.5px solid #7dd3fc;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+    .originality-dashboard.all-ok {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border-color: #4ade80;
+    }
+    .originality-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+    .originality-bar-bg {
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .originality-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #f59e0b, #10b981);
+      transition: width 0.25s ease;
+    }
+
   </style>
 </head>
 <body>
@@ -2519,7 +2614,7 @@
             <span>📝 第 3 步：段落檢查與字數靈力充能</span>
           </div>
           <div class="step-header-desc" style="color: #78350f;">
-            恭喜！以下是你組裝好的完整段落，請對照「五要素連貫檢驗儀」通讀一遍微調字句，讓靈力條充滿能量（50~80字）！
+            以下是你組裝好的段落草稿！請親手再補充<strong>至少 25 個中文字</strong>的動作、對話或內心感受（原創自主比例須達 <strong>45%</strong> 以上），並勾滿 PIRLS 四層檢核即可過關！
           </div>
         </div>
 
@@ -2539,14 +2634,17 @@
           </div>
 
           <div class="textarea-wrapper">
-            <textarea class="writing-textarea" id="paragraphInput" required placeholder="請在此微調你的段落內容（必填）……" oninput="window.islandApp.onTextChange()"></textarea>
+            <textarea class="writing-textarea" id="paragraphInput" required placeholder="請在此加入更多人物動作、神態或你的內心感受（至少再親手多寫 25 字）……" oninput="window.islandApp.onTextChange()"></textarea>
           </div>
-          
-          <!-- 字數靈力能量條 (50~80字) -->
+
+          <!-- 📊 原創自主比例儀表板 -->
+          <div id="step3OriginalityDashboard"></div>
+
+          <!-- 字數靈力能量條 (80~140字) -->
           <div class="energy-bar-wrap">
             <div class="energy-bar-label">
-              <span>段落靈力值（建議 50 ~ 80 字）</span>
-              <span id="charCountLabel">0 / 80 字</span>
+              <span>段落靈力值（建議 80 ~ 140 字）</span>
+              <span id="charCountLabel">0 / 140 字</span>
             </div>
             <div class="energy-bar-bg">
               <div class="energy-bar-fill" id="energyFill"></div>
@@ -6296,6 +6394,7 @@
           { time: 0, place: 0, person: 0, object: 0, event: 0 }
         ];
         this.step2ClozeData = [ {}, {}, {}, {} ];
+        this.step2StudentTails = [ {}, {}, {}, {} ];
         this.step2EditedSentences = [ {}, {}, {}, {} ];
         this.step2ExplicitChosen = [
           [false, false, false, false],
@@ -6361,6 +6460,7 @@
               { time: 0, place: 0, person: 0, object: 0, event: 0 }
             ];
             this.step2ClozeData = data.step2ClozeData || [ {}, {}, {}, {} ];
+            this.step2StudentTails = data.step2StudentTails || [ {}, {}, {}, {} ];
             this.step2EditedSentences = data.step2EditedSentences || [ {}, {}, {}, {} ];
             this.step2ExplicitChosen = data.step2ExplicitChosen || [
               [false, false, false, false],
@@ -6396,6 +6496,7 @@
             puzzleSelections: this.puzzleSelections,
             elementSelections: this.elementSelections,
             step2ClozeData: this.step2ClozeData,
+            step2StudentTails: this.step2StudentTails,
             step2EditedSentences: this.step2EditedSentences,
             step2ExplicitChosen: this.step2ExplicitChosen,
             pirlsCheckedState: this.pirlsCheckedState,
@@ -6439,6 +6540,7 @@
               elementSelections: this.elementSelections,
               puzzleSelections: this.puzzleSelections,
               step2ClozeData: this.step2ClozeData,
+            step2StudentTails: this.step2StudentTails,
             step2EditedSentences: this.step2EditedSentences,
               guidedSelections: this.guidedSelections
             };
@@ -12179,6 +12281,39 @@
       }
 
       // 轉之島 & 合之島考試結果聯動切換：依第 3 段選擇「比想像中好 / 比想像中壞」動態切換引導與參考詞庫
+      // 合併過於零碎的「在{part1}的{part2}中／裡」雙短詞模板為完整短句輸入，提升學生自主書寫比例
+      simplifyFragmentedGuidedFrames(guidedFrames) {
+        if (!guidedFrames) return guidedFrames;
+        const out = {};
+        for (const key of Object.keys(guidedFrames)) {
+          const frame = guidedFrames[key];
+          out[key] = {
+            ...frame,
+            patterns: (frame.patterns || []).map(pat => {
+              const tpl = String(pat.template || "");
+              const isShortSplit = (pat.blanks || []).length === 2 && /^在\{part1\}的\{part2\}[中裡]?$/.test(tpl);
+              if (!isShortSplit) return pat;
+              const b0 = pat.blanks[0];
+              const b1 = pat.blanks[1];
+              return {
+                ...pat,
+                name: pat.name.replace(/：.*/, "：在……（親手寫出完整情境短句）"),
+                template: "在{part1}",
+                blanks: [{
+                  ...b0,
+                  label: `${b0.label}與${b1.label}（完整短句）`,
+                  pos: "完整短句",
+                  thinkingPrompt: `${b0.thinkingPrompt || ""} 請把「形容詞＋具體時間或地點」連貫寫成完整短句（至少 8 個中文字）！`,
+                  placeholder: "請親手寫出完整短句，例：充滿溫暖飯菜香與笑聲的家裡客廳（至少 8 字）...",
+                  chips: b0.chips || []
+                }]
+              };
+            })
+          };
+        }
+        return out;
+      }
+
       getEffectiveIslandData(data) {
         if (!data) return data;
         let variant = null;
@@ -12188,7 +12323,12 @@
         } else if (data.id === 3 && state.twistOutcome === "better" && data.betterVariant) {
           variant = data.betterVariant;
         }
-        if (!variant) return data;
+        if (!variant) {
+          return {
+            ...data,
+            guidedFrames: this.simplifyFragmentedGuidedFrames(data.guidedFrames)
+          };
+        }
 
         const mergedGuided = {};
         if (data.guidedFrames) {
@@ -12224,7 +12364,7 @@
           elementOptions: variant.elementOptions || data.elementOptions,
           clozeSentences: variant.clozeSentences || data.clozeSentences,
           puzzleSentences: variant.puzzleSentences || data.puzzleSentences,
-          guidedFrames: Object.keys(mergedGuided).length > 0 ? mergedGuided : data.guidedFrames
+          guidedFrames: this.simplifyFragmentedGuidedFrames(Object.keys(mergedGuided).length > 0 ? mergedGuided : data.guidedFrames)
         };
       }
 
@@ -12729,13 +12869,7 @@
 
         const nextBtn = document.getElementById("btnStep3Next");
         if (nextBtn) {
-          if (remaining === 0) {
-            nextBtn.classList.remove("step2-locked");
-            nextBtn.innerHTML = `<span>✅ 段落與四層檢核完成！請老師蓋章審查 ➔</span>`;
-          } else {
-            nextBtn.classList.add("step2-locked");
-            nextBtn.innerHTML = `<span>🔒 還有 ${remaining} 層 PIRLS 檢核未打勾（點我跳至待勾題）</span>`;
-          }
+          this.updateStep3OriginalityUI();
         }
       }
 
@@ -12783,11 +12917,173 @@
         return null;
       }
 
+      // 計算有效中文字元數（扣除空白、標點符號、英數字）
+      countEffectiveZh(text) {
+        const matches = String(text || "").match(/[\u4e00-\u9fff]/g);
+        return matches ? matches.length : 0;
+      }
+
+      // 取得該要素對應的動態追問小卡問題與擴寫公式
+      getDynamicFollowupGuide(elemKey = "event", posText = "") {
+        const isAction = /動詞|片語|短句|形容詞＋/.test(posText) || elemKey === "event" || elemKey === "step2";
+        if (elemKey === "time") {
+          return {
+            questions: ["1. 那是什麼季節、天氣或一天裡的哪個時刻？", "2. 當時你的心情或周遭氣氛是怎麼樣的？", "3. 除了時間點，能不能加上「在……的時候」的畫面？"],
+            formula: "時間形容詞 ＋ 發生時刻／天氣 ＋ 當時氣氛（例：在微涼的秋風吹拂、陽光灑落教室的早晨）"
+          };
+        }
+        if (elemKey === "place") {
+          return {
+            questions: ["1. 這個地方看起來有什麼聲音、光線或氣味？", "2. 這個空間裡有哪些代表性的物品或景色？", "3. 在那裡待著給人什麼感覺？"],
+            formula: "環境感受詞 ＋ 的 ＋ 具體地點或角落（例：充滿溫馨飯菜香與笑聲的家裡客廳）"
+          };
+        }
+        if (elemKey === "person") {
+          return {
+            questions: ["1. 他的臉上常掛著什麼表情、眼神怎麼樣？", "2. 他的個性最大特色或專長是什麼？", "3. 他和你之間是什麼樣的關係？"],
+            formula: "外貌或個性形容詞 ＋ 的 ＋ 人物稱謂（例：總是戴著細框眼鏡、眼神溫柔又耐心的自然老師）"
+          };
+        }
+        if (elemKey === "object") {
+          return {
+            questions: ["1. 這件物品看起來什麼顏色、什麼質感或形狀？", "2. 上面有沒有特別的痕跡（例如筆記、磨損、溫度）？", "3. 看到它會讓你聯想到誰的什麼故事？"],
+            formula: "外觀或狀態形容詞 ＋ 的 ＋ 代表物品（例：翻到邊角微捲、寫滿密密麻麻紅筆筆記的課本）"
+          };
+        }
+        if (isAction || elemKey === "step2") {
+          return {
+            questions: ["1. 他當時具體做了什麼動作？（彎腰、拍肩、遞出…）", "2. 他說話時的語氣或臉部表情怎麼樣？", "3. 這件事讓你的心裡產生什麼變化或像什麼一樣？"],
+            formula: "主詞 ＋ 副詞／神態 ＋ 具體動作 ＋ 帶給我的感受（例：他輕輕蹲下身、笑著拍拍我的肩膀，讓我心中湧起一股暖流）"
+          };
+        }
+        return {
+          questions: ["1. 可以再加上什麼顏色、大小、聲音或動作細節？", "2. 他給人的感覺像什麼一樣？（譬喻法）", "3. 怎麼樣寫會讓沒見過的人也能想像出畫面？"],
+          formula: "具體形容詞 ＋ 的 ＋ 核心詞語（至少 4~8 個中文字）"
+        };
+      }
+
+      // 統一防灌水、禁照抄範例晶片與詞性字數品質檢核
+      checkAntiLazyQuality(val, opts = {}) {
+        const clean = String(val || "").trim();
+        const zhCount = this.countEffectiveZh(clean);
+        const minZh = opts.minZh || 4;
+        const elemKey = opts.elemKey || "event";
+        const posText = opts.posText || "";
+        const guide = this.getDynamicFollowupGuide(elemKey, posText);
+
+        if (!clean || zhCount === 0) {
+          return {
+            ok: false,
+            zhCount: 0,
+            minZh,
+            reason: "請親手輸入中文內容（不可空白或只填標點／英數符號）。",
+            ...guide
+          };
+        }
+
+        // 1. 防灌水過濾：連續重複單字 >= 3 次、重複 2 字詞組、敷衍詞黑名單
+        const zhOnly = (clean.match(/[\u4e00-\u9fff]/g) || []).join("");
+        if (/(.)\1{2,}/.test(zhOnly) || /(.{2})\1{1,}/.test(zhOnly) && new Set(zhOnly).size <= 3) {
+          return {
+            ok: false,
+            zhCount,
+            minZh,
+            reason: "偵測到重複疊字灌水囉！請用真實具體的詞語描寫你的主角。",
+            ...guide
+          };
+        }
+        const lazyBlacklist = /^(不知道|隨便|忘記了|沒有|不想寫|都可以|還好|普通|還行|無聊|呵呵|哈哈+|嗯嗯+|對啊|就是這樣|寫完了|沒什麼)$/;
+        if (lazyBlacklist.test(zhOnly)) {
+          return {
+            ok: false,
+            zhCount,
+            minZh,
+            reason: `「${clean}」是敷衍詞喔！想一想生活裡真實的細節，動筆寫出來吧。`,
+            ...guide
+          };
+        }
+
+        // 2. 禁止一字不改照抄靈感參考晶片或範例詞
+        const forbidden = (opts.forbiddenChips || []).map(c => String(c || "").replace(/[^\u4e00-\u9fff]/g, "")).filter(Boolean);
+        if (forbidden.includes(zhOnly)) {
+          return {
+            ok: false,
+            zhCount,
+            minZh,
+            reason: `「${clean}」跟參考靈感卡一模一樣喔！請加入自己的觀察細節或改寫成你的故事。`,
+            ...guide
+          };
+        }
+
+        // 3. 單字詞追問庫
+        const lazyTip = this.getLazyWordFeedback(clean);
+        if (lazyTip) {
+          return {
+            ok: false,
+            zhCount,
+            minZh,
+            reason: lazyTip,
+            ...guide
+          };
+        }
+
+        // 4. 有效中文字數門檻
+        if (zhCount < minZh) {
+          return {
+            ok: false,
+            zhCount,
+            minZh,
+            reason: `目前有效中文字只有 ${zhCount} 字（目標至少 ${minZh} 字，還差 ${minZh - zhCount} 字），再多加一點畫面細節吧！`,
+            ...guide
+          };
+        }
+
+        // 5. 修飾結構要求（名詞類 ≥4 字須有修飾、大師級 ≥12 字須有修飾/動態結構）
+        if (opts.requireModifier && !this.hasModifierStructure(clean)) {
+          return {
+            ok: false,
+            zhCount,
+            minZh,
+            reason: "請加上修飾詞（例如：……的……／……地……／像……一樣），讓畫面更生動！",
+            ...guide
+          };
+        }
+
+        return { ok: true, zhCount, minZh };
+      }
+
+      // 渲染或更新輸入框下方的「🔍 動態追問小卡」
+      updateFollowupCard(containerId, res) {
+        const el = document.getElementById(containerId);
+        if (!el) return;
+        if (!res) {
+          el.className = "followup-card";
+          el.innerHTML = "";
+          return;
+        }
+        if (res.ok) {
+          el.className = "followup-card is-visible is-ok";
+          el.innerHTML = `<div class="followup-title"><span>✅ 具體度達標！（有效中文字：${res.zhCount} / ${res.minZh} 字）</span></div>`;
+          return;
+        }
+        el.className = "followup-card is-visible";
+        const qHtml = (res.questions || []).map(q => `<li>${this.escapeHtmlText(q)}</li>`).join("");
+        el.innerHTML = `
+          <div class="followup-title">
+            <span>🔍 寫作小偵探・動態追問小卡</span>
+            <span>有效中文字 ${res.zhCount} / ${res.minZh} 字</span>
+          </div>
+          <div style="font-weight: 800; color: #b91c1c; margin-bottom: 4px;">⚠️ ${this.escapeHtmlText(res.reason)}</div>
+          <ul class="followup-questions">${qHtml}</ul>
+          <div class="followup-formula">📐 擴寫公式：${this.escapeHtmlText(res.formula || "")}</div>
+        `;
+      }
+
       // 檢驗是否符合「形容詞＋名詞／副詞＋動詞」修飾擴寫原則
       hasModifierStructure(val) {
         const clean = (val || "").trim();
-        if (clean.length >= 10) return true;
-        return /[的地得像如般又很極最常總默靜輕暖細認耐熱溫嚴笑]/.test(clean);
+        if (this.countEffectiveZh(clean) >= 6) return true;
+        return /[的地得像如般又很極最常總默靜輕暖細認耐熱溫嚴笑高大小長短圓紅藍綠白黑老新舊滿全整]/.test(clean);
       }
 
       validateStep1Required() {
@@ -12798,7 +13094,7 @@
         const data = this.getEffectiveIslandData(rawData);
         const elemKeys = ["time", "place", "person", "object", "event"];
 
-        // 挑戰者 / 初探者：結構雙格填空 + 防單字敷衍與偷懶短詞追問
+        // 挑戰者：名詞類 ≥ 4 中文字（含修飾詞）、動詞/事件/短句類 ≥ 8 中文字 + 防灌水/禁照抄/動態追問小卡
         if (state.tier === "intermediate" && data.guidedFrames) {
           const gSel = (state.guidedSelections && state.guidedSelections[islandIdx]) || {};
           for (const key of elemKeys) {
@@ -12811,25 +13107,20 @@
               const inputEl = document.getElementById(`guidedInput_${key}_${b.key}`);
               const storedVal = (curKeyData.blanks && curKeyData.blanks[b.key]) || "";
               const val = (inputEl ? inputEl.value : storedVal).trim();
-              if (!val) {
-                this.highlightMissingField(
-                  inputEl,
-                  `⚠️【${frameInfo.label}】的「${b.label}」為必填作答格！請先填寫所有空格再前往下一步。`
-                );
-                return false;
-              }
               const posText = b.pos || "";
-              const isActionOrPhrase = /動詞|片語|短句|形容詞＋/.test(posText);
-              const lazyTip = this.getLazyWordFeedback(val);
-              if (lazyTip && (curPattern.blanks.length === 1 || isActionOrPhrase)) {
-                this.highlightMissingField(inputEl, `💡 ${lazyTip}`);
-                return false;
-              }
-              if (isActionOrPhrase && val.length < 4) {
-                this.highlightMissingField(
-                  inputEl,
-                  `💡【${frameInfo.label}】的「${b.label}」請用「副詞＋動詞」或完整片語寫清楚（至少 4 個字），例如：溫柔地陪伴我、耐心地講解！`
-                );
+              const isActionOrPhrase = /動詞|片語|短句|形容詞＋/.test(posText) || key === "event";
+              const isPureTitleNoun = curPattern.blanks.length >= 2 && /人物名詞|稱謂/.test(posText);
+              const minZh = isActionOrPhrase ? 8 : (isPureTitleNoun ? 2 : 4);
+              const checkRes = this.checkAntiLazyQuality(val, {
+                minZh,
+                elemKey: key,
+                posText,
+                forbiddenChips: b.chips || [],
+                requireModifier: !isActionOrPhrase && !isPureTitleNoun
+              });
+              this.updateFollowupCard(`guidedFollowup_${key}_${b.key}`, checkRes);
+              if (!checkRes.ok) {
+                this.highlightMissingField(inputEl, `🔍【${frameInfo.label}】${checkRes.reason}`);
                 return false;
               }
             }
@@ -12837,7 +13128,7 @@
           return true;
         }
 
-        // 大師級：單框自由發揮，強制字數 >= 6 字且須包含「形容詞＋名詞／副詞＋動詞」修飾結構
+        // 大師級：單框自由發揮，強制有效中文字 >= 12 字且須包含修飾／動態細節結構
         if (state.tier === "master") {
           if (!state.elementSelections[islandIdx]) {
             state.elementSelections[islandIdx] = { time: 0, place: 0, person: 0, object: 0, event: 0 };
@@ -12850,23 +13141,16 @@
             const inputEl = document.getElementById(`masterInput_${key}`);
             const storedVal = curSel[`${key}_custom`] || "";
             const val = (inputEl ? inputEl.value : storedVal).trim();
-            if (!val) {
-              this.highlightMissingField(
-                inputEl,
-                `⚠️【${promptInfo.title}】為必填作答格！請先填寫所有格子再前往下一步。`
-              );
-              return false;
-            }
-            const lazyTip = this.getLazyWordFeedback(val);
-            if (lazyTip) {
-              this.highlightMissingField(inputEl, `💡 ${lazyTip}`);
-              return false;
-            }
-            if (val.length < 6 || !this.hasModifierStructure(val)) {
-              this.highlightMissingField(
-                inputEl,
-                `💡【${promptInfo.title}】請符合大師級「形容詞＋名詞」或「副詞＋動詞」擴寫目標（至少 6 字，如：在陽光灑落的教室裡、溫柔地鼓勵我）！`
-              );
+            const checkRes = this.checkAntiLazyQuality(val, {
+              minZh: 12,
+              elemKey: key,
+              posText: "短句",
+              forbiddenChips: [],
+              requireModifier: true
+            });
+            this.updateFollowupCard(`masterFollowup_${key}`, checkRes);
+            if (!checkRes.ok) {
+              this.highlightMissingField(inputEl, `🔍【${promptInfo.title}】${checkRes.reason}`);
               return false;
             }
             curSel[`${key}_custom`] = val;
@@ -12880,7 +13164,7 @@
 
       validateStep2Required() {
         const islandIdx = this.currentIsland;
-        const data = CURRICULUM_DATA[islandIdx];
+        const data = this.getEffectiveIslandData(CURRICULUM_DATA[islandIdx]);
         if (!data || islandIdx >= 4) return true;
         if (!state.step2ExplicitChosen || !state.step2ExplicitChosen[islandIdx]) {
           state.step2ExplicitChosen = [
@@ -12890,32 +13174,145 @@
             [false, false, false, false]
           ];
         }
+        if (!state.step2StudentTails) state.step2StudentTails = [ {}, {}, {}, {} ];
+        if (!state.step2StudentTails[islandIdx]) state.step2StudentTails[islandIdx] = {};
+
         const chosenFlags = state.step2ExplicitChosen[islandIdx];
-        const editedMap = (state.step2EditedSentences && state.step2EditedSentences[islandIdx]) || {};
-        const missingIndices = [];
-        for (let sIdx = 0; sIdx < 4; sIdx++) {
-          const isPicked = !!chosenFlags[sIdx] || !!(editedMap[sIdx] && editedMap[sIdx].trim());
-          if (!isPicked) missingIndices.push(sIdx);
-        }
-        if (missingIndices.length > 0) {
-          const firstMissing = missingIndices[0];
-          if ((this.currentStep || 1) < 2) {
-            this.goToStep(2, { skipValidation: true });
-            const cardEl = document.getElementById(`step2Card_${firstMissing}`);
+        const tailsMap = state.step2StudentTails[islandIdx];
+        const e = this.getSelectedElements(data);
+        const specs = this.getIslandSentenceSpecs(islandIdx, e);
+
+        for (let sIdx = 0; sIdx < specs.length; sIdx++) {
+          if (!chosenFlags[sIdx]) {
+            if ((this.currentStep || 1) < 2) this.goToStep(2, { skipValidation: true });
+            const cardEl = document.getElementById(`step2Card_${sIdx}`);
             this.highlightMissingField(
               cardEl,
-              `🧭 請先在 Step 2 思考比較並挑選 4 句修辭（還有 ${missingIndices.length} 句未選），才能前往 Step 3 潤飾喔！`
+              `⚠️ 第 ${sIdx + 1} 句還沒挑選修辭方向喔！請先點選修辭靈感方向卡，再親手補寫後半句！`
             );
             return false;
           }
-          const cardEl = document.getElementById(`step2Card_${firstMissing}`);
-          this.highlightMissingField(
-            cardEl,
-            `⚠️ 第 ${firstMissing + 1} 句還沒挑選修辭句喔！請先閱讀思考提問並點選最適合你主角的修辭（尚缺 ${missingIndices.length} 句）！`
-          );
-          return false;
+          const tailInput = document.getElementById(`step2Tail_${sIdx}`);
+          const tailVal = (tailInput ? tailInput.value : (tailsMap[sIdx] || "")).trim();
+          const checkRes = this.checkAntiLazyQuality(tailVal, {
+            minZh: 8,
+            elemKey: "step2",
+            posText: "短句",
+            forbiddenChips: specs[sIdx].options || [],
+            requireModifier: false
+          });
+          this.updateFollowupCard(`step2Followup_${sIdx}`, checkRes);
+          if (!checkRes.ok) {
+            if ((this.currentStep || 1) < 2) this.goToStep(2, { skipValidation: true });
+            this.highlightMissingField(
+              tailInput || document.getElementById(`step2Card_${sIdx}`),
+              `🔍 第 ${sIdx + 1} 句親寫後半句：${checkRes.reason}`
+            );
+            return false;
+          }
         }
         return true;
+      }
+
+      // 計算 Step 1 + Step 2 + Step 3 學生親手原創字數與原創自主比例
+      getStep3OriginalityMetrics(islandIdx, paragraphText) {
+        const data = this.getEffectiveIslandData(CURRICULUM_DATA[islandIdx]);
+        const elemKeys = ["time", "place", "person", "object", "event"];
+        let step1Zh = 0;
+        if (state.tier === "master") {
+          const sel = (state.elementSelections && state.elementSelections[islandIdx]) || {};
+          elemKeys.forEach(k => { step1Zh += this.countEffectiveZh(sel[`${k}_custom`] || ""); });
+        } else {
+          const gSel = (state.guidedSelections && state.guidedSelections[islandIdx]) || {};
+          elemKeys.forEach(k => {
+            const blanks = (gSel[k] && gSel[k].blanks) || {};
+            Object.values(blanks).forEach(v => { step1Zh += this.countEffectiveZh(v); });
+          });
+        }
+
+        let step2Zh = 0;
+        const tailsMap = (state.step2StudentTails && state.step2StudentTails[islandIdx]) || {};
+        Object.values(tailsMap).forEach(v => { step2Zh += this.countEffectiveZh(v); });
+
+        const draftText = data ? this.getCombinedStep2Text(data) : "";
+        const draftZh = this.countEffectiveZh(draftText);
+        const totalZh = this.countEffectiveZh(paragraphText);
+        const step3AddedZh = Math.max(0, totalZh - draftZh);
+        const studentTotalZh = Math.min(totalZh, step1Zh + step2Zh + step3AddedZh);
+        const originalRatio = totalZh > 0 ? Math.min(100, Math.round((studentTotalZh / totalZh) * 100)) : 0;
+        const zhOnly = (String(paragraphText || "").match(/[\u4e00-\u9fff]/g) || []).join("");
+        const hasRepeatedPadding = /(.)\1{3,}/.test(zhOnly);
+
+        return {
+          step1Zh,
+          step2Zh,
+          draftZh,
+          totalZh,
+          step3AddedZh,
+          studentTotalZh,
+          originalRatio,
+          hasRepeatedPadding,
+          addedOk: step3AddedZh >= 25,
+          ratioOk: originalRatio >= 45
+        };
+      }
+
+      updateStep3OriginalityUI() {
+        const islandIdx = this.currentIsland;
+        const textarea = document.getElementById("paragraphInput");
+        const text = (this.currentStep === 3 && textarea ? textarea.value : (state.paragraphs[islandIdx] || "")).trim();
+        const m = this.getStep3OriginalityMetrics(islandIdx, text);
+        const allMetricOk = m.addedOk && m.ratioOk && !m.hasRepeatedPadding;
+
+        const dash = document.getElementById("step3OriginalityDashboard");
+        if (dash) {
+          dash.className = `originality-dashboard ${allMetricOk ? "all-ok" : ""}`;
+          const addedColor = m.addedOk ? "#15803d" : "#c2410c";
+          const ratioColor = m.ratioOk ? "#15803d" : "#c2410c";
+          const tipMsg = m.hasRepeatedPadding
+            ? "⚠️ 偵測到重複疊字灌水，請刪除無意義重複字元並寫出真實細節！"
+            : !m.addedOk
+              ? `✍️ 請在上方段落中再親手補充至少 ${25 - m.addedOk * 0 - m.step3AddedZh} 個中文字（例如：人物動作、對話或內心感受）！`
+              : !m.ratioOk
+                ? `💡 目前原創自主比例為 ${m.originalRatio}%，請再補充或改寫句子讓原創比例達 45% 以上！`
+                : "🎉 太棒了！你的原創自主寫作比例與擴寫細節皆已達標！";
+
+          dash.innerHTML = `
+            <div class="originality-row">
+              <span>📊 原創自主比例儀表板（親寫字數 ${m.studentTotalZh} / 總字數 ${m.totalZh}）</span>
+              <span style="color: ${ratioColor};">${m.originalRatio}% / 目標 45%</span>
+            </div>
+            <div class="originality-bar-bg">
+              <div class="originality-bar-fill" style="width: ${Math.min(100, m.originalRatio)}%;"></div>
+            </div>
+            <div class="originality-row" style="margin-bottom: 2px;">
+              <span>✍️ Step 3 額外親自擴寫</span>
+              <span style="color: ${addedColor};">${m.step3AddedZh} / 25 字 ${m.addedOk ? "✓" : ""}</span>
+            </div>
+            <div style="font-size: 12.5px; font-weight: 800; color: ${allMetricOk ? "#166534" : "#9a3412"}; margin-top: 4px;">
+              ${tipMsg}
+            </div>
+          `;
+        }
+
+        const nextBtn = document.getElementById("btnStep3Next");
+        if (nextBtn) {
+          const checkedArr = (state.pirlsCheckedState && state.pirlsCheckedState[islandIdx]) || [false, false, false, false];
+          const pirlsRemaining = 4 - checkedArr.filter(Boolean).length;
+          if (!m.addedOk) {
+            nextBtn.classList.add("step2-locked");
+            nextBtn.innerHTML = `<span>🔒 請再親手擴寫 ${25 - m.step3AddedZh} 字細節（目標 +25 字）</span>`;
+          } else if (!m.ratioOk) {
+            nextBtn.classList.add("step2-locked");
+            nextBtn.innerHTML = `<span>🔒 原創比例 ${m.originalRatio}%（需達 45% 以上）</span>`;
+          } else if (pirlsRemaining > 0) {
+            nextBtn.classList.add("step2-locked");
+            nextBtn.innerHTML = `<span>🔒 還有 ${pirlsRemaining} 層 PIRLS 檢核未打勾（點我跳至待勾題）</span>`;
+          } else {
+            nextBtn.classList.remove("step2-locked");
+            nextBtn.innerHTML = `<span>✅ 原創擴寫與四層檢核完成！請老師蓋章審查 ➔</span>`;
+          }
+        }
       }
 
       validateStep3Required() {
@@ -12933,6 +13330,28 @@
           this.highlightMissingField(
             this.currentStep === 3 ? textarea : null,
             "⚠️ 段落中仍有未填寫的【______】空格，請補齊後再前往下一步！"
+          );
+          return false;
+        }
+        const metrics = this.getStep3OriginalityMetrics(islandIdx, val);
+        if (metrics.hasRepeatedPadding) {
+          this.highlightMissingField(
+            this.currentStep === 3 ? textarea : null,
+            "⚠️ 偵測到重複疊字灌水（例如連續重複同一個字），請改寫為真實具體的描寫喔！"
+          );
+          return false;
+        }
+        if (!metrics.addedOk) {
+          this.highlightMissingField(
+            this.currentStep === 3 ? textarea : null,
+            `✍️ 為了讓文章更豐富，請在 Step 3 再親手多補充至少 ${25 - metrics.step3AddedZh} 個中文字（例如人物動作、對話或內心感受）！`
+          );
+          return false;
+        }
+        if (!metrics.ratioOk) {
+          this.highlightMissingField(
+            this.currentStep === 3 ? textarea : null,
+            `📊 目前原創自主比例為 ${metrics.originalRatio}%，請再補充或改寫句子讓原創自主比例達 45% 以上！`
           );
           return false;
         }
@@ -13491,9 +13910,10 @@
                 ${promptInfo.hint}
               </div>
 
-              <!-- 大師輸入框 -->
+              <!-- 大師輸入框（強制至少 12 個有效中文字） -->
               <div style="margin-top: 8px;">
-                <input class="element-custom-input" required id="masterInput_${key}" style="padding: 12px 16px; font-weight: 700; font-size: 18px; width: 100%; border: 1.5px solid #e2e8f0; border-radius: 10px;" placeholder="${promptInfo.placeholder}（必填）" value="${String(curVal).replace(/"/g, '&quot;')}" onfocus="window.islandApp.lastFocusedElement='${key}'" oninput="window.islandApp.setElementCustomText('${key}', this.value)" onchange="window.islandApp.setElementCustomText('${key}', this.value)">
+                <input class="element-custom-input" required id="masterInput_${key}" style="padding: 12px 16px; font-weight: 700; font-size: 18px; width: 100%; border: 1.5px solid #e2e8f0; border-radius: 10px;" placeholder="${promptInfo.placeholder}（必填，至少 12 個中文字）" value="${String(curVal).replace(/"/g, '&quot;')}" onfocus="window.islandApp.lastFocusedElement='${key}'" oninput="window.islandApp.setElementCustomText('${key}', this.value)" onchange="window.islandApp.setElementCustomText('${key}', this.value)">
+                <div class="followup-card" id="masterFollowup_${key}"></div>
               </div>
             `;
             list.appendChild(card);
@@ -13587,7 +14007,7 @@
                   ${promptText}
                 </div>
 
-                <!-- 學生親手輸入框 (預設鼓勵親自打字，必填) -->
+                <!-- 學生親手輸入框 (預設鼓勵親自打字，必填 + 動態追問小卡) -->
                 <div style="margin-top: 10px;">
                   <input class="element-custom-input" 
                          required
@@ -13596,6 +14016,7 @@
                          placeholder="${b.placeholder || '請親手輸入你想到的詞語（必填）...'}" 
                          style="padding: 12px 16px; font-size: 18px; font-weight: 700; width: 100%; border: 1.5px solid #94a3b8; border-radius: 12px; box-sizing: border-box; background: #ffffff;"
                          oninput="window.islandApp.setGuidedBlankText('${key}', '${b.key}', this.value)">
+                  <div class="followup-card" id="guidedFollowup_${key}_${b.key}"></div>
                 </div>
 
                 <!-- 🧭 思考卡住時開啟：PIRLS 四層次思考提問引導（已全面移除好詞參考） -->
@@ -13684,25 +14105,48 @@
         state.guidedSelections[islandIdx][key].blanks[blankKey] = trimmed;
         state.saveState();
 
-        // 即時清除未填紅框並更新必填狀態標籤
-        const inputEl = document.getElementById(`guidedInput_${key}_${blankKey}`);
-        if (inputEl && trimmed) inputEl.classList.remove("input-required-error");
-        const statusEl = document.getElementById(`guidedStatus_${key}_${blankKey}`);
-        if (statusEl) {
-          statusEl.style.color = trimmed ? '#16a34a' : '#dc2626';
-          statusEl.textContent = trimmed ? '✓ 已親自填寫' : '* 必填，待輸入';
-        }
-
-        // 即時刷新組裝文字
+        // 即時防敷衍品質檢核與動態追問小卡更新
         const data = this.getEffectiveIslandData(CURRICULUM_DATA[islandIdx]);
+        let checkRes = null;
         if (data.guidedFrames && data.guidedFrames[key]) {
           const frameInfo = data.guidedFrames[key];
           const pIdx = state.guidedSelections[islandIdx][key].patternIdx || 0;
           const curPattern = frameInfo.patterns[pIdx] || frameInfo.patterns[0];
+          const curBlank = (curPattern.blanks || []).find(bl => bl.key === blankKey);
+          const posText = (curBlank && curBlank.pos) || "";
+          const isActionOrPhrase = /動詞|片語|短句|形容詞＋/.test(posText) || key === "event";
+          const isPureTitleNoun = curPattern.blanks.length >= 2 && /人物名詞|稱謂/.test(posText);
+          const minZh = isActionOrPhrase ? 8 : (isPureTitleNoun ? 2 : 4);
+          checkRes = trimmed ? this.checkAntiLazyQuality(trimmed, {
+            minZh,
+            elemKey: key,
+            posText,
+            forbiddenChips: (curBlank && curBlank.chips) || [],
+            requireModifier: !isActionOrPhrase && !isPureTitleNoun
+          }) : null;
+          this.updateFollowupCard(`guidedFollowup_${key}_${blankKey}`, checkRes);
+
           const assembled = this.getAssembledGuidedText(curPattern, state.guidedSelections[islandIdx][key].blanks);
           const box = document.getElementById(`guidedAssembled_${key}`);
           if (box) {
             box.innerHTML = `<span>✨ 【${key === 'time' ? '時' : key === 'place' ? '地' : key === 'person' ? '人' : key === 'object' ? '物' : '事'}】組裝成果：</span><span style="text-decoration: underline;">${assembled}</span>`;
+          }
+        }
+
+        // 即時清除未填紅框並更新必填狀態標籤
+        const inputEl = document.getElementById(`guidedInput_${key}_${blankKey}`);
+        if (inputEl && checkRes && checkRes.ok) inputEl.classList.remove("input-required-error");
+        const statusEl = document.getElementById(`guidedStatus_${key}_${blankKey}`);
+        if (statusEl) {
+          if (!trimmed) {
+            statusEl.style.color = '#dc2626';
+            statusEl.textContent = '* 必填，待輸入';
+          } else if (checkRes && !checkRes.ok) {
+            statusEl.style.color = '#d97706';
+            statusEl.textContent = `⏳ 還差 ${Math.max(1, checkRes.minZh - checkRes.zhCount)} 字（待擴寫）`;
+          } else {
+            statusEl.style.color = '#16a34a';
+            statusEl.textContent = '✓ 具體度達標';
           }
         }
       }
@@ -13760,8 +14204,16 @@
         const trimmed = text.trim();
         state.elementSelections[islandIdx][`${key}_custom`] = trimmed;
         state.saveState();
+        const checkRes = trimmed ? this.checkAntiLazyQuality(trimmed, {
+          minZh: 12,
+          elemKey: key,
+          posText: "短句",
+          forbiddenChips: [],
+          requireModifier: true
+        }) : null;
+        this.updateFollowupCard(`masterFollowup_${key}`, checkRes);
         const inputEl = document.getElementById(`masterInput_${key}`);
-        if (inputEl && trimmed) inputEl.classList.remove("input-required-error");
+        if (inputEl && checkRes && checkRes.ok) inputEl.classList.remove("input-required-error");
       }
 
       // ====================================================
@@ -14123,6 +14575,12 @@
         if (!state.puzzleSelections[islandIdx]) {
           state.puzzleSelections[islandIdx] = [0, 0, 0, 0];
         }
+        if (!state.step2StudentTails) {
+          state.step2StudentTails = [ {}, {}, {}, {} ];
+        }
+        if (!state.step2StudentTails[islandIdx]) {
+          state.step2StudentTails[islandIdx] = {};
+        }
         if (!state.step2EditedSentences) {
           state.step2EditedSentences = [ {}, {}, {}, {} ];
         }
@@ -14142,23 +14600,27 @@
         }
 
         const curSelections = state.puzzleSelections[islandIdx];
-        const editedMap = state.step2EditedSentences[islandIdx];
+        const tailsMap = state.step2StudentTails[islandIdx];
         const chosenFlags = state.step2ExplicitChosen[islandIdx];
 
-        // ③ 渲染進度橫幅與四大段落句卡片
+        // ③ 渲染進度橫幅與四大段落句卡片（系統給開頭連接詞 ＋ 學生親手寫完後半句 ≥ 8 中文字）
         const listContainer = document.getElementById("step2SentenceList");
         if (!listContainer) return;
         listContainer.innerHTML = "";
 
         const specs = this.getIslandSentenceSpecs(islandIdx, e);
-        const pickedCount = specs.filter((_, idx) => !!chosenFlags[idx] || !!(editedMap[idx] && editedMap[idx].trim())).length;
-        const remainingCount = specs.length - pickedCount;
+        const completedCount = specs.filter((spec, idx) => {
+          if (!chosenFlags[idx]) return false;
+          const tailVal = (tailsMap[idx] || "").trim();
+          return this.checkAntiLazyQuality(tailVal, { minZh: 8, elemKey: "step2", posText: "短句", forbiddenChips: spec.options || [] }).ok;
+        }).length;
+        const remainingCount = specs.length - completedCount;
 
         const progressBanner = document.createElement("div");
         progressBanner.className = `step2-progress-banner ${remainingCount === 0 ? 'all-done' : ''}`;
         progressBanner.innerHTML = remainingCount === 0
-          ? `<span>🎉 太棒了！你已完成全部 ${specs.length} / ${specs.length} 句修辭思考挑選，默念檢查通順後就能前往 Step 3！</span>`
-          : `<span>🎯 修辭挑選進度：已親手挑選 ${pickedCount} / ${specs.length} 句（還差 ${remainingCount} 句，請先思考比較再點選喔！）</span>`;
+          ? `<span>🎉 太棒了！你已親手寫完 ${specs.length} / ${specs.length} 句的後半段細節，前往 Step 3 再擴寫豐富內容吧！</span>`
+          : `<span>✍️ 半句親寫進度：已完成 ${completedCount} / ${specs.length} 句（每句皆須先選修辭方向，再親手補寫 ≥ 8 個中文字）</span>`;
         listContainer.appendChild(progressBanner);
 
         // 同步更新底部前往 Step 3 按鈕文字與樣式
@@ -14166,52 +14628,57 @@
         if (nextBtn) {
           if (remainingCount === 0) {
             nextBtn.classList.remove("step2-locked");
-            nextBtn.innerHTML = `<span>✅ 4 句修辭都挑好了！前往第 3 步潤飾段落 ➔</span>`;
+            nextBtn.innerHTML = `<span>✅ 4 句都親手寫好了！前往第 3 步擴寫潤飾 ➔</span>`;
           } else {
             nextBtn.classList.add("step2-locked");
-            nextBtn.innerHTML = `<span>🔒 還有 ${remainingCount} 句尚未挑選修辭（點我跳至待選句）</span>`;
+            nextBtn.innerHTML = `<span>🔒 還有 ${remainingCount} 句尚未親手補寫完（點我跳至待寫句）</span>`;
           }
         }
 
         specs.forEach((spec, sIdx) => {
-          const isPicked = !!chosenFlags[sIdx] || !!(editedMap[sIdx] && editedMap[sIdx].trim());
+          const isPicked = !!chosenFlags[sIdx];
+          const chosenOptIdx = curSelections[sIdx] || 0;
+          const chosenTag = (spec.optionTags && spec.optionTags[chosenOptIdx]) || `修辭方向 ${chosenOptIdx + 1}`;
+          const refExample = spec.options[chosenOptIdx] || spec.options[0];
+          const tailVal = (tailsMap[sIdx] || "").trim();
+          const tailCheck = isPicked && tailVal
+            ? this.checkAntiLazyQuality(tailVal, { minZh: 8, elemKey: "step2", posText: "短句", forbiddenChips: spec.options || [] })
+            : null;
+          const isDone = isPicked && !!(tailCheck && tailCheck.ok);
+
           const card = document.createElement("div");
           card.id = `step2Card_${sIdx}`;
           card.tabIndex = -1;
-          card.className = `sentence-block-card ${isPicked ? 'choice-done' : 'needs-choice'}`;
-
-          const chosenOptIdx = curSelections[sIdx] || 0;
-          const chosenTail = spec.options[chosenOptIdx] || spec.options[0];
-          const chosenTag = (spec.optionTags && spec.optionTags[chosenOptIdx]) || `修辭選項 ${chosenOptIdx + 1}`;
-          const generatedSentence = spec.template(chosenTail);
-          const displaySentence = (editedMap[sIdx] && editedMap[sIdx].trim()) ? editedMap[sIdx] : generatedSentence;
-          const isEdited = !!(editedMap[sIdx] && editedMap[sIdx].trim() && editedMap[sIdx] !== generatedSentence);
+          card.className = `sentence-block-card ${isDone ? 'choice-done' : 'needs-choice'}`;
 
           const optBtnsHtml = spec.options.map((opt, oIdx) => {
             const isActive = isPicked && chosenOptIdx === oIdx;
-            const tagText = (spec.optionTags && spec.optionTags[oIdx]) || `✨ 修辭選項 ${oIdx + 1}`;
+            const tagText = (spec.optionTags && spec.optionTags[oIdx]) || `✨ 修辭方向 ${oIdx + 1}`;
             return `
               <button type="button" class="rhetoric-choice-btn ${isActive ? 'active' : ''}" onclick="window.islandApp.selectStep2SentenceOption(${sIdx}, ${oIdx})">
-                <span class="rhetoric-choice-tag">${isActive ? '✓ 目前選擇｜' : ''}${this.escapeHtmlText(tagText)}</span>
-                <span class="rhetoric-choice-text">${this.escapeHtmlText(opt)}</span>
+                <span class="rhetoric-choice-tag">${isActive ? '✓ 目前方向｜' : ''}${this.escapeHtmlText(tagText)}</span>
+                <span class="rhetoric-choice-text" style="font-size: 13px; color: #475569;">💡 靈感寫法參考（禁照抄）：${this.escapeHtmlText(opt)}</span>
               </button>
             `;
           }).join("");
 
           const editorAreaHtml = isPicked
             ? `
-              <textarea class="step2-edit-box" id="step2Edit_${sIdx}" rows="2" oninput="window.islandApp.onStep2SentenceEdit(${sIdx}, this.value)"></textarea>
-              <div class="step2-compare-hint">
-                ✨ 已套用【${this.escapeHtmlText(chosenTag.split("｜")[0])}】！如果不夠像你心中的主角，隨時可以點下方其他修辭卡切換比較，或直接在上方框內微調字句。
+              <div class="step2-half-builder">
+                <div class="step2-prefix-chip">
+                  <span style="font-size: 12px; font-weight: 900; color: #0284c7; display: block; margin-bottom: 2px;">🔗 系統開頭連接詞（承接 Step 1 要素）：</span>
+                  ${this.escapeHtmlText(spec.previewPrefix || "")}
+                </div>
+                <textarea class="step2-tail-input" id="step2Tail_${sIdx}" rows="2" placeholder="請依【${this.escapeHtmlText(chosenTag.split("｜")[0])}】方向，親手補寫後半句具體畫面、動作或感受（必填，至少 8 個中文字，不可照抄參考句）..." oninput="window.islandApp.onStep2TailInput(${sIdx}, this.value)"></textarea>
+                <div class="followup-card" id="step2Followup_${sIdx}"></div>
               </div>
               <div class="step2-fluency-tip">
-                <span>${this.escapeHtmlText(spec.fluencyTip || "💡 請默念一遍這句話，若語句卡卡的或重複字詞，請直接在上方輸入框修順！")}</span>
-                ${isEdited ? `<button type="button" style="border:none; background:#e0f2fe; color:#0369a1; font-size:11.5px; font-weight:800; padding:3px 8px; border-radius:6px; cursor:pointer; flex-shrink:0;" onclick="window.islandApp.resetStep2Sentence(${sIdx})">🔄 還原原選修辭</button>` : ""}
+                <span>${this.escapeHtmlText(spec.fluencyTip || "💡 請把前後兩半句連起來默念一遍，確認語氣流暢自然！")}</span>
               </div>
             `
             : `
               <div class="step2-placeholder-box">
-                ${this.escapeHtmlText(spec.previewPrefix || "")}<span style="color:#dc2626; background:#fee2e2; padding:2px 8px; border-radius:6px;">【❓ 這裡該放入哪一句修辭，最符合你寫的主角？】</span>。
+                ${this.escapeHtmlText(spec.previewPrefix || "")}<span style="color:#dc2626; background:#fee2e2; padding:2px 8px; border-radius:6px;">【👇 請先點選下方修辭靈感方向，再親手補寫這半句】</span>。
               </div>
             `;
 
@@ -14220,23 +14687,82 @@
               <span>${this.escapeHtmlText(spec.title)}</span>
               <div style="display:flex; align-items:center; gap:6px;">
                 <span class="linkage-badge">🔗 承接 Step 1【${this.escapeHtmlText(spec.elementTag)}】</span>
-                <span class="rhetoric-status-pill ${isPicked ? 'done' : 'pending'}">${isPicked ? '✅ 已挑選修辭' : '⏳ 必選・待挑選'}</span>
+                <span class="rhetoric-status-pill ${isDone ? 'done' : 'pending'}" id="step2Pill_${sIdx}">${isDone ? '✅ 已親寫完成' : (isPicked ? '✍️ 補寫後半句中' : '⏳ 必選・待選方向')}</span>
               </div>
             </div>
             ${editorAreaHtml}
-            <div class="rhetoric-choose-prompt">${this.escapeHtmlText(spec.choosePrompt || "🤔 請比較下方三種不同風格的修辭句，點選最符合你主角特色的一句：")}</div>
+            <div class="rhetoric-choose-prompt">${this.escapeHtmlText(spec.choosePrompt || "🤔 先選擇你想使用的修辭方向（點選後系統只給開頭連接詞，後半句由你親手創作）：")}</div>
             <div class="rhetoric-choice-grid">
               ${optBtnsHtml}
             </div>
           `;
           listContainer.appendChild(card);
           if (isPicked) {
-            const ta = card.querySelector(`#step2Edit_${sIdx}`);
-            if (ta) ta.value = displaySentence;
+            const ta = card.querySelector(`#step2Tail_${sIdx}`);
+            if (ta) ta.value = tailsMap[sIdx] || "";
+            if (tailCheck) {
+              this.updateFollowupCard(`step2Followup_${sIdx}`, tailCheck);
+            }
           }
         });
 
-        // ④ 更新即時段落組合預覽（高光標示已挑選的修辭句與待選缺口）
+        // ④ 更新即時段落組合預覽（高光標示學生親寫後半句）
+        const previewEl = document.getElementById("step2CombinedPreview");
+        if (previewEl) {
+          previewEl.innerHTML = this.getCombinedStep2PreviewHtml(data);
+        }
+      }
+
+      onStep2TailInput(sIdx, val) {
+        const islandIdx = this.currentIsland;
+        if (!state.step2StudentTails) state.step2StudentTails = [ {}, {}, {}, {} ];
+        if (!state.step2StudentTails[islandIdx]) state.step2StudentTails[islandIdx] = {};
+        if (!state.step2ExplicitChosen) state.step2ExplicitChosen = [[false,false,false,false],[false,false,false,false],[false,false,false,false],[false,false,false,false]];
+        state.step2StudentTails[islandIdx][sIdx] = val;
+        state.step2ExplicitChosen[islandIdx][sIdx] = true;
+        if (!this._step2ChangedSinceSync) this._step2ChangedSinceSync = {};
+        this._step2ChangedSinceSync[islandIdx] = true;
+        state.saveState();
+
+        const data = this.getEffectiveIslandData(CURRICULUM_DATA[islandIdx]);
+        const e = this.getSelectedElements(data);
+        const specs = this.getIslandSentenceSpecs(islandIdx, e);
+        const curSpec = specs[sIdx] || {};
+        const checkRes = val.trim()
+          ? this.checkAntiLazyQuality(val, { minZh: 8, elemKey: "step2", posText: "短句", forbiddenChips: curSpec.options || [] })
+          : null;
+        this.updateFollowupCard(`step2Followup_${sIdx}`, checkRes);
+
+        const pill = document.getElementById(`step2Pill_${sIdx}`);
+        const card = document.getElementById(`step2Card_${sIdx}`);
+        const isDone = !!(checkRes && checkRes.ok);
+        if (pill) {
+          pill.className = `rhetoric-status-pill ${isDone ? 'done' : 'pending'}`;
+          pill.textContent = isDone ? '✅ 已親寫完成' : '✍️ 補寫後半句中';
+        }
+        if (card) {
+          card.classList.toggle("choice-done", isDone);
+          card.classList.toggle("needs-choice", !isDone);
+        }
+
+        const tailsMap = state.step2StudentTails[islandIdx];
+        const chosenFlags = state.step2ExplicitChosen[islandIdx];
+        const completedCount = specs.filter((sp, idx) => {
+          if (!chosenFlags[idx]) return false;
+          return this.checkAntiLazyQuality((tailsMap[idx] || "").trim(), { minZh: 8, elemKey: "step2", posText: "短句", forbiddenChips: sp.options || [] }).ok;
+        }).length;
+        const remainingCount = specs.length - completedCount;
+        const nextBtn = document.getElementById("btnStep2Next");
+        if (nextBtn) {
+          if (remainingCount === 0) {
+            nextBtn.classList.remove("step2-locked");
+            nextBtn.innerHTML = `<span>✅ 4 句都親手寫好了！前往第 3 步擴寫潤飾 ➔</span>`;
+          } else {
+            nextBtn.classList.add("step2-locked");
+            nextBtn.innerHTML = `<span>🔒 還有 ${remainingCount} 句尚未親手補寫完（點我跳至待寫句）</span>`;
+          }
+        }
+
         const previewEl = document.getElementById("step2CombinedPreview");
         if (previewEl) {
           previewEl.innerHTML = this.getCombinedStep2PreviewHtml(data);
@@ -14244,28 +14770,13 @@
       }
 
       onStep2SentenceEdit(sIdx, val) {
-        const islandIdx = this.currentIsland;
-        if (!state.step2EditedSentences) state.step2EditedSentences = [ {}, {}, {}, {} ];
-        if (!state.step2EditedSentences[islandIdx]) state.step2EditedSentences[islandIdx] = {};
-        if (!state.step2ExplicitChosen) state.step2ExplicitChosen = [[false,false,false,false],[false,false,false,false],[false,false,false,false],[false,false,false,false]];
-        state.step2EditedSentences[islandIdx][sIdx] = val;
-        state.step2ExplicitChosen[islandIdx][sIdx] = true;
-        if (!this._step2ChangedSinceSync) this._step2ChangedSinceSync = {};
-        this._step2ChangedSinceSync[islandIdx] = true;
-        state.saveState();
-
-        const previewEl = document.getElementById("step2CombinedPreview");
-        if (previewEl) {
-          previewEl.innerHTML = this.getCombinedStep2PreviewHtml(CURRICULUM_DATA[islandIdx]);
-        }
+        this.onStep2TailInput(sIdx, val);
       }
 
       resetStep2Sentence(sIdx) {
         const islandIdx = this.currentIsland;
-        if (state.step2EditedSentences && state.step2EditedSentences[islandIdx]) {
-          delete state.step2EditedSentences[islandIdx][sIdx];
-          if (!this._step2ChangedSinceSync) this._step2ChangedSinceSync = {};
-          this._step2ChangedSinceSync[islandIdx] = true;
+        if (state.step2StudentTails && state.step2StudentTails[islandIdx]) {
+          delete state.step2StudentTails[islandIdx][sIdx];
           state.saveState();
         }
         this.renderStep2Sentences(CURRICULUM_DATA[islandIdx]);
@@ -14284,9 +14795,6 @@
         }
         state.puzzleSelections[islandIdx][sIdx] = oIdx;
         state.step2ExplicitChosen[islandIdx][sIdx] = true;
-        if (state.step2EditedSentences && state.step2EditedSentences[islandIdx]) {
-          delete state.step2EditedSentences[islandIdx][sIdx];
-        }
         if (!this._step2ChangedSinceSync) this._step2ChangedSinceSync = {};
         this._step2ChangedSinceSync[islandIdx] = true;
         state.saveState();
@@ -14295,56 +14803,48 @@
         this.renderStep2Sentences(data);
       }
 
-      // 取得 Step 2 即時預覽 HTML（將挑選的修辭以綠色底線凸顯，未選以紅框提示）
+      // 取得 Step 2 即時預覽 HTML（將學生親寫後半句以綠色底線凸顯）
       getCombinedStep2PreviewHtml(data) {
         const islandIdx = this.currentIsland;
         const e = this.getSelectedElements(data);
         const specs = this.getIslandSentenceSpecs(islandIdx, e);
-        const curSelections = state.puzzleSelections[islandIdx] || [0, 0, 0, 0];
-        const editedMap = (state.step2EditedSentences && state.step2EditedSentences[islandIdx]) || {};
+        const tailsMap = (state.step2StudentTails && state.step2StudentTails[islandIdx]) || {};
         const chosenFlags = (state.step2ExplicitChosen && state.step2ExplicitChosen[islandIdx]) || [false, false, false, false];
 
         const htmlParts = specs.map((spec, sIdx) => {
-          if (editedMap[sIdx] && editedMap[sIdx].trim()) {
-            return `<span class="preview-rhetoric-hl" title="第 ${sIdx + 1} 句（你已親自修順）">${this.escapeHtmlText(editedMap[sIdx].trim())}</span>`;
-          }
+          const prefix = spec.previewPrefix || "";
+          const tail = (tailsMap[sIdx] || "").trim();
           if (!chosenFlags[sIdx]) {
-            return `${this.escapeHtmlText(spec.previewPrefix || "")}<span class="preview-rhetoric-missing">【❓ 第 ${sIdx + 1} 句待挑選修辭】</span>。`;
+            return `${this.escapeHtmlText(prefix)}<span class="preview-rhetoric-missing">【❓ 第 ${sIdx + 1} 句待選方向並親寫】</span>。`;
           }
-          const chosenOptIdx = curSelections[sIdx] || 0;
-          const chosenTail = spec.options[chosenOptIdx] || spec.options[0];
-          const full = spec.template(chosenTail);
-          const idxTail = full.indexOf(chosenTail);
-          if (idxTail !== -1) {
-            const before = full.slice(0, idxTail);
-            const after = full.slice(idxTail + chosenTail.length);
-            return `${this.escapeHtmlText(before)}<span class="preview-rhetoric-hl" title="你挑選的修辭句">${this.escapeHtmlText(chosenTail)}</span>${this.escapeHtmlText(after)}`;
+          if (!tail) {
+            return `${this.escapeHtmlText(prefix)}<span class="preview-rhetoric-missing">【✍️ 請親手補寫後半句】</span>。`;
           }
-          return this.escapeHtmlText(full);
+          const cleanTail = tail.replace(/[。！？]+$/, "");
+          const punct = sIdx === 3 && islandIdx === 3 ? "！" : "。";
+          return `${this.escapeHtmlText(prefix)}<span class="preview-rhetoric-hl" title="學生親手創作後半句">${this.escapeHtmlText(cleanTail)}</span>${punct}`;
         });
 
         return "　　" + htmlParts.join("");
       }
 
-      // 取得 Step 2 組裝好的純文字段落（供 Step 3 文字框帶入；未挑選修辭以【______】標示）
+      // 取得 Step 2 組裝好的純文字段落（供 Step 3 文字框帶入）
       getCombinedStep2Text(data) {
         const islandIdx = this.currentIsland;
         const e = this.getSelectedElements(data);
         const specs = this.getIslandSentenceSpecs(islandIdx, e);
-        const curSelections = state.puzzleSelections[islandIdx] || [0, 0, 0, 0];
-        const editedMap = (state.step2EditedSentences && state.step2EditedSentences[islandIdx]) || {};
+        const tailsMap = (state.step2StudentTails && state.step2StudentTails[islandIdx]) || {};
         const chosenFlags = (state.step2ExplicitChosen && state.step2ExplicitChosen[islandIdx]) || [false, false, false, false];
 
         const sentences = specs.map((spec, sIdx) => {
-          if (editedMap[sIdx] && editedMap[sIdx].trim()) {
-            return editedMap[sIdx].trim();
+          const prefix = spec.previewPrefix || "";
+          const tail = (tailsMap[sIdx] || "").trim();
+          if (!chosenFlags[sIdx] || !tail) {
+            return `${prefix}【______】。`;
           }
-          if (!chosenFlags[sIdx]) {
-            return `${spec.previewPrefix || ""}【______】。`;
-          }
-          const chosenOptIdx = curSelections[sIdx] || 0;
-          const chosenTail = spec.options[chosenOptIdx] || spec.options[0];
-          return spec.template(chosenTail);
+          const cleanTail = tail.replace(/[。！？]+$/, "");
+          const punct = sIdx === 3 && islandIdx === 3 ? "！" : "。";
+          return `${prefix}${cleanTail}${punct}`;
         });
 
         return "　　" + sentences.join("");
@@ -14485,15 +14985,16 @@
         state.saveState();
 
         const len = val.replace(/\s/g, '').length;
-        document.getElementById("charCountLabel").textContent = `${len} / 80 字`;
-        const pct = Math.min((len / 80) * 100, 100);
+        document.getElementById("charCountLabel").textContent = `${len} / 140 字`;
+        const pct = Math.min((len / 140) * 100, 100);
         const bar = document.getElementById("energyFill");
         bar.style.width = `${pct}%`;
-        bar.className = len >= 50 ? "energy-bar-fill good" : "energy-bar-fill";
+        bar.className = len >= 80 ? "energy-bar-fill good" : "energy-bar-fill";
 
-        // 即時動態連動五要素連貫閉環檢驗儀
+        // 即時動態連動五要素連貫閉環檢驗儀與原創自主比例儀表板
         const data = CURRICULUM_DATA[this.currentIsland];
         this.updateContinuityChecker(data);
+        this.updateStep3OriginalityUI();
       }
 
       // ----------------------------------------------------
